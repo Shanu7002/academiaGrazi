@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'firebase_options.dart';
 
+import 'src/test_user_creation/users/auth/auth_repository.dart';
+import 'src/test_user_creation/users/user_repository.dart';
+import 'src/test_user_creation/users/user_model.dart';
+import 'src/test_user_creation/users/user_service.dart';
+
 void main() async {
-  // Required to bind native channels before UI rendering
   WidgetsFlutterBinding.ensureInitialized();
-
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-
   runApp(const MyApp());
 }
 
@@ -20,51 +22,107 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Academia Grazi',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
       ),
-      // Routes directly to the database test screen
-      home: const TestScreen(),
+      home: const RegisterScreen(),
     );
   }
 }
 
-class TestScreen extends StatelessWidget {
-  const TestScreen({super.key});
+class RegisterScreen extends StatefulWidget {
+  const RegisterScreen({super.key});
 
-  Future<void> _executeTestWrite() async {
+  @override
+  State<RegisterScreen> createState() => _RegisterScreenState();
+}
+
+class _RegisterScreenState extends State<RegisterScreen> {
+  bool _isLoading = false;
+
+  Future<void> _handleRegistration() async {
+    setState(() => _isLoading = true);
+
     try {
-      // Executes an O(1) network write directly to the Firestore edge node
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc('test-user-123')
-          .set({
-            'name': 'Test User',
-            'email': 'test@academiagrazi.com',
-            'role': 'student',
-            'createdAt': FieldValue.serverTimestamp(),
-          });
+      final authRepo = AuthRepository();
+      final userRepo = UserRepository();
+      final userService = UserService(authRepo, userRepo);
 
-      debugPrint('SUCCESS: Document written to Firestore.');
-    } on FirebaseException catch (e) {
-      debugPrint('FIREBASE EXCEPTION: ${e.code} - ${e.message}');
+      await userService.registerStudent(
+        'Eduardo Müller2',
+        'eduardo2@academiagrazi.com',
+        'SecurePass123!',
+      );
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('SUCCESS: User registered and saved.')),
+        );
+      }
+    } on FirebaseAuthException catch (e) {
+      debugPrint('AUTH EXCEPTION: ${e.code}');
     } catch (e) {
       debugPrint('SYSTEM ERROR: $e');
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: const Text('DB Integration Test'),
-      ),
+      appBar: AppBar(title: const Text('Register Student')),
       body: Center(
-        child: ElevatedButton(
-          onPressed: _executeTestWrite,
-          child: const Text('Execute Write Operation'),
-        ),
+        child:
+            _isLoading
+                ? const CircularProgressIndicator()
+                : ElevatedButton(
+                  onPressed: _handleRegistration,
+                  child: const Text('Execute Secure Registration'),
+                ),
       ),
     );
   }
+
+  // Future<void> _testFirewallRejection() async {
+  //   setState(() => _isLoading = true);
+
+  //   try {
+  //     await FirebaseAuth.instance.signOut();
+
+  //     final userRepo = UserRepository();
+  //     final unauthorizedUser = UserModel(
+  //       id: 'unauthorized-123',
+  //       name: 'Hacker',
+  //       email: 'hacker@academiagrazi.com',
+  //     );
+
+  //     await userRepo.createUser(unauthorizedUser);
+
+  //     debugPrint(
+  //       'CRITICAL FAILURE: The firewall allowed an unauthorized write.',
+  //     );
+  //   } on FirebaseException catch (e) {
+  //     debugPrint('FIREWALL SUCCESS: Network request blocked -> ${e.code}');
+  //   } catch (e) {
+  //     debugPrint('SYSTEM ERROR: $e');
+  //   } finally {
+  //     if (mounted) setState(() => _isLoading = false);
+  //   }
+  // }
+
+  // @override
+  // Widget build(BuildContext context) {
+  //   return Scaffold(
+  //     appBar: AppBar(title: const Text('Register Student')),
+  //     body: Center(
+  //       child:
+  //           _isLoading
+  //               ? const CircularProgressIndicator()
+  //               : ElevatedButton(
+  //                 onPressed: _testFirewallRejection,
+  //                 child: const Text('Test Firewall Rejection'),
+  //               ),
+  //     ),
+  //   );
+  // }
 }
