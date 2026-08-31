@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "689931928417",
+    "project_id": "academia-grazi-dev-ab105",
+    "storage_bucket": "academia-grazi-dev-ab105.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:689931928417:android:5855d1bdfd33014fef3b20",
+        "android_client_info": {
+          "package_name": "com.example.academiagrazi"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCCiYFkMB7G6fBa9hlbMrNSVMWsZY0InTg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
