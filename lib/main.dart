@@ -7,6 +7,7 @@ import 'src/test_user_creation/users/auth/auth_repository.dart';
 import 'src/test_user_creation/users/user_repository.dart';
 import 'src/test_user_creation/users/user_model.dart';
 import 'src/test_user_creation/users/user_service.dart';
+import 'login_view.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,10 +22,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Academia Grazi',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
       ),
-      home: const RegisterScreen(),
+      home: const LoginView(),
     );
   }
 }
