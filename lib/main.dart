@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'firebase_options.dart';
 
 import 'src/test_user_creation/users/auth/auth_repository.dart';
@@ -25,6 +26,9 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+        textTheme: GoogleFonts.barlowCondensedTextTheme(
+          Theme.of(context).textTheme,
+        ),
       ),
       home: const LoginView(),
     );

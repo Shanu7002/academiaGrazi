@@ -9,9 +9,8 @@ class LoginView extends StatelessWidget {
       backgroundColor: Color(0xFFD8D6D6),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: 24.0),
+          padding: EdgeInsets.symmetric(horizontal: 60.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Image.asset('assets/logoLogin.png', height: 250),
               TextField(
@@ -39,47 +38,55 @@ class LoginView extends StatelessWidget {
               ),
               const SizedBox(height: 20),
 
-              ElevatedButton(
-                onPressed: () {
-                  debugPrint('Esqueci minha senha');
-                },
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: Text(
-                  'Esqueci minha senha',
-                  style: TextStyle(
-                    color: const Color.fromARGB(255, 2, 89, 79),
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    height: 2,
-                    decoration: TextDecoration.underline,
+              Align(
+                alignment: Alignment.centerRight,
+                child: SizedBox(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      debugPrint('Esqueci minha senha');
+                    },
+                    style: TextButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      minimumSize: const Size(0,0),
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      backgroundColor: Color(0xFFD8D6D6),
+                    ),
+                    child: Text(
+                      'Esqueci minha senha',
+                      style: TextStyle(
+                        color: const Color.fromARGB(255, 21, 73, 116),
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        decoration: TextDecoration.underline,
+                        height: 1,
+                      ),
+                    ),
                   ),
                 ),
               ),
-
               const SizedBox(height: 50),
 
-              ElevatedButton(
-                onPressed: () {
-                  debugPrint('Botão clicado');
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Color.fromARGB(255, 2, 89, 79),
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+              SizedBox(
+                width: 350,
+                child: ElevatedButton(
+                  onPressed: () {
+                    debugPrint('Botão clicado');
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color.fromARGB(255, 2, 89, 79),
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
-                ),
-                child: const Text(
-                  'ENTRAR',
-                  style: TextStyle(
-                    color: Color.fromARGB(255, 255, 255, 255),
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    height: 4,
+                  child: const Text(
+                    'ENTRAR',
+                    style: TextStyle(
+                      color: Color.fromARGB(255, 255, 255, 255),
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      height: 3,
+                    ),
                   ),
                 ),
               ),
