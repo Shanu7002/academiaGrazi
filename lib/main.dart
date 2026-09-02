@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'firebase_options.dart';
 
 import 'src/test_user_creation/users/auth/auth_repository.dart';
 import 'src/test_user_creation/users/user_repository.dart';
 import 'src/test_user_creation/users/user_model.dart';
 import 'src/test_user_creation/users/user_service.dart';
+import 'login_view.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,10 +23,14 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Academia Grazi',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+        textTheme: GoogleFonts.barlowCondensedTextTheme(
+          Theme.of(context).textTheme,
+        ),
       ),
-      home: const RegisterScreen(),
+      home: const LoginView(),
     );
   }
 }
