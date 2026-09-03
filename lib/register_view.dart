@@ -60,7 +60,9 @@ class _RegisterViewState extends State<RegisterView> {
                   fillColor: const Color.fromARGB(255, 238, 238, 238),
                   suffixIcon: IconButton(
                     icon: Icon(
-                      _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                      _obscurePassword
+                          ? Icons.visibility_off
+                          : Icons.visibility,
                       color: const Color(0xFF757575),
                     ),
                     onPressed: () {
@@ -71,6 +73,7 @@ class _RegisterViewState extends State<RegisterView> {
                   ),
                 ),
               ),
+
               const SizedBox(height: 20),
 
               TextField(
@@ -84,15 +87,17 @@ class _RegisterViewState extends State<RegisterView> {
                   fillColor: const Color.fromARGB(255, 238, 238, 238),
                   suffixIcon: IconButton(
                     icon: Icon(
-                      _obscureConfirmPassword ? Icons.visibility_off : Icons.visibility,
+                      _obscureConfirmPassword
+                          ? Icons.visibility_off
+                          : Icons.visibility,
                       color: const Color(0xFF757575),
                     ),
                     onPressed: () {
                       setState(() {
                         _obscureConfirmPassword = !_obscureConfirmPassword;
                       });
-                    }
-                  )
+                    },
+                  ),
                 ),
               ),
               const SizedBox(height: 20),
