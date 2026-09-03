@@ -16,6 +16,13 @@ class _RegisterViewState extends State<RegisterView> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color(0xFFD8D6D6),
+
+      appBar: AppBar(
+        backgroundColor: const Color(0xFFD8D6D6),
+        elevation: 0,
+        foregroundColor: const Color.fromARGB(255,21,73,116), 
+      ),
+
       body: SafeArea(
         child: SingleChildScrollView(
           padding: EdgeInsets.symmetric(horizontal: 60.0),
