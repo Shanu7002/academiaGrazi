@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'register_view.dart';
+import 'login_view.dart';
 
-class LoginView extends StatelessWidget {
-  const LoginView({super.key});
+class RegisterView extends StatelessWidget {
+  const RegisterView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -19,13 +19,27 @@ class LoginView extends StatelessWidget {
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  hintText: 'Usuário',
+                  hintText: 'Digite seu nome completo',
                   hintStyle: const TextStyle(color: Color(0xFF757575)),
                   filled: true,
                   fillColor: const Color.fromARGB(255, 238, 238, 238),
                 ),
               ),
               const SizedBox(height: 20),
+
+              TextField(
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  hintText: 'Email',
+                  hintStyle: const TextStyle(color: Color(0xFF757575)),
+                  filled: true,
+                  fillColor: const Color.fromARGB(255, 238, 238, 238),
+                ),
+              ),
+              const SizedBox(height: 20),
+
               TextField(
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
@@ -39,12 +53,25 @@ class LoginView extends StatelessWidget {
               ),
               const SizedBox(height: 20),
 
+              TextField(
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  hintText: 'Confirme sua senha',
+                  hintStyle: const TextStyle(color: Color(0xFF757575)),
+                  filled: true,
+                  fillColor: const Color.fromARGB(255, 238, 238, 238),
+                ),
+              ),
+              const SizedBox(height: 20),
+
               Align(
                 alignment: Alignment.centerRight,
                 child: SizedBox(
                   child: ElevatedButton(
                     onPressed: () {
-                      debugPrint('Esqueci minha senha');
+                      debugPrint('Já tenho cadastro');
                     },
                     style: TextButton.styleFrom(
                       padding: EdgeInsets.zero,
@@ -53,7 +80,7 @@ class LoginView extends StatelessWidget {
                       backgroundColor: Color(0xFFD8D6D6),
                     ),
                     child: Text(
-                      'Esqueci minha senha',
+                      'Já tenho cadastro',
                       style: TextStyle(
                         color: const Color.fromARGB(255, 21, 73, 116),
                         fontSize: 12,
@@ -65,39 +92,6 @@ class LoginView extends StatelessWidget {
                   ),
                 ),
               ),
-
-              SizedBox(height: 8),
-
-              Align(
-                alignment: Alignment.centerRight,
-                child: SizedBox(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const RegisterView()),
-                      );
-                    },
-                    style: TextButton.styleFrom(
-                      padding: EdgeInsets.zero,
-                      minimumSize: const Size(0, 0),
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      backgroundColor: Color(0xFFD8D6D6),
-                    ),
-                    child: Text(
-                      'Ainda não tenho uma conta',
-                      style: TextStyle(
-                        color: const Color.fromARGB(255, 21, 73, 116),
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        decoration: TextDecoration.underline,
-                        height: 1,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-
               const SizedBox(height: 50),
 
               SizedBox(
@@ -114,7 +108,7 @@ class LoginView extends StatelessWidget {
                     ),
                   ),
                   child: const Text(
-                    'ENTRAR',
+                    'CADASTRAR',
                     style: TextStyle(
                       color: Color.fromARGB(255, 255, 255, 255),
                       fontSize: 20,
@@ -124,8 +118,6 @@ class LoginView extends StatelessWidget {
                   ),
                 ),
               ),
-
-              SizedBox(width: 20),
             ],
           ),
         ),
