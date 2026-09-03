@@ -1,8 +1,16 @@
 import 'package:flutter/material.dart';
 import 'login_view.dart';
 
-class RegisterView extends StatelessWidget {
+class RegisterView extends StatefulWidget {
   const RegisterView({super.key});
+
+  @override
+  State<RegisterView> createState() => _RegisterViewState();
+}
+
+class _RegisterViewState extends State<RegisterView> {
+  bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
 
   @override
   Widget build(BuildContext context) {
@@ -41,6 +49,7 @@ class RegisterView extends StatelessWidget {
               const SizedBox(height: 20),
 
               TextField(
+                obscureText: _obscurePassword,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -49,6 +58,17 @@ class RegisterView extends StatelessWidget {
                   hintStyle: const TextStyle(color: Color(0xFF757575)),
                   filled: true,
                   fillColor: const Color.fromARGB(255, 238, 238, 238),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                      color: const Color(0xFF757575),
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _obscurePassword = !_obscurePassword;
+                      });
+                    },
+                  ),
                 ),
               ),
               const SizedBox(height: 20),
@@ -62,6 +82,17 @@ class RegisterView extends StatelessWidget {
                   hintStyle: const TextStyle(color: Color(0xFF757575)),
                   filled: true,
                   fillColor: const Color.fromARGB(255, 238, 238, 238),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _obscureConfirmPassword ? Icons.visibility_off : Icons.visibility,
+                      color: const Color(0xFF757575),
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _obscureConfirmPassword = !_obscureConfirmPassword;
+                      });
+                    }
+                  )
                 ),
               ),
               const SizedBox(height: 20),
@@ -71,7 +102,12 @@ class RegisterView extends StatelessWidget {
                 child: SizedBox(
                   child: ElevatedButton(
                     onPressed: () {
-                      debugPrint('Já tenho cadastro');
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const LoginView(),
+                        ),
+                      );
                     },
                     style: TextButton.styleFrom(
                       padding: EdgeInsets.zero,

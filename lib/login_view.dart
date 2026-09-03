@@ -1,10 +1,18 @@
 import 'package:flutter/material.dart';
 import 'register_view.dart';
 
-class LoginView extends StatelessWidget {
+class LoginView extends StatefulWidget {
   const LoginView({super.key});
 
   @override
+  State<LoginView> createState() => _LoginViewState();
+}
+
+
+class _LoginViewState extends State<LoginView> {
+  bool _obscureText = true;
+
+@override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color(0xFFD8D6D6),
@@ -27,6 +35,7 @@ class LoginView extends StatelessWidget {
               ),
               const SizedBox(height: 20),
               TextField(
+                obscureText: _obscureText,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -35,6 +44,17 @@ class LoginView extends StatelessWidget {
                   hintStyle: const TextStyle(color: Color(0xFF757575)),
                   filled: true,
                   fillColor: const Color.fromARGB(255, 238, 238, 238),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _obscureText ? Icons.visibility_off : Icons.visibility,
+                      color: const Color(0xFF757575),
+                    ), 
+                    onPressed: () {
+                      setState(() {
+                        _obscureText = !_obscureText;
+                      });
+                    },
+                  )
                 ),
               ),
               const SizedBox(height: 20),
@@ -75,7 +95,9 @@ class LoginView extends StatelessWidget {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const RegisterView()),
+                        MaterialPageRoute(
+                          builder: (context) => const RegisterView(),
+                        ),
                       );
                     },
                     style: TextButton.styleFrom(
