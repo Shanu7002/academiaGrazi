@@ -1,21 +1,28 @@
 import 'package:flutter/material.dart';
-import 'register_view.dart';
+import 'login_view.dart';
 
-class LoginView extends StatefulWidget {
-  const LoginView({super.key});
+class RegisterView extends StatefulWidget {
+  const RegisterView({super.key});
 
   @override
-  State<LoginView> createState() => _LoginViewState();
+  State<RegisterView> createState() => _RegisterViewState();
 }
 
+class _RegisterViewState extends State<RegisterView> {
+  bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
 
-class _LoginViewState extends State<LoginView> {
-  bool _obscureText = true;
-
-@override
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color(0xFFD8D6D6),
+
+      appBar: AppBar(
+        backgroundColor: const Color(0xFFD8D6D6),
+        elevation: 0,
+        foregroundColor: const Color.fromARGB(255,21,73,116), 
+      ),
+
       body: SafeArea(
         child: SingleChildScrollView(
           padding: EdgeInsets.symmetric(horizontal: 60.0),
@@ -27,15 +34,29 @@ class _LoginViewState extends State<LoginView> {
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  hintText: 'Usuário',
+                  hintText: 'Digite seu nome completo',
                   hintStyle: const TextStyle(color: Color(0xFF757575)),
                   filled: true,
                   fillColor: const Color.fromARGB(255, 238, 238, 238),
                 ),
               ),
               const SizedBox(height: 20),
+
               TextField(
-                obscureText: _obscureText,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  hintText: 'Email',
+                  hintStyle: const TextStyle(color: Color(0xFF757575)),
+                  filled: true,
+                  fillColor: const Color.fromARGB(255, 238, 238, 238),
+                ),
+              ),
+              const SizedBox(height: 20),
+
+              TextField(
+                obscureText: _obscurePassword,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -46,15 +67,44 @@ class _LoginViewState extends State<LoginView> {
                   fillColor: const Color.fromARGB(255, 238, 238, 238),
                   suffixIcon: IconButton(
                     icon: Icon(
-                      _obscureText ? Icons.visibility_off : Icons.visibility,
+                      _obscurePassword
+                          ? Icons.visibility_off
+                          : Icons.visibility,
                       color: const Color(0xFF757575),
-                    ), 
+                    ),
                     onPressed: () {
                       setState(() {
-                        _obscureText = !_obscureText;
+                        _obscurePassword = !_obscurePassword;
                       });
                     },
-                  )
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
+              TextField(
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  hintText: 'Confirme sua senha',
+                  hintStyle: const TextStyle(color: Color(0xFF757575)),
+                  filled: true,
+                  fillColor: const Color.fromARGB(255, 238, 238, 238),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _obscureConfirmPassword
+                          ? Icons.visibility_off
+                          : Icons.visibility,
+                      color: const Color(0xFF757575),
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _obscureConfirmPassword = !_obscureConfirmPassword;
+                      });
+                    },
+                  ),
                 ),
               ),
               const SizedBox(height: 20),
@@ -64,39 +114,10 @@ class _LoginViewState extends State<LoginView> {
                 child: SizedBox(
                   child: ElevatedButton(
                     onPressed: () {
-                      debugPrint('Esqueci minha senha');
-                    },
-                    style: TextButton.styleFrom(
-                      padding: EdgeInsets.zero,
-                      minimumSize: const Size(0, 0),
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      backgroundColor: Color(0xFFD8D6D6),
-                    ),
-                    child: Text(
-                      'Esqueci minha senha',
-                      style: TextStyle(
-                        color: const Color.fromARGB(255, 21, 73, 116),
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        decoration: TextDecoration.underline,
-                        height: 1,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-
-              SizedBox(height: 8),
-
-              Align(
-                alignment: Alignment.centerRight,
-                child: SizedBox(
-                  child: ElevatedButton(
-                    onPressed: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const RegisterView(),
+                          builder: (context) => const LoginView(),
                         ),
                       );
                     },
@@ -107,7 +128,7 @@ class _LoginViewState extends State<LoginView> {
                       backgroundColor: Color(0xFFD8D6D6),
                     ),
                     child: Text(
-                      'Ainda não tenho uma conta',
+                      'Já tenho cadastro',
                       style: TextStyle(
                         color: const Color.fromARGB(255, 21, 73, 116),
                         fontSize: 12,
@@ -119,7 +140,6 @@ class _LoginViewState extends State<LoginView> {
                   ),
                 ),
               ),
-
               const SizedBox(height: 50),
 
               SizedBox(
@@ -136,7 +156,7 @@ class _LoginViewState extends State<LoginView> {
                     ),
                   ),
                   child: const Text(
-                    'ENTRAR',
+                    'CADASTRAR',
                     style: TextStyle(
                       color: Color.fromARGB(255, 255, 255, 255),
                       fontSize: 20,
@@ -146,8 +166,6 @@ class _LoginViewState extends State<LoginView> {
                   ),
                 ),
               ),
-
-              SizedBox(width: 20),
             ],
           ),
         ),
