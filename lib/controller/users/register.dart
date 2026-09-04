@@ -1,12 +1,13 @@
-import 'package:academiagrazi/model/users/user_model.dart';
+import 'package:academiagrazi/models/users/user_model.dart';
 import 'package:academiagrazi/service/users/register.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class RegisterController {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseAuth _auth;
   final UserService _userService;
 
-  RegisterController(this._userService);
+  RegisterController(this._userService, {FirebaseAuth? auth})
+    : _auth = auth ?? FirebaseAuth.instance;
 
   Future<bool> registerUser(
     String email,

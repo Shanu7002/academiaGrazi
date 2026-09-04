@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../../model/users/user_model.dart';
+import '../../models/users/user_model.dart';
 
 class UserService {
-  final FirebaseFirestore _db = FirebaseFirestore.instance;
+  final FirebaseFirestore _db;
+
+  UserService({FirebaseFirestore? db}) : _db = db ?? FirebaseFirestore.instance;
 
   Future<void> registerUser(UserModel user) async {
     try {
