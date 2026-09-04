@@ -9,12 +9,13 @@ class RegisterController {
   RegisterController(this._userService, {FirebaseAuth? auth})
     : _auth = auth ?? FirebaseAuth.instance;
 
-  Future<bool> registerUser(
-    String email,
-    String name,
-    String password,
-    String passwordCheck,
-  ) async {
+  Future<bool> registerUser({
+    required String email,
+    required String name,
+    required String password,
+    required String passwordCheck,
+    UserType type = UserType.user,
+  }) async {
     try {
       if (password != passwordCheck) {
         return false;
@@ -25,7 +26,12 @@ class RegisterController {
 
       final String generatedUid = credential.user!.uid;
 
-      final userModel = UserModel(id: generatedUid, name: name, email: email);
+      final userModel = UserModel(
+        id: generatedUid,
+        name: name,
+        email: email,
+        type: type,
+      );
 
       await _userService.registerUser(userModel);
 

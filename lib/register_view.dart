@@ -61,10 +61,10 @@ class _RegisterViewState extends State<RegisterView> {
 
     // controller
     final bool success = await _controller.registerUser(
-      email,
-      name,
-      password,
-      confirm,
+      email: email,
+      name: name,
+      password: password,
+      passwordCheck: confirm,
     );
 
     if (!mounted) return;
