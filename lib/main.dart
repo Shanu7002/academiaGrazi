@@ -4,10 +4,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'firebase_options.dart';
 
-import 'src/test_user_creation/users/auth/auth_repository.dart';
-import 'src/test_user_creation/users/user_repository.dart';
-import 'src/test_user_creation/users/user_model.dart';
-import 'src/test_user_creation/users/user_service.dart';
 import 'login_view.dart';
 
 void main() async {
@@ -35,59 +31,59 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({super.key});
+// class RegisterScreen extends StatefulWidget {
+//   const RegisterScreen({super.key});
 
-  @override
-  State<RegisterScreen> createState() => _RegisterScreenState();
-}
+//   @override
+//   State<RegisterScreen> createState() => _RegisterScreenState();
+// }
 
-class _RegisterScreenState extends State<RegisterScreen> {
-  bool _isLoading = false;
+// class _RegisterScreenState extends State<RegisterScreen> {
+//   bool _isLoading = false;
 
-  Future<void> _handleRegistration() async {
-    setState(() => _isLoading = true);
+//   Future<void> _handleRegistration() async {
+//     setState(() => _isLoading = true);
 
-    try {
-      final authRepo = AuthRepository();
-      final userRepo = UserRepository();
-      final userService = UserService(authRepo, userRepo);
+//     try {
+//       final authRepo = AuthRepository();
+//       final userRepo = UserRepository();
+//       final userService = UserService(authRepo, userRepo);
 
-      await userService.registerStudent(
-        'Eduardo Müller2',
-        'eduardo2@academiagrazi.com',
-        'SecurePass123!',
-      );
+//       await userService.registerStudent(
+//         'Eduardo Müller2',
+//         'eduardo2@academiagrazi.com',
+//         'SecurePass123!',
+//       );
 
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('SUCCESS: User registered and saved.')),
-        );
-      }
-    } on FirebaseAuthException catch (e) {
-      debugPrint('AUTH EXCEPTION: ${e.code}');
-    } catch (e) {
-      debugPrint('SYSTEM ERROR: $e');
-    } finally {
-      if (mounted) setState(() => _isLoading = false);
-    }
-  }
+//       if (mounted) {
+//         ScaffoldMessenger.of(context).showSnackBar(
+//           const SnackBar(content: Text('SUCCESS: User registered and saved.')),
+//         );
+//       }
+//     } on FirebaseAuthException catch (e) {
+//       debugPrint('AUTH EXCEPTION: ${e.code}');
+//     } catch (e) {
+//       debugPrint('SYSTEM ERROR: $e');
+//     } finally {
+//       if (mounted) setState(() => _isLoading = false);
+//     }
+//   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Register Student')),
-      body: Center(
-        child:
-            _isLoading
-                ? const CircularProgressIndicator()
-                : ElevatedButton(
-                  onPressed: _handleRegistration,
-                  child: const Text('Execute Secure Registration'),
-                ),
-      ),
-    );
-  }
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(title: const Text('Register Student')),
+//       body: Center(
+//         child:
+//             _isLoading
+//                 ? const CircularProgressIndicator()
+//                 : ElevatedButton(
+//                   onPressed: _handleRegistration,
+//                   child: const Text('Execute Secure Registration'),
+//                 ),
+//       ),
+//     );
+//   }
 
   // Future<void> _testFirewallRejection() async {
   //   setState(() => _isLoading = true);
@@ -131,4 +127,4 @@ class _RegisterScreenState extends State<RegisterScreen> {
   //     ),
   //   );
   // }
-}
+// }
