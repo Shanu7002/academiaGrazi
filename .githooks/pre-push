@@ -1,0 +1,17 @@
+#!/bin/sh
+echo "Executing local test suite before push..."
+
+# faiz mock
+dart run build_runner build --delete-conflicting-outputs
+
+flutter test
+
+RESULT=$?
+
+if [ $RESULT -ne 0 ]; then
+  echo "Tests failed. Push aborted."
+  exit 1
+fi
+
+echo "Tests passed. Proceeding with push."
+exit 0
