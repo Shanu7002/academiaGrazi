@@ -1,3 +1,5 @@
+import 'package:academiagrazi/login_view.dart';
+import 'package:academiagrazi/register_view.dart';
 import 'package:flutter/material.dart';
 
 class menu extends StatefulWidget {
@@ -8,23 +10,30 @@ class menu extends StatefulWidget {
 }
 
 class _menuState extends State<menu> {
-  int _selectedIndex = 3;
+  int _selectedIndex = 0;
+
+  final List<Widget> _paginas = const [
+    LoginView(),
+    RegisterView(),
+    Center(child: Text('Página de Evolução')),
+    Center(child: Text('Página de Perfil')),
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(child: Text('Página selecionada: $_selectedIndex')),
+      body: _paginas[_selectedIndex],
 
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         currentIndex: _selectedIndex,
+
         onTap: (index) {
           setState(() {
             _selectedIndex = index;
           });
         },
-        selectedItemColor: const Color.fromARGB(255, 83, 83, 83),
-        unselectedItemColor: Color(0xFF9E9E9E),
+
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Início'),
           BottomNavigationBarItem(icon: Icon(Icons.fitness_center), label: 'Treinos'),
