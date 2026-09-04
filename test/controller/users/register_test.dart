@@ -51,7 +51,7 @@ void main() {
       verify(
         mockAuth.createUserWithEmailAndPassword(
           email: "test@test.com",
-          password: "password",
+          password: "password123",
         ),
       ).called(1);
 
