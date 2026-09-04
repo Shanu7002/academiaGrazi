@@ -12,16 +12,18 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        # só pinando a versão pro sonar nao encher o saco
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
 
       - name: Setup Flutter SDK
-        uses: subosito/flutter-action@v2
+        # só pinando a versão pro sonar nao encher o saco
+        uses: subosito/flutter-action@44ac965b96f18d999802d4b807e3256d5a3f9fa1
         with:
           channel: "stable"
           cache: true
 
       - name: Install Dependencies
-        run: flutter pub get
+        run: flutter pub get --enforce-lockfile
 
       - name: Generate Mocks
         run: dart run build_runner build --delete-conflicting-outputs
