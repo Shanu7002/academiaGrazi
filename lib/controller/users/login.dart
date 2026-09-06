@@ -32,6 +32,9 @@ class LoginController {
     } on FirebaseAuthException catch (e) {
       log('Error occurred in login', error: e);
       return null;
+    } on Exception catch (e) {
+      log("Generic error occured in login", error: e);
+      return null;
     }
   }
 }
