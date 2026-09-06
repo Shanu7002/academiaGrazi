@@ -2,7 +2,7 @@ import 'package:academiagrazi/controller/users/login.dart';
 import 'package:academiagrazi/models/users/user_model.dart';
 import 'package:academiagrazi/service/users/login.dart';
 import 'package:flutter/material.dart';
-import 'register_view.dart';
+import '../register_view.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});

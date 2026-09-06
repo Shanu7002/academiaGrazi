@@ -1,7 +1,7 @@
 import 'package:academiagrazi/auth/permissions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'login_view.dart';
+import 'view/login_view.dart';
 import 'controller/users/register_instructor.dart';
 import 'service/users/register.dart';
 
