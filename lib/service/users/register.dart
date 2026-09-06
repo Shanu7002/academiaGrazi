@@ -12,4 +12,15 @@ class RegisterService {
   Future<void> registerUser(UserModel user) async {
     await _db.collection("users").doc(user.id).set(user.toJson());
   }
+
+  Future<UserModel?> getUserById(String uid) async {
+    final doc =
+        await FirebaseFirestore.instance.collection('users').doc(uid).get();
+
+    if (!doc.exists) {
+      return null;
+    }
+
+    return UserModel.fromJson(doc.data()!, doc.id);
+  }
 }

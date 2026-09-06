@@ -1,4 +1,4 @@
-enum UserType { admin, professor, user }
+enum UserType { admin, instructor, user }
 
 class UserModel {
   final String id;
@@ -33,8 +33,8 @@ class UserModel {
     switch (typeString) {
       case 'admin':
         return UserType.admin;
-      case 'professor':
-        return UserType.professor;
+      case 'instructor':
+        return UserType.instructor;
       case 'user':
       default:
         return UserType.user;
