@@ -6,23 +6,23 @@ import "package:mockito/annotations.dart";
 import "package:academiagrazi/controller/users/register.dart";
 import "package:academiagrazi/service/users/register.dart";
 
-@GenerateMocks([UserService, FirebaseAuth, UserCredential, User])
+@GenerateMocks([RegisterService, FirebaseAuth, UserCredential, User])
 import "register_test.mocks.dart";
 
 void main() {
-  late MockUserService mockUserService;
+  late MockRegisterService mockRegisterService;
   late MockFirebaseAuth mockAuth;
   late MockUserCredential mockCredential;
   late MockUser mockUser;
   late RegisterController controller;
 
   setUp(() {
-    mockUserService = MockUserService();
+    mockRegisterService = MockRegisterService();
     mockAuth = MockFirebaseAuth();
     mockCredential = MockUserCredential();
     mockUser = MockUser();
 
-    controller = RegisterController(mockUserService, auth: mockAuth);
+    controller = RegisterController(mockRegisterService, auth: mockAuth);
   });
 
   group("RegisterController Tests sucessfully", () {
@@ -37,7 +37,7 @@ void main() {
       ).thenAnswer((_) async => mockCredential);
 
       when(
-        mockUserService.registerUser(any),
+        mockRegisterService.registerUser(any),
       ).thenAnswer((_) async => Future.value());
 
       final result = await controller.registerUser(
@@ -56,7 +56,7 @@ void main() {
       ).called(1);
 
       final capturedModel =
-          verify(mockUserService.registerUser(captureAny)).captured.first
+          verify(mockRegisterService.registerUser(captureAny)).captured.first
               as UserModel;
       expect(capturedModel.id, "fake_uid_777");
       expect(capturedModel.email, "test@test.com");
@@ -74,7 +74,7 @@ void main() {
       ).thenAnswer((_) async => mockCredential);
 
       when(
-        mockUserService.registerUser(any),
+        mockRegisterService.registerUser(any),
       ).thenAnswer((_) async => Future.value());
 
       final result = await controller.registerUser(
@@ -87,7 +87,7 @@ void main() {
       expect(result, isTrue);
 
       final capturedModel =
-          verify(mockUserService.registerUser(captureAny)).captured.first
+          verify(mockRegisterService.registerUser(captureAny)).captured.first
               as UserModel;
       expect(capturedModel.type, UserType.user);
     });
@@ -103,7 +103,7 @@ void main() {
       ).thenAnswer((_) async => mockCredential);
 
       when(
-        mockUserService.registerUser(any),
+        mockRegisterService.registerUser(any),
       ).thenAnswer((_) async => Future.value());
 
       final result = await controller.registerUser(
@@ -117,7 +117,7 @@ void main() {
       expect(result, isTrue);
 
       final capturedModel =
-          verify(mockUserService.registerUser(captureAny)).captured.first
+          verify(mockRegisterService.registerUser(captureAny)).captured.first
               as UserModel;
       expect(capturedModel.type, UserType.admin);
     });
@@ -157,7 +157,7 @@ void main() {
       );
 
       expect(result, isFalse);
-      verifyNever(mockUserService.registerUser(any));
+      verifyNever(mockRegisterService.registerUser(any));
     });
   });
 }

@@ -5,14 +5,14 @@ import 'package:academiagrazi/service/users/register.dart';
 
 void main() {
   late FakeFirebaseFirestore fakeDb;
-  late UserService userService;
+  late RegisterService registerService;
 
   setUp(() {
     fakeDb = FakeFirebaseFirestore();
-    userService = UserService(db: fakeDb);
+    registerService = RegisterService(db: fakeDb);
   });
 
-  group('UserService Tests |', () {
+  group('registerService Tests |', () {
     test(
       'registerUser should successfully insert a document including the serialized enum',
       () async {
@@ -23,7 +23,7 @@ void main() {
           type: UserType.admin,
         );
 
-        await userService.registerUser(user);
+        await registerService.registerUser(user);
 
         final snapshot = await fakeDb.collection('users').doc('user_777').get();
         expect(snapshot.exists, isTrue);

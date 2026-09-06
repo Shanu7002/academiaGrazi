@@ -1,10 +1,11 @@
+import 'dart:developer';
 import 'package:academiagrazi/models/users/user_model.dart';
 import 'package:academiagrazi/service/users/register.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class RegisterController {
   final FirebaseAuth _auth;
-  final UserService _userService;
+  final RegisterService _userService;
 
   RegisterController(this._userService, {FirebaseAuth? auth})
     : _auth = auth ?? FirebaseAuth.instance;
@@ -37,6 +38,7 @@ class RegisterController {
 
       return true;
     } on FirebaseAuthException catch (e) {
+      log('Error occurred in register', error: e);
       return false;
     }
   }
