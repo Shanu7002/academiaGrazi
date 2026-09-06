@@ -1,4 +1,5 @@
 import 'package:academiagrazi/controller/users/login.dart';
+import 'package:academiagrazi/menu.dart';
 import 'package:academiagrazi/models/users/user_model.dart';
 import 'package:academiagrazi/service/users/login.dart';
 import 'package:flutter/material.dart';
@@ -57,14 +58,12 @@ class _LoginViewState extends State<LoginView> {
     setState(() => _isLoading = false);
 
     if (user != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Usuario logado, alguem redireciona ele ai gurizada'),
-        ),
-      );
-      Navigator.pushReplacement(
+      ScaffoldMessenger.of(
         context,
-        MaterialPageRoute(builder: (context) => const LoginView()),
+      ).showSnackBar(const SnackBar(content: Text('Usuario logado')));
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const menu()),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -188,15 +187,6 @@ class _LoginViewState extends State<LoginView> {
               SizedBox(
                 width: 350,
                 child: ElevatedButton(
-                  // onPressed: () {
-                  //   Navigator.push(
-                  //     context,
-                  //     MaterialPageRoute(
-                  //       builder: (context) => const menu(),
-                  //     ),
-                  //   );
-                  // },
-                  // TODO: tem que redirecionar depois do login, dei os 2 aq pra tu conseguir reproduzir
                   onPressed: _isLoading ? null : _executeLogin,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color.fromARGB(255, 2, 89, 79),
