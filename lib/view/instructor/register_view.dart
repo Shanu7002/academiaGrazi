@@ -1,9 +1,9 @@
 import 'package:academiagrazi/auth/permissions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'view/login_view.dart';
-import 'controller/users/register_user.dart';
-import 'service/users/register.dart';
+import '../login_view.dart';
+import '../../controller/users/register_user.dart';
+import '../../service/users/register.dart';
 
 class RegisterView extends StatefulWidget {
   const RegisterView({super.key});
