@@ -3,7 +3,7 @@ import "package:firebase_auth/firebase_auth.dart";
 import "package:flutter_test/flutter_test.dart";
 import "package:mockito/mockito.dart";
 import "package:mockito/annotations.dart";
-import "package:academiagrazi/controller/users/register.dart";
+import "package:academiagrazi/controller/users/register_user.dart";
 import "package:academiagrazi/service/users/register.dart";
 
 @GenerateMocks([RegisterService, FirebaseAuth, UserCredential, User])
@@ -15,6 +15,13 @@ void main() {
   late MockUserCredential mockCredential;
   late MockUser mockUser;
   late RegisterController controller;
+
+  final instructorUser = UserModel(
+    id: "instructor_uid",
+    name: "Instructor",
+    email: "instructor@test.com",
+    type: UserType.instructor,
+  );
 
   setUp(() {
     mockRegisterService = MockRegisterService();
@@ -41,6 +48,7 @@ void main() {
       ).thenAnswer((_) async => Future.value());
 
       final result = await controller.registerUser(
+        currentUser: instructorUser,
         email: "test@test.com",
         name: "test",
         password: "password123",
@@ -78,8 +86,9 @@ void main() {
       ).thenAnswer((_) async => Future.value());
 
       final result = await controller.registerUser(
+        currentUser: instructorUser,
         email: "test@test.com",
-        name: "Eduardo",
+        name: "test",
         password: "password123",
         passwordCheck: "password123",
       );
@@ -91,41 +100,12 @@ void main() {
               as UserModel;
       expect(capturedModel.type, UserType.user);
     });
-
-    test("Should flow explicit UserType correctly to the model", () async {
-      when(mockUser.uid).thenReturn("uid_888");
-      when(mockCredential.user).thenReturn(mockUser);
-      when(
-        mockAuth.createUserWithEmailAndPassword(
-          email: "admin@test.com",
-          password: "password123",
-        ),
-      ).thenAnswer((_) async => mockCredential);
-
-      when(
-        mockRegisterService.registerUser(any),
-      ).thenAnswer((_) async => Future.value());
-
-      final result = await controller.registerUser(
-        email: "admin@test.com",
-        name: "Admin",
-        password: "password123",
-        passwordCheck: "password123",
-        type: UserType.admin,
-      );
-
-      expect(result, isTrue);
-
-      final capturedModel =
-          verify(mockRegisterService.registerUser(captureAny)).captured.first
-              as UserModel;
-      expect(capturedModel.type, UserType.admin);
-    });
   });
 
   group("RegisterController Tests failed", () {
     test("Should return false immediately if passwords do not match", () async {
       final result = await controller.registerUser(
+        currentUser: instructorUser,
         email: "test@test.com",
         name: "test",
         password: "password123",
@@ -150,6 +130,7 @@ void main() {
       ).thenThrow(FirebaseAuthException(code: "email-already-in-use"));
 
       final result = await controller.registerUser(
+        currentUser: instructorUser,
         email: "test@test.com",
         name: "test",
         password: "password123",
@@ -169,6 +150,7 @@ void main() {
       ).thenThrow(Exception("Internal server error"));
 
       final result = await controller.registerUser(
+        currentUser: instructorUser,
         name: "test",
         email: "test@test.com",
         password: "password123",

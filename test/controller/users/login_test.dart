@@ -95,13 +95,13 @@ void main() {
     );
 
     test(
-      "Should return the user when credentials are valid for professor login",
+      "Should return the user when credentials are valid for instructor login",
       () async {
         final userModel = UserModel(
           id: id,
           name: name,
           email: email,
-          type: UserType.professor,
+          type: UserType.instructor,
         );
 
         when(
@@ -122,7 +122,7 @@ void main() {
         expect(result?.id, id);
         expect(result?.name, name);
         expect(result?.email, email);
-        expect(result?.type, UserType.professor);
+        expect(result?.type, UserType.instructor);
       },
     );
 

@@ -1,4 +1,5 @@
 import "dart:developer";
+import "package:academiagrazi/auth/permissions.dart";
 import "package:academiagrazi/models/users/user_model.dart";
 import "package:academiagrazi/service/users/register.dart";
 import "package:firebase_auth/firebase_auth.dart";
@@ -13,12 +14,15 @@ class RegisterController {
   // coverage:ignore-end
 
   Future<bool> registerUser({
+    required UserModel currentUser,
     required String email,
     required String name,
     required String password,
     required String passwordCheck,
-    UserType type = UserType.user,
   }) async {
+    if (!Permissions.canCreateUser(currentUser)) {
+      return false;
+    }
     try {
       if (password != passwordCheck) {
         return false;
@@ -33,7 +37,7 @@ class RegisterController {
         id: generatedUid,
         name: name,
         email: email,
-        type: type,
+        type: UserType.user,
       );
 
       await _userService.registerUser(userModel);

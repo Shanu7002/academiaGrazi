@@ -2,17 +2,17 @@ import 'package:academiagrazi/auth/permissions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'login_view.dart';
-import 'controller/users/register_user.dart';
+import 'controller/users/register_instructor.dart';
 import 'service/users/register.dart';
 
-class RegisterView extends StatefulWidget {
-  const RegisterView({super.key});
+class RegisterInstructorView extends StatefulWidget {
+  const RegisterInstructorView({super.key});
 
   @override
-  State<RegisterView> createState() => _RegisterViewState();
+  State<RegisterInstructorView> createState() => _RegisterInstructorViewState();
 }
 
-class _RegisterViewState extends State<RegisterView> {
+class _RegisterInstructorViewState extends State<RegisterInstructorView> {
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
   bool _isLoading = false;
@@ -84,9 +84,7 @@ class _RegisterViewState extends State<RegisterView> {
     if (!Permissions.canCreateInstructor(currentUser)) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text(
-            'Apenas administradores ou instrutores podem cadastrar alunos.',
-          ),
+          content: Text('Apenas administradores podem cadastrar instrutores.'),
         ),
       );
       return;
@@ -95,7 +93,7 @@ class _RegisterViewState extends State<RegisterView> {
     setState(() => _isLoading = true);
 
     // controller
-    final bool success = await _controller.registerUser(
+    final bool success = await _controller.registerInstructor(
       currentUser: currentUser,
       email: email,
       name: name,
