@@ -1,4 +1,3 @@
-import "package:academiagrazi/models/users/user_model.dart";
 import "package:academiagrazi/service/users/login.dart";
 import "package:flutter_test/flutter_test.dart";
 import "package:mockito/annotations.dart";

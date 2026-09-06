@@ -125,6 +125,23 @@ void main() {
         expect(result?.type, UserType.professor);
       },
     );
+
+    test("Should return null when user has no database record", () async {
+      when(mockLoginService.getUserProfile(id)).thenAnswer((_) async => null);
+
+      final result = await controller.loginUser(
+        email: email,
+        password: password,
+      );
+
+      verify(
+        mockAuth.signInWithEmailAndPassword(email: email, password: password),
+      ).called(1);
+
+      verify(mockLoginService.getUserProfile(id)).called(1);
+
+      expect(result, isNull);
+    });
   });
 
   group("LoginController Tests failed", () {

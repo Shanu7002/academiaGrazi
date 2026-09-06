@@ -159,5 +159,31 @@ void main() {
       expect(result, isFalse);
       verifyNever(mockRegisterService.registerUser(any));
     });
+
+    test("should return error if database is unreachable", () async {
+      when(
+        mockAuth.createUserWithEmailAndPassword(
+          email: anyNamed("email"),
+          password: anyNamed("password"),
+        ),
+      ).thenThrow(Exception("Internal server error"));
+
+      final result = await controller.registerUser(
+        name: "test",
+        email: "test@test.com",
+        password: "password123",
+        passwordCheck: "password123",
+      );
+
+      verify(
+        mockAuth.createUserWithEmailAndPassword(
+          email: anyNamed("email"),
+          password: anyNamed("password"),
+        ),
+      ).called(1);
+
+      expect(result, isFalse);
+      verifyNever(mockRegisterService.registerUser(any));
+    });
   });
 }

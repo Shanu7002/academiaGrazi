@@ -43,8 +43,10 @@ class UserModel {
 
   // helper func to print json as string
   // (tava com problema de debugar os tests e achei isso viavel)
+  // coverage:ignore-start
   @override
   String toString() {
     return 'UserModel(id: $id, name: $name, email: $email, type: ${type.name})';
   }
+  // coverage:ignore-end
 }

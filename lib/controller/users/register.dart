@@ -1,14 +1,16 @@
-import 'dart:developer';
-import 'package:academiagrazi/models/users/user_model.dart';
-import 'package:academiagrazi/service/users/register.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import "dart:developer";
+import "package:academiagrazi/models/users/user_model.dart";
+import "package:academiagrazi/service/users/register.dart";
+import "package:firebase_auth/firebase_auth.dart";
 
 class RegisterController {
   final FirebaseAuth _auth;
   final RegisterService _userService;
 
+  // coverage:ignore-start
   RegisterController(this._userService, {FirebaseAuth? auth})
     : _auth = auth ?? FirebaseAuth.instance;
+  // coverage:ignore-end
 
   Future<bool> registerUser({
     required String email,
@@ -38,7 +40,10 @@ class RegisterController {
 
       return true;
     } on FirebaseAuthException catch (e) {
-      log('Error occurred in register', error: e);
+      log("Error occurred in register", error: e);
+      return false;
+    } on Exception catch (e) {
+      log("Generic error occurred in register", error: e);
       return false;
     }
   }
