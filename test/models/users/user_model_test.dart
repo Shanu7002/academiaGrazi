@@ -37,13 +37,13 @@ void main() {
           id: '123',
           name: 'Teste da Silva',
           email: 'test@test.com',
-          type: UserType.professor,
+          type: UserType.instructor,
         );
 
         final Map<String, dynamic> json = user.toJson();
 
         expect(json['name'], 'Teste da Silva');
-        expect(json['type'], 'professor');
+        expect(json['type'], 'instructor');
         expect(json['createdAt'], isA<String>());
       },
     );
@@ -82,7 +82,7 @@ void main() {
       Map<String, dynamic> userMap = {
         "name": name,
         "email": email,
-        "type": "professor",
+        "type": "instructor",
       };
 
       final user = UserModel.fromJson(userMap, "3");
@@ -90,7 +90,7 @@ void main() {
       expect(user.id, "3");
       expect(user.name, name);
       expect(user.email, email);
-      expect(user.type, UserType.professor);
+      expect(user.type, UserType.instructor);
     });
 
     test("Correct json parser with full default pattern", () {
