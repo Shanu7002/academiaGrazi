@@ -25,7 +25,7 @@ class _RegisterViewState extends State<RegisterView> {
   @override
   void initState() {
     super.initState();
-    _controller = RegisterController(UserService());
+    _controller = RegisterController(RegisterService());
   }
 
   @override
