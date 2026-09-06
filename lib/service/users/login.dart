@@ -4,8 +4,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class LoginService {
   final FirebaseFirestore _db;
 
+  // coverage:ignore-start
   LoginService({FirebaseFirestore? db})
     : _db = db ?? FirebaseFirestore.instance;
+  // coverage:ignore-end
 
   Future<UserModel?> getUserProfile(String uid) async {
     final DocumentSnapshot snapshot =

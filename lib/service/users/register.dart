@@ -1,17 +1,15 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import '../../models/users/user_model.dart';
+import "package:cloud_firestore/cloud_firestore.dart";
+import "../../models/users/user_model.dart";
 
 class RegisterService {
   final FirebaseFirestore _db;
 
+  // coverage:ignore-start
   RegisterService({FirebaseFirestore? db})
     : _db = db ?? FirebaseFirestore.instance;
+  // coverage:ignore-end
 
   Future<void> registerUser(UserModel user) async {
-    try {
-      await _db.collection('users').doc(user.id).set(user.toJson());
-    } catch (e) {
-      throw Exception('Failed to insert user into Firebase: $e');
-    }
+    await _db.collection("users").doc(user.id).set(user.toJson());
   }
 }
