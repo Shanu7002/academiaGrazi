@@ -1,5 +1,5 @@
-import 'package:academiagrazi/login_view.dart';
-import 'package:academiagrazi/register_view.dart';
+import 'package:academiagrazi/view/login_view.dart';
+import 'package:academiagrazi/view/instructor/register_view.dart';
 import 'package:flutter/material.dart';
 
 class menu extends StatefulWidget {
@@ -36,8 +36,14 @@ class _menuState extends State<menu> {
 
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Início'),
-          BottomNavigationBarItem(icon: Icon(Icons.fitness_center), label: 'Treinos'),
-          BottomNavigationBarItem(icon: Icon(Icons.insights), label: 'Evolução'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.fitness_center),
+            label: 'Treinos',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.insights),
+            label: 'Evolução',
+          ),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Perfil'),
         ],
       ),

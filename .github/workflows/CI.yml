@@ -1,0 +1,49 @@
+name: Flutter CI
+
+on:
+  push:
+  pull_request:
+    branches: "master"
+
+jobs:
+  test:
+    name: Build and Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        # só pinando a versão pro sonar nao encher o saco
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+
+      - name: Setup Flutter SDK
+        # só pinando a versão pro sonar nao encher o saco
+        uses: subosito/flutter-action@44ac965b96f18d999802d4b807e3256d5a3f9fa1
+        with:
+          channel: "stable"
+          cache: true
+
+      - name: Install Dependencies
+        run: flutter pub get --enforce-lockfile
+
+      - name: Generate Mocks
+        run: dart run build_runner build --delete-conflicting-outputs
+
+      - name: Install LCOV (Linux Dependency)
+        run: sudo apt-get install -y lcov
+
+      - name: Run Tests and Generate Coverage
+        run: flutter test --coverage
+
+      - name: Sanitize Coverage Report
+        run: |
+          lcov --remove coverage/lcov.info \
+          'lib/**/*.mocks.dart' \
+          'lib/**/*.g.dart' \
+          -o coverage/lcov.info \
+          --ignore-errors unused
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@ffc3010689be73b8e5ae0c57ce35968afd7909e8
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
