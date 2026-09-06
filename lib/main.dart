@@ -4,7 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'firebase_options.dart';
 
-import 'login_view.dart';
+import 'view/login_view.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -85,46 +85,46 @@ class MyApp extends StatelessWidget {
 //     );
 //   }
 
-  // Future<void> _testFirewallRejection() async {
-  //   setState(() => _isLoading = true);
+// Future<void> _testFirewallRejection() async {
+//   setState(() => _isLoading = true);
 
-  //   try {
-  //     await FirebaseAuth.instance.signOut();
+//   try {
+//     await FirebaseAuth.instance.signOut();
 
-  //     final userRepo = UserRepository();
-  //     final unauthorizedUser = UserModel(
-  //       id: 'unauthorized-123',
-  //       name: 'Hacker',
-  //       email: 'hacker@academiagrazi.com',
-  //     );
+//     final userRepo = UserRepository();
+//     final unauthorizedUser = UserModel(
+//       id: 'unauthorized-123',
+//       name: 'Hacker',
+//       email: 'hacker@academiagrazi.com',
+//     );
 
-  //     await userRepo.createUser(unauthorizedUser);
+//     await userRepo.createUser(unauthorizedUser);
 
-  //     debugPrint(
-  //       'CRITICAL FAILURE: The firewall allowed an unauthorized write.',
-  //     );
-  //   } on FirebaseException catch (e) {
-  //     debugPrint('FIREWALL SUCCESS: Network request blocked -> ${e.code}');
-  //   } catch (e) {
-  //     debugPrint('SYSTEM ERROR: $e');
-  //   } finally {
-  //     if (mounted) setState(() => _isLoading = false);
-  //   }
-  // }
+//     debugPrint(
+//       'CRITICAL FAILURE: The firewall allowed an unauthorized write.',
+//     );
+//   } on FirebaseException catch (e) {
+//     debugPrint('FIREWALL SUCCESS: Network request blocked -> ${e.code}');
+//   } catch (e) {
+//     debugPrint('SYSTEM ERROR: $e');
+//   } finally {
+//     if (mounted) setState(() => _isLoading = false);
+//   }
+// }
 
-  // @override
-  // Widget build(BuildContext context) {
-  //   return Scaffold(
-  //     appBar: AppBar(title: const Text('Register Student')),
-  //     body: Center(
-  //       child:
-  //           _isLoading
-  //               ? const CircularProgressIndicator()
-  //               : ElevatedButton(
-  //                 onPressed: _testFirewallRejection,
-  //                 child: const Text('Test Firewall Rejection'),
-  //               ),
-  //     ),
-  //   );
-  // }
+// @override
+// Widget build(BuildContext context) {
+//   return Scaffold(
+//     appBar: AppBar(title: const Text('Register Student')),
+//     body: Center(
+//       child:
+//           _isLoading
+//               ? const CircularProgressIndicator()
+//               : ElevatedButton(
+//                 onPressed: _testFirewallRejection,
+//                 child: const Text('Test Firewall Rejection'),
+//               ),
+//     ),
+//   );
+// }
 // }
