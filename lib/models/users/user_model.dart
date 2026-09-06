@@ -40,4 +40,11 @@ class UserModel {
         return UserType.user;
     }
   }
+
+  // helper func to print json as string
+  // (tava com problema de debugar os tests e achei isso viavel)
+  @override
+  String toString() {
+    return 'UserModel(id: $id, name: $name, email: $email, type: ${type.name})';
+  }
 }

@@ -48,4 +48,60 @@ void main() {
       },
     );
   });
+
+  group("Parse json Tests |", () {
+    const name = "Test";
+    const email = "test@gmail.com";
+    test("Correct json parser with default type", () {
+      Map<String, dynamic> userMap = {"name": name, "email": email};
+
+      final user = UserModel.fromJson(userMap, "1");
+
+      expect(user.id, "1");
+      expect(user.name, name);
+      expect(user.email, email);
+      expect(user.type, UserType.user);
+    });
+
+    test("Correct json parser with admin type", () {
+      Map<String, dynamic> userMap = {
+        "name": name,
+        "email": email,
+        "type": "admin",
+      };
+
+      final user = UserModel.fromJson(userMap, "2");
+
+      expect(user.id, "2");
+      expect(user.name, name);
+      expect(user.email, email);
+      expect(user.type, UserType.admin);
+    });
+
+    test("Correct json parser with admin type", () {
+      Map<String, dynamic> userMap = {
+        "name": name,
+        "email": email,
+        "type": "professor",
+      };
+
+      final user = UserModel.fromJson(userMap, "3");
+
+      expect(user.id, "3");
+      expect(user.name, name);
+      expect(user.email, email);
+      expect(user.type, UserType.professor);
+    });
+
+    test("Correct json parser with full default pattern", () {
+      Map<String, dynamic> userMap = {};
+
+      final user = UserModel.fromJson(userMap, "4");
+
+      expect(user.id, "4");
+      expect(user.name, "Unknown");
+      expect(user.email, "");
+      expect(user.type, UserType.user);
+    });
+  });
 }
