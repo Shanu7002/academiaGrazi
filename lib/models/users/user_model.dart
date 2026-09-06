@@ -19,4 +19,25 @@ class UserModel {
     'type': type.name,
     'createdAt': DateTime.now().toIso8601String(),
   };
+
+  factory UserModel.fromJson(Map<String, dynamic> json, String documentId) {
+    return UserModel(
+      id: documentId,
+      name: json['name'] as String? ?? 'Unknown',
+      email: json['email'] as String? ?? '',
+      type: _parseUserType(json['type'] as String?),
+    );
+  }
+
+  static UserType _parseUserType(String? typeString) {
+    switch (typeString) {
+      case 'admin':
+        return UserType.admin;
+      case 'professor':
+        return UserType.professor;
+      case 'user':
+      default:
+        return UserType.user;
+    }
+  }
 }
