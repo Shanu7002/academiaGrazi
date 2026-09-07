@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'register_view.dart';
+import 'alunoHome_view.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -8,11 +9,10 @@ class LoginView extends StatefulWidget {
   State<LoginView> createState() => _LoginViewState();
 }
 
-
 class _LoginViewState extends State<LoginView> {
   bool _obscureText = true;
 
-@override
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color(0xFFD8D6D6),
@@ -48,13 +48,13 @@ class _LoginViewState extends State<LoginView> {
                     icon: Icon(
                       _obscureText ? Icons.visibility_off : Icons.visibility,
                       color: const Color(0xFF757575),
-                    ), 
+                    ),
                     onPressed: () {
                       setState(() {
                         _obscureText = !_obscureText;
                       });
                     },
-                  )
+                  ),
                 ),
               ),
               const SizedBox(height: 20),
@@ -126,7 +126,10 @@ class _LoginViewState extends State<LoginView> {
                 width: 350,
                 child: ElevatedButton(
                   onPressed: () {
-                    debugPrint('Botão clicado');
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => AlunoHomeView()),
+                    );
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color.fromARGB(255, 2, 89, 79),
