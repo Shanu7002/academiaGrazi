@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'register_view.dart';
+import 'view/instructor/register_view.dart';
 import 'alunoHome_view.dart';
 
 class LoginView extends StatefulWidget {
