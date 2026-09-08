@@ -57,14 +57,12 @@ class _LoginViewState extends State<LoginView> {
     setState(() => _isLoading = false);
 
     if (user != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Usuario logado, alguem redireciona ele ai gurizada'),
-        ),
-      );
-      Navigator.pushReplacement(
+      ScaffoldMessenger.of(
         context,
-        MaterialPageRoute(builder: (context) => const LoginView()),
+      ).showSnackBar(const SnackBar(content: Text('Usuario logado')));
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const RegisterView()),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
