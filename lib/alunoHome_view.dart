@@ -177,91 +177,116 @@ class AlunoHomeView extends StatelessWidget {
 
             const SizedBox(height: 20),
 
-            SizedBox(
-              height: screenHeight * 0.25,
-              width: double.infinity,
-              child: Stack(
-                alignment: Alignment.center,
+            Container(
+              width: screenWidth * 0.85,
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16.0),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color.fromARGB(
+                      255,
+                      2,
+                      89,
+                      79,
+                    ).withOpacity(0.3),
+                    blurRadius: 6,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  Positioned(
-                    bottom: 10,
-                    width: screenWidth * 0.85,
-                    child: Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(16.0),
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color.fromARGB(
-                              255,
-                              2,
-                              89,
-                              79,
-                            ).withOpacity(0.3),
-                            blurRadius: 6,
-                            offset: const Offset(0, 3),
-                          ),
-                        ],
+                  ElevatedButton(
+                    onPressed: () {
+                      print("Botão laranja clicado!");
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromARGB(255, 244, 121, 67),
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
                       ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          ElevatedButton(
-                            onPressed: () {
-                              print("Botão laranja clicado!");
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color.fromARGB(
-                                255,
-                                244,
-                                121,
-                                67,
-                              ),
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 12,
-                              ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8.0),
-                              ),
-                            ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                    ),
+                    child: Text(
+                      '4 exercícios',
+                      style: TextStyle(
+                        fontFamily: GoogleFonts.inter().fontFamily,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ),
 
-                            child: Text(
-                              '4 exercícios',
-                              style: TextStyle(
-                                fontFamily: GoogleFonts.inter().fontFamily,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14,
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: 10),
-                          Text(
-                            'TREINO B - INFERIORES',
-                            style: GoogleFonts.antonio(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: const Color.fromARGB(255, 2, 89, 79),
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                          const Text(
-                            'Quadríceps, posterior e panturrilha',
-                            style: TextStyle(
-                              color: Color.fromARGB(255, 0, 0, 0),
-                              fontSize: 14,
-                            ),
-                          ),
-                        ],
+                  const SizedBox(height: 15),
+
+                  Text(
+                    'TREINO B - INFERIORES',
+                    style: GoogleFonts.antonio(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: const Color.fromARGB(255, 2, 89, 79),
+                    ),
+                  ),
+
+                  const SizedBox(height: 10),
+
+                  const Text(
+                    'Quadríceps, posterior e panturrilha',
+                    style: TextStyle(
+                      color: Color.fromARGB(255, 0, 0, 0),
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+
+                  const SizedBox(height: 15),
+
+                  ElevatedButton(
+                    onPressed: () {
+                      print("Botão iniciar treino clicado!");
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromARGB(255, 244, 121, 67),
+                      foregroundColor: Colors.white,
+                      minimumSize: const Size(300,50),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
                       ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize:
+                          MainAxisSize.min, 
+                      children: [
+                        const Icon(Icons.play_arrow, size: 18),
+                        const SizedBox(
+                          width: 8,
+                        ), 
+                        Text(
+                          'Iniciar treino',
+                          style: TextStyle(
+                            fontFamily: GoogleFonts.inter().fontFamily,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
               ),
-            ),
+            ), // Fim da Column principal
           ],
         ),
       ),
