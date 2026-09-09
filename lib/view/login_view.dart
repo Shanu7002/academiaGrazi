@@ -2,8 +2,8 @@ import 'package:academiagrazi/controller/users/login.dart';
 import 'package:academiagrazi/menu.dart';
 import 'package:academiagrazi/models/users/user_model.dart';
 import 'package:academiagrazi/service/users/login.dart';
+import 'package:academiagrazi/view/tabRouter.dart';
 import 'package:flutter/material.dart';
-import 'user/alunoHome_view.dart';
 import 'instructor/register_view.dart';
 
 class LoginView extends StatefulWidget {
@@ -64,7 +64,7 @@ class _LoginViewState extends State<LoginView> {
       ).showSnackBar(const SnackBar(content: Text('Usuario logado')));
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => const AlunoHomeView()),
+        MaterialPageRoute(builder: (context) => const menu()),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
