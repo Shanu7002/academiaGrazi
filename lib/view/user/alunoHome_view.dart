@@ -79,25 +79,15 @@ class AlunoHomeView extends StatelessWidget {
                                 Expanded(
                                   child: Container(
                                     alignment: Alignment.center,
-                                    child: const Text(
-                                      'Sequência 🔥',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 14,
-                                      ),
-                                    ),
+                                    child: Image.asset('assets/sequencia.png'),
+                                    height: 25,
                                   ),
                                 ),
                                 Expanded(
                                   child: Container(
                                     alignment: Alignment.center,
-                                    child: const Text(
-                                      'Progressão 📈',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 14,
-                                      ),
-                                    ),
+                                    child: Image.asset('assets/progressao.png'),
+                                    height: 30,
                                   ),
                                 ),
                               ],
@@ -109,11 +99,11 @@ class AlunoHomeView extends StatelessWidget {
                                 Expanded(
                                   child: Container(
                                     alignment: Alignment.center,
-                                    child: const Text(
+                                    child: Text(
                                       'Dias',
-                                      style: TextStyle(
+                                      style: GoogleFonts.inter(
                                         fontWeight: FontWeight.bold,
-                                        fontSize: 14,
+                                        fontSize: 20,
                                       ),
                                     ),
                                   ),
@@ -121,11 +111,11 @@ class AlunoHomeView extends StatelessWidget {
                                 Expanded(
                                   child: Container(
                                     alignment: Alignment.center,
-                                    child: const Text(
+                                    child: Text(
                                       'KG',
-                                      style: TextStyle(
+                                      style: GoogleFonts.inter(
                                         fontWeight: FontWeight.bold,
-                                        fontSize: 14,
+                                        fontSize: 20,
                                       ),
                                     ),
                                   ),
@@ -175,10 +165,10 @@ class AlunoHomeView extends StatelessWidget {
               ],
             ),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 30),
 
             Container(
-              width: screenWidth * 0.85,
+              width: screenWidth * 1,
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
                 color: Colors.white,
@@ -256,7 +246,7 @@ class AlunoHomeView extends StatelessWidget {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromARGB(255, 244, 121, 67),
                       foregroundColor: Colors.white,
-                      minimumSize: const Size(300,50),
+                      minimumSize: const Size(double.infinity, 50),
                       padding: const EdgeInsets.symmetric(
                         horizontal: 16,
                         vertical: 12,
@@ -266,13 +256,10 @@ class AlunoHomeView extends StatelessWidget {
                       ),
                     ),
                     child: Row(
-                      mainAxisSize:
-                          MainAxisSize.min, 
+                      mainAxisSize: MainAxisSize.min,
                       children: [
                         const Icon(Icons.play_arrow, size: 18),
-                        const SizedBox(
-                          width: 8,
-                        ), 
+                        const SizedBox(width: 8),
                         Text(
                           'Iniciar treino',
                           style: TextStyle(
@@ -286,7 +273,102 @@ class AlunoHomeView extends StatelessWidget {
                   ),
                 ],
               ),
-            ), // Fim da Column principal
+            ),
+
+            SizedBox(height: 30),
+
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  'Outras atividades',
+                  style: GoogleFonts.antonio(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(width: 15),
+                Expanded(
+                  child: Image.asset(
+                    'assets/linhaGradiente.png',
+                    fit: BoxFit.fitWidth,
+                  ),
+                ),
+              ],
+            ),
+
+            SizedBox(height: 30),
+
+            Container(
+              width: screenWidth * 1,
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16.0),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color.fromARGB(
+                      255,
+                      2,
+                      89,
+                      79,
+                    ).withOpacity(0.3),
+                    blurRadius: 6,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
+              ),
+              child: IntrinsicHeight(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Expanded(
+                      child: InkWell(
+                        onTap: () {
+                          print('Pilates cliacado');
+                        },
+                        borderRadius: BorderRadius.circular(8),
+                        child: Image.asset('assets/pilates.png', height: 80),
+                      ),
+                    ),
+
+                    const VerticalDivider(
+                      color: Colors.grey,
+                      thickness: 1,
+                      indent: 5,
+                      endIndent: 5,
+                    ),
+
+                    Expanded(
+                      child: InkWell(
+                        onTap: () {
+                          print('Dança clicada');
+                        },
+                        borderRadius: BorderRadius.circular(8),
+                        child: Image.asset('assets/danca.png', height: 80),
+                      ),
+                    ),
+
+                    const VerticalDivider(
+                      color: Colors.grey,
+                      thickness: 1,
+                      indent: 5,
+                      endIndent: 5,
+                    ),
+
+                    Expanded(
+                      child: InkWell(
+                        onTap: () {
+                          print('Karatê clicado');
+                        },
+                        borderRadius: BorderRadius.circular(8),
+                        child: Image.asset('assets/karate.png', height: 80),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ],
         ),
       ),
