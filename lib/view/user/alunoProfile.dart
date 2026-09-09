@@ -5,6 +5,6 @@ class AlunoProfileView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: Text("Olá Mundo"));
+    return const Scaffold(body: Text("Olá Mundo"));
   }
 }

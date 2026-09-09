@@ -73,6 +73,8 @@ class _RegisterViewState extends State<RegisterView> {
 
     final currentUser = await _userService.getUserById(firebaseUser.uid);
 
+    if (!mounted) return;
+
     if (currentUser == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Usuário atual não encontrado.')),

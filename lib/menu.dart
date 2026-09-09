@@ -2,14 +2,14 @@ import 'package:academiagrazi/view/login_view.dart';
 import 'package:academiagrazi/view/instructor/register_view.dart';
 import 'package:flutter/material.dart';
 
-class menu extends StatefulWidget {
-  const menu({super.key});
+class Menu extends StatefulWidget {
+  const Menu({super.key});
 
   @override
-  State<menu> createState() => _menuState();
+  State<Menu> createState() => MenuState();
 }
 
-class _menuState extends State<menu> {
+class MenuState extends State<Menu> {
   int _selectedIndex = 0;
 
   final List<Widget> _paginas = const [

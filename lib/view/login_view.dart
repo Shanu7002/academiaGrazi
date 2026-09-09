@@ -2,9 +2,12 @@ import 'package:academiagrazi/controller/users/login.dart';
 import 'package:academiagrazi/menu.dart';
 import 'package:academiagrazi/models/users/user_model.dart';
 import 'package:academiagrazi/service/users/login.dart';
+import 'package:academiagrazi/view/admin/register_instructor_view.dart';
 import 'package:academiagrazi/view/tabRouter.dart';
+import 'package:academiagrazi/view/user/alunoHome_view.dart';
 import 'package:flutter/material.dart';
 import 'instructor/register_view.dart';
+import '../menu.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -62,10 +65,26 @@ class _LoginViewState extends State<LoginView> {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text('Usuario logado')));
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const menu()),
-      );
+      if (user.type == UserType.user) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const AlunoHomeView()),
+        );
+      } else {
+        if (user.type == UserType.instructor) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const Menu()),
+          );
+        } else {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const RegisterInstructorView(),
+            ),
+          );
+        }
+      }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Falha ao entrar. Tente novamente.')),
@@ -76,10 +95,10 @@ class _LoginViewState extends State<LoginView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFD8D6D6),
+      backgroundColor: const Color(0xFFD8D6D6),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: 60.0),
+          padding: const EdgeInsets.symmetric(horizontal: 60.0),
           child: Column(
             children: [
               Image.asset('assets/logoLogin.png', height: 250),
@@ -135,10 +154,10 @@ class _LoginViewState extends State<LoginView> {
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       backgroundColor: Color(0xFFD8D6D6),
                     ),
-                    child: Text(
+                    child: const Text(
                       'Esqueci minha senha',
                       style: TextStyle(
-                        color: const Color.fromARGB(255, 21, 73, 116),
+                        color: Color.fromARGB(255, 21, 73, 116),
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
                         decoration: TextDecoration.underline,
@@ -149,7 +168,7 @@ class _LoginViewState extends State<LoginView> {
                 ),
               ),
 
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
 
               Align(
                 alignment: Alignment.centerRight,
@@ -169,10 +188,10 @@ class _LoginViewState extends State<LoginView> {
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       backgroundColor: Color(0xFFD8D6D6),
                     ),
-                    child: Text(
+                    child: const Text(
                       'Ainda não tenho uma conta',
                       style: TextStyle(
-                        color: const Color.fromARGB(255, 21, 73, 116),
+                        color: Color.fromARGB(255, 21, 73, 116),
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
                         decoration: TextDecoration.underline,
@@ -190,7 +209,7 @@ class _LoginViewState extends State<LoginView> {
                 child: ElevatedButton(
                   onPressed: _isLoading ? null : _executeLogin,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color.fromARGB(255, 2, 89, 79),
+                    backgroundColor: const Color.fromARGB(255, 2, 89, 79),
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -208,7 +227,7 @@ class _LoginViewState extends State<LoginView> {
                 ),
               ),
 
-              SizedBox(width: 20),
+              const SizedBox(width: 20),
             ],
           ),
         ),
