@@ -4,12 +4,12 @@ import "package:academiagrazi/models/users/user_model.dart";
 import "package:academiagrazi/service/users/register.dart";
 import "package:firebase_auth/firebase_auth.dart";
 
-class RegisterController {
+class RegisterUserController {
   final FirebaseAuth _auth;
   final RegisterService _userService;
 
   // coverage:ignore-start
-  RegisterController(this._userService, {FirebaseAuth? auth})
+  RegisterUserController(this._userService, {FirebaseAuth? auth})
     : _auth = auth ?? FirebaseAuth.instance;
   // coverage:ignore-end
 
