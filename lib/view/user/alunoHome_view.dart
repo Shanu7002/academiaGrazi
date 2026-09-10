@@ -92,7 +92,7 @@ class AlunoHomeView extends StatelessWidget {
                                 ),
                               ],
                             ),
-                          ),
+                          ), 
                           Expanded(
                             child: Row(
                               children: [
