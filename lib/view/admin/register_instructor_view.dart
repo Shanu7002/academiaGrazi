@@ -1,297 +1,32 @@
-import 'package:academiagrazi/auth/permissions.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import '../login_view.dart';
+
 import '../../controller/users/register_instructor.dart';
 import '../../service/users/register.dart';
+import '../model/register_model.dart';
 
-class RegisterInstructorView extends StatefulWidget {
+class RegisterInstructorView extends StatelessWidget {
   const RegisterInstructorView({super.key});
 
   @override
-  State<RegisterInstructorView> createState() => _RegisterInstructorViewState();
-}
-
-class _RegisterInstructorViewState extends State<RegisterInstructorView> {
-  bool _obscurePassword = true;
-  bool _obscureConfirmPassword = true;
-  bool _isLoading = false;
-
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmController = TextEditingController();
-
-  late final RegisterController _controller;
-  late final RegisterService _userService;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _userService = RegisterService();
-    _controller = RegisterController(RegisterService());
-  }
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _emailController.dispose();
-    _passwordController.dispose();
-    _confirmController.dispose();
-    super.dispose();
-  }
-
-  Future<void> _executeRegistration() async {
-    final name = _nameController.text.trim();
-    final email = _emailController.text.trim();
-    final password = _passwordController.text;
-    final confirm = _confirmController.text;
-
-    if (name.isEmpty || email.isEmpty || password.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Preencha todos os campos.')),
-      );
-      return;
-    }
-
-    if (password != confirm) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('As senhas não são iguais.')),
-      );
-      return;
-    }
-
-    final firebaseUser = FirebaseAuth.instance.currentUser;
-
-    if (firebaseUser == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Você precisa estar autenticado.')),
-      );
-      return;
-    }
-
-    final currentUser = await _userService.getUserById(firebaseUser.uid);
-
-    if (!mounted) return;
-
-    if (currentUser == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Usuário atual não encontrado.')),
-      );
-      return;
-    }
-
-    // Check permission
-    if (!Permissions.canCreateInstructor(currentUser)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Apenas administradores podem cadastrar instrutores.'),
-        ),
-      );
-      return;
-    }
-
-    setState(() => _isLoading = true);
-
-    // controller
-    final bool success = await _controller.registerInstructor(
-      currentUser: currentUser,
-      email: email,
-      name: name,
-      password: password,
-      passwordCheck: confirm,
-    );
-
-    if (!mounted) return;
-
-    setState(() => _isLoading = false);
-
-    if (success) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Cadastro realizado com sucesso!')),
-      );
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const LoginView()),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Falha ao cadastrar. Tente novamente.')),
-      );
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFD8D6D6),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFD8D6D6),
-        elevation: 0,
-        foregroundColor: const Color.fromARGB(255, 21, 73, 116),
-      ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 60.0),
-          child: Column(
-            children: [
-              Image.asset('assets/logoLogin.png', height: 250),
-
-              TextField(
-                controller: _nameController,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  hintText: 'Digite seu nome completo',
-                  hintStyle: const TextStyle(color: Color(0xFF757575)),
-                  filled: true,
-                  fillColor: const Color.fromARGB(255, 238, 238, 238),
-                ),
-              ),
-              const SizedBox(height: 20),
-
-              TextField(
-                controller: _emailController,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  hintText: 'Email',
-                  hintStyle: const TextStyle(color: Color(0xFF757575)),
-                  filled: true,
-                  fillColor: const Color.fromARGB(255, 238, 238, 238),
-                ),
-              ),
-              const SizedBox(height: 20),
-
-              TextField(
-                controller: _passwordController,
-                obscureText: _obscurePassword,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  hintText: 'Senha',
-                  hintStyle: const TextStyle(color: Color(0xFF757575)),
-                  filled: true,
-                  fillColor: const Color.fromARGB(255, 238, 238, 238),
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      _obscurePassword
-                          ? Icons.visibility_off
-                          : Icons.visibility,
-                      color: const Color(0xFF757575),
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        _obscurePassword = !_obscurePassword;
-                      });
-                    },
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-
-              TextField(
-                controller: _confirmController,
-                obscureText: _obscureConfirmPassword,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  hintText: 'Confirme sua senha',
-                  hintStyle: const TextStyle(color: Color(0xFF757575)),
-                  filled: true,
-                  fillColor: const Color.fromARGB(255, 238, 238, 238),
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      _obscureConfirmPassword
-                          ? Icons.visibility_off
-                          : Icons.visibility,
-                      color: const Color(0xFF757575),
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        _obscureConfirmPassword = !_obscureConfirmPassword;
-                      });
-                    },
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-
-              Align(
-                alignment: Alignment.centerRight,
-                child: SizedBox(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const LoginView(),
-                        ),
-                      );
-                    },
-                    style: TextButton.styleFrom(
-                      padding: EdgeInsets.zero,
-                      minimumSize: const Size(0, 0),
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      backgroundColor: const Color(0xFFD8D6D6),
-                    ),
-                    child: const Text(
-                      'Já tenho cadastro',
-                      style: TextStyle(
-                        color: Color.fromARGB(255, 21, 73, 116),
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        decoration: TextDecoration.underline,
-                        height: 1,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 50),
-
-              SizedBox(
-                width: 350,
-                child: ElevatedButton(
-                  // Bind the execution logic
-                  onPressed: _isLoading ? null : _executeRegistration,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromARGB(255, 2, 89, 79),
-                    padding: const EdgeInsets.symmetric(vertical: 10),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child:
-                      _isLoading
-                          ? const SizedBox(
-                            height: 24,
-                            width: 24,
-                            child: CircularProgressIndicator(
-                              color: Colors.white,
-                              strokeWidth: 2,
-                            ),
-                          )
-                          : const Text(
-                            'CADASTRAR',
-                            style: TextStyle(
-                              color: Color.fromARGB(255, 255, 255, 255),
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              height: 3,
-                            ),
-                          ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
+    return RegisterView(
+      registerFunction: ({
+        required currentUser,
+        required email,
+        required name,
+        required password,
+        required passwordCheck,
+      }) {
+        return RegisterInstructorController(
+          RegisterService(),
+        ).registerInstructor(
+          currentUser: currentUser,
+          email: email,
+          name: name,
+          password: password,
+          passwordCheck: passwordCheck,
+        );
+      },
     );
   }
 }

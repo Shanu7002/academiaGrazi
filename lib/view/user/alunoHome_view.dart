@@ -1,4 +1,3 @@
-import 'package:academiagrazi/view/user/alunoProfile.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -257,7 +256,7 @@ class AlunoHomeView extends StatelessWidget {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromARGB(255, 244, 121, 67),
                       foregroundColor: Colors.white,
-                      minimumSize: const Size(300,50),
+                      minimumSize: const Size(300, 50),
                       padding: const EdgeInsets.symmetric(
                         horizontal: 16,
                         vertical: 12,
@@ -267,13 +266,10 @@ class AlunoHomeView extends StatelessWidget {
                       ),
                     ),
                     child: Row(
-                      mainAxisSize:
-                          MainAxisSize.min, 
+                      mainAxisSize: MainAxisSize.min,
                       children: [
                         const Icon(Icons.play_arrow, size: 18),
-                        const SizedBox(
-                          width: 8,
-                        ), 
+                        const SizedBox(width: 8),
                         Text(
                           'Iniciar treino',
                           style: TextStyle(
