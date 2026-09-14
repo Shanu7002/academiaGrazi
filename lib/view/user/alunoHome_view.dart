@@ -1,3 +1,4 @@
+import 'package:academiagrazi/view/user/alunoHome_view2.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -92,7 +93,7 @@ class AlunoHomeView extends StatelessWidget {
                                 ),
                               ],
                             ),
-                          ), 
+                          ),
                           Expanded(
                             child: Row(
                               children: [
@@ -241,7 +242,12 @@ class AlunoHomeView extends StatelessWidget {
 
                   ElevatedButton(
                     onPressed: () {
-                      print("Botão iniciar treino clicado!");
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const AlunoHomeView2(),
+                        ),
+                      );
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromARGB(255, 244, 121, 67),
