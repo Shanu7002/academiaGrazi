@@ -3,7 +3,7 @@ import 'package:academiagrazi/models/users/user_model.dart';
 import 'package:academiagrazi/service/users/login.dart';
 import 'package:academiagrazi/view/admin/register_instructor_view.dart';
 import 'package:academiagrazi/view/model/register_model.dart';
-import 'package:academiagrazi/view/user/alunoHome_view.dart';
+import 'package:academiagrazi/view/user/aluno_home_view.dart';
 import 'package:flutter/material.dart';
 import 'package:academiagrazi/controller/users/register_instructor.dart';
 import 'package:academiagrazi/service/users/register.dart';
