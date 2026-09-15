@@ -1,4 +1,4 @@
-import 'package:academiagrazi/view/user/alunoHome_view2.dart';
+import 'package:academiagrazi/view/user/aluno_home_view2.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
