@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xml>
+<changelog>
+    <model>
+        <version>1.0</version>
+        <owner>Shanu7002</owner>
+        <actualModel>
+            user = {
+                id: --gerado automaticamente  28-character strings (Base62)
+                name: string
+                email: string
+                type: UserType enum
+                createdAt: string (iso8601) - horario do dispositivo para nao se preocupar com ztimestamp convertion
+            }
+        </actualModel>
+    </model>
+</changelog>
