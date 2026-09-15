@@ -1,5 +1,5 @@
-import 'package:academiagrazi/view/user/alunoHome_view.dart';
-import 'package:academiagrazi/view/user/alunoProfile.dart';
+import 'package:academiagrazi/view/user/aluno_home_view.dart';
+import 'package:academiagrazi/view/user/aluno_profile.dart';
 import 'package:flutter/material.dart';
 
 class Menu extends StatefulWidget {
