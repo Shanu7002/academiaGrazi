@@ -252,7 +252,7 @@ class AlunoHomeView extends StatelessWidget {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromARGB(255, 244, 121, 67),
                       foregroundColor: Colors.white,
-                      minimumSize: const Size(double.infinity, 50),
+                      minimumSize: const Size(300, 50),
                       padding: const EdgeInsets.symmetric(
                         horizontal: 16,
                         vertical: 12,

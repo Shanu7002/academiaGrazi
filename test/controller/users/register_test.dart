@@ -14,7 +14,7 @@ void main() {
   late MockFirebaseAuth mockAuth;
   late MockUserCredential mockCredential;
   late MockUser mockUser;
-  late RegisterController controller;
+  late RegisterUserController controller;
 
   final instructorUser = UserModel(
     id: "instructor_uid",
@@ -29,7 +29,7 @@ void main() {
     mockCredential = MockUserCredential();
     mockUser = MockUser();
 
-    controller = RegisterController(mockRegisterService, auth: mockAuth);
+    controller = RegisterUserController(mockRegisterService, auth: mockAuth);
   });
 
   group("RegisterController Tests sucessfully", () {
