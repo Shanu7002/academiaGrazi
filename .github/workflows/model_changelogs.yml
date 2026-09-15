@@ -14,16 +14,12 @@ jobs:
 
       - name: Validate dynamic model/changelog pairs
         run: |
-          # 1. Fetch the target branch to ensure we can diff against it
           git fetch origin ${{ github.base_ref }}
 
-          # 2. Get all files Added, Modified, or Renamed (exclude deleted files)
           CHANGED_FILES=$(git diff --name-only --diff-filter=d origin/${{ github.base_ref }}...HEAD)
 
-          # 3. Filter for any file ending in _model.dart
           MODEL_FILES=$(echo "$CHANGED_FILES" | grep '_model\.dart$' || true)
 
-          # If no models changed, exit early (success)
           if [ -z "$MODEL_FILES" ]; then
             echo "No models modified. Skipping validation."
             exit 0
@@ -31,19 +27,16 @@ jobs:
 
           FAILED=0
 
-          # 4. Iterate over each modified model
           for MODEL_FILE in $MODEL_FILES; do
             # String manipulation: strip '.dart' and append '_changelog.xml'
             CHANGELOG_FILE="${MODEL_FILE%.dart}_changelog.xml"
             
-            # 5. Check if the computed changelog file exists in the CHANGED_FILES list
             if ! echo "$CHANGED_FILES" | grep -Fxq "$CHANGELOG_FILE"; then
               echo "::error file=$CHANGELOG_FILE::Integrity check failed: $MODEL_FILE was modified, but $CHANGELOG_FILE was not updated."
               FAILED=1
             fi
           done
 
-          # 6. Fail the pipeline if any pairs mismatched
           if [ $FAILED -ne 0 ]; then
             exit 1
           fi
