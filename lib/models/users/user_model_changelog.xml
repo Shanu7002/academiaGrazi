@@ -4,6 +4,7 @@
     <model>
         <version>1.0</version>
         <owner>Shanu7002</owner>
+        <description>Initial model creation</description>
         <actualModel>
             user = {
                 id: --gerado automaticamente  28-character strings (Base62)
