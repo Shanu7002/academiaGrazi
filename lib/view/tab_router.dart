@@ -41,9 +41,13 @@ class _MainShellState extends State<MainShell> {
         indicatorColor: const Color(0xFFFF7943),
         selectedIndex: _selectedIndex,
         onDestinationSelected: (index) {
-          setState(() {
-            _selectedIndex = index;
-          });
+          if (index == 0) {
+            _homeNavigatorKey.currentState?.popUntil((route) => route.isFirst);
+          }
+
+          if (index != _selectedIndex) {
+            setState(() => _selectedIndex = index);
+          }
         },
         destinations: const [
           NavigationDestination(
