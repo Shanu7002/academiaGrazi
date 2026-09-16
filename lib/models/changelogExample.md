@@ -2,6 +2,8 @@
 
 After a change in any something_model.dart, you have to update the something_model_changelog.xml.
 
+**IMPORTANT** ⚠️ NOTE THAT YOU DO NOT CHANGE THE PREVIOUS CHANGELG, YOU ADD A NEW ONE WITH SAME STRUCT, IT'S A VERSION CONTROL IDEA ⚠️
+
 In this scenario you gonna have 3 paths, new model, major change or minor change.
 
 What caracterizes a major or minor change?
