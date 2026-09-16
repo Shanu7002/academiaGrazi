@@ -3,7 +3,7 @@ import 'package:academiagrazi/models/users/user_model.dart';
 import 'package:academiagrazi/service/users/login.dart';
 import 'package:academiagrazi/view/admin/register_instructor_view.dart';
 import 'package:academiagrazi/view/model/register_model.dart';
-import 'package:academiagrazi/view/user/aluno_home_view.dart';
+import 'package:academiagrazi/view/tab_router.dart';
 import 'package:flutter/material.dart';
 import 'package:academiagrazi/controller/users/register_instructor.dart';
 import 'package:academiagrazi/service/users/register.dart';
@@ -42,32 +42,27 @@ class _LoginViewState extends State<LoginView> {
     final password = _passwordController.text;
 
     if (email.isEmpty || password.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Preencha todos os campos.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Preencha todos os campos.')));
       return;
     }
 
     setState(() => _isLoading = true);
 
     // controller
-    final UserModel? user = await _controller.loginUser(
-      email: email,
-      password: password,
-    );
+    final UserModel? user = await _controller.loginUser(email: email, password: password);
 
     if (!mounted) return;
 
     setState(() => _isLoading = false);
 
     if (user != null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Usuario logado')));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Usuario logado')));
       if (user.type == UserType.user) {
-        Navigator.push(
+        Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const AlunoHomeView()),
+          MaterialPageRoute(builder: (context) => const MainShell()),
         );
       } else {
         if (user.type == UserType.instructor) {
@@ -83,9 +78,7 @@ class _LoginViewState extends State<LoginView> {
                       required password,
                       required passwordCheck,
                     }) {
-                      return RegisterInstructorController(
-                        RegisterService(),
-                      ).registerInstructor(
+                      return RegisterInstructorController(RegisterService()).registerInstructor(
                         currentUser: currentUser,
                         email: email,
                         name: name,
@@ -99,16 +92,14 @@ class _LoginViewState extends State<LoginView> {
         } else {
           Navigator.push(
             context,
-            MaterialPageRoute(
-              builder: (context) => const RegisterInstructorView(),
-            ),
+            MaterialPageRoute(builder: (context) => const RegisterInstructorView()),
           );
         }
       }
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Falha ao entrar. Tente novamente.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Falha ao entrar. Tente novamente.')));
     }
   }
 
@@ -125,9 +116,7 @@ class _LoginViewState extends State<LoginView> {
               TextField(
                 controller: _emailController,
                 decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                   hintText: 'Email',
                   hintStyle: const TextStyle(color: Color(0xFF757575)),
                   filled: true,
@@ -139,9 +128,7 @@ class _LoginViewState extends State<LoginView> {
                 controller: _passwordController,
                 obscureText: _obscureText,
                 decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                   hintText: 'Senha',
                   hintStyle: const TextStyle(color: Color(0xFF757575)),
                   filled: true,
@@ -197,9 +184,7 @@ class _LoginViewState extends State<LoginView> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color.fromARGB(255, 2, 89, 79),
                     padding: const EdgeInsets.symmetric(vertical: 10),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
                   child: const Text(
                     'ENTRAR',
