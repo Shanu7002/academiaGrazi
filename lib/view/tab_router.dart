@@ -1,5 +1,5 @@
 import 'package:academiagrazi/view/user/aluno_home_view.dart';
-import 'package:academiagrazi/view/user/aluno_profile.dart';
+import 'package:academiagrazi/view/user/aluno_profile_view.dart';
 import 'package:flutter/material.dart';
 
 class MainShell extends StatefulWidget {
