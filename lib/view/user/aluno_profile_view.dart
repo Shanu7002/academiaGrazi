@@ -19,19 +19,12 @@ class AlunoProfileView extends StatelessWidget {
         ),
         title: const Text(
           'GRAZI BRAZ',
-          style: TextStyle(
-            color: Color(0xFF005A4F),
-            fontSize: 22,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(color: Color(0xFF005A4F), fontSize: 22, fontWeight: FontWeight.bold),
         ),
         actions: [
           IconButton(
-            onPressed: () {},
-            icon: const Icon(
-              Icons.notifications_none,
-              color: Color(0xFF354640),
-            ),
+            onPressed: () {}, // Notificações ainda não estão ligadas ao banco
+            icon: const Icon(Icons.notifications_none, color: Color(0xFF354640)),
           ),
         ],
       ),
@@ -62,8 +55,10 @@ class AlunoProfileView extends StatelessWidget {
                         child: Icon(Icons.person, color: Color(0xFF8A8A8A)),
                       ),
                       label: 'PROFESSOR RESPONSÁVEL',
-                      title: 'Prof. Marcos',
-                      subtitle: 'Especialista',
+                      title:
+                          'Prof. Marcos', //Dado mockado, precisa ser alterado em produção para buscar o dado do banco
+                      subtitle:
+                          'Especialista', //Dado mockado, precisa ser alterado em produção para buscar o dado do banco
                       subtitleColor: Color(0xFF277B60),
                     ),
                     SizedBox(height: 12),
@@ -72,16 +67,15 @@ class AlunoProfileView extends StatelessWidget {
                         radius: 18,
                         backgroundColor: Color(0xFF005A4F),
                         child: Text(
-                          'A',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
+                          'A', // Valor derivado do bloco mockado, deve vir do banco
+                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                         ),
                       ),
                       label: 'BLOCO / TURNO',
-                      title: 'Bloco A',
-                      subtitle: '06:00 - 09:00',
+                      title:
+                          'Bloco A', //Dado mockado, precisa ser alterado em produção para buscar o dado do banco
+                      subtitle:
+                          '06:00 - 09:00', //Dado mockado, precisa ser alterado em produção para buscar o dado do banco
                     ),
                   ],
                 ),
@@ -102,28 +96,31 @@ class AlunoProfileView extends StatelessWidget {
                     SizedBox(height: 12),
                     _InfoCard(
                       label: 'Condições Crônicas',
-                      value: 'Hipertensão controlada',
+                      value:
+                          'Hipertensão controlada', //Dado mockado, precisa ser alterado em produção para buscar o dado do banco
                     ),
                     SizedBox(height: 10),
                     _InfoCard(
                       label: 'Restrições no Treino',
-                      value: 'Evitar impacto excessivo em membros inferiores',
+                      value:
+                          'Evitar impacto excessivo em membros inferiores', //Dado mockado, precisa ser alterado em produção para buscar o dado do banco
                     ),
                     SizedBox(height: 10),
                     _InfoCard(
                       label: 'Contato de Emergência',
-                      value: 'Carlos Lima (Esposo) • (11) 98765-4321',
+                      value:
+                          'Carlos Lima (Esposo) • (11) 98765-4321', //Dado mockado, precisa ser alterado em produção para buscar o dado do banco
                     ),
                     SizedBox(height: 14),
                     Text(
-                      'Revisado em 15/06/2023 por Prof. Marcos',
+                      'Revisado em 15/06/2023 por Prof. Marcos', //Dado mockado, precisa ser alterado em produção para buscar o dado do banco
                       style: TextStyle(color: Color(0xFF65716D), fontSize: 10),
                     ),
                     SizedBox(height: 14),
                     SizedBox(
                       width: double.infinity,
                       child: OutlinedButton(
-                        onPressed: () {},
+                        onPressed: () {}, // Atualização da ficha no banco ainda não implementada
                         style: OutlinedButton.styleFrom(
                           foregroundColor: const Color(0xFF005A4F),
                           side: const BorderSide(color: Color(0xFF005A4F)),
@@ -141,13 +138,10 @@ class AlunoProfileView extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _SectionHeader(
-                      icon: Icons.credit_card,
-                      title: 'PLANO E MENSALIDADE',
-                    ),
+                    _SectionHeader(icon: Icons.credit_card, title: 'PLANO E MENSALIDADE'),
                     SizedBox(height: 16),
                     Text(
-                      'Plano Conexão Semestral',
+                      'Plano Conexão Semestral', //Dado mockado, precisa ser alterado em produção para buscar o dado do banco
                       style: TextStyle(
                         color: Color(0xFF092837),
                         fontSize: 14,
@@ -156,7 +150,7 @@ class AlunoProfileView extends StatelessWidget {
                     ),
                     SizedBox(height: 4),
                     Text(
-                      'Renovação em 10/11/2023',
+                      'Renovação em 10/11/2023', //Dado mockado, precisa ser alterado em produção para buscar o dado do banco
                       style: TextStyle(color: Color(0xFF65716D), fontSize: 11),
                     ),
                     SizedBox(height: 14),
@@ -164,20 +158,14 @@ class AlunoProfileView extends StatelessWidget {
                       children: [
                         Expanded(
                           child: Text(
-                            'Modalidades\nMusculação + Pilates',
-                            style: TextStyle(
-                              color: Color(0xFF092837),
-                              fontSize: 12,
-                            ),
+                            'Modalidades\nMusculação + Pilates', //Dado mockado, precisa ser alterado em produção para buscar o dado do banco
+                            style: TextStyle(color: Color(0xFF092837), fontSize: 12),
                           ),
                         ),
                         Expanded(
                           child: Text(
-                            'Matrícula\n#GB-2023-0482',
-                            style: TextStyle(
-                              color: Color(0xFF092837),
-                              fontSize: 12,
-                            ),
+                            'Matrícula\n#GB-2023-0482', //Dado mockado, precisa ser alterado em produção para buscar o dado do banco
+                            style: TextStyle(color: Color(0xFF092837), fontSize: 12),
                           ),
                         ),
                       ],
@@ -194,20 +182,15 @@ class AlunoProfileView extends StatelessWidget {
                   children: [
                     const Padding(
                       padding: EdgeInsets.all(16),
-                      child: _SectionHeader(
-                        icon: Icons.tune,
-                        title: 'PREFERÊNCIAS & AJUSTES',
-                      ),
+                      child: _SectionHeader(icon: Icons.tune, title: 'PREFERÊNCIAS & AJUSTES'),
                     ),
                     const Divider(height: 1),
-                    const _PreferenceSwitch(
-                      icon: Icons.alarm,
-                      title: 'Lembrete diário de treino',
-                    ),
+                    const _PreferenceSwitch(icon: Icons.alarm, title: 'Lembrete diário de treino'),
                     const Divider(height: 1),
                     const _PreferenceSwitch(
                       icon: Icons.notifications_active_outlined,
-                      title: 'Avisos do Prof. Marcos',
+                      title:
+                          'Avisos do Prof. Marcos', // Dado mockado, deve vir do professor vinculado no banco
                     ),
                     const Divider(height: 1),
                     const Material(
@@ -241,8 +224,12 @@ class _ProfileSummary extends StatelessWidget {
         children: [
           Stack(
             children: [
-              _ProfileAvatar(),
-              Positioned(right: 0, bottom: 0, child: _VerifiedBadge()),
+              _ProfileAvatar(), // Imagem de perfil mockada, deve vir do banco/storage
+              Positioned(
+                right: 0,
+                bottom: 0,
+                child: _VerifiedBadge(), // Status do perfil mockado, deve vir do banco
+              ),
             ],
           ),
           SizedBox(width: 16),
@@ -251,7 +238,7 @@ class _ProfileSummary extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Ana Lima',
+                  'Ana Lima', //Dado mockado, precisa ser alterado em produção para buscar o dado do banco
                   style: TextStyle(
                     color: Color(0xFF092837),
                     fontSize: 22,
@@ -260,20 +247,16 @@ class _ProfileSummary extends StatelessWidget {
                 ),
                 SizedBox(height: 4),
                 Text(
-                  'ana.lima@exemplo.com',
+                  'ana.lima@exemplo.com', //Dado mockado, precisa ser alterado em produção para buscar o dado do banco
                   style: TextStyle(color: Color(0xFF65716D), fontSize: 12),
                 ),
                 SizedBox(height: 8),
                 Row(
                   children: [
-                    Icon(
-                      Icons.fitness_center,
-                      color: Color(0xFF005A4F),
-                      size: 16,
-                    ),
+                    Icon(Icons.fitness_center, color: Color(0xFF005A4F), size: 16),
                     SizedBox(width: 5),
                     Text(
-                      'Plano Presencial + App',
+                      'Plano Presencial + App', //Dado mockado, precisa ser alterado em produção para buscar o dado do banco
                       style: TextStyle(color: Color(0xFF005A4F), fontSize: 12),
                     ),
                   ],
@@ -324,10 +307,7 @@ class _VerifiedBadge extends StatelessWidget {
 }
 
 class _SectionCard extends StatelessWidget {
-  const _SectionCard({
-    required this.child,
-    this.padding = const EdgeInsets.all(16),
-  });
+  const _SectionCard({required this.child, this.padding = const EdgeInsets.all(16)});
 
   final Widget child;
   final EdgeInsetsGeometry padding;
@@ -348,11 +328,7 @@ class _SectionCard extends StatelessWidget {
 }
 
 class _SectionHeader extends StatelessWidget {
-  const _SectionHeader({
-    required this.icon,
-    required this.title,
-    this.fontSize = 16,
-  });
+  const _SectionHeader({required this.icon, required this.title, this.fontSize = 16});
 
   final IconData icon;
   final String title;
@@ -410,22 +386,13 @@ class _ProfessionalInfoCard extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                label,
-                style: const TextStyle(color: Color(0xFF65716D), fontSize: 10),
-              ),
+              Text(label, style: const TextStyle(color: Color(0xFF65716D), fontSize: 10)),
               const SizedBox(height: 4),
               Text(
                 title,
-                style: const TextStyle(
-                  color: Color(0xFF092837),
-                  fontWeight: FontWeight.bold,
-                ),
+                style: const TextStyle(color: Color(0xFF092837), fontWeight: FontWeight.bold),
               ),
-              Text(
-                subtitle,
-                style: TextStyle(color: subtitleColor, fontSize: 10),
-              ),
+              Text(subtitle, style: TextStyle(color: subtitleColor, fontSize: 10)),
             ],
           ),
         ],
@@ -481,17 +448,11 @@ class _InfoCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            label,
-            style: const TextStyle(color: Color(0xFF65716D), fontSize: 11),
-          ),
+          Text(label, style: const TextStyle(color: Color(0xFF65716D), fontSize: 11)),
           const SizedBox(height: 4),
           Text(
             value,
-            style: const TextStyle(
-              color: Color(0xFF092837),
-              fontWeight: FontWeight.bold,
-            ),
+            style: const TextStyle(color: Color(0xFF092837), fontWeight: FontWeight.bold),
           ),
         ],
       ),
@@ -510,8 +471,8 @@ class _PreferenceSwitch extends StatelessWidget {
     return Material(
       color: Colors.transparent,
       child: SwitchListTile(
-        value: true,
-        onChanged: (value) {},
+        value: true, // Preferência mockada, deve ser lida do banco
+        onChanged: (value) {}, // Persistência da preferência no banco ainda não implementada
         activeThumbColor: const Color(0xFF005A4F),
         secondary: Icon(icon),
         title: Text(title),
