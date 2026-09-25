@@ -51,6 +51,9 @@ void main() {
     await tester.tap(find.text('Iniciar treino'));
     await tester.pumpAndSettle();
 
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+
     await tester.tap(find.text('Início'));
     await tester.pumpAndSettle();
 
