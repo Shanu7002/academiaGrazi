@@ -1,5 +1,5 @@
 import 'package:academiagrazi/view/user/aluno_home_view.dart';
-import 'package:academiagrazi/view/user/aluno_profile.dart';
+import 'package:academiagrazi/view/user/aluno_profile_view.dart';
 import 'package:flutter/material.dart';
 
 class Menu extends StatefulWidget {
@@ -36,14 +36,8 @@ class MenuState extends State<Menu> {
 
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Início'),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.fitness_center),
-            label: 'Treinos',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.insights),
-            label: 'Evolução',
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.fitness_center), label: 'Treinos'),
+          BottomNavigationBarItem(icon: Icon(Icons.insights), label: 'Evolução'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Perfil'),
         ],
       ),

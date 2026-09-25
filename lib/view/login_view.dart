@@ -3,13 +3,15 @@ import 'package:academiagrazi/models/users/user_model.dart';
 import 'package:academiagrazi/service/users/login.dart';
 import 'package:academiagrazi/view/admin/register_instructor_view.dart';
 import 'package:academiagrazi/view/model/register_model.dart';
-import 'package:academiagrazi/view/user/aluno_home_view.dart';
+import 'package:academiagrazi/view/user/aluno_profile_view.dart';
 import 'package:flutter/material.dart';
 import 'package:academiagrazi/controller/users/register_instructor.dart';
 import 'package:academiagrazi/service/users/register.dart';
 
 class LoginView extends StatefulWidget {
-  const LoginView({super.key});
+  const LoginView({super.key, this.controller});
+
+  final LoginController? controller;
 
   @override
   State<LoginView> createState() => _LoginViewState();
@@ -27,7 +29,7 @@ class _LoginViewState extends State<LoginView> {
   @override
   void initState() {
     super.initState();
-    _controller = LoginController(LoginService());
+    _controller = widget.controller ?? LoginController(LoginService());
   }
 
   @override
@@ -67,7 +69,7 @@ class _LoginViewState extends State<LoginView> {
       if (user.type == UserType.user) {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const AlunoHomeView()),
+          MaterialPageRoute(builder: (context) => const AlunoProfileView()),
         );
       } else {
         if (user.type == UserType.instructor) {
