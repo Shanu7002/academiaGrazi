@@ -19,12 +19,19 @@ class AlunoProfileView extends StatelessWidget {
         ),
         title: const Text(
           'GRAZI BRAZ',
-          style: TextStyle(color: Color(0xFF005A4F), fontSize: 22, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            color: Color(0xFF005A4F),
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         actions: [
           IconButton(
             onPressed: () {},
-            icon: const Icon(Icons.notifications_none, color: Color(0xFF354640)),
+            icon: const Icon(
+              Icons.notifications_none,
+              color: Color(0xFF354640),
+            ),
           ),
         ],
       ),
@@ -53,9 +60,16 @@ class AlunoProfileView extends StatelessWidget {
                           decoration: BoxDecoration(
                             color: const Color(0xFFD6D6D6),
                             shape: BoxShape.circle,
-                            border: Border.all(color: const Color(0xFF2CA99F), width: 2),
+                            border: Border.all(
+                              color: const Color(0xFF2CA99F),
+                              width: 2,
+                            ),
                           ),
-                          child: const Icon(Icons.person, size: 34, color: Color(0xFF8A8A8A)),
+                          child: const Icon(
+                            Icons.person,
+                            size: 34,
+                            color: Color(0xFF8A8A8A),
+                          ),
                         ),
 
                         Positioned(
@@ -69,7 +83,11 @@ class AlunoProfileView extends StatelessWidget {
                               shape: BoxShape.circle,
                               border: Border.all(color: Colors.white, width: 2),
                             ),
-                            child: const Icon(Icons.check, color: Colors.white, size: 14),
+                            child: const Icon(
+                              Icons.check,
+                              color: Colors.white,
+                              size: 14,
+                            ),
                           ),
                         ),
                       ],
@@ -94,18 +112,28 @@ class AlunoProfileView extends StatelessWidget {
 
                           Text(
                             'ana.lima@exemplo.com',
-                            style: TextStyle(color: Color(0xFF65716D), fontSize: 12),
+                            style: TextStyle(
+                              color: Color(0xFF65716D),
+                              fontSize: 12,
+                            ),
                           ),
 
                           SizedBox(height: 8),
 
                           Row(
                             children: [
-                              Icon(Icons.fitness_center, color: Color(0xFF005A4F), size: 16),
+                              Icon(
+                                Icons.fitness_center,
+                                color: Color(0xFF005A4F),
+                                size: 16,
+                              ),
                               SizedBox(width: 5),
                               Text(
                                 'Plano Presencial + App',
-                                style: TextStyle(color: Color(0xFF005A4F), fontSize: 12),
+                                style: TextStyle(
+                                  color: Color(0xFF005A4F),
+                                  fontSize: 12,
+                                ),
                               ),
                             ],
                           ),
@@ -169,7 +197,10 @@ class AlunoProfileView extends StatelessWidget {
                             children: [
                               Text(
                                 'PROFESSOR RESPONSÁVEL',
-                                style: TextStyle(color: Color(0xFF65716D), fontSize: 10),
+                                style: TextStyle(
+                                  color: Color(0xFF65716D),
+                                  fontSize: 10,
+                                ),
                               ),
 
                               SizedBox(height: 4),
@@ -184,7 +215,10 @@ class AlunoProfileView extends StatelessWidget {
 
                               Text(
                                 'Especialista',
-                                style: TextStyle(color: Color(0xFF277B60), fontSize: 10),
+                                style: TextStyle(
+                                  color: Color(0xFF277B60),
+                                  fontSize: 10,
+                                ),
                               ),
                             ],
                           ),
@@ -208,7 +242,10 @@ class AlunoProfileView extends StatelessWidget {
                             backgroundColor: Color(0xFF005A4F),
                             child: Text(
                               'A',
-                              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
 
@@ -219,7 +256,10 @@ class AlunoProfileView extends StatelessWidget {
                             children: [
                               Text(
                                 'BLOCO / TURNO',
-                                style: TextStyle(color: Color(0xFF65716D), fontSize: 10),
+                                style: TextStyle(
+                                  color: Color(0xFF65716D),
+                                  fontSize: 10,
+                                ),
                               ),
 
                               SizedBox(height: 4),
@@ -234,7 +274,10 @@ class AlunoProfileView extends StatelessWidget {
 
                               Text(
                                 '06:00 - 09:00',
-                                style: TextStyle(color: Color(0xFF65716D), fontSize: 10),
+                                style: TextStyle(
+                                  color: Color(0xFF65716D),
+                                  fontSize: 10,
+                                ),
                               ),
                             ],
                           ),
@@ -261,7 +304,10 @@ class AlunoProfileView extends StatelessWidget {
                   children: [
                     const Row(
                       children: [
-                        Icon(Icons.health_and_safety_outlined, color: Color(0xFF005A4F)),
+                        Icon(
+                          Icons.health_and_safety_outlined,
+                          color: Color(0xFF005A4F),
+                        ),
                         SizedBox(width: 8),
                         Expanded(
                           child: Text(
@@ -288,14 +334,21 @@ class AlunoProfileView extends StatelessWidget {
                       child: const Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Icon(Icons.lock_outline, color: Color(0xFF005A4F), size: 18),
+                          Icon(
+                            Icons.lock_outline,
+                            color: Color(0xFF005A4F),
+                            size: 18,
+                          ),
 
                           SizedBox(width: 10),
 
                           Expanded(
                             child: Text(
                               'Proteção de dados: informações visíveis apenas a você e ao seu professor tutor.',
-                              style: TextStyle(color: Color(0xFF092837), fontSize: 11),
+                              style: TextStyle(
+                                color: Color(0xFF092837),
+                                fontSize: 11,
+                              ),
                             ),
                           ),
                         ],
@@ -316,12 +369,18 @@ class AlunoProfileView extends StatelessWidget {
                         children: [
                           Text(
                             'Condições Crônicas',
-                            style: TextStyle(color: Color(0xFF65716D), fontSize: 11),
+                            style: TextStyle(
+                              color: Color(0xFF65716D),
+                              fontSize: 11,
+                            ),
                           ),
                           SizedBox(height: 4),
                           Text(
                             'Hipertensão controlada',
-                            style: TextStyle(color: Color(0xFF092837), fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                              color: Color(0xFF092837),
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ],
                       ),
@@ -341,12 +400,18 @@ class AlunoProfileView extends StatelessWidget {
                         children: [
                           Text(
                             'Restrições no Treino',
-                            style: TextStyle(color: Color(0xFF65716D), fontSize: 11),
+                            style: TextStyle(
+                              color: Color(0xFF65716D),
+                              fontSize: 11,
+                            ),
                           ),
                           SizedBox(height: 4),
                           Text(
                             'Evitar impacto excessivo em membros inferiores',
-                            style: TextStyle(color: Color(0xFF092837), fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                              color: Color(0xFF092837),
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ],
                       ),
@@ -366,12 +431,18 @@ class AlunoProfileView extends StatelessWidget {
                         children: [
                           Text(
                             'Contato de Emergência',
-                            style: TextStyle(color: Color(0xFF65716D), fontSize: 11),
+                            style: TextStyle(
+                              color: Color(0xFF65716D),
+                              fontSize: 11,
+                            ),
                           ),
                           SizedBox(height: 4),
                           Text(
                             'Carlos Lima (Esposo) • (11) 98765-4321',
-                            style: TextStyle(color: Color(0xFF092837), fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                              color: Color(0xFF092837),
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ],
                       ),
@@ -455,14 +526,20 @@ class AlunoProfileView extends StatelessWidget {
                         Expanded(
                           child: Text(
                             'Modalidades\nMusculação + Pilates',
-                            style: TextStyle(color: Color(0xFF092837), fontSize: 12),
+                            style: TextStyle(
+                              color: Color(0xFF092837),
+                              fontSize: 12,
+                            ),
                           ),
                         ),
 
                         Expanded(
                           child: Text(
                             'Matrícula\n#GB-2023-0482',
-                            style: TextStyle(color: Color(0xFF092837), fontSize: 12),
+                            style: TextStyle(
+                              color: Color(0xFF092837),
+                              fontSize: 12,
+                            ),
                           ),
                         ),
                       ],
@@ -503,30 +580,41 @@ class AlunoProfileView extends StatelessWidget {
 
                     const Divider(height: 1),
 
-                    SwitchListTile(
-                      value: true,
-                      onChanged: (value) {},
-                      activeColor: const Color(0xFF005A4F),
-                      secondary: const Icon(Icons.alarm),
-                      title: const Text('Lembrete diário de treino'),
+                    Material(
+                      color: Colors.transparent,
+                      child: SwitchListTile(
+                        value: true,
+                        onChanged: (value) {},
+                        activeThumbColor: const Color(0xFF005A4F),
+                        secondary: const Icon(Icons.alarm),
+                        title: const Text('Lembrete diário de treino'),
+                      ),
                     ),
 
                     const Divider(height: 1),
 
-                    SwitchListTile(
-                      value: true,
-                      onChanged: (value) {},
-                      activeColor: const Color(0xFF005A4F),
-                      secondary: const Icon(Icons.notifications_active_outlined),
-                      title: const Text('Avisos do Prof. Marcos'),
+                    Material(
+                      color: Colors.transparent,
+                      child: SwitchListTile(
+                        value: true,
+                        onChanged: (value) {},
+                        activeThumbColor: const Color(0xFF005A4F),
+                        secondary: const Icon(
+                          Icons.notifications_active_outlined,
+                        ),
+                        title: const Text('Avisos do Prof. Marcos'),
+                      ),
                     ),
 
                     const Divider(height: 1),
 
-                    const ListTile(
-                      leading: Icon(Icons.shield_outlined),
-                      title: Text('Privacidade & Termos'),
-                      trailing: Icon(Icons.chevron_right),
+                    const Material(
+                      color: Colors.transparent,
+                      child: ListTile(
+                        leading: Icon(Icons.shield_outlined),
+                        title: Text('Privacidade & Termos'),
+                        trailing: Icon(Icons.chevron_right),
+                      ),
                     ),
                   ],
                 ),
