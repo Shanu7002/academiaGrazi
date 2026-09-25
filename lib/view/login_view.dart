@@ -9,7 +9,9 @@ import 'package:academiagrazi/controller/users/register_instructor.dart';
 import 'package:academiagrazi/service/users/register.dart';
 
 class LoginView extends StatefulWidget {
-  const LoginView({super.key});
+  const LoginView({super.key, this.controller});
+
+  final LoginController? controller;
 
   @override
   State<LoginView> createState() => _LoginViewState();
@@ -27,7 +29,7 @@ class _LoginViewState extends State<LoginView> {
   @override
   void initState() {
     super.initState();
-    _controller = LoginController(LoginService());
+    _controller = widget.controller ?? LoginController(LoginService());
   }
 
   @override
