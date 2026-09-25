@@ -11,12 +11,7 @@ class AlunoProfileView extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        leading: IconButton(
-          onPressed: () {
-            Navigator.maybePop(context);
-          },
-          icon: const Icon(Icons.arrow_back, color: Color(0xFF005A4F)),
-        ),
+        automaticallyImplyLeading: false,
         title: const Text(
           'GRAZI BRAZ',
           style: TextStyle(color: Color(0xFF005A4F), fontSize: 22, fontWeight: FontWeight.bold),
