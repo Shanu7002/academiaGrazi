@@ -39,6 +39,7 @@ class RegisterInstructorController {
         name: name,
         email: email,
         type: UserType.instructor,
+        responsable: currentUser.id,
       );
 
       await _userService.registerUser(userModel);

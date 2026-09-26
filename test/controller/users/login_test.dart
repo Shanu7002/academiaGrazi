@@ -39,7 +39,12 @@ void main() {
 
   group("LoginController Tests sucessfully", () {
     test("Should return the user when credentials are valid", () async {
-      final userModel = UserModel(id: id, name: name, email: email);
+      final userModel = UserModel(
+        id: id,
+        name: name,
+        email: email,
+        responsable: 'test',
+      );
 
       when(
         mockLoginService.getUserProfile(id),
@@ -70,6 +75,7 @@ void main() {
           name: name,
           email: email,
           type: UserType.admin,
+          responsable: 'test',
         );
 
         when(
@@ -102,6 +108,7 @@ void main() {
           name: name,
           email: email,
           type: UserType.instructor,
+          responsable: 'test',
         );
 
         when(

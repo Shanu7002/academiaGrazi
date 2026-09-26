@@ -10,6 +10,7 @@ void main() {
           id: '123',
           name: 'Teste da Silva',
           email: 'test@test.com',
+          responsable: 'test',
         );
 
         expect(user.id, '123');
@@ -25,6 +26,7 @@ void main() {
         name: 'Admin',
         email: 'admin@test.com',
         type: UserType.admin,
+        responsable: 'test',
       );
 
       expect(admin.type, UserType.admin);
@@ -38,6 +40,7 @@ void main() {
           name: 'Teste da Silva',
           email: 'test@test.com',
           type: UserType.instructor,
+          responsable: 'test',
         );
 
         final Map<String, dynamic> json = user.toJson();

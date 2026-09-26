@@ -30,6 +30,7 @@ void main() {
           name: "Teste da Silva",
           email: "test@test.com",
           type: UserType.admin,
+          responsable: 'test',
         );
 
         await registerService.registerUser(user);
@@ -52,6 +53,7 @@ void main() {
         name: "Teste da Silva",
         email: "test@test.com",
         type: UserType.admin,
+        responsable: 'test',
       );
 
       when(mockDb.collection("users")).thenReturn(mockCollection);
