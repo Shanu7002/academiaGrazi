@@ -22,7 +22,7 @@ void main() {
     ignorePlaceholderImageError();
     await tester.pumpWidget(const MaterialApp(home: MainShell()));
 
-    expect(find.text('Painel do Aluno'), findsOneWidget);
+    expect(find.text('Grazi Braz'), findsOneWidget);
     expect(find.byType(NavigationBar), findsOneWidget);
 
     await tester.scrollUntilVisible(
@@ -57,8 +57,8 @@ void main() {
     await tester.tap(find.text('Início'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Painel do Aluno'), findsOneWidget);
-    expect(find.text('Treino do dia'), findsNothing);
+    expect(find.text('Grazi Braz'), findsOneWidget);
+    expect(find.text('Treino do dia'), findsOneWidget);
     expect(find.byType(NavigationBar), findsOneWidget);
   });
 

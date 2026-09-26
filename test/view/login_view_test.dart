@@ -47,7 +47,7 @@ void main() {
 
     expect(find.byType(LoginView), findsNothing);
     expect(find.byType(MainShell), findsOneWidget);
-    expect(find.text('Painel do Aluno'), findsOneWidget);
+    expect(find.text('Grazi Braz'), findsOneWidget);
     expect(
       Navigator.of(tester.element(find.byType(MainShell))).canPop(),
       isFalse,
