@@ -27,8 +27,10 @@ class _MainShellState extends State<MainShell> {
             child: Navigator(
               key: _homeNavigatorKey,
               onGenerateRoute:
-                  (settings) =>
-                      MaterialPageRoute(settings: settings, builder: (_) => const AlunoHomeView()),
+                  (settings) => MaterialPageRoute(
+                    settings: settings,
+                    builder: (_) => const AlunoHomeView(),
+                  ),
             ),
           ),
           const Center(child: Text('Treinos')),
@@ -55,7 +57,10 @@ class _MainShellState extends State<MainShell> {
             selectedIcon: Icon(Icons.home),
             label: 'Início',
           ),
-          NavigationDestination(icon: Icon(Icons.fitness_center), label: 'Treinos'),
+          NavigationDestination(
+            icon: Icon(Icons.fitness_center),
+            label: 'Treinos',
+          ),
           NavigationDestination(
             icon: Icon(Icons.insights_outlined),
             selectedIcon: Icon(Icons.insights),
