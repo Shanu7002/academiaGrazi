@@ -5,12 +5,14 @@ class UserModel {
   final String name;
   final String email;
   final UserType type;
+  String responsable;
 
-  const UserModel({
+  UserModel({
     required this.id,
     required this.name,
     required this.email,
     this.type = UserType.user,
+    required this.responsable,
   });
 
   Map<String, dynamic> toJson() => {
@@ -18,6 +20,7 @@ class UserModel {
     'email': email,
     'type': type.name,
     'createdAt': DateTime.now().toIso8601String(),
+    'responsable': responsable,
   };
 
   factory UserModel.fromJson(Map<String, dynamic> json, String documentId) {
@@ -26,6 +29,7 @@ class UserModel {
       name: json['name'] as String? ?? 'Unknown',
       email: json['email'] as String? ?? '',
       type: _parseUserType(json['type'] as String?),
+      responsable: json['responsable'] as String? ?? '',
     );
   }
 

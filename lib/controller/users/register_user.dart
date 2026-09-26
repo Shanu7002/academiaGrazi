@@ -38,6 +38,7 @@ class RegisterUserController {
         name: name,
         email: email,
         type: UserType.user,
+        responsable: currentUser.id,
       );
 
       await _userService.registerUser(userModel);

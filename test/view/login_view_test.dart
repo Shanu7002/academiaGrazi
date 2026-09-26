@@ -34,8 +34,12 @@ void main() {
     when(
       controller.loginUser(email: 'aluno@exemplo.com', password: 'senha123'),
     ).thenAnswer(
-      (_) async =>
-          UserModel(id: 'user-1', name: 'Aluno', email: 'aluno@exemplo.com'),
+      (_) async => UserModel(
+        id: 'user-1',
+        name: 'Aluno',
+        email: 'aluno@exemplo.com',
+        responsable: 'test',
+      ),
     );
 
     await pumpLogin(tester, controller);
