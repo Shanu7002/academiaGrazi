@@ -21,6 +21,7 @@ void main() {
     name: "Instructor",
     email: "instructor@test.com",
     type: UserType.instructor,
+    responsable: 'test',
   );
 
   setUp(() {
