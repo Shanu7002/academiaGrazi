@@ -1,8 +1,7 @@
 import 'package:academiagrazi/controller/users/login.dart';
 import 'package:academiagrazi/controller/users/register_user.dart';
 import 'package:academiagrazi/models/users/user_model.dart';
-import 'package:academiagrazi/service/users/login.dart';
-import 'package:academiagrazi/view/model/register_model.dart';
+import 'package:academiagrazi/view/model/register_mod.dart';
 import 'package:academiagrazi/view/tab_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';

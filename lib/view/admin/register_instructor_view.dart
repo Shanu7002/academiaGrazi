@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 import '../../controller/users/register_instructor.dart';
 import '../../service/users/register.dart';
-import '../model/register_model.dart';
+import '../model/register_mod.dart';
 
 class RegisterInstructorView extends StatelessWidget {
   final RegisterInstructorController controller;

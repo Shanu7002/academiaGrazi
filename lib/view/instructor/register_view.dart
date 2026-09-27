@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 import '../../controller/users/register_user.dart';
 import '../../service/users/register.dart';
-import '../model/register_model.dart';
+import '../model/register_mod.dart';
 
 class RegisterUserView extends StatelessWidget {
   final RegisterUserController controller;
