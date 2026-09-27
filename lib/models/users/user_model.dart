@@ -5,14 +5,14 @@ class UserModel {
   final String name;
   final String email;
   final UserType type;
-  String responsable;
+  String? responsable;
 
   UserModel({
     required this.id,
     required this.name,
     required this.email,
     this.type = UserType.user,
-    required this.responsable,
+    this.responsable,
   });
 
   Map<String, dynamic> toJson() => {

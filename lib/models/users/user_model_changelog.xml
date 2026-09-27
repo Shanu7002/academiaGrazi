@@ -30,4 +30,19 @@
             }
         </actualModel>
     </model>
+     <model>
+        <version>1.1</version>
+        <owner>Shanu7002</owner>
+        <description>Make responsable field optional</description>
+        <actualModel>
+            user = {
+                id: --gerado automaticamente  28-character strings (Base62)
+                name: string
+                email: string
+                type: UserType enum
+                createdAt: string (iso8601) - horario do dispositivo para nao se preocupar com ztimestamp convertion
+                responsable: string (optional) --id do criador, uuid gerado pelo firebase 28-character strings (Base62)
+            }
+        </actualModel>
+    </model>
 </changelog>

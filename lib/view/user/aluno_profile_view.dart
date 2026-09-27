@@ -1,10 +1,79 @@
+import 'package:academiagrazi/models/users/user_model.dart';
+import 'package:academiagrazi/service/users/register.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-class AlunoProfileView extends StatelessWidget {
-  const AlunoProfileView({super.key});
+class AlunoProfileView extends StatefulWidget {
+  final RegisterService userService;
+  final FirebaseAuth authInstance;
+
+  const AlunoProfileView({
+    super.key,
+    required this.userService,
+    required this.authInstance,
+  });
+
+  @override
+  State<AlunoProfileView> createState() => _AlunoProfileViewState();
+}
+
+class _AlunoProfileViewState extends State<AlunoProfileView> {
+  UserModel? _currentUser;
+  UserModel? _currentResponsable;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCurrentUser();
+  }
+
+  Future<void> _loadCurrentUser() async {
+    try {
+      final firebaseUser = widget.authInstance.currentUser;
+
+      if (firebaseUser == null) {
+        if (!mounted) return;
+        setState(() => _isLoading = false);
+        return;
+      }
+
+      final user = await widget.userService.getUserById(firebaseUser.uid);
+      UserModel? responsable;
+
+      if (user?.responsable != null && user!.responsable!.isNotEmpty) {
+        responsable = await widget.userService.getResponsableData(
+          user.responsable!,
+        );
+      }
+
+      if (!mounted) return;
+      setState(() {
+        _currentUser = user;
+        _currentResponsable = responsable;
+        _isLoading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _isLoading = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
+    if (_currentUser == null) {
+      return const Scaffold(
+        body: Center(child: Text('Usuário não encontrado.')),
+      );
+    }
+
+    final user = _currentUser!;
+    final responsable = _currentResponsable;
+
     return Scaffold(
       backgroundColor: const Color(0xFFF5FAFF),
 
@@ -36,7 +105,7 @@ class AlunoProfileView extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           child: Column(
             children: [
-              const _ProfileSummary(),
+              _ProfileSummary(user: user),
 
               const SizedBox(height: 16),
 
@@ -58,7 +127,8 @@ class AlunoProfileView extends StatelessWidget {
                       ),
                       label: 'PROFESSOR RESPONSÁVEL',
                       title:
-                          'Prof. Marcos', //Dado mockado, precisa ser alterado em produção para buscar o dado do banco
+                          responsable?.name ??
+                          'Professor não encontrado', //Dado mockado, precisa ser alterado em produção para buscar o dado do banco
                       subtitle:
                           'Especialista', //Dado mockado, precisa ser alterado em produção para buscar o dado do banco
                       subtitleColor: Color(0xFF277B60),
@@ -236,11 +306,13 @@ class AlunoProfileView extends StatelessWidget {
 }
 
 class _ProfileSummary extends StatelessWidget {
-  const _ProfileSummary();
+  const _ProfileSummary({required this.user});
+
+  final UserModel user;
 
   @override
   Widget build(BuildContext context) {
-    return const _SectionCard(
+    return _SectionCard(
       child: Row(
         children: [
           Stack(
@@ -260,7 +332,7 @@ class _ProfileSummary extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Ana Lima', //Dado mockado, precisa ser alterado em produção para buscar o dado do banco
+                  user.name, //Dado mockado, precisa ser alterado em produção para buscar o dado do banco
                   style: TextStyle(
                     color: Color(0xFF092837),
                     fontSize: 22,
@@ -269,7 +341,7 @@ class _ProfileSummary extends StatelessWidget {
                 ),
                 SizedBox(height: 4),
                 Text(
-                  'ana.lima@exemplo.com', //Dado mockado, precisa ser alterado em produção para buscar o dado do banco
+                  user.email, //Dado mockado, precisa ser alterado em produção para buscar o dado do banco
                   style: TextStyle(color: Color(0xFF65716D), fontSize: 12),
                 ),
                 SizedBox(height: 8),

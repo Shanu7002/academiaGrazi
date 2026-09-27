@@ -4,14 +4,26 @@ import 'package:academiagrazi/models/users/user_model.dart';
 import 'package:academiagrazi/service/users/login.dart';
 import 'package:academiagrazi/view/model/register_model.dart';
 import 'package:academiagrazi/view/tab_router.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:academiagrazi/controller/users/register_instructor.dart';
 import 'package:academiagrazi/service/users/register.dart';
 
 class LoginView extends StatefulWidget {
-  const LoginView({super.key, this.controller});
+  final LoginController loginController;
+  final RegisterUserController registerUserController;
+  final RegisterInstructorController registerInstructorController;
+  final RegisterService userService;
+  final FirebaseAuth authInstance;
 
-  final LoginController? controller;
+  const LoginView({
+    super.key,
+    required this.loginController,
+    required this.registerUserController,
+    required this.registerInstructorController,
+    required this.userService,
+    required this.authInstance,
+  });
 
   @override
   State<LoginView> createState() => _LoginViewState();
@@ -23,14 +35,6 @@ class _LoginViewState extends State<LoginView> {
 
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-
-  late final LoginController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = widget.controller ?? LoginController(LoginService());
-  }
 
   @override
   void dispose() {
@@ -52,79 +56,79 @@ class _LoginViewState extends State<LoginView> {
 
     setState(() => _isLoading = true);
 
-    // controller
-    final UserModel? user = await _controller.loginUser(
+    final UserModel? user = await widget.loginController.loginUser(
       email: email,
       password: password,
     );
 
     if (!mounted) return;
-
     setState(() => _isLoading = false);
 
     if (user != null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Usuario logado')));
       if (user.type == UserType.user) {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const MainShell()),
+          MaterialPageRoute(
+            builder:
+                (context) => MainShell(
+                  userService: widget.userService,
+                  authInstance: widget.authInstance,
+                ),
+          ),
+        );
+      } else if (user.type == UserType.instructor) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder:
+                (context) => RegisterView(
+                  userService: widget.userService,
+                  authInstance: widget.authInstance,
+                  registerFunction: ({
+                    required currentUser,
+                    required email,
+                    required name,
+                    required password,
+                    required passwordCheck,
+                  }) {
+                    return widget.registerUserController.registerUser(
+                      currentUser: currentUser,
+                      email: email,
+                      name: name,
+                      password: password,
+                      passwordCheck: passwordCheck,
+                    );
+                  },
+                ),
+          ),
         );
       } else {
-        if (user.type == UserType.instructor) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder:
-                  (context) => RegisterView(
-                    registerFunction: ({
-                      required currentUser,
-                      required email,
-                      required name,
-                      required password,
-                      required passwordCheck,
-                    }) {
-                      return RegisterUserController(
-                        RegisterService(),
-                      ).registerUser(
-                        currentUser: currentUser,
-                        email: email,
-                        name: name,
-                        password: password,
-                        passwordCheck: passwordCheck,
-                      );
-                    },
-                  ),
-            ),
-          );
-        } else {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder:
-                  (context) => RegisterView(
-                    registerFunction: ({
-                      required currentUser,
-                      required email,
-                      required name,
-                      required password,
-                      required passwordCheck,
-                    }) {
-                      return RegisterInstructorController(
-                        RegisterService(),
-                      ).registerInstructor(
-                        currentUser: currentUser,
-                        email: email,
-                        name: name,
-                        password: password,
-                        passwordCheck: passwordCheck,
-                      );
-                    },
-                  ),
-            ),
-          );
-        }
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder:
+                (context) => RegisterView(
+                  userService: widget.userService,
+                  authInstance: widget.authInstance,
+                  registerFunction: ({
+                    required currentUser,
+                    required email,
+                    required name,
+                    required password,
+                    required passwordCheck,
+                  }) {
+                    return widget.registerInstructorController
+                        .registerInstructor(
+                          currentUser: currentUser,
+                          email: email,
+                          name: name,
+                          password: password,
+                          passwordCheck: passwordCheck,
+                        );
+                  },
+                ),
+          ),
+        );
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(

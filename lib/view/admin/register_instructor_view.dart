@@ -1,15 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 import '../../controller/users/register_instructor.dart';
 import '../../service/users/register.dart';
 import '../model/register_model.dart';
 
 class RegisterInstructorView extends StatelessWidget {
-  const RegisterInstructorView({super.key});
+  final RegisterInstructorController controller;
+  final RegisterService userService;
+  final FirebaseAuth authInstance;
+
+  const RegisterInstructorView({
+    super.key,
+    required this.controller,
+    required this.userService,
+    required this.authInstance,
+  });
 
   @override
   Widget build(BuildContext context) {
     return RegisterView(
+      userService: userService,
+      authInstance: authInstance,
       registerFunction: ({
         required currentUser,
         required email,
@@ -17,9 +29,7 @@ class RegisterInstructorView extends StatelessWidget {
         required password,
         required passwordCheck,
       }) {
-        return RegisterInstructorController(
-          RegisterService(),
-        ).registerInstructor(
+        return controller.registerInstructor(
           currentUser: currentUser,
           email: email,
           name: name,

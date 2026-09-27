@@ -1,22 +1,52 @@
-import 'package:academiagrazi/controller/users/login.dart';
-import 'package:academiagrazi/models/users/user_model.dart';
-import 'package:academiagrazi/view/login_view.dart';
-import 'package:academiagrazi/view/tab_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-@GenerateMocks([LoginController])
+import 'package:academiagrazi/controller/users/login.dart';
+import 'package:academiagrazi/controller/users/register_user.dart';
+import 'package:academiagrazi/controller/users/register_instructor.dart';
+import 'package:academiagrazi/service/users/register.dart';
+import 'package:academiagrazi/models/users/user_model.dart';
+import 'package:academiagrazi/view/login_view.dart';
+import 'package:academiagrazi/view/tab_router.dart';
+
+@GenerateMocks([
+  LoginController,
+  RegisterUserController,
+  RegisterInstructorController,
+  RegisterService,
+  FirebaseAuth,
+])
 import 'login_view_test.mocks.dart';
 
 void main() {
-  Future<void> pumpLogin(
-    WidgetTester tester,
-    MockLoginController controller,
-  ) async {
+  late MockLoginController mockLoginController;
+  late MockRegisterUserController mockRegisterUserController;
+  late MockRegisterInstructorController mockRegisterInstructorController;
+  late MockRegisterService mockUserService;
+  late MockFirebaseAuth mockAuth;
+
+  setUp(() {
+    mockLoginController = MockLoginController();
+    mockRegisterUserController = MockRegisterUserController();
+    mockRegisterInstructorController = MockRegisterInstructorController();
+    mockUserService = MockRegisterService();
+    mockAuth = MockFirebaseAuth();
+  });
+
+  Future<void> pumpLogin(WidgetTester tester) async {
     await tester.pumpWidget(
-      MaterialApp(home: LoginView(controller: controller)),
+      MaterialApp(
+        home: LoginView(
+          loginController: mockLoginController,
+          registerUserController: mockRegisterUserController,
+          registerInstructorController: mockRegisterInstructorController,
+          userService: mockUserService,
+          authInstance: mockAuth,
+        ),
+      ),
     );
   }
 
@@ -30,19 +60,22 @@ void main() {
   testWidgets('substitui o login pela MainShell após login de aluno', (
     tester,
   ) async {
-    final controller = MockLoginController();
     when(
-      controller.loginUser(email: 'aluno@exemplo.com', password: 'senha123'),
+      mockLoginController.loginUser(
+        email: 'aluno@exemplo.com',
+        password: 'senha123',
+      ),
     ).thenAnswer(
       (_) async => UserModel(
         id: 'user-1',
         name: 'Aluno',
         email: 'aluno@exemplo.com',
         responsable: 'test',
+        type: UserType.user,
       ),
     );
 
-    await pumpLogin(tester, controller);
+    await pumpLogin(tester);
     await submitLogin(tester);
 
     expect(find.byType(LoginView), findsNothing);
@@ -52,18 +85,24 @@ void main() {
       Navigator.of(tester.element(find.byType(MainShell))).canPop(),
       isFalse,
     );
+
     verify(
-      controller.loginUser(email: 'aluno@exemplo.com', password: 'senha123'),
+      mockLoginController.loginUser(
+        email: 'aluno@exemplo.com',
+        password: 'senha123',
+      ),
     ).called(1);
   });
 
   testWidgets('mostra erro quando o login não retorna usuário', (tester) async {
-    final controller = MockLoginController();
     when(
-      controller.loginUser(email: 'aluno@exemplo.com', password: 'senha123'),
+      mockLoginController.loginUser(
+        email: 'aluno@exemplo.com',
+        password: 'senha123',
+      ),
     ).thenAnswer((_) async => null);
 
-    await pumpLogin(tester, controller);
+    await pumpLogin(tester);
     await submitLogin(tester);
 
     expect(find.text('Falha ao entrar. Tente novamente.'), findsOneWidget);
@@ -72,8 +111,7 @@ void main() {
   testWidgets('valida campos vazios e permite alternar a senha', (
     tester,
   ) async {
-    final controller = MockLoginController();
-    await pumpLogin(tester, controller);
+    await pumpLogin(tester);
 
     await tester.tap(find.text('ENTRAR'));
     await tester.pump();
@@ -86,8 +124,9 @@ void main() {
 
     await tester.tap(find.text('Esqueci minha senha'));
     await tester.pump();
+
     verifyNever(
-      controller.loginUser(
+      mockLoginController.loginUser(
         email: anyNamed('email'),
         password: anyNamed('password'),
       ),

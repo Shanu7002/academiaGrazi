@@ -1,9 +1,8 @@
-import 'package:academiagrazi/models/users/user_model.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-import '../../service/users/register.dart';
-import '../login_view.dart';
+import 'package:academiagrazi/models/users/user_model.dart';
+import 'package:academiagrazi/service/users/register.dart';
 
 typedef RegisterFunction =
     Future<bool> Function({
@@ -16,8 +15,15 @@ typedef RegisterFunction =
 
 class RegisterView extends StatefulWidget {
   final RegisterFunction registerFunction;
+  final RegisterService userService;
+  final FirebaseAuth authInstance;
 
-  const RegisterView({super.key, required this.registerFunction});
+  const RegisterView({
+    super.key,
+    required this.registerFunction,
+    required this.userService,
+    required this.authInstance,
+  });
 
   @override
   State<RegisterView> createState() => _RegisterViewState();
@@ -29,20 +35,9 @@ class _RegisterViewState extends State<RegisterView> {
   bool _isLoading = false;
 
   final TextEditingController _nameController = TextEditingController();
-
   final TextEditingController _emailController = TextEditingController();
-
   final TextEditingController _passwordController = TextEditingController();
-
   final TextEditingController _confirmController = TextEditingController();
-
-  late final RegisterService _userService;
-
-  @override
-  void initState() {
-    super.initState();
-    _userService = RegisterService();
-  }
 
   @override
   void dispose() {
@@ -73,7 +68,7 @@ class _RegisterViewState extends State<RegisterView> {
       return;
     }
 
-    final firebaseUser = FirebaseAuth.instance.currentUser;
+    final firebaseUser = widget.authInstance.currentUser;
 
     if (firebaseUser == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -82,7 +77,7 @@ class _RegisterViewState extends State<RegisterView> {
       return;
     }
 
-    final currentUser = await _userService.getUserById(firebaseUser.uid);
+    final currentUser = await widget.userService.getUserById(firebaseUser.uid);
 
     if (!mounted) return;
 
@@ -93,9 +88,7 @@ class _RegisterViewState extends State<RegisterView> {
       return;
     }
 
-    setState(() {
-      _isLoading = true;
-    });
+    setState(() => _isLoading = true);
 
     final bool success = await widget.registerFunction(
       currentUser: currentUser,
@@ -107,19 +100,16 @@ class _RegisterViewState extends State<RegisterView> {
 
     if (!mounted) return;
 
-    setState(() {
-      _isLoading = false;
-    });
+    setState(() => _isLoading = false);
 
     if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Cadastro realizado com sucesso!')),
       );
 
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const LoginView()),
-      );
+      if (Navigator.canPop(context)) {
+        Navigator.pop(context);
+      }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Falha ao cadastrar. Tente novamente.')),
@@ -235,12 +225,9 @@ class _RegisterViewState extends State<RegisterView> {
                 alignment: Alignment.centerRight,
                 child: ElevatedButton(
                   onPressed: () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const LoginView(),
-                      ),
-                    );
+                    if (Navigator.canPop(context)) {
+                      Navigator.pop(context);
+                    }
                   },
                   style: TextButton.styleFrom(
                     padding: EdgeInsets.zero,
