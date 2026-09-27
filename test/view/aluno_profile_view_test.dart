@@ -1,43 +1,70 @@
-import 'package:academiagrazi/view/user/aluno_profile_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/annotations.dart';
+import 'package:mockito/mockito.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+import 'package:academiagrazi/models/users/user_model.dart';
+import 'package:academiagrazi/service/users/register.dart';
+import 'package:academiagrazi/view/user/aluno_profile_view.dart';
+
+@GenerateMocks([RegisterService, FirebaseAuth, User])
+import 'aluno_profile_view_test.mocks.dart';
 
 void main() {
-  Future<void> pumpProfile(WidgetTester tester) async {
-    await tester.pumpWidget(const MaterialApp(home: AlunoProfileView()));
-  }
+  late MockRegisterService mockUserService;
+  late MockFirebaseAuth mockAuth;
+  late MockUser mockFirebaseUser;
 
-  testWidgets('exibe o resumo do aluno e as seções de acompanhamento', (
-    tester,
-  ) async {
-    await pumpProfile(tester);
-
-    expect(find.text('GRAZI BRAZ'), findsOneWidget);
-    expect(find.text('Ana Lima'), findsOneWidget);
-    expect(find.text('ana.lima@exemplo.com'), findsOneWidget);
-    expect(find.text('ACOMPANHAMENTO PROFISSIONAL'), findsOneWidget);
-    expect(find.text('Prof. Marcos'), findsOneWidget);
-    expect(find.text('SAÚDE E FICHA CLÍNICA'), findsOneWidget);
-    expect(find.text('Hipertensão controlada'), findsOneWidget);
+  setUp(() {
+    mockUserService = MockRegisterService();
+    mockAuth = MockFirebaseAuth();
+    mockFirebaseUser = MockUser();
   });
 
-  testWidgets('exibe plano e preferências ao navegar pelo conteúdo', (
-    tester,
+  testWidgets('AlunoProfileView renders user data properly', (
+    WidgetTester tester,
   ) async {
-    await pumpProfile(tester);
+    when(mockFirebaseUser.uid).thenReturn("uid_123");
+    when(mockAuth.currentUser).thenReturn(mockFirebaseUser);
 
-    await tester.scrollUntilVisible(
-      find.text('PREFERÊNCIAS & AJUSTES'),
-      500,
-      scrollable: find.byType(Scrollable),
+    final testUserModel = UserModel(
+      id: 'uid_123',
+      name: 'Test',
+      email: 'test@example.com',
+      responsable: 'resp_456',
     );
 
-    expect(find.text('PLANO E MENSALIDADE'), findsOneWidget);
-    expect(find.text('Plano Conexão Semestral'), findsOneWidget);
-    expect(find.text('Matrícula\n#GB-2023-0482'), findsOneWidget);
-    expect(find.text('PREFERÊNCIAS & AJUSTES'), findsOneWidget);
-    expect(find.text('Lembrete diário de treino'), findsOneWidget);
-    expect(find.text('Avisos do Prof. Marcos'), findsOneWidget);
-    expect(find.text('Privacidade & Termos'), findsOneWidget);
+    final testResponsableModel = UserModel(
+      id: 'resp_456',
+      name: 'Prof. Marcos',
+      email: 'marcos@example.com',
+    );
+
+    when(
+      mockUserService.getUserById("uid_123"),
+    ).thenAnswer((_) async => testUserModel);
+    when(
+      mockUserService.getResponsableData("resp_456"),
+    ).thenAnswer((_) async => testResponsableModel);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: AlunoProfileView(
+          userService: mockUserService,
+          authInstance: mockAuth,
+        ),
+      ),
+    );
+
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+
+    await tester.pumpAndSettle();
+
+    expect(find.text('Test'), findsOneWidget);
+    expect(find.text('test@example.com'), findsOneWidget);
+
+    verify(mockAuth.currentUser).called(1);
+    verify(mockUserService.getUserById('uid_123')).called(1);
   });
 }

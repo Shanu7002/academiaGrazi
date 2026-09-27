@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:academiagrazi/models/users/user_model.dart'; // Update to your project name
+import 'package:academiagrazi/models/users/user_model.dart';
 
 void main() {
   group('UserModel Tests |', () {
