@@ -1,6 +1,7 @@
 import 'package:academiagrazi/service/users/register.dart';
 import 'package:academiagrazi/view/user/aluno_home_view.dart';
 import 'package:academiagrazi/view/user/aluno_profile_view.dart';
+import 'package:academiagrazi/view/user/aluno_treinos_view.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -20,7 +21,9 @@ class MainShell extends StatefulWidget {
 
 class _MainShellState extends State<MainShell> {
   int _selectedIndex = 0;
+
   final _homeNavigatorKey = GlobalKey<NavigatorState>();
+  final _treinosNavigatorKey = GlobalKey<NavigatorState>();
 
   @override
   Widget build(BuildContext context) {
@@ -28,6 +31,9 @@ class _MainShellState extends State<MainShell> {
       body: IndexedStack(
         index: _selectedIndex,
         children: [
+          // =====================================================
+          // INÍCIO
+          // =====================================================
           NavigatorPopHandler<Object?>(
             enabled: _selectedIndex == 0,
             onPopWithResult: (_) {
@@ -35,15 +41,45 @@ class _MainShellState extends State<MainShell> {
             },
             child: Navigator(
               key: _homeNavigatorKey,
-              onGenerateRoute:
-                  (settings) => MaterialPageRoute(
-                    settings: settings,
-                    builder: (_) => const AlunoHomeView(),
-                  ),
+              onGenerateRoute: (settings) {
+                return MaterialPageRoute(
+                  settings: settings,
+                  builder: (_) => const AlunoHomeView(),
+                );
+              },
             ),
           ),
-          const Center(child: Text('Treinos')),
-          const Center(child: Text('Evolução')),
+
+          // =====================================================
+          // TREINOS
+          // =====================================================
+          NavigatorPopHandler<Object?>(
+            enabled: _selectedIndex == 1,
+            onPopWithResult: (_) {
+              _treinosNavigatorKey.currentState?.pop();
+            },
+            child: Navigator(
+              key: _treinosNavigatorKey,
+              onGenerateRoute: (settings) {
+                return MaterialPageRoute(
+                  settings: settings,
+                  builder: (_) => const AlunoTreinosView(),
+                );
+              },
+            ),
+          ),
+
+          // =====================================================
+          // EVOLUÇÃO
+          // =====================================================
+          const Center(
+            child: Text('Evolução'),
+          ),
+
+          // =====================================================
+          // PERFIL
+          // Mantém a implementação nova da sprint-3.
+          // =====================================================
           AlunoProfileView(
             userService: widget.userService,
             authInstance: widget.authInstance,
@@ -54,15 +90,29 @@ class _MainShellState extends State<MainShell> {
       bottomNavigationBar: NavigationBar(
         indicatorColor: const Color(0xFFFF7943),
         selectedIndex: _selectedIndex,
+
         onDestinationSelected: (index) {
+          // Ao tocar em Início, volta para a raiz da Home.
           if (index == 0) {
-            _homeNavigatorKey.currentState?.popUntil((route) => route.isFirst);
+            _homeNavigatorKey.currentState?.popUntil(
+              (route) => route.isFirst,
+            );
+          }
+
+          // Ao tocar em Treinos, volta para a lista de treinos.
+          if (index == 1) {
+            _treinosNavigatorKey.currentState?.popUntil(
+              (route) => route.isFirst,
+            );
           }
 
           if (index != _selectedIndex) {
-            setState(() => _selectedIndex = index);
+            setState(() {
+              _selectedIndex = index;
+            });
           }
         },
+
         destinations: const [
           NavigationDestination(
             icon: Icon(Icons.home_outlined),
