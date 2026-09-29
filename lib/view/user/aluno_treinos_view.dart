@@ -4,28 +4,20 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AlunoTreinosView extends StatefulWidget {
-  const AlunoTreinosView({
-    super.key,
-  });
+  const AlunoTreinosView({super.key});
 
   @override
-  State<AlunoTreinosView> createState() =>
-      _AlunoTreinosViewState();
+  State<AlunoTreinosView> createState() => _AlunoTreinosViewState();
 }
 
-class _AlunoTreinosViewState
-    extends State<AlunoTreinosView> {
+class _AlunoTreinosViewState extends State<AlunoTreinosView> {
   static const Color _background = Color(0xFFF0F5F9);
-
   static const Color _verde = Color(0xFF005A4F);
   static const Color _verdeEscuro = Color(0xFF003D36);
   static const Color _verdeTexto = Color(0xFF277B60);
-
   static const Color _laranja = Color(0xFFFF7943);
   static const Color _laranjaEscuro = Color(0xFFC94F25);
-
   static const Color _azulEscuro = Color(0xFF092837);
-
   static const Color _cinzaTexto = Color(0xFF64748B);
   static const Color _cinzaBorda = Color(0xFFE2E8F0);
   static const Color _cinzaClaro = Color(0xFFF8FAFC);
@@ -41,63 +33,32 @@ class _AlunoTreinosViewState
         child: Column(
           children: [
             _buildHeader(),
-
             Expanded(
               child: Center(
                 child: ConstrainedBox(
-                  constraints: const BoxConstraints(
-                    maxWidth: 420,
-                  ),
+                  constraints: const BoxConstraints(maxWidth: 420),
                   child: SingleChildScrollView(
                     physics: const BouncingScrollPhysics(),
-                    padding: const EdgeInsets.fromLTRB(
-                      16,
-                      16,
-                      16,
-                      32,
-                    ),
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
                     child: Column(
-                      crossAxisAlignment:
-                          CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         _buildCabecalhoTela(),
-
                         const SizedBox(height: 16),
-
                         _buildTipoTreinoTabs(),
-
                         const SizedBox(height: 16),
-
                         _buildCicloAtual(),
-
                         const SizedBox(height: 20),
-
                         _buildCabecalhoDivisao(),
-
                         const SizedBox(height: 16),
-
-                        _buildTreinoDestaque(
-                          TreinosFrontData.treinoA,
-                        ),
-
+                        _buildTreinoDestaque(TreinosFrontData.treinoA),
                         const SizedBox(height: 16),
-
-                        _buildTreinoConcluido(
-                          TreinosFrontData.treinoB,
-                        ),
-
+                        _buildTreinoConcluido(TreinosFrontData.treinoB),
                         const SizedBox(height: 16),
-
-                        _buildTreinoProgramado(
-                          TreinosFrontData.treinoC,
-                        ),
-
+                        _buildTreinoProgramado(TreinosFrontData.treinoC),
                         const SizedBox(height: 28),
-
                         _buildComplementares(),
-
                         const SizedBox(height: 20),
-
                         _buildHistoricoButton(),
                       ],
                     ),
@@ -111,23 +72,15 @@ class _AlunoTreinosViewState
     );
   }
 
-  // ============================================================
-  // HEADER
-  // ============================================================
-
   Widget _buildHeader() {
     return Container(
       height: 64,
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(
-        horizontal: 16,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       decoration: const BoxDecoration(
         color: Color(0xFFFDFEFE),
         border: Border(
-          bottom: BorderSide(
-            color: Color(0xCCE2E8F0),
-          ),
+          bottom: BorderSide(color: Color(0xCCE2E8F0)),
         ),
       ),
       child: Row(
@@ -137,9 +90,7 @@ class _AlunoTreinosViewState
             height: 40,
             child: IconButton(
               padding: EdgeInsets.zero,
-              onPressed: () {
-                Navigator.maybePop(context);
-              },
+              onPressed: () => Navigator.maybePop(context),
               icon: const Icon(
                 Icons.arrow_back_ios_new_rounded,
                 color: _verde,
@@ -147,18 +98,16 @@ class _AlunoTreinosViewState
               ),
             ),
           ),
-
           const SizedBox(width: 10),
-
           Expanded(
             child: Column(
-              mainAxisAlignment:
-                  MainAxisAlignment.center,
-              crossAxisAlignment:
-                  CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   'GRAZI BRAZ',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: GoogleFonts.anton(
                     color: _verde,
                     fontSize: 24,
@@ -166,11 +115,11 @@ class _AlunoTreinosViewState
                     height: 1,
                   ),
                 ),
-
                 const SizedBox(height: 3),
-
                 Text(
                   'METODOLOGIA & PERFORMANCE',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: GoogleFonts.inter(
                     color: _cinzaTexto,
                     fontSize: 10,
@@ -181,7 +130,6 @@ class _AlunoTreinosViewState
               ],
             ),
           ),
-
           Stack(
             clipBehavior: Clip.none,
             children: [
@@ -197,7 +145,6 @@ class _AlunoTreinosViewState
                   ),
                 ),
               ),
-
               Positioned(
                 right: 8,
                 top: 7,
@@ -207,18 +154,13 @@ class _AlunoTreinosViewState
                   decoration: BoxDecoration(
                     color: _laranja,
                     shape: BoxShape.circle,
-                    border: Border.all(
-                      color: Colors.white,
-                      width: 2,
-                    ),
+                    border: Border.all(color: Colors.white, width: 2),
                   ),
                 ),
               ),
             ],
           ),
-
           const SizedBox(width: 6),
-
           Container(
             width: 36,
             height: 36,
@@ -241,172 +183,139 @@ class _AlunoTreinosViewState
     );
   }
 
-  // ============================================================
-  // CABEÇALHO
-  // ============================================================
-
   Widget _buildCabecalhoTela() {
-    return Column(
-      crossAxisAlignment:
-          CrossAxisAlignment.start,
-      children: [
-        Row(
-          crossAxisAlignment:
-              CrossAxisAlignment.center,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final compact = constraints.maxWidth < 340;
+
+        final titulo = Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment:
-                    CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'ALUNO: '
-                    '${TreinosFrontData.alunoNome.toUpperCase()}',
-                    style: GoogleFonts.inter(
-                      color: _verdeTexto,
-                      fontSize: 11,
-                      fontWeight:
-                          FontWeight.w700,
-                      letterSpacing: 0.55,
-                    ),
-                  ),
-
-                  const SizedBox(height: 1),
-
-                  Text(
-                    'MEUS TREINOS',
-                    style:
-                        GoogleFonts.barlowCondensed(
-                      color: _azulEscuro,
-                      fontSize: 30,
-                      fontWeight:
-                          FontWeight.w800,
-                      letterSpacing: -0.75,
-                      height: 1.25,
-                    ),
-                  ),
-                ],
+            Text(
+              'ALUNO: ${TreinosFrontData.alunoNome.toUpperCase()}',
+              style: GoogleFonts.inter(
+                color: _verdeTexto,
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.55,
               ),
             ),
-
-            Container(
-              padding:
-                  const EdgeInsets.symmetric(
-                horizontal: 12,
-                vertical: 5,
-              ),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius:
-                    BorderRadius.circular(999),
-                border: Border.all(
-                  color:
-                      const Color(0xFF99F6E4),
-                ),
-              ),
-              child: Row(
-                mainAxisSize:
-                    MainAxisSize.min,
-                children: [
-                  Container(
-                    width: 8,
-                    height: 8,
-                    decoration:
-                        const BoxDecoration(
-                      color: _laranja,
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-
-                  const SizedBox(width: 6),
-
-                  Text(
-                    TreinosFrontData.semana,
-                    style: GoogleFonts.inter(
-                      color: _verde,
-                      fontSize: 12,
-                      fontWeight:
-                          FontWeight.w600,
-                    ),
-                  ),
-                ],
+            const SizedBox(height: 1),
+            Text(
+              'MEUS TREINOS',
+              style: GoogleFonts.barlowCondensed(
+                color: _azulEscuro,
+                fontSize: 30,
+                fontWeight: FontWeight.w800,
+                letterSpacing: -0.75,
+                height: 1.25,
               ),
             ),
           ],
-        ),
+        );
 
-        const SizedBox(height: 4),
-
-        Row(
-          children: [
-            const Icon(
-              Icons.edit_note_rounded,
-              color: _cinzaTexto,
-              size: 16,
-            ),
-
-            const SizedBox(width: 4),
-
-            Expanded(
-              child: Text(
-                'Prescrição '
-                '${TreinosFrontData.professorNome} '
-                '• ${TreinosFrontData.ultimaAtualizacao}',
+        final semana = Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(999),
+            border: Border.all(color: const Color(0xFF99F6E4)),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 8,
+                height: 8,
+                decoration: const BoxDecoration(
+                  color: _laranja,
+                  shape: BoxShape.circle,
+                ),
+              ),
+              const SizedBox(width: 6),
+              Text(
+                TreinosFrontData.semana,
                 style: GoogleFonts.inter(
-                  color: _cinzaTexto,
+                  color: _verde,
                   fontSize: 12,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
+            ],
+          ),
+        );
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (compact) ...[
+              titulo,
+              const SizedBox(height: 8),
+              semana,
+            ] else
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Expanded(child: titulo),
+                  const SizedBox(width: 8),
+                  semana,
+                ],
+              ),
+            const SizedBox(height: 4),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Icon(
+                  Icons.edit_note_rounded,
+                  color: _cinzaTexto,
+                  size: 16,
+                ),
+                const SizedBox(width: 4),
+                Expanded(
+                  child: Text(
+                    'Prescrição ${TreinosFrontData.professorNome} '
+                    '• ${TreinosFrontData.ultimaAtualizacao}',
+                    style: GoogleFonts.inter(
+                      color: _cinzaTexto,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
-        ),
-      ],
+        );
+      },
     );
   }
-
-  // ============================================================
-  // TABS
-  // ============================================================
 
   Widget _buildTipoTreinoTabs() {
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
         color: const Color(0xCCE2E8F0),
-        borderRadius:
-            BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
         children: [
           Expanded(
             child: _buildTab(
-              selecionado:
-                  _fichaPresencialSelecionada,
-              icone:
-                  Icons.fitness_center_rounded,
+              selecionado: _fichaPresencialSelecionada,
+              icone: Icons.fitness_center_rounded,
               titulo: 'FICHA PRESENCIAL',
               onTap: () {
-                setState(() {
-                  _fichaPresencialSelecionada =
-                      true;
-                });
+                setState(() => _fichaPresencialSelecionada = true);
               },
             ),
           ),
-
           const SizedBox(width: 4),
-
           Expanded(
             child: _buildTab(
-              selecionado:
-                  !_fichaPresencialSelecionada,
+              selecionado: !_fichaPresencialSelecionada,
               icone: Icons.home_outlined,
               titulo: 'TREINAR EM CASA',
               onTap: () {
-                setState(() {
-                  _fichaPresencialSelecionada =
-                      false;
-                });
+                setState(() => _fichaPresencialSelecionada = false);
               },
             ),
           ),
@@ -422,45 +331,32 @@ class _AlunoTreinosViewState
     required VoidCallback onTap,
   }) {
     return Material(
-      color: selecionado
-          ? Colors.white
-          : Colors.transparent,
-      borderRadius:
-          BorderRadius.circular(12),
+      color: selecionado ? Colors.white : Colors.transparent,
+      borderRadius: BorderRadius.circular(12),
       child: InkWell(
-        borderRadius:
-            BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(12),
         onTap: onTap,
         child: SizedBox(
           height: 40,
           child: Row(
-            mainAxisAlignment:
-                MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
                 icone,
-                size: 17,
-                color: selecionado
-                    ? _verde
-                    : _cinzaTexto,
+                size: 16,
+                color: selecionado ? _verde : _cinzaTexto,
               ),
-
-              const SizedBox(width: 8),
-
+              const SizedBox(width: 6),
               Flexible(
                 child: Text(
                   titulo,
-                  overflow:
-                      TextOverflow.ellipsis,
-                  style:
-                      GoogleFonts.barlowCondensed(
-                    color: selecionado
-                        ? _verde
-                        : _cinzaTexto,
-                    fontSize: 14,
-                    fontWeight:
-                        FontWeight.w700,
-                    letterSpacing: 0.35,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.inter(
+                    color: selecionado ? _verde : _cinzaTexto,
+                    fontSize: 10,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0.25,
                   ),
                 ),
               ),
@@ -471,126 +367,80 @@ class _AlunoTreinosViewState
     );
   }
 
-  // ============================================================
-  // CICLO ATUAL
-  // ============================================================
-
   Widget _buildCicloAtual() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(17),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius:
-            BorderRadius.circular(16),
-        border: Border.all(
-          color: const Color(0xE6E2E8F0),
-        ),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: _cinzaBorda),
         boxShadow: const [
           BoxShadow(
-            color: Color(0x0D000000),
-            blurRadius: 2,
-            offset: Offset(0, 1),
+            color: Color(0x0A0F172A),
+            blurRadius: 14,
+            offset: Offset(0, 4),
           ),
         ],
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            crossAxisAlignment:
-                CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Expanded(
                 child: Column(
-                  crossAxisAlignment:
-                      CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(
-                      padding:
-                          const EdgeInsets
-                              .symmetric(
-                        horizontal: 8,
-                        vertical: 3,
-                      ),
-                      decoration:
-                          BoxDecoration(
-                        color:
-                            const Color(
-                          0x66FFD8C8,
-                        ),
-                        borderRadius:
-                            BorderRadius.circular(
-                          4,
-                        ),
-                      ),
-                      child: Text(
-                        'CICLO ATUAL',
-                        style:
-                            GoogleFonts.inter(
-                          color: _laranja,
-                          fontSize: 10,
-                          fontWeight:
-                              FontWeight.w700,
-                          letterSpacing: 1,
-                        ),
+                    Text(
+                      'CICLO ATUAL',
+                      style: GoogleFonts.inter(
+                        color: _verdeTexto,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 0.5,
                       ),
                     ),
-
-                    const SizedBox(height: 4),
-
+                    const SizedBox(height: 3),
                     Text(
-                      TreinosFrontData
-                          .cicloNome,
-                      style: GoogleFonts
-                          .barlowCondensed(
+                      TreinosFrontData.cicloNome,
+                      style: GoogleFonts.barlowCondensed(
                         color: _azulEscuro,
                         fontSize: 20,
-                        fontWeight:
-                            FontWeight.w700,
+                        fontWeight: FontWeight.w700,
                         letterSpacing: -0.5,
                       ),
                     ),
                   ],
                 ),
               ),
-
+              const SizedBox(width: 10),
               Container(
-                padding:
-                    const EdgeInsets.symmetric(
+                padding: const EdgeInsets.symmetric(
                   horizontal: 10,
                   vertical: 5,
                 ),
                 decoration: BoxDecoration(
-                  color:
-                      const Color(0xFFECFDF5),
-                  borderRadius:
-                      BorderRadius.circular(999),
-                  border: Border.all(
-                    color:
-                        const Color(0xFFA7F3D0),
-                  ),
+                  color: const Color(0xFFECFDF5),
+                  borderRadius: BorderRadius.circular(999),
+                  border: Border.all(color: const Color(0xFFA7F3D0)),
                 ),
                 child: Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     const Icon(
                       Icons.check_circle,
-                      color:
-                          Color(0xFF047857),
+                      color: Color(0xFF047857),
                       size: 13,
                     ),
-
                     const SizedBox(width: 4),
-
                     Text(
                       'Em dia',
                       style: GoogleFonts.inter(
-                        color:
-                            const Color(
-                          0xFF047857,
-                        ),
+                        color: const Color(0xFF047857),
                         fontSize: 11,
-                        fontWeight:
-                            FontWeight.w600,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   ],
@@ -598,48 +448,34 @@ class _AlunoTreinosViewState
               ),
             ],
           ),
-
           const SizedBox(height: 12),
-
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Expanded(
                 child: _buildMetrica(
-                  icon:
-                      Icons.event_repeat_rounded,
+                  icon: Icons.event_repeat_rounded,
                   titulo: 'FREQ.',
-                  valor:
-                      TreinosFrontData.frequencia,
-                  legenda: TreinosFrontData
-                      .frequenciaLegenda,
+                  valor: TreinosFrontData.frequencia,
+                  legenda: TreinosFrontData.frequenciaLegenda,
                 ),
               ),
-
               const SizedBox(width: 8),
-
               Expanded(
                 child: _buildMetrica(
-                  icon:
-                      Icons.access_time_rounded,
+                  icon: Icons.access_time_rounded,
                   titulo: 'DURAÇÃO',
-                  valor: TreinosFrontData
-                      .duracaoMedia,
-                  legenda: TreinosFrontData
-                      .duracaoLegenda,
+                  valor: TreinosFrontData.duracaoMedia,
+                  legenda: TreinosFrontData.duracaoLegenda,
                 ),
               ),
-
               const SizedBox(width: 8),
-
               Expanded(
                 child: _buildMetrica(
-                  icon:
-                      Icons.event_available_outlined,
+                  icon: Icons.event_available_outlined,
                   titulo: 'VALIDADE',
-                  valor:
-                      TreinosFrontData.validade,
-                  legenda: TreinosFrontData
-                      .validadeLegenda,
+                  valor: TreinosFrontData.validade,
+                  legenda: TreinosFrontData.validadeLegenda,
                   destaque: true,
                 ),
               ),
@@ -658,14 +494,11 @@ class _AlunoTreinosViewState
     bool destaque = false,
   }) {
     return Container(
-      height: 76,
+      constraints: const BoxConstraints(minHeight: 76),
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: destaque
-            ? const Color(0x1AFF7943)
-            : _cinzaClaro,
-        borderRadius:
-            BorderRadius.circular(12),
+        color: destaque ? const Color(0x1AFF7943) : _cinzaClaro,
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: destaque
               ? const Color(0x33FF7943)
@@ -673,57 +506,50 @@ class _AlunoTreinosViewState
         ),
       ),
       child: Column(
-        crossAxisAlignment:
-            CrossAxisAlignment.start,
-        mainAxisAlignment:
-            MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
               Icon(
                 icon,
                 size: 13,
-                color: destaque
-                    ? _laranjaEscuro
-                    : _verdeTexto,
+                color: destaque ? _laranjaEscuro : _verdeTexto,
               ),
-
               const SizedBox(width: 4),
-
-              Flexible(
+              Expanded(
                 child: Text(
                   titulo,
-                  overflow:
-                      TextOverflow.ellipsis,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: GoogleFonts.inter(
                     color: _cinzaTexto,
                     fontSize: 9,
-                    fontWeight:
-                        FontWeight.w600,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
             ],
           ),
-
-          const SizedBox(height: 1),
-
+          const SizedBox(height: 2),
           Text(
             valor,
-            style:
-                GoogleFonts.barlowCondensed(
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: GoogleFonts.barlowCondensed(
               color: _azulEscuro,
               fontSize: 18,
               fontWeight: FontWeight.w700,
             ),
           ),
-
           Text(
             legenda,
+            maxLines: 2,
             overflow: TextOverflow.ellipsis,
             style: GoogleFonts.inter(
               color: _cinzaTexto,
               fontSize: 9,
+              height: 1.2,
             ),
           ),
         ],
@@ -731,539 +557,356 @@ class _AlunoTreinosViewState
     );
   }
 
-  // ============================================================
-  // DIVISÃO
-  // ============================================================
-
   Widget _buildCabecalhoDivisao() {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         Expanded(
           child: Text(
             'DIVISÃO DE FICHAS',
-            style:
-                GoogleFonts.barlowCondensed(
+            style: GoogleFonts.barlowCondensed(
               color: _azulEscuro,
-              fontSize: 21,
-              fontWeight: FontWeight.w700,
-              letterSpacing: 0.3,
+              fontSize: 23,
+              fontWeight: FontWeight.w800,
             ),
           ),
         ),
-
         Text(
           '3 rotinas prescritas',
           style: GoogleFonts.inter(
             color: _cinzaTexto,
-            fontSize: 11,
+            fontSize: 10,
+            fontWeight: FontWeight.w500,
           ),
         ),
       ],
     );
   }
 
-  // ============================================================
-  // TREINO A
-  // ============================================================
-
-  Widget _buildTreinoDestaque(
-    TreinoUi treino,
-  ) {
+  Widget _buildTreinoDestaque(TreinoUi treino) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(
-        20,
-        30,
-        18,
-        18,
-      ),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Colors.white,
-            Colors.white,
-            Color(0x66ECFDF5),
-          ],
-        ),
-        borderRadius:
-            BorderRadius.circular(16),
-        border: Border.all(
-          color: const Color(
-            0x66005A4F,
-          ),
-          width: 2,
-        ),
+        borderRadius: BorderRadius.circular(16),
         boxShadow: const [
           BoxShadow(
-            color: Color(0x1A000000),
-            blurRadius: 6,
-            offset: Offset(0, 4),
+            color: Color(0x140F172A),
+            blurRadius: 18,
+            offset: Offset(0, 6),
           ),
         ],
       ),
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          Positioned(
-            left: -20,
-            top: -30,
-            bottom: -18,
-            child: Container(
-              width: 6,
-              color: _laranjaEscuro,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [Colors.white, Color(0xFFF2FBF8)],
+                  ),
+                  border: Border.all(
+                    color: const Color(0x66005A4F),
+                    width: 2,
+                  ),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+              ),
             ),
-          ),
-
-          Column(
-            crossAxisAlignment:
-                CrossAxisAlignment.start,
-            children: [
-              Row(
+            Positioned(
+              left: 0,
+              top: 0,
+              bottom: 0,
+              child: Container(width: 6, color: _laranjaEscuro),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(18, 16, 16, 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Flexible(
-                    child: Container(
-                      padding:
-                          const EdgeInsets
-                              .symmetric(
-                        horizontal: 12,
-                        vertical: 5,
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 5,
+                            ),
+                            decoration: BoxDecoration(
+                              color: _laranja,
+                              borderRadius: BorderRadius.circular(999),
+                            ),
+                            child: Text(
+                              treino.statusTexto,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: GoogleFonts.inter(
+                                color: Colors.white,
+                                fontSize: 9,
+                                fontWeight: FontWeight.w800,
+                                letterSpacing: 0.25,
+                              ),
+                            ),
+                          ),
+                        ),
                       ),
-                      decoration:
-                          BoxDecoration(
-                        color: _laranja,
-                        borderRadius:
-                            BorderRadius.circular(
-                          999,
+                      const SizedBox(width: 8),
+                      _duracaoPill(treino.duracaoMinutos),
+                    ],
+                  ),
+                  const SizedBox(height: 14),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _letraTreino(treino.letra, _verdeEscuro),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          treino.nome,
+                          style: GoogleFonts.barlowCondensed(
+                            color: _azulEscuro,
+                            fontSize: 24,
+                            fontWeight: FontWeight.w800,
+                            height: 1.05,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    treino.descricao,
+                    style: GoogleFonts.inter(
+                      color: _cinzaTexto,
+                      fontSize: 12,
+                      height: 1.4,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Wrap(
+                    spacing: 6,
+                    runSpacing: 6,
+                    children: [
+                      _badge(
+                        '${treino.quantidadeExercicios} exercícios',
+                        background: const Color(0xFFE7F7F1),
+                        foreground: _verde,
+                      ),
+                      _badge(
+                        treino.nivel,
+                        background: const Color(0xFFF1F5F9),
+                        foreground: const Color(0xFF475569),
+                      ),
+                      _badge(
+                        treino.estrategia,
+                        background: const Color(0xFFFFEEE7),
+                        foreground: _laranjaEscuro,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 14),
+                  _buildResumoExercicios(treino, destaque: true),
+                  const SizedBox(height: 14),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 46,
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFFFF7943), Color(0xFFC94F25)],
+                        ),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: ElevatedButton(
+                        onPressed: () => _abrirTreino(treino),
+                        style: ElevatedButton.styleFrom(
+                          elevation: 0,
+                          backgroundColor: Colors.transparent,
+                          shadowColor: Colors.transparent,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: Text(
+                          'INICIAR TREINO ${treino.letra} AGORA',
+                          style: GoogleFonts.inter(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: 0.2,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 42,
+                    child: ElevatedButton(
+                      onPressed: () => _abrirTreino(treino),
+                      style: ElevatedButton.styleFrom(
+                        elevation: 0,
+                        backgroundColor: const Color(0xFFE8F6F2),
+                        foregroundColor: _verde,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
                         ),
                       ),
                       child: Text(
-                        treino.statusTexto,
-                        style:
-                            GoogleFonts.inter(
-                          color: Colors.white,
+                        'VER FICHA DETALHADA',
+                        style: GoogleFonts.inter(
                           fontSize: 11,
-                          fontWeight:
-                              FontWeight.w700,
-                          letterSpacing: 0.4,
+                          fontWeight: FontWeight.w800,
                         ),
                       ),
                     ),
                   ),
-
-                  const Spacer(),
-
-                  _smallPill(
-                    icon:
-                        Icons.schedule_rounded,
-                    text:
-                        '${treino.duracaoMinutos} min',
-                  ),
                 ],
               ),
-
-              const SizedBox(height: 14),
-
-              Row(
-                crossAxisAlignment:
-                    CrossAxisAlignment.start,
-                children: [
-                  _letraTreino(
-                    treino.letra,
-                    _verdeEscuro,
-                  ),
-
-                  const SizedBox(width: 8),
-
-                  Expanded(
-                    child: Text(
-                      treino.nome,
-                      style: GoogleFonts
-                          .barlowCondensed(
-                        color: _azulEscuro,
-                        fontSize: 24,
-                        fontWeight:
-                            FontWeight.w800,
-                        letterSpacing: -0.6,
-                        height: 1.12,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 5),
-
-              Text(
-                treino.descricao,
-                style: GoogleFonts.inter(
-                  color: _cinzaTexto,
-                  fontSize: 12,
-                  height: 1.6,
-                ),
-              ),
-
-              const SizedBox(height: 12),
-
-              Wrap(
-                spacing: 8,
-                runSpacing: 6,
-                children: [
-                  _badge(
-                    Icons.fitness_center,
-                    '${treino.quantidadeExercicios} exercícios',
-                    const Color(0xFFDDF5F2),
-                    _verdeEscuro,
-                  ),
-                  _badge(
-                    Icons.speed_rounded,
-                    treino.nivel,
-                    const Color(0xFFF1F5F9),
-                    _azulEscuro,
-                  ),
-                  _badge(
-                    Icons.trending_up,
-                    treino.estrategia,
-                    const Color(0xFFFFF7ED),
-                    _laranjaEscuro,
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 14),
-
-              _buildResumoExercicios(
-                treino,
-                destaque: true,
-              ),
-
-              const SizedBox(height: 14),
-
-              SizedBox(
-                width: double.infinity,
-                height: 48,
-                child: ElevatedButton.icon(
-                  onPressed: () {
-                    _abrirTreino(treino);
-                  },
-                  icon: const Icon(
-                    Icons.play_arrow_rounded,
-                  ),
-                  label: Text(
-                    'INICIAR TREINO ${treino.letra} AGORA',
-                    style: GoogleFonts
-                        .barlowCondensed(
-                      fontSize: 18,
-                      fontWeight:
-                          FontWeight.w700,
-                      letterSpacing: 0.9,
-                    ),
-                  ),
-                  style:
-                      ElevatedButton.styleFrom(
-                    backgroundColor:
-                        _laranja,
-                    foregroundColor:
-                        Colors.white,
-                    elevation: 2,
-                    shape:
-                        RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.circular(
-                        12,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 8),
-
-              SizedBox(
-                width: double.infinity,
-                height: 40,
-                child: OutlinedButton.icon(
-                  onPressed: () {
-                    _abrirTreino(treino);
-                  },
-                  icon: const Icon(
-                    Icons.visibility_outlined,
-                    size: 17,
-                  ),
-                  label: Text(
-                    'VER FICHA DETALHADA',
-                    style: GoogleFonts
-                        .barlowCondensed(
-                      fontSize: 14,
-                      fontWeight:
-                          FontWeight.w700,
-                      letterSpacing: 0.35,
-                    ),
-                  ),
-                  style:
-                      OutlinedButton.styleFrom(
-                    foregroundColor: _verde,
-                    backgroundColor:
-                        const Color(
-                      0xFFF0FDFA,
-                    ),
-                    side: const BorderSide(
-                      color:
-                          Color(0xB399F6E4),
-                    ),
-                    shape:
-                        RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.circular(
-                        12,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  // ============================================================
-  // TREINO B
-  // ============================================================
-
-  Widget _buildTreinoConcluido(
-    TreinoUi treino,
-  ) {
+  Widget _buildTreinoConcluido(TreinoUi treino) {
     return _buildTreinoSecundario(
       treino: treino,
-      statusColor:
-          const Color(0xFF065F46),
-      statusBackground:
-          const Color(0xFFECFDF5),
-      statusBorder:
-          const Color(0xFFA7F3D0),
-      letraColor:
-          const Color(0xFF334155),
-      secundarioTexto:
-          treino.estrategia,
-      segundoBotao:
-          'REFAZER TREINO',
+      statusBackground: const Color(0xFFECFDF5),
+      statusForeground: const Color(0xFF047857),
+      letraColor: const Color(0xFF475569),
+      segundoBadge: treino.estrategia,
+      primeiroBotao: 'VER FICHA',
+      segundoBotao: 'REFAZER TREINO',
     );
   }
 
-  // ============================================================
-  // TREINO C
-  // ============================================================
-
-  Widget _buildTreinoProgramado(
-    TreinoUi treino,
-  ) {
+  Widget _buildTreinoProgramado(TreinoUi treino) {
     return _buildTreinoSecundario(
       treino: treino,
-      statusColor:
-          const Color(0xFF1D4ED8),
-      statusBackground:
-          const Color(0xFFEFF6FF),
-      statusBorder:
-          const Color(0xFFBFDBFE),
-      letraColor:
-          const Color(0xFF115E59),
+      statusBackground: const Color(0xFFEFF6FF),
+      statusForeground: const Color(0xFF1D4ED8),
+      letraColor: const Color(0xFF115E59),
+      primeiroBotao: 'VER FICHA COMPLETA',
     );
   }
 
   Widget _buildTreinoSecundario({
     required TreinoUi treino,
-    required Color statusColor,
     required Color statusBackground,
-    required Color statusBorder,
+    required Color statusForeground,
     required Color letraColor,
-    String? secundarioTexto,
+    required String primeiroBotao,
     String? segundoBotao,
+    String? segundoBadge,
   }) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(17),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius:
-            BorderRadius.circular(16),
-        border: Border.all(
-          color: _cinzaBorda,
-        ),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x0D000000),
-            blurRadius: 2,
-            offset: Offset(0, 1),
-          ),
-        ],
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: _cinzaBorda),
       ),
       child: Column(
-        crossAxisAlignment:
-            CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Flexible(
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 5,
-                  ),
-                  decoration:
-                      BoxDecoration(
-                    color:
-                        statusBackground,
-                    borderRadius:
-                        BorderRadius.circular(
-                      999,
-                    ),
-                    border: Border.all(
-                      color: statusBorder,
-                    ),
-                  ),
-                  child: Text(
-                    treino.statusTexto,
-                    overflow:
-                        TextOverflow.ellipsis,
-                    style: GoogleFonts.inter(
-                      color: statusColor,
-                      fontSize: 11,
-                      fontWeight:
-                          FontWeight.w700,
-                    ),
-                  ),
-                ),
-              ),
-
-              if (secundarioTexto !=
-                  null) ...[
-                const SizedBox(width: 8),
-
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 3,
-                  ),
-                  decoration:
-                      BoxDecoration(
-                    color:
-                        const Color(
-                      0xFFF1F5F9,
-                    ),
-                    borderRadius:
-                        BorderRadius.circular(
-                      6,
-                    ),
-                  ),
-                  child: Text(
-                    secundarioTexto,
-                    style: GoogleFonts.inter(
-                      color: _cinzaTexto,
-                      fontSize: 11,
-                      fontWeight:
-                          FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ],
-
-              if (treino.status ==
-                  TreinoStatusUi
-                      .programado) ...[
-                const Spacer(),
-
-                Text(
-                  '${treino.duracaoMinutos} min',
-                  style: GoogleFonts.inter(
-                    color: _cinzaTexto,
-                    fontSize: 12,
-                    fontWeight:
-                        FontWeight.w600,
-                  ),
-                ),
-              ],
-            ],
-          ),
-
-          const SizedBox(height: 12),
-
-          Row(
-            crossAxisAlignment:
-                CrossAxisAlignment.start,
-            children: [
-              _letraTreino(
-                treino.letra,
-                letraColor,
-              ),
-
-              const SizedBox(width: 8),
-
               Expanded(
-                child: Text(
-                  treino.nome,
-                  style: GoogleFonts
-                      .barlowCondensed(
-                    color: _azulEscuro,
-                    fontSize: 20,
-                    fontWeight:
-                        FontWeight.w700,
-                    height: 1.15,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 9,
+                      vertical: 5,
+                    ),
+                    decoration: BoxDecoration(
+                      color: statusBackground,
+                      borderRadius: BorderRadius.circular(999),
+                    ),
+                    child: Text(
+                      treino.statusTexto,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.inter(
+                        color: statusForeground,
+                        fontSize: 9,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
                   ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              _duracaoPill(treino.duracaoMinutos),
+            ],
+          ),
+          const SizedBox(height: 14),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _letraTreino(treino.letra, letraColor),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      treino.nome,
+                      style: GoogleFonts.barlowCondensed(
+                        color: _azulEscuro,
+                        fontSize: 21,
+                        fontWeight: FontWeight.w800,
+                        height: 1.08,
+                      ),
+                    ),
+                    if (segundoBadge != null) ...[
+                      const SizedBox(height: 7),
+                      _badge(
+                        segundoBadge,
+                        background: const Color(0xFFF1F5F9),
+                        foreground: const Color(0xFF475569),
+                      ),
+                    ],
+                  ],
                 ),
               ),
             ],
           ),
-
-          const SizedBox(height: 5),
-
+          const SizedBox(height: 8),
           Text(
             treino.descricao,
             style: GoogleFonts.inter(
               color: _cinzaTexto,
               fontSize: 12,
-              height: 1.35,
+              height: 1.4,
             ),
           ),
-
           const SizedBox(height: 12),
-
-          _buildResumoExercicios(
-            treino,
-          ),
-
-          const SizedBox(height: 12),
-
+          _buildResumoExercicios(treino),
+          const SizedBox(height: 14),
           if (segundoBotao != null)
             Row(
               children: [
                 Expanded(
-                  child:
-                      _secondaryActionButton(
-                    'VER FICHA',
-                    () {
-                      _abrirTreino(
-                        treino,
-                      );
-                    },
+                  child: _secondaryActionButton(
+                    primeiroBotao,
+                    () => _abrirTreino(treino),
                   ),
                 ),
-
                 const SizedBox(width: 8),
-
                 Expanded(
-                  child:
-                      _secondaryActionButton(
+                  child: _secondaryActionButton(
                     segundoBotao,
-                    () {
-                      _abrirTreino(
-                        treino,
-                      );
-                    },
+                    () => _abrirTreino(treino),
                     outlined: true,
                   ),
                 ),
@@ -1273,10 +916,8 @@ class _AlunoTreinosViewState
             SizedBox(
               width: double.infinity,
               child: _secondaryActionButton(
-                'VER FICHA COMPLETA',
-                () {
-                  _abrirTreino(treino);
-                },
+                primeiroBotao,
+                () => _abrirTreino(treino),
               ),
             ),
         ],
@@ -1284,124 +925,113 @@ class _AlunoTreinosViewState
     );
   }
 
-  // ============================================================
-  // COMPLEMENTARES
-  // ============================================================
-
   Widget _buildComplementares() {
     return Column(
-      crossAxisAlignment:
-          CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           'TREINOS COMPLEMENTARES',
-          style:
-              GoogleFonts.barlowCondensed(
+          style: GoogleFonts.barlowCondensed(
             color: _azulEscuro,
             fontSize: 21,
             fontWeight: FontWeight.w700,
           ),
         ),
-
+        const SizedBox(height: 4),
+        Text(
+          'VÍDEOS GUIADOS',
+          style: GoogleFonts.inter(
+            color: _cinzaTexto,
+            fontSize: 10,
+            fontWeight: FontWeight.w700,
+            letterSpacing: 0.5,
+          ),
+        ),
         const SizedBox(height: 12),
+        LayoutBuilder(
+          builder: (context, constraints) {
+            final empilhar = constraints.maxWidth < 330;
+            final cards = TreinosFrontData.complementares
+                .map((treino) => _buildComplementarCard(treino))
+                .toList();
 
-        Row(
-          children: TreinosFrontData
-              .complementares
-              .map(
-                (treino) => Expanded(
-                  child: Padding(
-                    padding:
-                        EdgeInsets.only(
-                      right: treino ==
-                              TreinosFrontData
-                                  .complementares
-                                  .first
-                          ? 8
-                          : 0,
-                    ),
-                    child:
-                        _buildComplementarCard(
-                      treino,
-                    ),
-                  ),
-                ),
-              )
-              .toList(),
+            if (empilhar) {
+              return Column(
+                children: [
+                  for (var i = 0; i < cards.length; i++) ...[
+                    cards[i],
+                    if (i < cards.length - 1) const SizedBox(height: 8),
+                  ],
+                ],
+              );
+            }
+
+            return Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                for (var i = 0; i < cards.length; i++) ...[
+                  Expanded(child: cards[i]),
+                  if (i < cards.length - 1) const SizedBox(width: 8),
+                ],
+              ],
+            );
+          },
         ),
       ],
     );
   }
 
-  Widget _buildComplementarCard(
-    TreinoComplementarUi treino,
-  ) {
+  Widget _buildComplementarCard(TreinoComplementarUi treino) {
     return Container(
-      height: 145,
+      constraints: const BoxConstraints(minHeight: 145),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius:
-            BorderRadius.circular(16),
-        border: Border.all(
-          color: _cinzaBorda,
-        ),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: _cinzaBorda),
       ),
       child: Column(
-        crossAxisAlignment:
-            CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Icon(
             Icons.self_improvement_rounded,
             color: _verde,
             size: 22,
           ),
-
           const SizedBox(height: 8),
-
           Text(
             treino.nome,
-            style:
-                GoogleFonts.barlowCondensed(
+            style: GoogleFonts.barlowCondensed(
               color: _azulEscuro,
               fontSize: 18,
               fontWeight: FontWeight.w700,
             ),
           ),
-
           const SizedBox(height: 4),
-
-          Expanded(
-            child: Text(
-              treino.descricao,
-              maxLines: 3,
-              overflow:
-                  TextOverflow.ellipsis,
-              style: GoogleFonts.inter(
-                color: _cinzaTexto,
-                fontSize: 10,
-                height: 1.3,
-              ),
+          Text(
+            treino.descricao,
+            maxLines: 3,
+            overflow: TextOverflow.ellipsis,
+            style: GoogleFonts.inter(
+              color: _cinzaTexto,
+              fontSize: 10,
+              height: 1.3,
             ),
           ),
-
+          const SizedBox(height: 8),
           Text(
             '${treino.duracaoMinutos} min',
             style: GoogleFonts.inter(
               color: _verde,
               fontSize: 11,
-              fontWeight:
-                  FontWeight.w700,
+              fontWeight: FontWeight.w700,
             ),
           ),
         ],
       ),
     );
   }
-
-  // ============================================================
-  // HISTÓRICO
-  // ============================================================
 
   Widget _buildHistoricoButton() {
     return SizedBox(
@@ -1412,30 +1042,21 @@ class _AlunoTreinosViewState
         style: OutlinedButton.styleFrom(
           foregroundColor: _verde,
           backgroundColor: Colors.white,
-          side: const BorderSide(
-            color: _cinzaBorda,
-          ),
+          side: const BorderSide(color: _cinzaBorda),
           shape: RoundedRectangleBorder(
-            borderRadius:
-                BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(12),
           ),
         ),
         child: Text(
           'VER FICHAS E CICLOS ANTERIORES',
-          style:
-              GoogleFonts.barlowCondensed(
-            fontSize: 14,
+          style: GoogleFonts.inter(
+            fontSize: 11,
             fontWeight: FontWeight.w700,
-            letterSpacing: 0.3,
           ),
         ),
       ),
     );
   }
-
-  // ============================================================
-  // HELPERS
-  // ============================================================
 
   Widget _buildResumoExercicios(
     TreinoUi treino, {
@@ -1445,11 +1066,8 @@ class _AlunoTreinosViewState
       width: double.infinity,
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: destaque
-            ? const Color(0xE6FFFFFF)
-            : _cinzaClaro,
-        borderRadius:
-            BorderRadius.circular(12),
+        color: destaque ? const Color(0xE6FFFFFF) : _cinzaClaro,
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: destaque
               ? const Color(0xFFD1FAE5)
@@ -1457,55 +1075,50 @@ class _AlunoTreinosViewState
         ),
       ),
       child: Column(
-        crossAxisAlignment:
-            CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Text(
-                destaque
-                    ? 'PRINCIPAIS EXERCÍCIOS'
-                    : 'RESUMO DA FICHA:',
-                style: GoogleFonts.inter(
-                  color: destaque
-                      ? _verdeTexto
-                      : const Color(
-                          0xFF94A3B8),
-                  fontSize: 10,
-                  fontWeight:
-                      FontWeight.w700,
-                  letterSpacing: 0.5,
+              Expanded(
+                child: Text(
+                  destaque ? 'PRINCIPAIS EXERCÍCIOS' : 'RESUMO DA FICHA:',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.inter(
+                    color: destaque
+                        ? _verdeTexto
+                        : const Color(0xFF94A3B8),
+                    fontSize: 10,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0.5,
+                  ),
                 ),
               ),
-
               if (destaque) ...[
-                const Spacer(),
-
-                Text(
-                  treino.seriesResumo,
-                  style: GoogleFonts.inter(
-                    color: _cinzaTexto,
-                    fontSize: 10,
-                    fontWeight:
-                        FontWeight.w600,
+                const SizedBox(width: 8),
+                Flexible(
+                  child: Text(
+                    treino.seriesResumo,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.right,
+                    style: GoogleFonts.inter(
+                      color: _cinzaTexto,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ],
             ],
           ),
-
           const SizedBox(height: 5),
-
           Text(
             treino.principaisExercicios,
             style: GoogleFonts.inter(
-              color: destaque
-                  ? _azulEscuro
-                  : const Color(
-                      0xFF334155),
+              color: destaque ? _azulEscuro : const Color(0xFF334155),
               fontSize: 12,
-              fontWeight:
-                  FontWeight.w500,
+              fontWeight: FontWeight.w500,
               height: 1.45,
             ),
           ),
@@ -1514,41 +1127,28 @@ class _AlunoTreinosViewState
     );
   }
 
-  Widget _smallPill({
-    required IconData icon,
-    required String text,
-  }) {
+  Widget _duracaoPill(int minutos) {
     return Container(
-      padding:
-          const EdgeInsets.symmetric(
-        horizontal: 9,
-        vertical: 5,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
       decoration: BoxDecoration(
-        color:
-            const Color(0xFFF1F5F9),
-        borderRadius:
-            BorderRadius.circular(999),
+        color: const Color(0xFFF1F5F9),
+        borderRadius: BorderRadius.circular(999),
       ),
       child: Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            icon,
-            size: 13,
-            color:
-                const Color(0xFF334155),
+          const Icon(
+            Icons.schedule_rounded,
+            size: 12,
+            color: _cinzaTexto,
           ),
-
           const SizedBox(width: 4),
-
           Text(
-            text,
+            '$minutos min',
             style: GoogleFonts.inter(
-              color:
-                  const Color(0xFF334155),
-              fontSize: 11,
-              fontWeight:
-                  FontWeight.w600,
+              color: _cinzaTexto,
+              fontSize: 10,
+              fontWeight: FontWeight.w600,
             ),
           ),
         ],
@@ -1556,158 +1156,110 @@ class _AlunoTreinosViewState
     );
   }
 
-  Widget _letraTreino(
-    String letra,
-    Color color,
-  ) {
+  Widget _letraTreino(String letra, Color cor) {
     return Container(
-      width: 28,
-      height: 28,
+      width: 30,
+      height: 30,
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: color,
-        borderRadius:
-            BorderRadius.circular(8),
+        color: cor,
+        borderRadius: BorderRadius.circular(8),
       ),
       child: Text(
         letra,
         style: GoogleFonts.anton(
           color: Colors.white,
-          fontSize: 16,
+          fontSize: 17,
+          height: 1,
         ),
       ),
     );
   }
 
   Widget _badge(
-    IconData icon,
-    String texto,
-    Color background,
-    Color foreground,
-  ) {
+    String texto, {
+    required Color background,
+    required Color foreground,
+  }) {
     return Container(
-      padding:
-          const EdgeInsets.symmetric(
-        horizontal: 10,
-        vertical: 5,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
       decoration: BoxDecoration(
         color: background,
-        borderRadius:
-            BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(999),
       ),
-      child: Row(
-        mainAxisSize:
-            MainAxisSize.min,
-        children: [
-          Icon(
-            icon,
-            size: 13,
-            color: foreground,
-          ),
-
-          const SizedBox(width: 4),
-
-          Text(
-            texto,
-            style: GoogleFonts.inter(
-              color: foreground,
-              fontSize: 11,
-              fontWeight:
-                  FontWeight.w600,
-            ),
-          ),
-        ],
+      child: Text(
+        texto,
+        style: GoogleFonts.inter(
+          color: foreground,
+          fontSize: 9,
+          fontWeight: FontWeight.w700,
+        ),
       ),
     );
   }
 
   Widget _secondaryActionButton(
-    String label,
+    String texto,
     VoidCallback onPressed, {
     bool outlined = false,
   }) {
-    return SizedBox(
-      height: 40,
-      child: outlined
-          ? OutlinedButton(
-              onPressed: onPressed,
-              style:
-                  OutlinedButton.styleFrom(
-                foregroundColor:
-                    const Color(
-                  0xFF334155,
-                ),
-                side: const BorderSide(
-                  color: _cinzaBorda,
-                ),
-                shape:
-                    RoundedRectangleBorder(
-                  borderRadius:
-                      BorderRadius.circular(
-                    12,
-                  ),
-                ),
-              ),
-              child: Text(
-                label,
-                style: GoogleFonts
-                    .barlowCondensed(
-                  fontSize: 14,
-                  fontWeight:
-                      FontWeight.w700,
-                ),
-              ),
-            )
-          : ElevatedButton(
-              onPressed: onPressed,
-              style:
-                  ElevatedButton.styleFrom(
-                elevation: 0,
-                backgroundColor:
-                    const Color(
-                  0xFFF1F5F9,
-                ),
-                foregroundColor:
-                    _verde,
-                shape:
-                    RoundedRectangleBorder(
-                  borderRadius:
-                      BorderRadius.circular(
-                    12,
-                  ),
-                ),
-              ),
-              child: Text(
-                label,
-                style: GoogleFonts
-                    .barlowCondensed(
-                  fontSize: 14,
-                  fontWeight:
-                      FontWeight.w700,
-                ),
-              ),
+    if (outlined) {
+      return SizedBox(
+        height: 42,
+        child: OutlinedButton(
+          onPressed: onPressed,
+          style: OutlinedButton.styleFrom(
+            foregroundColor: _verde,
+            backgroundColor: Colors.white,
+            side: const BorderSide(color: Color(0xFFB7D8D2)),
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
             ),
+          ),
+          child: Text(
+            texto,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: GoogleFonts.inter(
+              fontSize: 10,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ),
+      );
+    }
+
+    return SizedBox(
+      height: 42,
+      child: ElevatedButton(
+        onPressed: onPressed,
+        style: ElevatedButton.styleFrom(
+          elevation: 0,
+          backgroundColor: const Color(0xFFE8F6F2),
+          foregroundColor: _verde,
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+        child: Text(
+          texto,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: GoogleFonts.inter(
+            fontSize: 10,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+      ),
     );
   }
 
-  // ============================================================
-  // NAVEGAÇÃO TEMPORÁRIA
-  // ============================================================
-
-  void _abrirTreino(
-    TreinoUi treino,
-  ) {
+  void _abrirTreino(TreinoUi treino) {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) {
-          // Esta tela ainda é a versão antiga.
-          // Na próxima etapa será substituída
-          // pelo novo "Treino do Dia - Aluno".
-          return AlunoTreinoDetalheView(
-            treino: treino,
-          );
-        },
+        builder: (_) => AlunoTreinoDetalheView(treino: treino),
       ),
     );
   }
