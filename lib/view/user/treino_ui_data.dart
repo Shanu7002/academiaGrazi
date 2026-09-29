@@ -1,3 +1,9 @@
+enum TreinoStatusUi {
+  recomendado,
+  concluido,
+  programado,
+}
+
 class ExercicioTreinoUi {
   final String id;
   final String nome;
@@ -16,208 +22,256 @@ class ExercicioTreinoUi {
 
 class TreinoUi {
   final String id;
+  final String letra;
   final String nome;
   final String descricao;
+
+  final int duracaoMinutos;
+  final int quantidadeExercicios;
+
+  final String nivel;
+  final String estrategia;
+
+  final String principaisExercicios;
+  final String seriesResumo;
+
+  final TreinoStatusUi status;
+  final String statusTexto;
+
   final List<ExercicioTreinoUi> exercicios;
 
   const TreinoUi({
     required this.id,
+    required this.letra,
     required this.nome,
     required this.descricao,
+    required this.duracaoMinutos,
+    required this.quantidadeExercicios,
+    required this.nivel,
+    required this.estrategia,
+    required this.principaisExercicios,
+    required this.seriesResumo,
+    required this.status,
+    required this.statusTexto,
     required this.exercicios,
   });
 }
 
-/// Dados temporários SOMENTE para construção do front.
-///
-/// Quando o backend for implementado, esta classe poderá ser substituída
-/// pelos dados vindos do Firebase sem precisar refazer as telas.
-class TreinosFrontData {
-  static const treinoA = TreinoUi(
-    id: 'treino-a',
-    nome: 'TREINO A - SUPERIORES',
-    descricao: 'Peito e Tríceps',
-    exercicios: [
-      ExercicioTreinoUi(
-        id: 'supino-inclinado',
-        nome: 'Supino Inclinado',
-        aquecimento: '1x15',
-        series: '3x10',
-        carga: '40Kg',
-      ),
-      ExercicioTreinoUi(
-        id: 'peitoral-fly',
-        nome: 'Peitoral no Fly',
-        series: '3x10-12',
-        carga: '45Kg',
-      ),
-      ExercicioTreinoUi(
-        id: 'supino-reto-maquina',
-        nome: 'Supino Reto Máquina',
-        series: '3x8-10',
-        carga: '20Kg',
-      ),
-      ExercicioTreinoUi(
-        id: 'crucifixo-maquina',
-        nome: 'Crucifixo Máquina',
-        series: '3x10',
-        carga: '25Kg',
-      ),
-      ExercicioTreinoUi(
-        id: 'triceps-pulley',
-        nome: 'Tríceps Pulley',
-        series: '3x12',
-        carga: '30Kg',
-      ),
-      ExercicioTreinoUi(
-        id: 'triceps-frances',
-        nome: 'Tríceps Francês',
-        series: '3x10',
-        carga: '12Kg',
-      ),
-    ],
-  );
+class TreinoComplementarUi {
+  final String id;
+  final String nome;
+  final String descricao;
+  final int duracaoMinutos;
 
-  static const treinoB = TreinoUi(
-    id: 'treino-b',
-    nome: 'TREINO B - INFERIORES',
-    descricao: 'Quadríceps e Panturrilha',
+  const TreinoComplementarUi({
+    required this.id,
+    required this.nome,
+    required this.descricao,
+    required this.duracaoMinutos,
+  });
+}
+
+/// Dados temporários para construção do front.
+///
+/// Mais adiante estes dados serão substituídos pelos valores
+/// retornados pelo backend/Firebase.
+class TreinosFrontData {
+  // ============================================================
+  // ALUNO / PRESCRIÇÃO
+  // ============================================================
+
+  static const String alunoNome = 'Ana Lima';
+
+  static const String semana = 'Semana 03/08';
+
+  static const String professorNome = 'Prof. Marcos';
+
+  static const String ultimaAtualizacao =
+      'Atualizado há 2 semanas';
+
+  // ============================================================
+  // CICLO ATUAL
+  // ============================================================
+
+  static const String cicloNome =
+      'Divisão ABC • Hipertrofia & Postura';
+
+  static const String frequencia = '3–5x';
+  static const String frequenciaLegenda = 'por semana';
+
+  static const String duracaoMedia = '45 min';
+  static const String duracaoLegenda = 'tempo médio';
+
+  static const String validade = '25/08';
+  static const String validadeLegenda = 'revisão geral';
+
+  // ============================================================
+  // TREINO A
+  // ============================================================
+
+  static const TreinoUi treinoA = TreinoUi(
+    id: 'treino-a',
+    letra: 'A',
+    nome: 'TREINO A — PERNAS + GLÚTEOS',
+    descricao:
+        'Foco em força de cadeia posterior e estabilidade pélvica',
+    duracaoMinutos: 42,
+    quantidadeExercicios: 8,
+    nivel: 'Intermediário',
+    estrategia: 'Carga Progressiva',
+    seriesResumo: '3 a 4 séries',
+    principaisExercicios:
+        'Agachamento livre guiado, Elevação pélvica c/ '
+        'pausa isométrica, Afundo halteres, Cadeira '
+        'extensora, Stiff unilateral.',
+    status: TreinoStatusUi.recomendado,
+    statusTexto: 'RECOMENDADO PARA HOJE',
     exercicios: [
       ExercicioTreinoUi(
         id: 'agachamento',
-        nome: 'Agachamento Livre',
+        nome: 'Agachamento livre',
         aquecimento: '1x15',
         series: '4x10',
         carga: '40Kg',
       ),
       ExercicioTreinoUi(
-        id: 'leg-press',
-        nome: 'Leg Press 45°',
-        series: '4x12',
-        carga: '80Kg',
-      ),
-      ExercicioTreinoUi(
-        id: 'extensora',
-        nome: 'Cadeira Extensora',
-        series: '3x12',
-        carga: '35Kg',
-      ),
-      ExercicioTreinoUi(
-        id: 'flexora',
-        nome: 'Mesa Flexora',
-        series: '3x12',
-        carga: '30Kg',
-      ),
-      ExercicioTreinoUi(
         id: 'elevacao-pelvica',
-        nome: 'Elevação Pélvica',
-        series: '4x12',
+        nome: 'Elevação pélvica',
+        series: '3x12',
         carga: '50Kg',
       ),
       ExercicioTreinoUi(
-        id: 'panturrilha',
-        nome: 'Panturrilha em Pé',
-        series: '4x15',
-        carga: '30Kg',
-      ),
-    ],
-  );
-
-  static const treinoC = TreinoUi(
-    id: 'treino-c',
-    nome: 'TREINO C - SUPERIORES',
-    descricao: 'Ombro',
-    exercicios: [
-      ExercicioTreinoUi(
-        id: 'desenvolvimento',
-        nome: 'Desenvolvimento Máquina',
-        aquecimento: '1x15',
+        id: 'afundo',
+        nome: 'Afundo halteres',
         series: '3x10',
-        carga: '25Kg',
+        carga: '12Kg',
       ),
       ExercicioTreinoUi(
-        id: 'elevacao-lateral',
-        nome: 'Elevação Lateral',
+        id: 'extensora',
+        nome: 'Cadeira extensora',
         series: '3x12',
-        carga: '8Kg',
-      ),
-      ExercicioTreinoUi(
-        id: 'elevacao-frontal',
-        nome: 'Elevação Frontal',
-        series: '3x12',
-        carga: '8Kg',
-      ),
-      ExercicioTreinoUi(
-        id: 'crucifixo-inverso',
-        nome: 'Crucifixo Inverso',
-        series: '3x12',
-        carga: '20Kg',
-      ),
-    ],
-  );
-
-  static const treinoD = TreinoUi(
-    id: 'treino-d',
-    nome: 'TREINO D - INFERIORES',
-    descricao: 'Posterior, Glúteos e Panturrilha',
-    exercicios: [
-      ExercicioTreinoUi(
-        id: 'stiff',
-        nome: 'Stiff',
-        aquecimento: '1x15',
-        series: '4x10',
         carga: '35Kg',
       ),
       ExercicioTreinoUi(
-        id: 'mesa-flexora-d',
-        nome: 'Mesa Flexora',
-        series: '4x12',
+        id: 'stiff',
+        nome: 'Stiff unilateral',
+        series: '3x10',
+        carga: '20Kg',
+      ),
+      ExercicioTreinoUi(
+        id: 'flexora',
+        nome: 'Mesa flexora',
+        series: '3x12',
         carga: '30Kg',
       ),
       ExercicioTreinoUi(
-        id: 'elevacao-pelvica-d',
-        nome: 'Elevação Pélvica',
-        series: '4x12',
-        carga: '55Kg',
-      ),
-      ExercicioTreinoUi(
-        id: 'panturrilha-d',
+        id: 'panturrilha',
         nome: 'Panturrilha',
         series: '4x15',
         carga: '30Kg',
       ),
+      ExercicioTreinoUi(
+        id: 'abdutora',
+        nome: 'Cadeira abdutora',
+        series: '3x15',
+        carga: '35Kg',
+      ),
     ],
   );
 
-  static const treinoE = TreinoUi(
-    id: 'treino-e',
-    nome: 'TREINO E - SUPERIORES',
-    descricao: 'Costas e Bíceps',
+  // ============================================================
+  // TREINO B
+  // ============================================================
+
+  static const TreinoUi treinoB = TreinoUi(
+    id: 'treino-b',
+    letra: 'B',
+    nome: 'TREINO B — COSTAS, BÍCEPS + ABDÔMEN',
+    descricao:
+        'Tração, retração escapular e resistência profunda do tronco',
+    duracaoMinutos: 40,
+    quantidadeExercicios: 4,
+    nivel: 'Intermediário',
+    estrategia: 'Postura & Core',
+    seriesResumo: '3 séries',
+    principaisExercicios:
+        'Puxada frontal neutra, Remada articulada, '
+        'Rosca direta halter, Prancha ativa isométrica.',
+    status: TreinoStatusUi.concluido,
+    statusTexto: 'Concluído ontem • 40 min',
     exercicios: [
       ExercicioTreinoUi(
         id: 'puxada',
-        nome: 'Puxada Frontal',
-        aquecimento: '1x15',
+        nome: 'Puxada frontal neutra',
         series: '3x10',
         carga: '40Kg',
       ),
       ExercicioTreinoUi(
         id: 'remada',
-        nome: 'Remada Baixa',
+        nome: 'Remada articulada',
         series: '3x10',
-        carga: '40Kg',
+        carga: '35Kg',
       ),
       ExercicioTreinoUi(
         id: 'rosca-direta',
-        nome: 'Rosca Direta',
-        series: '3x10',
-        carga: '15Kg',
-      ),
-      ExercicioTreinoUi(
-        id: 'rosca-martelo',
-        nome: 'Rosca Martelo',
+        nome: 'Rosca direta halter',
         series: '3x12',
         carga: '10Kg',
+      ),
+      ExercicioTreinoUi(
+        id: 'prancha',
+        nome: 'Prancha ativa isométrica',
+        series: '3x30s',
+        carga: '-',
+      ),
+    ],
+  );
+
+  // ============================================================
+  // TREINO C
+  // ============================================================
+
+  static const TreinoUi treinoC = TreinoUi(
+    id: 'treino-c',
+    letra: 'C',
+    nome:
+        'TREINO C — PEITO, OMBROS, TRÍCEPS + MOBILIDADE',
+    descricao:
+        'Empurrar, estabilidade glenoumeral e flexibilidade articular',
+    duracaoMinutos: 38,
+    quantidadeExercicios: 4,
+    nivel: 'Intermediário',
+    estrategia: 'Mobilidade',
+    seriesResumo: '3 séries',
+    principaisExercicios:
+        'Supino halteres plano, Elevação lateral c/ rotação, '
+        'Tríceps corda polia, Rotação torácica.',
+    status: TreinoStatusUi.programado,
+    statusTexto: 'Programado para Quinta-feira',
+    exercicios: [
+      ExercicioTreinoUi(
+        id: 'supino',
+        nome: 'Supino halteres plano',
+        series: '3x10',
+        carga: '20Kg',
+      ),
+      ExercicioTreinoUi(
+        id: 'elevacao-lateral',
+        nome: 'Elevação lateral c/ rotação',
+        series: '3x12',
+        carga: '8Kg',
+      ),
+      ExercicioTreinoUi(
+        id: 'triceps-corda',
+        nome: 'Tríceps corda polia',
+        series: '3x12',
+        carga: '25Kg',
+      ),
+      ExercicioTreinoUi(
+        id: 'rotacao-toracica',
+        nome: 'Rotação torácica',
+        series: '3x10',
+        carga: '-',
       ),
     ],
   );
@@ -226,13 +280,31 @@ class TreinosFrontData {
     treinoA,
     treinoB,
     treinoC,
-    treinoD,
-    treinoE,
   ];
 
-  /// Só para representar visualmente a recomendação no front.
-  ///
-  /// Hoje usamos o Treino B. Depois quem definirá isso será o professor
-  /// através da agenda do aluno.
-  static const TreinoUi recomendacao = treinoB;
+  /// Temporário.
+  /// Futuramente o backend informará qual treino está
+  /// recomendado para o dia atual.
+  static const TreinoUi recomendacao = treinoA;
+
+  // ============================================================
+  // COMPLEMENTARES
+  // ============================================================
+
+  static const List<TreinoComplementarUi> complementares = [
+    TreinoComplementarUi(
+      id: 'mobilidade',
+      nome: 'Mobilidade & Soltura',
+      descricao:
+          'Ideal para dias de descanso ou recuperação',
+      duracaoMinutos: 15,
+    ),
+    TreinoComplementarUi(
+      id: 'core',
+      nome: 'Core Sem Carga',
+      descricao:
+          'Para manter o ritmo ativo em viagens ou finais de semana',
+      duracaoMinutos: 20,
+    ),
+  ];
 }
