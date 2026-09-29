@@ -45,4 +45,40 @@
             }
         </actualModel>
     </model>
+    <model>
+        <version>1.2</version>
+        <owner>Bayer-07</owner>
+        <description>Add optional onboarding, instructor code and registration profile fields</description>
+        <actualModel>
+            user = {
+                id: --gerado automaticamente 28-character strings (Base62)
+                name: string
+                email: string
+                type: UserType enum
+                createdAt: string (iso8601) - horario do dispositivo
+                responsable: string (optional) --id do instrutor responsavel
+                registrationCode: string (optional) --codigo fixo de 8 caracteres para instrutores
+                registrationProfile: {
+                    measurements: {
+                        age: int
+                        heightCm: int
+                        weightKg: double
+                    }
+                    primaryGoal: PrimaryGoal enum serialized as string
+                    health: {
+                        conditions: array[string]
+                        notes: string
+                        restrictions: array[string]
+                    }
+                    emergencyContact: {
+                        name: string
+                        relationship: string
+                        phone: string --somente digitos
+                    }
+                } (optional)
+                onboardingCompleted: bool
+                termsAcceptedAt: string (iso8601) (optional)
+            }
+        </actualModel>
+    </model>
 </changelog>

@@ -11,6 +11,7 @@ import 'package:academiagrazi/service/users/register.dart';
 import 'package:academiagrazi/models/users/user_model.dart';
 import 'package:academiagrazi/view/login_view.dart';
 import 'package:academiagrazi/view/tab_router.dart';
+import 'package:academiagrazi/view/user/self_register_view.dart';
 
 @GenerateMocks([
   LoginController,
@@ -131,5 +132,16 @@ void main() {
         password: anyNamed('password'),
       ),
     );
+  });
+
+  testWidgets('abre o auto cadastro público pelo login', (tester) async {
+    await pumpLogin(tester);
+
+    await tester.ensureVisible(find.byKey(const Key('createAccountButton')));
+    await tester.tap(find.byKey(const Key('createAccountButton')));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(SelfRegisterView), findsOneWidget);
+    expect(find.text('CONTA & ACESSO'), findsOneWidget);
   });
 }
