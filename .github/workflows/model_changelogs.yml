@@ -1,0 +1,42 @@
+name: Enforce Model Changelogs
+
+on:
+  pull_request:
+
+jobs:
+  verify-changelog-sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate dynamic model/changelog pairs
+        run: |
+          git fetch origin ${{ github.base_ref }}
+
+          CHANGED_FILES=$(git diff --name-only --diff-filter=d origin/${{ github.base_ref }}...HEAD)
+
+          MODEL_FILES=$(echo "$CHANGED_FILES" | grep '_model\.dart$' || true)
+
+          if [ -z "$MODEL_FILES" ]; then
+            echo "No models modified. Skipping validation."
+            exit 0
+          fi
+
+          FAILED=0
+
+          for MODEL_FILE in $MODEL_FILES; do
+            # String manipulation: strip '.dart' and append '_changelog.xml'
+            CHANGELOG_FILE="${MODEL_FILE%.dart}_changelog.xml"
+            
+            if ! echo "$CHANGED_FILES" | grep -Fxq "$CHANGELOG_FILE"; then
+              echo "::error file=$CHANGELOG_FILE::Integrity check failed: $MODEL_FILE was modified, but $CHANGELOG_FILE was not updated."
+              FAILED=1
+            fi
+          done
+
+          if [ $FAILED -ne 0 ]; then
+            exit 1
+          fi

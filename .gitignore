@@ -195,3 +195,5 @@ app.*.symbols
 *.mocks.dart
 *.g.dart
 *.freezed.dart
+# Widget Preview related
+.widget_preview/

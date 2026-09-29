@@ -1,381 +1,169 @@
-import 'package:academiagrazi/view/user/aluno_home_view2.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class AlunoHomeView extends StatelessWidget {
+class AlunoHomeView extends StatefulWidget {
   const AlunoHomeView({super.key});
 
   @override
+  State<AlunoHomeView> createState() => _AlunoHomeViewState();
+}
+
+class _AlunoHomeViewState extends State<AlunoHomeView> {
+  @override
   Widget build(BuildContext context) {
-    final double screenWidth = MediaQuery.of(context).size.width;
-    final double screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFD8D6D6),
       appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 2, 89, 79),
-        title: const Text(
-          'Painel do Aluno',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-        ),
-        centerTitle: true,
-        iconTheme: const IconThemeData(color: Colors.white),
-      ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(
-          horizontal: screenWidth * 0.05,
-          vertical: 20.0,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        automaticallyImplyLeading: true,
+        backgroundColor: Colors.white,
+        elevation: 0,
+        title: Row(
           children: [
-            SizedBox(
-              height: screenHeight * 0.50,
-              width: double.infinity,
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: Image.asset(
-                      'assets/retanguloVerde.png',
-                      height: screenHeight * 0.50,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  Positioned(
-                    top: screenHeight * 0.02,
-                    child: SizedBox(
-                      height: screenHeight * 0.18,
-                      child: Image.asset('assets/logoGraziBranca.png'),
-                    ),
-                  ),
-                  Positioned(
-                    bottom: screenHeight * 0.08,
-                    width: screenWidth * 0.60,
-                    child: Container(
-                      height: screenHeight * 0.14,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12.0),
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color.fromARGB(
-                              255,
-                              2,
-                              89,
-                              79,
-                            ).withOpacity(0.3),
-                            blurRadius: 6,
-                            offset: const Offset(0, 3),
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        children: [
-                          Expanded(
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: Container(
-                                    alignment: Alignment.center,
-                                    child: Image.asset('assets/sequencia.png'),
-                                    height: 25,
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Container(
-                                    alignment: Alignment.center,
-                                    child: Image.asset('assets/progressao.png'),
-                                    height: 30,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Expanded(
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: Container(
-                                    alignment: Alignment.center,
-                                    child: Text(
-                                      'Dias',
-                                      style: GoogleFonts.inter(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 20,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Container(
-                                    alignment: Alignment.center,
-                                    child: Text(
-                                      'KG',
-                                      style: GoogleFonts.inter(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 20,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    bottom: screenHeight * 0.02,
-                    left: screenWidth * 0.05,
-                    child: const Text(
-                      'Bem vindo aluno!',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                    ),
-                  ),
-                ],
+            const CircleAvatar(
+              radius: 20,
+              backgroundColor: Color(0xFFD6D6D6),
+              child: Icon(Icons.person, color: Color(0xFF8A8A8A)),
+            ),
+            const SizedBox(width: 12),
+            Text(
+              'Grazi Braz',
+              style: GoogleFonts.barlowCondensed(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: const Color.fromARGB(255, 0, 65, 100),
               ),
             ),
-
-            const SizedBox(height: 30),
-
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  'Treino de hoje',
-                  style: GoogleFonts.antonio(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(width: 15),
-                Expanded(
-                  child: Image.asset(
-                    'assets/linhaGradiente.png',
-                    fit: BoxFit.fitWidth,
-                  ),
+          ],
+        ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16.0),
+            child: IconButton(
+              icon: const Icon(
+                Icons.notifications_none_rounded,
+                color: Colors.black87,
+                size: 24,
+              ),
+              onPressed: () {},
+            ),
+          ),
+        ],
+      ),
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16.0),
+          child: Container(
+            width: screenWidth,
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16.0),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color.fromARGB(255, 2, 89, 79).withOpacity(0.3),
+                  blurRadius: 6,
+                  offset: const Offset(0, 3),
                 ),
               ],
             ),
-
-            const SizedBox(height: 30),
-
-            Container(
-              width: screenWidth * 1,
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16.0),
-                boxShadow: [
-                  BoxShadow(
-                    color: const Color.fromARGB(
-                      255,
-                      2,
-                      89,
-                      79,
-                    ).withOpacity(0.3),
-                    blurRadius: 6,
-                    offset: const Offset(0, 3),
-                  ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      print("Botão laranja clicado!");
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(255, 244, 121, 67),
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 12,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(
+                      Icons.local_fire_department,
+                      size: 18,
+                      color: Color.fromARGB(255, 0, 90, 79),
                     ),
-                    child: Text(
-                      '4 exercícios',
+                    const SizedBox(width: 8),
+                    Text(
+                      'Treino do dia',
                       style: TextStyle(
                         fontFamily: GoogleFonts.inter().fontFamily,
                         fontWeight: FontWeight.bold,
+                        color: const Color.fromARGB(255, 0, 90, 79),
                         fontSize: 14,
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 15),
-
-                  Text(
-                    'TREINO B - INFERIORES',
-                    style: GoogleFonts.antonio(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: const Color.fromARGB(255, 2, 89, 79),
-                    ),
-                  ),
-
-                  const SizedBox(height: 10),
-
-                  const Text(
-                    'Quadríceps, posterior e panturrilha',
-                    style: TextStyle(
-                      color: Color.fromARGB(255, 0, 0, 0),
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-
-                  const SizedBox(height: 15),
-
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const AlunoHomeView2(),
-                        ),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(255, 244, 121, 67),
-                      foregroundColor: Colors.white,
-                      minimumSize: const Size(300, 50),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 12,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(Icons.play_arrow, size: 18),
-                        const SizedBox(width: 8),
-                        Text(
-                          'Iniciar treino',
-                          style: TextStyle(
-                            fontFamily: GoogleFonts.inter().fontFamily,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            SizedBox(height: 30),
-
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  'Outras atividades',
-                  style: GoogleFonts.antonio(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(width: 15),
-                Expanded(
-                  child: Image.asset(
-                    'assets/linhaGradiente.png',
-                    fit: BoxFit.fitWidth,
-                  ),
-                ),
-              ],
-            ),
-
-            SizedBox(height: 30),
-
-            Container(
-              width: screenWidth * 1,
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16.0),
-                boxShadow: [
-                  BoxShadow(
-                    color: const Color.fromARGB(
-                      255,
-                      2,
-                      89,
-                      79,
-                    ).withOpacity(0.3),
-                    blurRadius: 6,
-                    offset: const Offset(0, 3),
-                  ),
-                ],
-              ),
-              child: IntrinsicHeight(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Expanded(
-                      child: InkWell(
-                        onTap: () {
-                          print('Pilates cliacado');
-                        },
-                        borderRadius: BorderRadius.circular(8),
-                        child: Image.asset('assets/pilates.png', height: 80),
-                      ),
-                    ),
-
-                    const VerticalDivider(
-                      color: Colors.grey,
-                      thickness: 1,
-                      indent: 5,
-                      endIndent: 5,
-                    ),
-
-                    Expanded(
-                      child: InkWell(
-                        onTap: () {
-                          print('Dança clicada');
-                        },
-                        borderRadius: BorderRadius.circular(8),
-                        child: Image.asset('assets/danca.png', height: 80),
-                      ),
-                    ),
-
-                    const VerticalDivider(
-                      color: Colors.grey,
-                      thickness: 1,
-                      indent: 5,
-                      endIndent: 5,
-                    ),
-
-                    Expanded(
-                      child: InkWell(
-                        onTap: () {
-                          print('Karatê clicado');
-                        },
-                        borderRadius: BorderRadius.circular(8),
-                        child: Image.asset('assets/karate.png', height: 80),
                       ),
                     ),
                   ],
                 ),
-              ),
+
+                const SizedBox(height: 15),
+
+                Text(
+                  'Pernas + Glúteos',
+                  style: GoogleFonts.barlowCondensed(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: const Color.fromARGB(255, 0, 30, 45),
+                  ),
+                ),
+
+                const SizedBox(height: 10),
+
+                Text(
+                  'Nível intermediário - Foco em Hipertrofia',
+                  style: GoogleFonts.inter(
+                    fontSize: 12,
+                    color: const Color.fromARGB(255, 63, 73, 70),
+                  ),
+                ),
+
+                const SizedBox(height: 10),
+
+                const Text(
+                  'Quadríceps, posterior e panturrilha',
+                  style: TextStyle(
+                    color: Colors.black87,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+
+                const SizedBox(height: 15),
+
+                ElevatedButton(
+                  onPressed: () {},
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color.fromARGB(255, 244, 121, 67),
+                    foregroundColor: Colors.white,
+                    minimumSize: const Size(double.infinity, 50),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(
+                        Icons.play_arrow,
+                        size: 18,
+                        color: Colors.black,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Iniciar treino',
+                        style: TextStyle(
+                          fontFamily: GoogleFonts.inter().fontFamily,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

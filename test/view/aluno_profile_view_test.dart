@@ -1,0 +1,70 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/annotations.dart';
+import 'package:mockito/mockito.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+import 'package:academiagrazi/models/users/user_model.dart';
+import 'package:academiagrazi/service/users/register.dart';
+import 'package:academiagrazi/view/user/aluno_profile_view.dart';
+
+@GenerateMocks([RegisterService, FirebaseAuth, User])
+import 'aluno_profile_view_test.mocks.dart';
+
+void main() {
+  late MockRegisterService mockUserService;
+  late MockFirebaseAuth mockAuth;
+  late MockUser mockFirebaseUser;
+
+  setUp(() {
+    mockUserService = MockRegisterService();
+    mockAuth = MockFirebaseAuth();
+    mockFirebaseUser = MockUser();
+  });
+
+  testWidgets('AlunoProfileView renders user data properly', (
+    WidgetTester tester,
+  ) async {
+    when(mockFirebaseUser.uid).thenReturn("uid_123");
+    when(mockAuth.currentUser).thenReturn(mockFirebaseUser);
+
+    final testUserModel = UserModel(
+      id: 'uid_123',
+      name: 'Test',
+      email: 'test@example.com',
+      responsable: 'resp_456',
+    );
+
+    final testResponsableModel = UserModel(
+      id: 'resp_456',
+      name: 'Prof. Marcos',
+      email: 'marcos@example.com',
+    );
+
+    when(
+      mockUserService.getUserById("uid_123"),
+    ).thenAnswer((_) async => testUserModel);
+    when(
+      mockUserService.getResponsableData("resp_456"),
+    ).thenAnswer((_) async => testResponsableModel);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: AlunoProfileView(
+          userService: mockUserService,
+          authInstance: mockAuth,
+        ),
+      ),
+    );
+
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+
+    await tester.pumpAndSettle();
+
+    expect(find.text('Test'), findsOneWidget);
+    expect(find.text('test@example.com'), findsOneWidget);
+
+    verify(mockAuth.currentUser).called(1);
+    verify(mockUserService.getUserById('uid_123')).called(1);
+  });
+}
