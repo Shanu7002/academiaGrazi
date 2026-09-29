@@ -1,4 +1,4 @@
-import 'package:academiagrazi/view/user/aluno_treino_detalhe_view.dart';
+import 'package:academiagrazi/view/user/aluno_treino_dia_view.dart';
 import 'package:academiagrazi/view/user/treino_ui_data.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -1257,10 +1257,12 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
   }
 
   void _abrirTreino(TreinoUi treino) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => AlunoTreinoDetalheView(treino: treino),
+  Navigator.of(context).push(
+    MaterialPageRoute(
+      builder: (_) => AlunoTreinoDiaView(
+        treino: treino,
       ),
-    );
-  }
+    ),
+  );
+}
 }
