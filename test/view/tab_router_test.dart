@@ -85,11 +85,11 @@ void main() {
     );
 
     await tester.scrollUntilVisible(
-      find.text('Iniciar treino'),
+      find.byKey(const Key('botao_iniciar_treino')),
       500,
       scrollable: find.byType(Scrollable),
     );
-    await tester.tap(find.text('Iniciar treino'));
+    await tester.tap(find.byKey(const Key('botao_iniciar_treino')));
     await tester.pumpAndSettle();
 
     await tester.binding.handlePopRoute();
