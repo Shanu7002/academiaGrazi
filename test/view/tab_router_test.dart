@@ -59,11 +59,7 @@ void main() {
     expect(find.text('Grazi Braz'), findsOneWidget);
     expect(find.byType(NavigationBar), findsOneWidget);
 
-    await tester.scrollUntilVisible(
-      find.byKey(const Key('botao_iniciar_treino')),
-      500,
-      scrollable: find.byType(Scrollable),
-    );
+    await tester.ensureVisible(find.byKey(const Key('botao_iniciar_treino')));
 
     await tester.tap(find.byKey(const Key('botao_iniciar_treino')));
 
@@ -84,12 +80,10 @@ void main() {
       ),
     );
 
-    await tester.scrollUntilVisible(
-      find.byKey(const Key('botao_iniciar_treino')),
-      500,
-      scrollable: find.byType(Scrollable),
-    );
+    await tester.ensureVisible(find.byKey(const Key('botao_iniciar_treino')));
+
     await tester.tap(find.byKey(const Key('botao_iniciar_treino')));
+
     await tester.pumpAndSettle();
 
     await tester.binding.handlePopRoute();
