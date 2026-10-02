@@ -168,6 +168,7 @@ class _AlunoHomeViewState extends State<AlunoHomeView> {
                     const SizedBox(height: 15),
 
                     ElevatedButton(
+                      key: const Key('botao_iniciar_treino'),
                       onPressed: () {},
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color.fromARGB(

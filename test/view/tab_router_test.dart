@@ -60,11 +60,13 @@ void main() {
     expect(find.byType(NavigationBar), findsOneWidget);
 
     await tester.scrollUntilVisible(
-      find.text('Iniciar treino'),
+      find.byKey(const Key('botao_iniciar_treino')),
       500,
       scrollable: find.byType(Scrollable),
     );
-    await tester.tap(find.text('Iniciar treino'));
+
+    await tester.tap(find.byKey(const Key('botao_iniciar_treino')));
+
     await tester.pumpAndSettle();
 
     expect(find.text('Treino do dia'), findsOneWidget);
