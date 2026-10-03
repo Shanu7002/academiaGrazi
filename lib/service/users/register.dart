@@ -1,5 +1,19 @@
+import 'dart:math';
+
 import "package:cloud_firestore/cloud_firestore.dart";
 import "../../models/users/user_model.dart";
+
+class InstructorCodeInfo {
+  final String code;
+  final String instructorId;
+  final String instructorName;
+
+  const InstructorCodeInfo({
+    required this.code,
+    required this.instructorId,
+    required this.instructorName,
+  });
+}
 
 class RegisterService {
   final FirebaseFirestore _db;
@@ -13,9 +27,123 @@ class RegisterService {
     await _db.collection("users").doc(user.id).set(user.toJson());
   }
 
+  Future<String> registerInstructorWithCode(
+    UserModel instructor, {
+    String Function()? codeGenerator,
+  }) async {
+    return _reserveInstructorCode(
+      instructor,
+      createUserDocument: true,
+      codeGenerator: codeGenerator,
+    );
+  }
+
+  Future<String> ensureInstructorCode(
+    UserModel instructor, {
+    String Function()? codeGenerator,
+  }) async {
+    final existingCode = instructor.registrationCode?.trim();
+    if (existingCode != null && existingCode.isNotEmpty) {
+      return existingCode;
+    }
+
+    if (instructor.type != UserType.instructor) {
+      throw ArgumentError('Only instructors can have registration codes');
+    }
+
+    return _reserveInstructorCode(
+      instructor,
+      createUserDocument: false,
+      codeGenerator: codeGenerator,
+    );
+  }
+
+  Future<InstructorCodeInfo?> validateInstructorCode(String rawCode) async {
+    final code = rawCode.trim().toUpperCase();
+    if (code.isEmpty) return null;
+
+    final codeSnapshot =
+        await _db.collection('instructorCodes').doc(code).get();
+    final codeData = codeSnapshot.data();
+    if (!codeSnapshot.exists ||
+        codeData == null ||
+        codeData['active'] != true) {
+      return null;
+    }
+
+    final instructorId = codeData['instructorId'] as String?;
+    final instructorName = codeData['instructorName'] as String?;
+    if (instructorId == null ||
+        instructorId.isEmpty ||
+        instructorName == null ||
+        instructorName.trim().isEmpty) {
+      return null;
+    }
+
+    return InstructorCodeInfo(
+      code: code,
+      instructorId: instructorId,
+      instructorName: instructorName.trim(),
+    );
+  }
+
+  Future<String> _reserveInstructorCode(
+    UserModel instructor, {
+    required bool createUserDocument,
+    String Function()? codeGenerator,
+  }) async {
+    final generator = codeGenerator ?? _generateCode;
+
+    for (var attempt = 0; attempt < 5; attempt++) {
+      final code = generator().trim().toUpperCase();
+      if (code.length != 8) {
+        throw ArgumentError('Instructor code must have eight characters');
+      }
+
+      try {
+        await _db.runTransaction((transaction) async {
+          final codeReference = _db.collection('instructorCodes').doc(code);
+          final userReference = _db.collection('users').doc(instructor.id);
+          final existingCode = await transaction.get(codeReference);
+          if (existingCode.exists) {
+            throw StateError('Instructor code collision');
+          }
+
+          final instructorWithCode = instructor.copyWith(
+            registrationCode: code,
+          );
+          if (createUserDocument) {
+            transaction.set(userReference, instructorWithCode.toJson());
+          } else {
+            transaction.update(userReference, {'registrationCode': code});
+          }
+          transaction.set(codeReference, {
+            'instructorId': instructor.id,
+            'instructorName': instructor.name,
+            'active': true,
+            'createdAt': DateTime.now().toIso8601String(),
+          });
+        });
+        return code;
+      } on StateError {
+        if (attempt == 4) rethrow;
+      }
+    }
+
+    throw StateError('Unable to generate a unique instructor code');
+  }
+
+  String _generateCode() {
+    const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    final random = Random.secure();
+    return List.generate(
+      8,
+      (_) => alphabet[random.nextInt(alphabet.length)],
+    ).join();
+  }
+
   Future<UserModel?> getUserById(String uid) async {
-    final doc =
-        await FirebaseFirestore.instance.collection('users').doc(uid).get();
+    final doc = await _db.collection('users').doc(uid).get();
 
     if (!doc.exists) {
       return null;
@@ -25,8 +153,7 @@ class RegisterService {
   }
 
   Future<UserModel?> getResponsableData(String uid) async {
-    final doc =
-        await FirebaseFirestore.instance.collection('users').doc(uid).get();
+    final doc = await _db.collection('users').doc(uid).get();
 
     if (!doc.exists) {
       return null;

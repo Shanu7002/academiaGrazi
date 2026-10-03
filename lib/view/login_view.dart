@@ -3,6 +3,7 @@ import 'package:academiagrazi/controller/users/register_user.dart';
 import 'package:academiagrazi/models/users/user_model.dart';
 import 'package:academiagrazi/view/model/register_mod.dart';
 import 'package:academiagrazi/view/tab_router.dart';
+import 'package:academiagrazi/view/user/self_register_view.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:academiagrazi/controller/users/register_instructor.dart';
@@ -80,24 +81,9 @@ class _LoginViewState extends State<LoginView> {
           context,
           MaterialPageRoute(
             builder:
-                (context) => RegisterView(
+                (context) => MainShell(
                   userService: widget.userService,
                   authInstance: widget.authInstance,
-                  registerFunction: ({
-                    required currentUser,
-                    required email,
-                    required name,
-                    required password,
-                    required passwordCheck,
-                  }) {
-                    return widget.registerUserController.registerUser(
-                      currentUser: currentUser,
-                      email: email,
-                      name: name,
-                      password: password,
-                      passwordCheck: passwordCheck,
-                    );
-                  },
                 ),
           ),
         );
@@ -236,8 +222,42 @@ class _LoginViewState extends State<LoginView> {
                   ),
                 ),
               ),
-
-              const SizedBox(width: 20),
+              const SizedBox(height: 14),
+              SizedBox(
+                width: 350,
+                child: OutlinedButton(
+                  key: const Key('createAccountButton'),
+                  onPressed:
+                      _isLoading
+                          ? null
+                          : () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder:
+                                    (_) => SelfRegisterView(
+                                      controller: widget.registerUserController,
+                                      userService: widget.userService,
+                                      authInstance: widget.authInstance,
+                                    ),
+                              ),
+                            );
+                          },
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: const Color(0xFF02594F),
+                    side: const BorderSide(color: Color(0xFF02594F)),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Text(
+                    'CRIAR CONTA',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
             ],
           ),
         ),

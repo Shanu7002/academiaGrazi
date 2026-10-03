@@ -42,7 +42,7 @@ class RegisterInstructorController {
         responsable: currentUser.id,
       );
 
-      await _userService.registerUser(userModel);
+      await _userService.registerInstructorWithCode(userModel);
 
       return true;
     } on FirebaseAuthException catch (e) {

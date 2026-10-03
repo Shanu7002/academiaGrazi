@@ -4,6 +4,7 @@ import "package:flutter_test/flutter_test.dart";
 import "package:mockito/mockito.dart";
 import "package:mockito/annotations.dart";
 import "package:academiagrazi/controller/users/register_user.dart";
+import "package:academiagrazi/models/users/registration_profile.dart";
 import "package:academiagrazi/service/users/register.dart";
 
 @GenerateMocks([RegisterService, FirebaseAuth, UserCredential, User])
@@ -33,140 +34,89 @@ void main() {
     controller = RegisterUserController(mockRegisterService, auth: mockAuth);
   });
 
-  group("RegisterController Tests sucessfully", () {
-    test("Should return true when Auth and DB insertion succeed", () async {
-      when(mockUser.uid).thenReturn("fake_uid_777");
+  group('Self registration |', () {
+    RegistrationDraft validDraft() {
+      return RegistrationDraft()
+        ..name = 'Aluna Teste'
+        ..email = 'aluna@example.com'
+        ..password = 'password123'
+        ..passwordConfirmation = 'password123'
+        ..termsAcceptedAt = DateTime.utc(2026, 9, 29)
+        ..instructorCode = 'ABCD2345'
+        ..primaryGoal = PrimaryGoal.conditioning
+        ..emergencyName = 'Contato'
+        ..emergencyRelationship = 'friend'
+        ..emergencyPhone = '11999999999';
+    }
+
+    const codeInfo = InstructorCodeInfo(
+      code: 'ABCD2345',
+      instructorId: 'instructor_uid',
+      instructorName: 'Instructor',
+    );
+
+    test('creates Auth and complete Firestore profile', () async {
+      when(
+        mockRegisterService.validateInstructorCode('ABCD2345'),
+      ).thenAnswer((_) async => codeInfo);
+      when(mockUser.uid).thenReturn('new-user');
       when(mockCredential.user).thenReturn(mockUser);
       when(
         mockAuth.createUserWithEmailAndPassword(
-          email: "test@test.com",
-          password: "password123",
+          email: 'aluna@example.com',
+          password: 'password123',
         ),
       ).thenAnswer((_) async => mockCredential);
+      when(mockRegisterService.registerUser(any)).thenAnswer((_) async {});
 
-      when(
-        mockRegisterService.registerUser(any),
-      ).thenAnswer((_) async => Future.value());
+      final result = await controller.registerSelf(draft: validDraft());
 
-      final result = await controller.registerUser(
-        currentUser: instructorUser,
-        email: "test@test.com",
-        name: "test",
-        password: "password123",
-        passwordCheck: "password123",
-      );
-
-      expect(result, isTrue);
-      verify(
-        mockAuth.createUserWithEmailAndPassword(
-          email: "test@test.com",
-          password: "password123",
-        ),
-      ).called(1);
-
-      final capturedModel =
-          verify(mockRegisterService.registerUser(captureAny)).captured.first
+      expect(result.status, SelfRegistrationStatus.success);
+      final saved =
+          verify(mockRegisterService.registerUser(captureAny)).captured.single
               as UserModel;
-      expect(capturedModel.id, "fake_uid_777");
-      expect(capturedModel.email, "test@test.com");
-      expect(capturedModel.type, UserType.user);
+      expect(saved.responsable, 'instructor_uid');
+      expect(saved.onboardingCompleted, isTrue);
+      expect(saved.registrationProfile?.primaryGoal, PrimaryGoal.conditioning);
     });
 
-    test("Should return true and default to type user when omitted", () async {
-      when(mockUser.uid).thenReturn("uid_777");
-      when(mockCredential.user).thenReturn(mockUser);
+    test('does not create Auth when instructor code is invalid', () async {
       when(
-        mockAuth.createUserWithEmailAndPassword(
-          email: "test@test.com",
-          password: "password123",
-        ),
-      ).thenAnswer((_) async => mockCredential);
+        mockRegisterService.validateInstructorCode('ABCD2345'),
+      ).thenAnswer((_) async => null);
 
-      when(
-        mockRegisterService.registerUser(any),
-      ).thenAnswer((_) async => Future.value());
+      final result = await controller.registerSelf(draft: validDraft());
 
-      final result = await controller.registerUser(
-        currentUser: instructorUser,
-        email: "test@test.com",
-        name: "test",
-        password: "password123",
-        passwordCheck: "password123",
-      );
-
-      expect(result, isTrue);
-
-      final capturedModel =
-          verify(mockRegisterService.registerUser(captureAny)).captured.first
-              as UserModel;
-      expect(capturedModel.type, UserType.user);
-    });
-  });
-
-  group("RegisterController Tests failed", () {
-    test("Should return false immediately if passwords do not match", () async {
-      final result = await controller.registerUser(
-        currentUser: instructorUser,
-        email: "test@test.com",
-        name: "test",
-        password: "password123",
-        passwordCheck: "wrongpassword",
-      );
-
-      expect(result, isFalse);
+      expect(result.status, SelfRegistrationStatus.invalidInstructorCode);
       verifyNever(
         mockAuth.createUserWithEmailAndPassword(
-          email: anyNamed("email"),
-          password: anyNamed("password"),
+          email: anyNamed('email'),
+          password: anyNamed('password'),
         ),
       );
     });
 
-    test("Should return false when FirebaseAuthException is thrown", () async {
+    test('deletes Auth user when Firestore persistence fails', () async {
+      when(
+        mockRegisterService.validateInstructorCode('ABCD2345'),
+      ).thenAnswer((_) async => codeInfo);
+      when(mockUser.uid).thenReturn('new-user');
+      when(mockCredential.user).thenReturn(mockUser);
       when(
         mockAuth.createUserWithEmailAndPassword(
-          email: "test@test.com",
-          password: "password123",
+          email: 'aluna@example.com',
+          password: 'password123',
         ),
-      ).thenThrow(FirebaseAuthException(code: "email-already-in-use"));
-
-      final result = await controller.registerUser(
-        currentUser: instructorUser,
-        email: "test@test.com",
-        name: "test",
-        password: "password123",
-        passwordCheck: "password123",
-      );
-
-      expect(result, isFalse);
-      verifyNever(mockRegisterService.registerUser(any));
-    });
-
-    test("should return error if database is unreachable", () async {
+      ).thenAnswer((_) async => mockCredential);
       when(
-        mockAuth.createUserWithEmailAndPassword(
-          email: anyNamed("email"),
-          password: anyNamed("password"),
-        ),
-      ).thenThrow(Exception("Internal server error"));
+        mockRegisterService.registerUser(any),
+      ).thenThrow(Exception('Firestore unavailable'));
+      when(mockUser.delete()).thenAnswer((_) async {});
 
-      final result = await controller.registerUser(
-        currentUser: instructorUser,
-        name: "test",
-        email: "test@test.com",
-        password: "password123",
-        passwordCheck: "password123",
-      );
+      final result = await controller.registerSelf(draft: validDraft());
 
-      verify(
-        mockAuth.createUserWithEmailAndPassword(
-          email: anyNamed("email"),
-          password: anyNamed("password"),
-        ),
-      ).called(1);
-
-      expect(result, isFalse);
-      verifyNever(mockRegisterService.registerUser(any));
+      expect(result.status, SelfRegistrationStatus.persistenceError);
+      verify(mockUser.delete()).called(1);
     });
   });
 }

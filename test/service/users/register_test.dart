@@ -66,4 +66,86 @@ void main() {
       expect(service.registerUser(user), throwsA(isA<Exception>()));
     });
   });
+
+  group('instructor codes |', () {
+    test('atomically registers an instructor and reusable code', () async {
+      final instructor = UserModel(
+        id: 'instructor-1',
+        name: 'Marina',
+        email: 'marina@example.com',
+        type: UserType.instructor,
+      );
+
+      final code = await registerService.registerInstructorWithCode(
+        instructor,
+        codeGenerator: () => 'ABCD2345',
+      );
+
+      final user = await fakeDb.collection('users').doc(instructor.id).get();
+      final codeDocument =
+          await fakeDb.collection('instructorCodes').doc(code).get();
+      expect(code, 'ABCD2345');
+      expect(user.data()?['registrationCode'], code);
+      expect(codeDocument.data()?['instructorId'], instructor.id);
+      expect(codeDocument.data()?['instructorName'], instructor.name);
+      expect(codeDocument.data()?['active'], isTrue);
+    });
+
+    test('validates a normalized active instructor code', () async {
+      await fakeDb.collection('instructorCodes').doc('ABCD2345').set({
+        'instructorId': 'instructor-1',
+        'instructorName': 'Marina',
+        'active': true,
+      });
+
+      final result = await registerService.validateInstructorCode(
+        '  abcd2345 ',
+      );
+
+      expect(result?.code, 'ABCD2345');
+      expect(result?.instructorId, 'instructor-1');
+      expect(result?.instructorName, 'Marina');
+    });
+
+    test('rejects a code without its public instructor name', () async {
+      await fakeDb.collection('instructorCodes').doc('LEGACY12').set({
+        'instructorId': 'instructor-1',
+        'active': true,
+      });
+
+      expect(await registerService.validateInstructorCode('LEGACY12'), isNull);
+    });
+
+    test('rejects inactive and unknown instructor codes', () async {
+      await fakeDb.collection('instructorCodes').doc('INACTIVE').set({
+        'instructorId': 'instructor-1',
+        'active': false,
+      });
+
+      expect(await registerService.validateInstructorCode('INACTIVE'), isNull);
+      expect(await registerService.validateInstructorCode('UNKNOWN1'), isNull);
+    });
+
+    test('generates a code for an existing instructor', () async {
+      final instructor = UserModel(
+        id: 'instructor-2',
+        name: 'Ana',
+        email: 'ana@example.com',
+        type: UserType.instructor,
+      );
+      await fakeDb
+          .collection('users')
+          .doc(instructor.id)
+          .set(instructor.toJson());
+
+      final code = await registerService.ensureInstructorCode(
+        instructor,
+        codeGenerator: () => 'WXYZ6789',
+      );
+
+      final user = await fakeDb.collection('users').doc(instructor.id).get();
+      expect(code, 'WXYZ6789');
+      expect(user.data()?['registrationCode'], code);
+    });
+  });
 }

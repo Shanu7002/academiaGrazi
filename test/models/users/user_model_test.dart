@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:academiagrazi/models/users/user_model.dart';
+import 'package:academiagrazi/models/users/registration_profile.dart';
 
 void main() {
   group('UserModel Tests |', () {
@@ -106,5 +107,42 @@ void main() {
       expect(user.email, "");
       expect(user.type, UserType.user);
     });
+  });
+
+  test('serializes and parses the complete onboarding profile', () {
+    final acceptedAt = DateTime.utc(2026, 9, 29);
+    final user = UserModel(
+      id: 'student-1',
+      name: 'Grazi',
+      email: 'grazi@example.com',
+      responsable: 'instructor-1',
+      onboardingCompleted: true,
+      termsAcceptedAt: acceptedAt,
+      registrationProfile: const RegistrationProfile(
+        measurements: BodyMeasurements(age: 28, heightCm: 165, weightKg: 68.5),
+        primaryGoal: PrimaryGoal.conditioning,
+        health: HealthProfile(
+          conditions: ['knee'],
+          notes: 'Cuidado com impacto',
+          restrictions: ['asthmaBronchitis'],
+        ),
+        emergencyContact: EmergencyContact(
+          name: 'Carlos',
+          relationship: 'partner',
+          phone: '11999999999',
+        ),
+      ),
+    );
+
+    final json = user.toJson();
+    final parsed = UserModel.fromJson(json, user.id);
+
+    expect(json, isNot(contains('password')));
+    expect(parsed.onboardingCompleted, isTrue);
+    expect(parsed.termsAcceptedAt, acceptedAt);
+    expect(parsed.registrationProfile?.measurements.weightKg, 68.5);
+    expect(parsed.registrationProfile?.primaryGoal, PrimaryGoal.conditioning);
+    expect(parsed.registrationProfile?.health.conditions, ['knee']);
+    expect(parsed.registrationProfile?.emergencyContact.phone, '11999999999');
   });
 }

@@ -33,11 +33,36 @@ class _RegisterViewState extends State<RegisterView> {
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
   bool _isLoading = false;
+  String? _instructorCode;
 
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadInstructorCode();
+  }
+
+  Future<void> _loadInstructorCode() async {
+    final firebaseUser = widget.authInstance.currentUser;
+    if (firebaseUser == null) return;
+    try {
+      final currentUser = await widget.userService.getUserById(
+        firebaseUser.uid,
+      );
+      if (currentUser == null || currentUser.type != UserType.instructor) {
+        return;
+      }
+      final code = await widget.userService.ensureInstructorCode(currentUser);
+      if (mounted) setState(() => _instructorCode = code);
+    } on Exception {
+      // O cadastro administrativo continua disponível mesmo se o código
+      // não puder ser carregado naquele momento.
+    }
+  }
 
   @override
   void dispose() {
@@ -132,6 +157,43 @@ class _RegisterViewState extends State<RegisterView> {
           child: Column(
             children: [
               Image.asset('assets/logoLogin.png', height: 250),
+
+              if (_instructorCode != null) ...[
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFDDF5F2),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Column(
+                    children: [
+                      const Text(
+                        'SEU CÓDIGO DE CONVITE',
+                        style: TextStyle(
+                          color: Color(0xFF005A4F),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                        ),
+                      ),
+                      SelectableText(
+                        _instructorCode!,
+                        style: const TextStyle(
+                          color: Color(0xFF005A4F),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 24,
+                          letterSpacing: 3,
+                        ),
+                      ),
+                      const Text(
+                        'Compartilhe este código com seus alunos.',
+                        style: TextStyle(fontSize: 12),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
+              ],
 
               TextField(
                 controller: _nameController,
