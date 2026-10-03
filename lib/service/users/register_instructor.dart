@@ -15,27 +15,19 @@ class InstructorCodeInfo {
   });
 }
 
-class RegisterService {
+class RegisterInstructorService {
   final FirebaseFirestore _db;
 
   // coverage:ignore-start
-  RegisterService({FirebaseFirestore? db})
+  RegisterInstructorService({FirebaseFirestore? db})
     : _db = db ?? FirebaseFirestore.instance;
   // coverage:ignore-end
 
-  Future<void> registerUser(UserModel user) async {
-    await _db.collection("users").doc(user.id).set(user.toJson());
-  }
-
-  Future<String> registerInstructorWithCode(
+  Future<String> registerInstructor(
     UserModel instructor, {
     String Function()? codeGenerator,
   }) async {
-    return _reserveInstructorCode(
-      instructor,
-      createUserDocument: true,
-      codeGenerator: codeGenerator,
-    );
+    return _reserveInstructorCode(instructor, createUserDocument: true);
   }
 
   Future<String> ensureInstructorCode(
@@ -43,6 +35,7 @@ class RegisterService {
     String Function()? codeGenerator,
   }) async {
     final existingCode = instructor.registrationCode?.trim();
+
     if (existingCode != null && existingCode.isNotEmpty) {
       return existingCode;
     }
@@ -51,20 +44,21 @@ class RegisterService {
       throw ArgumentError('Only instructors can have registration codes');
     }
 
-    return _reserveInstructorCode(
-      instructor,
-      createUserDocument: false,
-      codeGenerator: codeGenerator,
-    );
+    return _reserveInstructorCode(instructor, createUserDocument: false);
   }
 
   Future<InstructorCodeInfo?> validateInstructorCode(String rawCode) async {
     final code = rawCode.trim().toUpperCase();
-    if (code.isEmpty) return null;
+
+    if (code.isEmpty) {
+      return null;
+    }
 
     final codeSnapshot =
         await _db.collection('instructorCodes').doc(code).get();
+
     final codeData = codeSnapshot.data();
+
     if (!codeSnapshot.exists ||
         codeData == null ||
         codeData['active'] != true) {
@@ -73,6 +67,7 @@ class RegisterService {
 
     final instructorId = codeData['instructorId'] as String?;
     final instructorName = codeData['instructorName'] as String?;
+
     if (instructorId == null ||
         instructorId.isEmpty ||
         instructorName == null ||
@@ -90,21 +85,20 @@ class RegisterService {
   Future<String> _reserveInstructorCode(
     UserModel instructor, {
     required bool createUserDocument,
-    String Function()? codeGenerator,
   }) async {
-    final generator = codeGenerator ?? _generateCode;
+    final generator = _generateCode;
 
     for (var attempt = 0; attempt < 5; attempt++) {
       final code = generator().trim().toUpperCase();
-      if (code.length != 8) {
-        throw ArgumentError('Instructor code must have eight characters');
-      }
 
       try {
         await _db.runTransaction((transaction) async {
           final codeReference = _db.collection('instructorCodes').doc(code);
+
           final userReference = _db.collection('users').doc(instructor.id);
+
           final existingCode = await transaction.get(codeReference);
+
           if (existingCode.exists) {
             throw StateError('Instructor code collision');
           }
@@ -112,11 +106,13 @@ class RegisterService {
           final instructorWithCode = instructor.copyWith(
             registrationCode: code,
           );
+
           if (createUserDocument) {
             transaction.set(userReference, instructorWithCode.toJson());
           } else {
             transaction.update(userReference, {'registrationCode': code});
           }
+
           transaction.set(codeReference, {
             'instructorId': instructor.id,
             'instructorName': instructor.name,
@@ -124,9 +120,12 @@ class RegisterService {
             'createdAt': DateTime.now().toIso8601String(),
           });
         });
+
         return code;
       } on StateError {
-        if (attempt == 4) rethrow;
+        if (attempt == 4) {
+          rethrow;
+        }
       }
     }
 
@@ -136,29 +135,10 @@ class RegisterService {
   String _generateCode() {
     const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
     final random = Random.secure();
+
     return List.generate(
       8,
       (_) => alphabet[random.nextInt(alphabet.length)],
     ).join();
-  }
-
-  Future<UserModel?> getUserById(String uid) async {
-    final doc = await _db.collection('users').doc(uid).get();
-
-    if (!doc.exists) {
-      return null;
-    }
-
-    return UserModel.fromJson(doc.data()!, doc.id);
-  }
-
-  Future<UserModel?> getResponsableData(String uid) async {
-    final doc = await _db.collection('users').doc(uid).get();
-
-    if (!doc.exists) {
-      return null;
-    }
-
-    return UserModel.fromJson(doc.data()!, doc.id);
   }
 }
