@@ -5,10 +5,10 @@ import 'package:mockito/mockito.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:academiagrazi/models/users/user_model.dart';
-import 'package:academiagrazi/service/users/register.dart';
+import 'package:academiagrazi/service/users/register_user.dart';
 import 'package:academiagrazi/view/user/aluno_profile_view.dart';
 
-@GenerateMocks([RegisterService, FirebaseAuth, User])
+@GenerateMocks([RegisterUserService, FirebaseAuth, User])
 import 'aluno_profile_view_test.mocks.dart';
 
 void main() {

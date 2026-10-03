@@ -2,7 +2,7 @@ import "package:cloud_firestore/cloud_firestore.dart";
 import "package:flutter_test/flutter_test.dart";
 import "package:fake_cloud_firestore/fake_cloud_firestore.dart";
 import "package:academiagrazi/models/users/user_model.dart";
-import "package:academiagrazi/service/users/register.dart";
+import "package:academiagrazi/service/users/register_user.dart";
 import "package:mockito/annotations.dart";
 import "package:mockito/mockito.dart";
 

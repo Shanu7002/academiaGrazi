@@ -1,8 +1,10 @@
+import 'package:academiagrazi/service/users/register_instructor.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:academiagrazi/models/users/user_model.dart';
-import 'package:academiagrazi/service/users/register.dart';
+import 'package:academiagrazi/service/users/register_user.dart';
+import 'package:academiagrazi/locator.dart';
 
 typedef RegisterFunction =
     Future<bool> Function({
@@ -15,15 +17,8 @@ typedef RegisterFunction =
 
 class RegisterView extends StatefulWidget {
   final RegisterFunction registerFunction;
-  final RegisterService userService;
-  final FirebaseAuth authInstance;
 
-  const RegisterView({
-    super.key,
-    required this.registerFunction,
-    required this.userService,
-    required this.authInstance,
-  });
+  const RegisterView({super.key, required this.registerFunction});
 
   @override
   State<RegisterView> createState() => _RegisterViewState();
@@ -40,6 +35,11 @@ class _RegisterViewState extends State<RegisterView> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmController = TextEditingController();
 
+  final FirebaseAuth _authInstance = locator<FirebaseAuth>();
+  final RegisterInstructorService _instructorService =
+      locator<RegisterInstructorService>();
+  final RegisterUserService _userService = locator<RegisterUserService>();
+
   @override
   void initState() {
     super.initState();
@@ -47,16 +47,14 @@ class _RegisterViewState extends State<RegisterView> {
   }
 
   Future<void> _loadInstructorCode() async {
-    final firebaseUser = widget.authInstance.currentUser;
+    final firebaseUser = _authInstance.currentUser;
     if (firebaseUser == null) return;
     try {
-      final currentUser = await widget.userService.getUserById(
-        firebaseUser.uid,
-      );
+      final currentUser = await _userService.getUserById(firebaseUser.uid);
       if (currentUser == null || currentUser.type != UserType.instructor) {
         return;
       }
-      final code = await widget.userService.ensureInstructorCode(currentUser);
+      final code = await _instructorService.ensureInstructorCode(currentUser);
       if (mounted) setState(() => _instructorCode = code);
     } on Exception {
       // O cadastro administrativo continua disponível mesmo se o código
@@ -93,7 +91,7 @@ class _RegisterViewState extends State<RegisterView> {
       return;
     }
 
-    final firebaseUser = widget.authInstance.currentUser;
+    final firebaseUser = _authInstance.currentUser;
 
     if (firebaseUser == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -102,7 +100,7 @@ class _RegisterViewState extends State<RegisterView> {
       return;
     }
 
-    final currentUser = await widget.userService.getUserById(firebaseUser.uid);
+    final currentUser = await _userService.getUserById(firebaseUser.uid);
 
     if (!mounted) return;
 

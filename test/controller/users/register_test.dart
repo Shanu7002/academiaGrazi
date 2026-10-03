@@ -5,9 +5,9 @@ import "package:mockito/mockito.dart";
 import "package:mockito/annotations.dart";
 import "package:academiagrazi/controller/users/register_user.dart";
 import "package:academiagrazi/models/users/registration_profile.dart";
-import "package:academiagrazi/service/users/register.dart";
+import "package:academiagrazi/service/users/register_user.dart";
 
-@GenerateMocks([RegisterService, FirebaseAuth, UserCredential, User])
+@GenerateMocks([RegisterUserService, FirebaseAuth, UserCredential, User])
 import "register_test.mocks.dart";
 
 void main() {

@@ -6,9 +6,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:academiagrazi/view/tab_router.dart';
 import 'package:academiagrazi/models/users/user_model.dart';
-import 'package:academiagrazi/service/users/register.dart';
+import 'package:academiagrazi/service/users/register_user.dart';
 
-@GenerateMocks([RegisterService, FirebaseAuth, User])
+@GenerateMocks([RegisterUserService, FirebaseAuth, User])
 import 'tab_router_test.mocks.dart';
 
 void main() {

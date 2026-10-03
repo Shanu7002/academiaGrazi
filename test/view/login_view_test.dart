@@ -7,7 +7,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:academiagrazi/controller/users/login.dart';
 import 'package:academiagrazi/controller/users/register_user.dart';
 import 'package:academiagrazi/controller/users/register_instructor.dart';
-import 'package:academiagrazi/service/users/register.dart';
+import 'package:academiagrazi/service/users/register_user.dart';
 import 'package:academiagrazi/models/users/user_model.dart';
 import 'package:academiagrazi/view/login_view.dart';
 import 'package:academiagrazi/view/tab_router.dart';
@@ -17,7 +17,7 @@ import 'package:academiagrazi/view/user/self_register_view.dart';
   LoginController,
   RegisterUserController,
   RegisterInstructorController,
-  RegisterService,
+  RegisterUserService,
   FirebaseAuth,
 ])
 import 'login_view_test.mocks.dart';

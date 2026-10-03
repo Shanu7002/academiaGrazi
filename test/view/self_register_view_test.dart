@@ -1,5 +1,5 @@
 import 'package:academiagrazi/controller/users/register_user.dart';
-import 'package:academiagrazi/service/users/register.dart';
+import 'package:academiagrazi/service/users/register_user.dart';
 import 'package:academiagrazi/view/user/self_register_view.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
