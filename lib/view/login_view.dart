@@ -81,24 +81,9 @@ class _LoginViewState extends State<LoginView> {
           context,
           MaterialPageRoute(
             builder:
-                (context) => RegisterView(
+                (context) => MainShell(
                   userService: widget.userService,
                   authInstance: widget.authInstance,
-                  registerFunction: ({
-                    required currentUser,
-                    required email,
-                    required name,
-                    required password,
-                    required passwordCheck,
-                  }) {
-                    return widget.registerUserController.registerUser(
-                      currentUser: currentUser,
-                      email: email,
-                      name: name,
-                      password: password,
-                      passwordCheck: passwordCheck,
-                    );
-                  },
                 ),
           ),
         );
