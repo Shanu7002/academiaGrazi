@@ -1,23 +1,19 @@
+import 'package:academiagrazi/locator.dart';
 import 'package:academiagrazi/models/users/user_model.dart';
-import 'package:academiagrazi/service/users/register.dart';
+import 'package:academiagrazi/service/users/register_user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class AlunoProfileView extends StatefulWidget {
-  final RegisterService userService;
-  final FirebaseAuth authInstance;
-
-  const AlunoProfileView({
-    super.key,
-    required this.userService,
-    required this.authInstance,
-  });
+  const AlunoProfileView({super.key});
 
   @override
   State<AlunoProfileView> createState() => _AlunoProfileViewState();
 }
 
 class _AlunoProfileViewState extends State<AlunoProfileView> {
+  final FirebaseAuth _authInstance = locator<FirebaseAuth>();
+  final RegisterUserService _userService = locator<RegisterUserService>();
   UserModel? _currentUser;
   UserModel? _currentResponsable;
   bool _isLoading = true;
@@ -30,7 +26,7 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
 
   Future<void> _loadCurrentUser() async {
     try {
-      final firebaseUser = widget.authInstance.currentUser;
+      final firebaseUser = _authInstance.currentUser;
 
       if (firebaseUser == null) {
         if (!mounted) return;
@@ -38,13 +34,11 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
         return;
       }
 
-      final user = await widget.userService.getUserById(firebaseUser.uid);
+      final user = await _userService.getUserById(firebaseUser.uid);
       UserModel? responsable;
 
       if (user?.responsable != null && user!.responsable!.isNotEmpty) {
-        responsable = await widget.userService.getResponsableData(
-          user.responsable!,
-        );
+        responsable = await _userService.getResponsableData(user.responsable!);
       }
 
       if (!mounted) return;

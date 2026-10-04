@@ -1,3 +1,4 @@
+import 'package:academiagrazi/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
@@ -5,21 +6,27 @@ import 'package:mockito/mockito.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:academiagrazi/models/users/user_model.dart';
-import 'package:academiagrazi/service/users/register.dart';
+import 'package:academiagrazi/service/users/register_user.dart';
 import 'package:academiagrazi/view/user/aluno_profile_view.dart';
 
-@GenerateMocks([RegisterService, FirebaseAuth, User])
+@GenerateMocks([RegisterUserService, FirebaseAuth, User])
 import 'aluno_profile_view_test.mocks.dart';
 
 void main() {
-  late MockRegisterService mockUserService;
+  late MockRegisterUserService mockUserService;
   late MockFirebaseAuth mockAuth;
   late MockUser mockFirebaseUser;
 
   setUp(() {
-    mockUserService = MockRegisterService();
+    locator.reset();
+    locator.allowReassignment = true;
+
+    mockUserService = MockRegisterUserService();
     mockAuth = MockFirebaseAuth();
     mockFirebaseUser = MockUser();
+
+    locator.registerSingleton<RegisterUserService>(mockUserService);
+    locator.registerSingleton<FirebaseAuth>(mockAuth);
   });
 
   testWidgets('AlunoProfileView renders user data properly', (
@@ -48,14 +55,7 @@ void main() {
       mockUserService.getResponsableData("resp_456"),
     ).thenAnswer((_) async => testResponsableModel);
 
-    await tester.pumpWidget(
-      MaterialApp(
-        home: AlunoProfileView(
-          userService: mockUserService,
-          authInstance: mockAuth,
-        ),
-      ),
-    );
+    await tester.pumpWidget(MaterialApp(home: AlunoProfileView()));
 
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
 

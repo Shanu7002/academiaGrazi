@@ -1,29 +1,22 @@
 import 'package:academiagrazi/controller/users/register_user.dart';
+import 'package:academiagrazi/locator.dart';
 import 'package:academiagrazi/models/users/registration_profile.dart';
-import 'package:academiagrazi/service/users/register.dart';
 import 'package:academiagrazi/view/tab_router.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class SelfRegisterView extends StatefulWidget {
-  final RegisterUserController controller;
-  final RegisterService userService;
-  final FirebaseAuth authInstance;
-
-  const SelfRegisterView({
-    super.key,
-    required this.controller,
-    required this.userService,
-    required this.authInstance,
-  });
+  const SelfRegisterView({super.key});
 
   @override
   State<SelfRegisterView> createState() => _SelfRegisterViewState();
 }
 
 class _SelfRegisterViewState extends State<SelfRegisterView> {
+  final RegisterUserController _userController =
+      locator<RegisterUserController>();
+
   static const _primary = Color(0xFF005A4F);
   static const _secondary = Color(0xFFFF7943);
   static const _background = Color(0xFFF5FAFF);
@@ -120,7 +113,7 @@ class _SelfRegisterViewState extends State<SelfRegisterView> {
 
     setState(() => _loading = true);
     try {
-      final info = await widget.controller.validateInstructorCode(code);
+      final info = await _userController.validateInstructorCode(code);
       if (!mounted) return;
       if (info == null) {
         _showMessage('Código inválido ou inativo.');
@@ -151,7 +144,10 @@ class _SelfRegisterViewState extends State<SelfRegisterView> {
     }
 
     setState(() => _loading = true);
-    final result = await widget.controller.registerSelf(draft: _draft);
+    final result = await _userController.registerUser(
+      draft: _draft,
+      instructorId: _draft.instructorId!,
+    );
     if (!mounted) return;
     setState(() => _loading = false);
 
@@ -189,21 +185,13 @@ class _SelfRegisterViewState extends State<SelfRegisterView> {
     );
     if (!mounted) return;
     Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(
-        builder:
-            (_) => MainShell(
-              userService: widget.userService,
-              authInstance: widget.authInstance,
-            ),
-      ),
+      MaterialPageRoute(builder: (_) => MainShell()),
       (_) => false,
     );
   }
 
   String _resultMessage(SelfRegistrationStatus status) {
     switch (status) {
-      case SelfRegistrationStatus.invalidInstructorCode:
-        return 'O código do instrutor não é mais válido.';
       case SelfRegistrationStatus.emailAlreadyInUse:
         return 'Este e-mail já está cadastrado.';
       case SelfRegistrationStatus.weakPassword:

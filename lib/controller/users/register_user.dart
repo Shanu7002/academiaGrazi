@@ -1,13 +1,13 @@
 import "dart:developer";
 import "package:academiagrazi/models/users/user_model.dart";
 import "package:academiagrazi/models/users/registration_profile.dart";
-import "package:academiagrazi/service/users/register.dart";
+import "package:academiagrazi/service/users/register_user.dart";
+import "package:academiagrazi/service/users/register_instructor.dart";
 import "package:firebase_auth/firebase_auth.dart";
 
 enum SelfRegistrationStatus {
   success,
   invalidData,
-  invalidInstructorCode,
   emailAlreadyInUse,
   weakPassword,
   networkError,
@@ -25,18 +25,24 @@ class SelfRegistrationResult {
 
 class RegisterUserController {
   final FirebaseAuth _auth;
-  final RegisterService _userService;
+  final RegisterUserService _userService;
+  final RegisterInstructorService _instructorService;
 
   // coverage:ignore-start
-  RegisterUserController(this._userService, {FirebaseAuth? auth})
-    : _auth = auth ?? FirebaseAuth.instance;
+  RegisterUserController(
+    this._userService,
+    this._instructorService, {
+    FirebaseAuth? auth,
+  }) : _auth = auth ?? FirebaseAuth.instance;
   // coverage:ignore-end
+
   Future<InstructorCodeInfo?> validateInstructorCode(String code) {
-    return _userService.validateInstructorCode(code);
+    return _instructorService.validateInstructorCode(code);
   }
 
-  Future<SelfRegistrationResult> registerSelf({
+  Future<SelfRegistrationResult> registerUser({
     required RegistrationDraft draft,
+    required String instructorId,
   }) async {
     if (draft.name.trim().isEmpty ||
         draft.email.trim().isEmpty ||
@@ -49,15 +55,6 @@ class RegisterUserController {
 
     User? createdUser;
     try {
-      final codeInfo = await _userService.validateInstructorCode(
-        draft.instructorCode,
-      );
-      if (codeInfo == null) {
-        return const SelfRegistrationResult(
-          SelfRegistrationStatus.invalidInstructorCode,
-        );
-      }
-
       final credential = await _auth.createUserWithEmailAndPassword(
         email: draft.email.trim(),
         password: draft.password,
@@ -74,7 +71,7 @@ class RegisterUserController {
         name: draft.name.trim(),
         email: draft.email.trim(),
         type: UserType.user,
-        responsable: codeInfo.instructorId,
+        responsable: instructorId,
         registrationProfile: draft.toProfile(),
         onboardingCompleted: true,
         termsAcceptedAt: draft.termsAcceptedAt,

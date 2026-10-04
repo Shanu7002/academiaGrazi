@@ -1,19 +1,10 @@
-import 'package:academiagrazi/service/users/register.dart';
 import 'package:academiagrazi/view/user/aluno_home_view.dart';
 import 'package:academiagrazi/view/user/aluno_profile_view.dart';
 import 'package:academiagrazi/view/user/aluno_treinos_view.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class MainShell extends StatefulWidget {
-  final RegisterService userService;
-  final FirebaseAuth authInstance;
-
-  const MainShell({
-    super.key,
-    required this.userService,
-    required this.authInstance,
-  });
+  const MainShell({super.key});
 
   @override
   State<MainShell> createState() => _MainShellState();
@@ -72,18 +63,13 @@ class _MainShellState extends State<MainShell> {
           // =====================================================
           // EVOLUÇÃO
           // =====================================================
-          const Center(
-            child: Text('Evolução'),
-          ),
+          const Center(child: Text('Evolução')),
 
           // =====================================================
           // PERFIL
           // Mantém a implementação nova da sprint-3.
           // =====================================================
-          AlunoProfileView(
-            userService: widget.userService,
-            authInstance: widget.authInstance,
-          ),
+          AlunoProfileView(),
         ],
       ),
 
@@ -94,9 +80,7 @@ class _MainShellState extends State<MainShell> {
         onDestinationSelected: (index) {
           // Ao tocar em Início, volta para a raiz da Home.
           if (index == 0) {
-            _homeNavigatorKey.currentState?.popUntil(
-              (route) => route.isFirst,
-            );
+            _homeNavigatorKey.currentState?.popUntil((route) => route.isFirst);
           }
 
           // Ao tocar em Treinos, volta para a lista de treinos.

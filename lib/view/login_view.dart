@@ -1,29 +1,13 @@
 import 'package:academiagrazi/controller/users/login.dart';
-import 'package:academiagrazi/controller/users/register_user.dart';
 import 'package:academiagrazi/models/users/user_model.dart';
-import 'package:academiagrazi/view/model/register_mod.dart';
+import 'package:academiagrazi/view/admin/register_instructor_view.dart';
 import 'package:academiagrazi/view/tab_router.dart';
 import 'package:academiagrazi/view/user/self_register_view.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:academiagrazi/controller/users/register_instructor.dart';
-import 'package:academiagrazi/service/users/register.dart';
+import 'package:academiagrazi/locator.dart';
 
 class LoginView extends StatefulWidget {
-  final LoginController loginController;
-  final RegisterUserController registerUserController;
-  final RegisterInstructorController registerInstructorController;
-  final RegisterService userService;
-  final FirebaseAuth authInstance;
-
-  const LoginView({
-    super.key,
-    required this.loginController,
-    required this.registerUserController,
-    required this.registerInstructorController,
-    required this.userService,
-    required this.authInstance,
-  });
+  const LoginView({super.key});
 
   @override
   State<LoginView> createState() => _LoginViewState();
@@ -35,6 +19,8 @@ class _LoginViewState extends State<LoginView> {
 
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+
+  final LoginController _controller = locator<LoginController>();
 
   @override
   void dispose() {
@@ -56,7 +42,7 @@ class _LoginViewState extends State<LoginView> {
 
     setState(() => _isLoading = true);
 
-    final UserModel? user = await widget.loginController.loginUser(
+    final UserModel? user = await _controller.loginUser(
       email: email,
       password: password,
     );
@@ -68,51 +54,17 @@ class _LoginViewState extends State<LoginView> {
       if (user.type == UserType.user) {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(
-            builder:
-                (context) => MainShell(
-                  userService: widget.userService,
-                  authInstance: widget.authInstance,
-                ),
-          ),
+          MaterialPageRoute(builder: (context) => MainShell()),
         );
       } else if (user.type == UserType.instructor) {
         Navigator.push(
           context,
-          MaterialPageRoute(
-            builder:
-                (context) => MainShell(
-                  userService: widget.userService,
-                  authInstance: widget.authInstance,
-                ),
-          ),
+          MaterialPageRoute(builder: (context) => MainShell()),
         );
       } else {
         Navigator.push(
           context,
-          MaterialPageRoute(
-            builder:
-                (context) => RegisterView(
-                  userService: widget.userService,
-                  authInstance: widget.authInstance,
-                  registerFunction: ({
-                    required currentUser,
-                    required email,
-                    required name,
-                    required password,
-                    required passwordCheck,
-                  }) {
-                    return widget.registerInstructorController
-                        .registerInstructor(
-                          currentUser: currentUser,
-                          email: email,
-                          name: name,
-                          password: password,
-                          passwordCheck: passwordCheck,
-                        );
-                  },
-                ),
-          ),
+          MaterialPageRoute(builder: (context) => RegisterInstructorView()),
         );
       }
     } else {
@@ -234,12 +186,7 @@ class _LoginViewState extends State<LoginView> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder:
-                                    (_) => SelfRegisterView(
-                                      controller: widget.registerUserController,
-                                      userService: widget.userService,
-                                      authInstance: widget.authInstance,
-                                    ),
+                                builder: (_) => SelfRegisterView(),
                               ),
                             );
                           },

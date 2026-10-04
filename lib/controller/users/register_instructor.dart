@@ -1,12 +1,12 @@
 import "dart:developer";
 import "package:academiagrazi/auth/permissions.dart";
 import "package:academiagrazi/models/users/user_model.dart";
-import "package:academiagrazi/service/users/register.dart";
+import "package:academiagrazi/service/users/register_instructor.dart";
 import "package:firebase_auth/firebase_auth.dart";
 
 class RegisterInstructorController {
   final FirebaseAuth _auth;
-  final RegisterService _userService;
+  final RegisterInstructorService _userService;
 
   // coverage:ignore-start
   RegisterInstructorController(this._userService, {FirebaseAuth? auth})
@@ -42,7 +42,7 @@ class RegisterInstructorController {
         responsable: currentUser.id,
       );
 
-      await _userService.registerInstructorWithCode(userModel);
+      await _userService.registerInstructor(userModel);
 
       return true;
     } on FirebaseAuthException catch (e) {

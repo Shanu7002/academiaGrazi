@@ -1,10 +1,5 @@
 import 'dart:math' as math;
 
-import 'package:academiagrazi/controller/users/login.dart';
-import 'package:academiagrazi/controller/users/register_instructor.dart';
-import 'package:academiagrazi/controller/users/register_user.dart';
-import 'package:academiagrazi/service/users/register.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -35,20 +30,7 @@ const String _gradientAsset = 'assets/welcometela/faixa_gradiente.png';
 // ================================================================
 
 class WelcomeView extends StatefulWidget {
-  final LoginController loginController;
-  final RegisterUserController registerUserController;
-  final RegisterInstructorController registerInstructorController;
-  final RegisterService userService;
-  final FirebaseAuth authInstance;
-
-  const WelcomeView({
-    super.key,
-    required this.loginController,
-    required this.registerUserController,
-    required this.registerInstructorController,
-    required this.userService,
-    required this.authInstance,
-  });
+  const WelcomeView({super.key});
 
   @override
   State<WelcomeView> createState() => _WelcomeViewState();
@@ -150,13 +132,7 @@ class _WelcomeViewState extends State<WelcomeView>
       PageRouteBuilder(
         transitionDuration: const Duration(milliseconds: 450),
         pageBuilder: (context, animation, secondaryAnimation) {
-          return LoginView(
-            loginController: widget.loginController,
-            registerUserController: widget.registerUserController,
-            registerInstructorController: widget.registerInstructorController,
-            userService: widget.userService,
-            authInstance: widget.authInstance,
-          );
+          return LoginView();
         },
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           return FadeTransition(opacity: animation, child: child);
