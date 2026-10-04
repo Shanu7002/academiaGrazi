@@ -12,12 +12,12 @@ import 'package:academiagrazi/view/user/aluno_profile_view.dart';
 import 'aluno_profile_view_test.mocks.dart';
 
 void main() {
-  late MockRegisterService mockUserService;
+  late MockRegisterUserService mockUserService;
   late MockFirebaseAuth mockAuth;
   late MockUser mockFirebaseUser;
 
   setUp(() {
-    mockUserService = MockRegisterService();
+    mockUserService = MockRegisterUserService();
     mockAuth = MockFirebaseAuth();
     mockFirebaseUser = MockUser();
   });
@@ -48,14 +48,7 @@ void main() {
       mockUserService.getResponsableData("resp_456"),
     ).thenAnswer((_) async => testResponsableModel);
 
-    await tester.pumpWidget(
-      MaterialApp(
-        home: AlunoProfileView(
-          userService: mockUserService,
-          authInstance: mockAuth,
-        ),
-      ),
-    );
+    await tester.pumpWidget(MaterialApp(home: AlunoProfileView()));
 
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
 

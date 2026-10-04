@@ -1,4 +1,6 @@
+import 'package:academiagrazi/controller/users/register_instructor.dart';
 import 'package:academiagrazi/controller/users/register_user.dart';
+import 'package:academiagrazi/service/users/register_instructor.dart';
 import 'package:academiagrazi/service/users/register_user.dart';
 import 'package:academiagrazi/view/user/self_register_view.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
@@ -11,13 +13,19 @@ class _MockFirebaseAuth extends Mock implements FirebaseAuth {}
 
 void main() {
   late FakeFirebaseFirestore db;
-  late RegisterService service;
-  late RegisterUserController controller;
+  late RegisterUserService userService;
+  late RegisterUserController userController;
+  late RegisterInstructorService instructorService;
 
   setUp(() async {
     db = FakeFirebaseFirestore();
-    service = RegisterService(db: db);
-    controller = RegisterUserController(service, auth: _MockFirebaseAuth());
+    userService = RegisterUserService(db: db);
+    instructorService = RegisterInstructorService(db: db);
+    userController = RegisterUserController(
+      userService,
+      instructorService,
+      auth: _MockFirebaseAuth(),
+    );
     await db.collection('users').doc('instructor-1').set({
       'name': 'Marina',
       'email': 'marina@example.com',
@@ -31,15 +39,7 @@ void main() {
   });
 
   Future<void> pumpView(WidgetTester tester) async {
-    await tester.pumpWidget(
-      MaterialApp(
-        home: SelfRegisterView(
-          controller: controller,
-          userService: service,
-          authInstance: _MockFirebaseAuth(),
-        ),
-      ),
-    );
+    await tester.pumpWidget(MaterialApp(home: SelfRegisterView()));
   }
 
   Future<void> completeAccountStep(WidgetTester tester) async {

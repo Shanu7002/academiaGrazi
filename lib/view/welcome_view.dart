@@ -1,10 +1,5 @@
 import 'dart:math' as math;
 
-import 'package:academiagrazi/controller/users/login.dart';
-import 'package:academiagrazi/controller/users/register_instructor.dart';
-import 'package:academiagrazi/controller/users/register_user.dart';
-import 'package:academiagrazi/service/users/register_user.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 

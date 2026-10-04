@@ -26,29 +26,19 @@ void main() {
   late MockLoginController mockLoginController;
   late MockRegisterUserController mockRegisterUserController;
   late MockRegisterInstructorController mockRegisterInstructorController;
-  late MockRegisterService mockUserService;
+  late MockRegisterUserService mockUserRegisterService;
   late MockFirebaseAuth mockAuth;
 
   setUp(() {
     mockLoginController = MockLoginController();
     mockRegisterUserController = MockRegisterUserController();
     mockRegisterInstructorController = MockRegisterInstructorController();
-    mockUserService = MockRegisterService();
+    mockUserRegisterService = MockRegisterUserService();
     mockAuth = MockFirebaseAuth();
   });
 
   Future<void> pumpLogin(WidgetTester tester) async {
-    await tester.pumpWidget(
-      MaterialApp(
-        home: LoginView(
-          loginController: mockLoginController,
-          registerUserController: mockRegisterUserController,
-          registerInstructorController: mockRegisterInstructorController,
-          userService: mockUserService,
-          authInstance: mockAuth,
-        ),
-      ),
-    );
+    await tester.pumpWidget(MaterialApp(home: LoginView()));
   }
 
   Future<void> submitLogin(WidgetTester tester) async {
