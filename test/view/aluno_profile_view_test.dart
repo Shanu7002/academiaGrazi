@@ -1,3 +1,4 @@
+import 'package:academiagrazi/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
@@ -17,9 +18,15 @@ void main() {
   late MockUser mockFirebaseUser;
 
   setUp(() {
+    locator.reset();
+    locator.allowReassignment = true;
+
     mockUserService = MockRegisterUserService();
     mockAuth = MockFirebaseAuth();
     mockFirebaseUser = MockUser();
+
+    locator.registerSingleton<RegisterUserService>(mockUserService);
+    locator.registerSingleton<FirebaseAuth>(mockAuth);
   });
 
   testWidgets('AlunoProfileView renders user data properly', (

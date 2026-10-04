@@ -27,7 +27,11 @@ class RegisterInstructorService {
     UserModel instructor, {
     String Function()? codeGenerator,
   }) async {
-    return _reserveInstructorCode(instructor, createUserDocument: true);
+    return _reserveInstructorCode(
+      instructor,
+      createUserDocument: true,
+      codeGenerator: codeGenerator,
+    );
   }
 
   Future<String> ensureInstructorCode(
@@ -44,7 +48,11 @@ class RegisterInstructorService {
       throw ArgumentError('Only instructors can have registration codes');
     }
 
-    return _reserveInstructorCode(instructor, createUserDocument: false);
+    return _reserveInstructorCode(
+      instructor,
+      createUserDocument: false,
+      codeGenerator: codeGenerator,
+    );
   }
 
   Future<InstructorCodeInfo?> validateInstructorCode(String rawCode) async {
@@ -85,8 +93,9 @@ class RegisterInstructorService {
   Future<String> _reserveInstructorCode(
     UserModel instructor, {
     required bool createUserDocument,
+    String Function()? codeGenerator,
   }) async {
-    final generator = _generateCode;
+    final generator = codeGenerator ?? _generateCode;
 
     for (var attempt = 0; attempt < 5; attempt++) {
       final code = generator().trim().toUpperCase();

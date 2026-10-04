@@ -1,42 +1,57 @@
-import 'package:academiagrazi/controller/users/register_instructor.dart';
 import 'package:academiagrazi/controller/users/register_user.dart';
-import 'package:academiagrazi/service/users/register_instructor.dart';
+import 'package:academiagrazi/locator.dart';
 import 'package:academiagrazi/service/users/register_user.dart';
+import 'package:academiagrazi/service/users/register_instructor.dart';
 import 'package:academiagrazi/view/user/self_register_view.dart';
-import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 
-class _MockFirebaseAuth extends Mock implements FirebaseAuth {}
+@GenerateMocks([
+  RegisterUserService,
+  RegisterUserController,
+  RegisterInstructorService,
+  FirebaseAuth,
+  User,
+])
+import 'self_register_view_test.mocks.dart';
 
 void main() {
-  late FakeFirebaseFirestore db;
-  late RegisterUserService userService;
-  late RegisterUserController userController;
-  late RegisterInstructorService instructorService;
+  late MockRegisterUserService mockUserService;
+  late MockRegisterUserController mockUserController;
+  late MockRegisterInstructorService mockInstructorService;
+  late MockFirebaseAuth mockAuth;
 
   setUp(() async {
-    db = FakeFirebaseFirestore();
-    userService = RegisterUserService(db: db);
-    instructorService = RegisterInstructorService(db: db);
-    userController = RegisterUserController(
-      userService,
-      instructorService,
-      auth: _MockFirebaseAuth(),
+    locator.reset();
+    locator.allowReassignment = true;
+
+    mockUserService = MockRegisterUserService();
+    mockUserController = MockRegisterUserController();
+    mockInstructorService = MockRegisterInstructorService();
+    mockAuth = MockFirebaseAuth();
+
+    locator.registerSingleton<RegisterUserService>(mockUserService);
+    locator.registerSingleton<RegisterUserController>(mockUserController);
+    locator.registerSingleton<RegisterInstructorService>(mockInstructorService);
+    locator.registerSingleton<FirebaseAuth>(mockAuth);
+
+    when(mockUserController.validateInstructorCode('ABCD2345')).thenAnswer(
+      (_) async => InstructorCodeInfo(
+        code: 'ABCD2345',
+        instructorId: '123',
+        instructorName: 'Marina',
+      ),
     );
-    await db.collection('users').doc('instructor-1').set({
-      'name': 'Marina',
-      'email': 'marina@example.com',
-      'type': 'instructor',
-    });
-    await db.collection('instructorCodes').doc('ABCD2345').set({
-      'instructorId': 'instructor-1',
-      'instructorName': 'Marina',
-      'active': true,
-    });
   });
+
+  tearDown(() {
+    locator.reset();
+  });
+
+  // helpers
 
   Future<void> pumpView(WidgetTester tester) async {
     await tester.pumpWidget(MaterialApp(home: SelfRegisterView()));
@@ -59,12 +74,53 @@ void main() {
       find.byKey(const Key('registrationPasswordConfirmation')),
       'password123',
     );
+
     await tester.ensureVisible(find.byKey(const Key('registrationTerms')));
     await tester.tap(find.byKey(const Key('registrationTerms')));
     await tester.pump();
+
+    await tester.ensureVisible(
+      find.byKey(const Key('registrationContinueButton')),
+    );
     await tester.tap(find.byKey(const Key('registrationContinueButton')));
     await tester.pumpAndSettle();
   }
+
+  Future<void> completeInstructorStep(WidgetTester tester) async {
+    await tester.enterText(
+      find.byKey(const Key('registrationInstructorCode')),
+      'ABCD2345',
+    );
+
+    await tester.ensureVisible(
+      find.byKey(const Key('registrationContinueButton')),
+    );
+    await tester.tap(find.byKey(const Key('registrationContinueButton')));
+    await tester.pumpAndSettle();
+  }
+
+  Future<void> completePersonalDataStep(WidgetTester tester) async {
+    await tester.ensureVisible(
+      find.byKey(const Key('registrationContinueButton')),
+    );
+    await tester.tap(find.byKey(const Key('registrationContinueButton')));
+    await tester.pumpAndSettle();
+  }
+
+  Future<void> completeGoalsStep(WidgetTester tester) async {
+    final goalChip = find.byKey(const Key('goal-conditioning'));
+    await tester.ensureVisible(goalChip);
+    await tester.tap(goalChip);
+    await tester.pump();
+
+    await tester.ensureVisible(
+      find.byKey(const Key('registrationContinueButton')),
+    );
+    await tester.tap(find.byKey(const Key('registrationContinueButton')));
+    await tester.pumpAndSettle();
+  }
+
+  // actual tests
 
   testWidgets('validates account data before advancing', (tester) async {
     await pumpView(tester);
@@ -83,15 +139,18 @@ void main() {
 
     await tester.enterText(
       find.byKey(const Key('registrationInstructorCode')),
-      'abcd2345',
+      'ABCD2345',
     );
     await tester.tap(find.byKey(const Key('registrationContinueButton')));
     await tester.pumpAndSettle();
 
     expect(find.text('ETAPA 3 DE 6'), findsOneWidget);
+
     await tester.tap(find.byTooltip('Voltar'));
     await tester.pumpAndSettle();
+
     expect(find.text('Marina'), findsOneWidget);
+
     final codeField = tester.widget<TextField>(
       find.byKey(const Key('registrationInstructorCode')),
     );
@@ -102,23 +161,19 @@ void main() {
     tester,
   ) async {
     await pumpView(tester);
+
     await completeAccountStep(tester);
-    await tester.enterText(
-      find.byKey(const Key('registrationInstructorCode')),
-      'ABCD2345',
-    );
-    await tester.tap(find.byKey(const Key('registrationContinueButton')));
-    await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('registrationContinueButton')));
-    await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('goal-conditioning')));
-    await tester.tap(find.byKey(const Key('registrationContinueButton')));
-    await tester.pumpAndSettle();
+    await completeInstructorStep(tester);
+    await completePersonalDataStep(tester);
+    await completeGoalsStep(tester);
 
     final noneFinder = find.byKey(const Key('health-none-Nenhuma dor'));
     final kneeFinder = find.byKey(const Key('health-knee-Joelho'));
+
+    await tester.ensureVisible(noneFinder);
     expect(tester.widget<FilterChip>(noneFinder).selected, isTrue);
 
+    await tester.ensureVisible(kneeFinder);
     await tester.tap(kneeFinder);
     await tester.pump();
 

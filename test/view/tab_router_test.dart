@@ -1,3 +1,4 @@
+import 'package:academiagrazi/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
@@ -18,9 +19,15 @@ void main() {
   late void Function(FlutterErrorDetails)? previousFlutterError;
 
   setUp(() {
+    locator.reset();
+    locator.allowReassignment = true;
+
     mockUserService = MockRegisterUserService();
     mockAuth = MockFirebaseAuth();
     mockFirebaseUser = MockUser();
+
+    locator.registerSingleton<RegisterUserService>(mockUserService);
+    locator.registerSingleton<FirebaseAuth>(mockAuth);
 
     when(mockFirebaseUser.uid).thenReturn('uid_test');
     when(mockAuth.currentUser).thenReturn(mockFirebaseUser);
@@ -32,6 +39,10 @@ void main() {
         email: 'test@bigtech.com',
       ),
     );
+  });
+
+  tearDown(() {
+    locator.reset();
   });
 
   void ignorePlaceholderImageError() {
@@ -50,7 +61,7 @@ void main() {
   ) async {
     ignorePlaceholderImageError();
 
-    await tester.pumpWidget(MaterialApp(home: MainShell()));
+    await tester.pumpWidget(const MaterialApp(home: MainShell()));
 
     expect(find.text('Grazi Braz'), findsOneWidget);
     expect(find.byType(NavigationBar), findsOneWidget);

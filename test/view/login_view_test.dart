@@ -1,3 +1,4 @@
+import 'package:academiagrazi/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
@@ -5,36 +6,53 @@ import 'package:mockito/mockito.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:academiagrazi/controller/users/login.dart';
+import 'package:academiagrazi/models/users/user_model.dart';
 import 'package:academiagrazi/controller/users/register_user.dart';
 import 'package:academiagrazi/controller/users/register_instructor.dart';
-import 'package:academiagrazi/service/users/register_user.dart';
-import 'package:academiagrazi/models/users/user_model.dart';
 import 'package:academiagrazi/view/login_view.dart';
 import 'package:academiagrazi/view/tab_router.dart';
 import 'package:academiagrazi/view/user/self_register_view.dart';
+import 'package:academiagrazi/service/users/register_user.dart';
 
 @GenerateMocks([
   LoginController,
+  FirebaseAuth,
+  RegisterUserService,
   RegisterUserController,
   RegisterInstructorController,
-  RegisterUserService,
-  FirebaseAuth,
 ])
 import 'login_view_test.mocks.dart';
 
 void main() {
   late MockLoginController mockLoginController;
+  late MockFirebaseAuth mockAuth;
+  late MockRegisterUserService mockRegisterUserService;
   late MockRegisterUserController mockRegisterUserController;
   late MockRegisterInstructorController mockRegisterInstructorController;
-  late MockRegisterUserService mockUserRegisterService;
-  late MockFirebaseAuth mockAuth;
 
   setUp(() {
+    locator.reset();
+    locator.allowReassignment = true;
+
     mockLoginController = MockLoginController();
+    mockAuth = MockFirebaseAuth();
+    mockRegisterUserService = MockRegisterUserService();
     mockRegisterUserController = MockRegisterUserController();
     mockRegisterInstructorController = MockRegisterInstructorController();
-    mockUserRegisterService = MockRegisterUserService();
-    mockAuth = MockFirebaseAuth();
+
+    locator.registerSingleton<LoginController>(mockLoginController);
+    locator.registerSingleton<FirebaseAuth>(mockAuth);
+    locator.registerSingleton<RegisterUserService>(mockRegisterUserService);
+    locator.registerSingleton<RegisterUserController>(
+      mockRegisterUserController,
+    );
+    locator.registerSingleton<RegisterInstructorController>(
+      mockRegisterInstructorController,
+    );
+  });
+
+  tearDown(() {
+    locator.reset();
   });
 
   Future<void> pumpLogin(WidgetTester tester) async {
@@ -71,6 +89,7 @@ void main() {
 
     expect(find.byType(LoginView), findsNothing);
     expect(find.byType(MainShell), findsOneWidget);
+
     expect(find.text('Grazi Braz'), findsOneWidget);
     expect(
       Navigator.of(tester.element(find.byType(MainShell))).canPop(),
