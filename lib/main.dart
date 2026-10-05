@@ -1,14 +1,16 @@
-import 'package:flutter/material.dart';
+import 'package:academiagrazi/firebase_options.dart';
+import 'package:academiagrazi/locator.dart';
+import 'package:academiagrazi/theme/app_theme.dart';
+import 'package:academiagrazi/view/welcome_view.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:google_fonts/google_fonts.dart';
-
-import 'firebase_options.dart';
-import 'locator.dart';
-import 'view/welcome_view.dart';
+import 'package:flutter/material.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   setupLocator();
 
@@ -23,13 +25,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Academia Grazi',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-        textTheme: GoogleFonts.barlowCondensedTextTheme(
-          Theme.of(context).textTheme,
-        ),
-      ),
-      home: const WelcomeView(), // Clean constructor
+      theme: AppTheme.light,
+      home: const WelcomeView(),
     );
   }
 }

@@ -1,33 +1,30 @@
+import 'package:academiagrazi/theme/app_colors.dart';
 import 'package:academiagrazi/view/user/aluno_treino_dia_view.dart';
-import 'package:academiagrazi/view/user/treino_ui_data.dart';
+import 'package:academiagrazi/view/user/ui_data/aluno_treinos_ui_data.dart';
+import 'package:academiagrazi/view/user/ui_models/treino_ui_models.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AlunoTreinosView extends StatefulWidget {
-  const AlunoTreinosView({super.key});
+  final AlunoTreinosUiData data;
+
+  const AlunoTreinosView({
+    super.key,
+    required this.data,
+  });
 
   @override
   State<AlunoTreinosView> createState() => _AlunoTreinosViewState();
 }
 
 class _AlunoTreinosViewState extends State<AlunoTreinosView> {
-  static const Color _background = Color(0xFFF0F5F9);
-  static const Color _verde = Color(0xFF005A4F);
-  static const Color _verdeEscuro = Color(0xFF003D36);
-  static const Color _verdeTexto = Color(0xFF277B60);
-  static const Color _laranja = Color(0xFFFF7943);
-  static const Color _laranjaEscuro = Color(0xFFC94F25);
-  static const Color _azulEscuro = Color(0xFF092837);
-  static const Color _cinzaTexto = Color(0xFF64748B);
-  static const Color _cinzaBorda = Color(0xFFE2E8F0);
-  static const Color _cinzaClaro = Color(0xFFF8FAFC);
 
   bool _fichaPresencialSelecionada = true;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: _background,
+      backgroundColor: AppColors.trainingListBackground,
       body: SafeArea(
         bottom: false,
         child: Column(
@@ -51,11 +48,7 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
                         const SizedBox(height: 20),
                         _buildCabecalhoDivisao(),
                         const SizedBox(height: 16),
-                        _buildTreinoDestaque(TreinosFrontData.treinoA),
-                        const SizedBox(height: 16),
-                        _buildTreinoConcluido(TreinosFrontData.treinoB),
-                        const SizedBox(height: 16),
-                        _buildTreinoProgramado(TreinosFrontData.treinoC),
+                        ..._buildTreinos(),
                         const SizedBox(height: 28),
                         _buildComplementares(),
                         const SizedBox(height: 20),
@@ -72,15 +65,37 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
     );
   }
 
+  List<Widget> _buildTreinos() {
+    final cards = <Widget>[];
+
+    for (var index = 0; index < widget.data.treinos.length; index++) {
+      final treino = widget.data.treinos[index];
+
+      final card = switch (treino.status) {
+        TreinoStatusUi.recomendado => _buildTreinoDestaque(treino),
+        TreinoStatusUi.concluido => _buildTreinoConcluido(treino),
+        TreinoStatusUi.programado => _buildTreinoProgramado(treino),
+      };
+
+      cards.add(card);
+
+      if (index < widget.data.treinos.length - 1) {
+        cards.add(const SizedBox(height: 16));
+      }
+    }
+
+    return cards;
+  }
+
   Widget _buildHeader() {
     return Container(
       height: 64,
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 16),
       decoration: const BoxDecoration(
-        color: Color(0xFFFDFEFE),
+        color: AppColors.headerSurface,
         border: Border(
-          bottom: BorderSide(color: Color(0xCCE2E8F0)),
+          bottom: BorderSide(color: AppColors.borderTranslucent),
         ),
       ),
       child: Row(
@@ -93,7 +108,7 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
               onPressed: () => Navigator.maybePop(context),
               icon: const Icon(
                 Icons.arrow_back_ios_new_rounded,
-                color: _verde,
+                color: AppColors.primary,
                 size: 18,
               ),
             ),
@@ -109,7 +124,7 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: GoogleFonts.anton(
-                    color: _verde,
+                    color: AppColors.primary,
                     fontSize: 24,
                     letterSpacing: 0.6,
                     height: 1,
@@ -121,7 +136,7 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: GoogleFonts.inter(
-                    color: _cinzaTexto,
+                    color: AppColors.textSecondary,
                     fontSize: 10,
                     fontWeight: FontWeight.w600,
                     letterSpacing: 0.5,
@@ -140,7 +155,7 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
                   onPressed: () {},
                   icon: const Icon(
                     Icons.notifications_none_rounded,
-                    color: _azulEscuro,
+                    color: AppColors.textPrimary,
                     size: 23,
                   ),
                 ),
@@ -152,7 +167,7 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
                   width: 10,
                   height: 10,
                   decoration: BoxDecoration(
-                    color: _laranja,
+                    color: AppColors.accent,
                     shape: BoxShape.circle,
                     border: Border.all(color: Colors.white, width: 2),
                   ),
@@ -165,16 +180,16 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
             width: 36,
             height: 36,
             decoration: BoxDecoration(
-              color: const Color(0xFFDDF5F2),
+              color: AppColors.avatarBackground,
               shape: BoxShape.circle,
               border: Border.all(
-                color: const Color(0xFFDDF5F2),
+                color: AppColors.avatarBackground,
                 width: 2,
               ),
             ),
             child: const Icon(
               Icons.person_rounded,
-              color: _verde,
+              color: AppColors.primary,
               size: 21,
             ),
           ),
@@ -192,9 +207,9 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'ALUNO: ${TreinosFrontData.alunoNome.toUpperCase()}',
+              'ALUNO: ${widget.data.alunoNome.toUpperCase()}',
               style: GoogleFonts.inter(
-                color: _verdeTexto,
+                color: AppColors.primaryText,
                 fontSize: 11,
                 fontWeight: FontWeight.w700,
                 letterSpacing: 0.55,
@@ -204,7 +219,7 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
             Text(
               'MEUS TREINOS',
               style: GoogleFonts.barlowCondensed(
-                color: _azulEscuro,
+                color: AppColors.textPrimary,
                 fontSize: 30,
                 fontWeight: FontWeight.w800,
                 letterSpacing: -0.75,
@@ -219,7 +234,7 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(999),
-            border: Border.all(color: const Color(0xFF99F6E4)),
+            border: Border.all(color: AppColors.mintBorderBright),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -228,15 +243,15 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
                 width: 8,
                 height: 8,
                 decoration: const BoxDecoration(
-                  color: _laranja,
+                  color: AppColors.accent,
                   shape: BoxShape.circle,
                 ),
               ),
               const SizedBox(width: 6),
               Text(
-                TreinosFrontData.semana,
+                widget.data.semana,
                 style: GoogleFonts.inter(
-                  color: _verde,
+                  color: AppColors.primary,
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
                 ),
@@ -267,16 +282,16 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
               children: [
                 const Icon(
                   Icons.edit_note_rounded,
-                  color: _cinzaTexto,
+                  color: AppColors.textSecondary,
                   size: 16,
                 ),
                 const SizedBox(width: 4),
                 Expanded(
                   child: Text(
-                    'Prescrição ${TreinosFrontData.professorNome} '
-                    '• ${TreinosFrontData.ultimaAtualizacao}',
+                    'Prescrição ${widget.data.professorNome} '
+                    '• ${widget.data.ultimaAtualizacao}',
                     style: GoogleFonts.inter(
-                      color: _cinzaTexto,
+                      color: AppColors.textSecondary,
                       fontSize: 12,
                     ),
                   ),
@@ -293,7 +308,7 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: const Color(0xCCE2E8F0),
+        color: AppColors.borderTranslucent,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
@@ -344,7 +359,7 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
               Icon(
                 icone,
                 size: 16,
-                color: selecionado ? _verde : _cinzaTexto,
+                color: selecionado ? AppColors.primary : AppColors.textSecondary,
               ),
               const SizedBox(width: 6),
               Flexible(
@@ -353,7 +368,7 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: GoogleFonts.inter(
-                    color: selecionado ? _verde : _cinzaTexto,
+                    color: selecionado ? AppColors.primary : AppColors.textSecondary,
                     fontSize: 10,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 0.25,
@@ -374,10 +389,10 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: _cinzaBorda),
+        border: Border.all(color: AppColors.border),
         boxShadow: const [
           BoxShadow(
-            color: Color(0x0A0F172A),
+            color: AppColors.shadowFaint,
             blurRadius: 14,
             offset: Offset(0, 4),
           ),
@@ -396,7 +411,7 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
                     Text(
                       'CICLO ATUAL',
                       style: GoogleFonts.inter(
-                        color: _verdeTexto,
+                        color: AppColors.primaryText,
                         fontSize: 10,
                         fontWeight: FontWeight.w700,
                         letterSpacing: 0.5,
@@ -404,9 +419,9 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
                     ),
                     const SizedBox(height: 3),
                     Text(
-                      TreinosFrontData.cicloNome,
+                      widget.data.cicloNome,
                       style: GoogleFonts.barlowCondensed(
-                        color: _azulEscuro,
+                        color: AppColors.textPrimary,
                         fontSize: 20,
                         fontWeight: FontWeight.w700,
                         letterSpacing: -0.5,
@@ -422,23 +437,23 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
                   vertical: 5,
                 ),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFECFDF5),
+                  color: AppColors.successSurface,
                   borderRadius: BorderRadius.circular(999),
-                  border: Border.all(color: const Color(0xFFA7F3D0)),
+                  border: Border.all(color: AppColors.successBorder),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     const Icon(
                       Icons.check_circle,
-                      color: Color(0xFF047857),
+                      color: AppColors.success,
                       size: 13,
                     ),
                     const SizedBox(width: 4),
                     Text(
                       'Em dia',
                       style: GoogleFonts.inter(
-                        color: const Color(0xFF047857),
+                        color: AppColors.success,
                         fontSize: 11,
                         fontWeight: FontWeight.w600,
                       ),
@@ -456,8 +471,8 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
                 child: _buildMetrica(
                   icon: Icons.event_repeat_rounded,
                   titulo: 'FREQ.',
-                  valor: TreinosFrontData.frequencia,
-                  legenda: TreinosFrontData.frequenciaLegenda,
+                  valor: widget.data.frequencia,
+                  legenda: widget.data.frequenciaLegenda,
                 ),
               ),
               const SizedBox(width: 8),
@@ -465,8 +480,8 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
                 child: _buildMetrica(
                   icon: Icons.access_time_rounded,
                   titulo: 'DURAÇÃO',
-                  valor: TreinosFrontData.duracaoMedia,
-                  legenda: TreinosFrontData.duracaoLegenda,
+                  valor: widget.data.duracaoMedia,
+                  legenda: widget.data.duracaoLegenda,
                 ),
               ),
               const SizedBox(width: 8),
@@ -474,8 +489,8 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
                 child: _buildMetrica(
                   icon: Icons.event_available_outlined,
                   titulo: 'VALIDADE',
-                  valor: TreinosFrontData.validade,
-                  legenda: TreinosFrontData.validadeLegenda,
+                  valor: widget.data.validade,
+                  legenda: widget.data.validadeLegenda,
                   destaque: true,
                 ),
               ),
@@ -497,12 +512,12 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
       constraints: const BoxConstraints(minHeight: 76),
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: destaque ? const Color(0x1AFF7943) : _cinzaClaro,
+        color: destaque ? AppColors.accentSurfaceTransparent : AppColors.surfaceSoft,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: destaque
-              ? const Color(0x33FF7943)
-              : const Color(0xB3E2E8F0),
+              ? AppColors.accentBorderTransparent
+              : AppColors.borderSoftAlpha,
         ),
       ),
       child: Column(
@@ -514,7 +529,7 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
               Icon(
                 icon,
                 size: 13,
-                color: destaque ? _laranjaEscuro : _verdeTexto,
+                color: destaque ? AppColors.accentDark : AppColors.primaryText,
               ),
               const SizedBox(width: 4),
               Expanded(
@@ -523,7 +538,7 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: GoogleFonts.inter(
-                    color: _cinzaTexto,
+                    color: AppColors.textSecondary,
                     fontSize: 9,
                     fontWeight: FontWeight.w600,
                   ),
@@ -537,7 +552,7 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: GoogleFonts.barlowCondensed(
-              color: _azulEscuro,
+              color: AppColors.textPrimary,
               fontSize: 18,
               fontWeight: FontWeight.w700,
             ),
@@ -547,7 +562,7 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
             style: GoogleFonts.inter(
-              color: _cinzaTexto,
+              color: AppColors.textSecondary,
               fontSize: 9,
               height: 1.2,
             ),
@@ -565,16 +580,16 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
           child: Text(
             'DIVISÃO DE FICHAS',
             style: GoogleFonts.barlowCondensed(
-              color: _azulEscuro,
+              color: AppColors.textPrimary,
               fontSize: 23,
               fontWeight: FontWeight.w800,
             ),
           ),
         ),
         Text(
-          '3 rotinas prescritas',
+          '${widget.data.treinos.length} rotinas prescritas',
           style: GoogleFonts.inter(
-            color: _cinzaTexto,
+            color: AppColors.textSecondary,
             fontSize: 10,
             fontWeight: FontWeight.w500,
           ),
@@ -590,7 +605,7 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: const [
           BoxShadow(
-            color: Color(0x140F172A),
+            color: AppColors.shadowSoft,
             blurRadius: 18,
             offset: Offset(0, 6),
           ),
@@ -606,10 +621,10 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
                   gradient: const LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
-                    colors: [Colors.white, Color(0xFFF2FBF8)],
+                    colors: [Colors.white, AppColors.primaryGradientEnd],
                   ),
                   border: Border.all(
-                    color: const Color(0x66005A4F),
+                    color: AppColors.primaryBorderAlpha,
                     width: 2,
                   ),
                   borderRadius: BorderRadius.circular(16),
@@ -620,7 +635,7 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
               left: 0,
               top: 0,
               bottom: 0,
-              child: Container(width: 6, color: _laranjaEscuro),
+              child: Container(width: 6, color: AppColors.accentDark),
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(18, 16, 16, 16),
@@ -638,7 +653,7 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
                               vertical: 5,
                             ),
                             decoration: BoxDecoration(
-                              color: _laranja,
+                              color: AppColors.accent,
                               borderRadius: BorderRadius.circular(999),
                             ),
                             child: Text(
@@ -663,13 +678,13 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _letraTreino(treino.letra, _verdeEscuro),
+                      _letraTreino(treino.letra, AppColors.primaryDark),
                       const SizedBox(width: 10),
                       Expanded(
                         child: Text(
                           treino.nome,
                           style: GoogleFonts.barlowCondensed(
-                            color: _azulEscuro,
+                            color: AppColors.textPrimary,
                             fontSize: 24,
                             fontWeight: FontWeight.w800,
                             height: 1.05,
@@ -682,7 +697,7 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
                   Text(
                     treino.descricao,
                     style: GoogleFonts.inter(
-                      color: _cinzaTexto,
+                      color: AppColors.textSecondary,
                       fontSize: 12,
                       height: 1.4,
                     ),
@@ -694,18 +709,18 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
                     children: [
                       _badge(
                         '${treino.quantidadeExercicios} exercícios',
-                        background: const Color(0xFFE7F7F1),
-                        foreground: _verde,
+                        background: AppColors.primaryBadgeSurface,
+                        foreground: AppColors.primary,
                       ),
                       _badge(
                         treino.nivel,
-                        background: const Color(0xFFF1F5F9),
-                        foreground: const Color(0xFF475569),
+                        background: AppColors.slateSurface,
+                        foreground: AppColors.slateText,
                       ),
                       _badge(
                         treino.estrategia,
-                        background: const Color(0xFFFFEEE7),
-                        foreground: _laranjaEscuro,
+                        background: AppColors.accentSurface,
+                        foreground: AppColors.accentDark,
                       ),
                     ],
                   ),
@@ -718,11 +733,12 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
                     child: DecoratedBox(
                       decoration: BoxDecoration(
                         gradient: const LinearGradient(
-                          colors: [Color(0xFFFF7943), Color(0xFFC94F25)],
+                          colors: [AppColors.accent, AppColors.accentDark],
                         ),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: ElevatedButton(
+                        key: Key('treino_iniciar_${treino.id}'),
                         onPressed: () => _abrirTreino(treino),
                         style: ElevatedButton.styleFrom(
                           elevation: 0,
@@ -752,8 +768,8 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
                       onPressed: () => _abrirTreino(treino),
                       style: ElevatedButton.styleFrom(
                         elevation: 0,
-                        backgroundColor: const Color(0xFFE8F6F2),
-                        foregroundColor: _verde,
+                        backgroundColor: AppColors.primaryActionSurface,
+                        foregroundColor: AppColors.primary,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -779,9 +795,9 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
   Widget _buildTreinoConcluido(TreinoUi treino) {
     return _buildTreinoSecundario(
       treino: treino,
-      statusBackground: const Color(0xFFECFDF5),
-      statusForeground: const Color(0xFF047857),
-      letraColor: const Color(0xFF475569),
+      statusBackground: AppColors.successSurface,
+      statusForeground: AppColors.success,
+      letraColor: AppColors.slateText,
       segundoBadge: treino.estrategia,
       primeiroBotao: 'VER FICHA',
       segundoBotao: 'REFAZER TREINO',
@@ -791,9 +807,9 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
   Widget _buildTreinoProgramado(TreinoUi treino) {
     return _buildTreinoSecundario(
       treino: treino,
-      statusBackground: const Color(0xFFEFF6FF),
-      statusForeground: const Color(0xFF1D4ED8),
-      letraColor: const Color(0xFF115E59),
+      statusBackground: AppColors.infoSurface,
+      statusForeground: AppColors.info,
+      letraColor: AppColors.teal,
       primeiroBotao: 'VER FICHA COMPLETA',
     );
   }
@@ -813,7 +829,7 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: _cinzaBorda),
+        border: Border.all(color: AppColors.border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -862,7 +878,7 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
                     Text(
                       treino.nome,
                       style: GoogleFonts.barlowCondensed(
-                        color: _azulEscuro,
+                        color: AppColors.textPrimary,
                         fontSize: 21,
                         fontWeight: FontWeight.w800,
                         height: 1.08,
@@ -872,8 +888,8 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
                       const SizedBox(height: 7),
                       _badge(
                         segundoBadge,
-                        background: const Color(0xFFF1F5F9),
-                        foreground: const Color(0xFF475569),
+                        background: AppColors.slateSurface,
+                        foreground: AppColors.slateText,
                       ),
                     ],
                   ],
@@ -885,7 +901,7 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
           Text(
             treino.descricao,
             style: GoogleFonts.inter(
-              color: _cinzaTexto,
+              color: AppColors.textSecondary,
               fontSize: 12,
               height: 1.4,
             ),
@@ -932,7 +948,7 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
         Text(
           'TREINOS COMPLEMENTARES',
           style: GoogleFonts.barlowCondensed(
-            color: _azulEscuro,
+            color: AppColors.textPrimary,
             fontSize: 21,
             fontWeight: FontWeight.w700,
           ),
@@ -941,7 +957,7 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
         Text(
           'VÍDEOS GUIADOS',
           style: GoogleFonts.inter(
-            color: _cinzaTexto,
+            color: AppColors.textSecondary,
             fontSize: 10,
             fontWeight: FontWeight.w700,
             letterSpacing: 0.5,
@@ -951,7 +967,7 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
         LayoutBuilder(
           builder: (context, constraints) {
             final empilhar = constraints.maxWidth < 330;
-            final cards = TreinosFrontData.complementares
+            final cards = widget.data.complementares
                 .map((treino) => _buildComplementarCard(treino))
                 .toList();
 
@@ -988,7 +1004,7 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: _cinzaBorda),
+        border: Border.all(color: AppColors.border),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -996,14 +1012,14 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
         children: [
           const Icon(
             Icons.self_improvement_rounded,
-            color: _verde,
+            color: AppColors.primary,
             size: 22,
           ),
           const SizedBox(height: 8),
           Text(
             treino.nome,
             style: GoogleFonts.barlowCondensed(
-              color: _azulEscuro,
+              color: AppColors.textPrimary,
               fontSize: 18,
               fontWeight: FontWeight.w700,
             ),
@@ -1014,7 +1030,7 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
             maxLines: 3,
             overflow: TextOverflow.ellipsis,
             style: GoogleFonts.inter(
-              color: _cinzaTexto,
+              color: AppColors.textSecondary,
               fontSize: 10,
               height: 1.3,
             ),
@@ -1023,7 +1039,7 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
           Text(
             '${treino.duracaoMinutos} min',
             style: GoogleFonts.inter(
-              color: _verde,
+              color: AppColors.primary,
               fontSize: 11,
               fontWeight: FontWeight.w700,
             ),
@@ -1040,9 +1056,9 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
       child: OutlinedButton(
         onPressed: () {},
         style: OutlinedButton.styleFrom(
-          foregroundColor: _verde,
+          foregroundColor: AppColors.primary,
           backgroundColor: Colors.white,
-          side: const BorderSide(color: _cinzaBorda),
+          side: const BorderSide(color: AppColors.border),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
@@ -1066,12 +1082,12 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
       width: double.infinity,
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: destaque ? const Color(0xE6FFFFFF) : _cinzaClaro,
+        color: destaque ? AppColors.white90 : AppColors.surfaceSoft,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: destaque
-              ? const Color(0xFFD1FAE5)
-              : const Color(0xFFF1F5F9),
+              ? AppColors.primarySoftBorder
+              : AppColors.slateSurface,
         ),
       ),
       child: Column(
@@ -1086,8 +1102,8 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
                   overflow: TextOverflow.ellipsis,
                   style: GoogleFonts.inter(
                     color: destaque
-                        ? _verdeTexto
-                        : const Color(0xFF94A3B8),
+                        ? AppColors.primaryText
+                        : AppColors.textMuted,
                     fontSize: 10,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 0.5,
@@ -1103,7 +1119,7 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
                     overflow: TextOverflow.ellipsis,
                     textAlign: TextAlign.right,
                     style: GoogleFonts.inter(
-                      color: _cinzaTexto,
+                      color: AppColors.textSecondary,
                       fontSize: 10,
                       fontWeight: FontWeight.w600,
                     ),
@@ -1116,7 +1132,7 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
           Text(
             treino.principaisExercicios,
             style: GoogleFonts.inter(
-              color: destaque ? _azulEscuro : const Color(0xFF334155),
+              color: destaque ? AppColors.textPrimary : AppColors.textBody,
               fontSize: 12,
               fontWeight: FontWeight.w500,
               height: 1.45,
@@ -1131,7 +1147,7 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
       decoration: BoxDecoration(
-        color: const Color(0xFFF1F5F9),
+        color: AppColors.slateSurface,
         borderRadius: BorderRadius.circular(999),
       ),
       child: Row(
@@ -1140,13 +1156,13 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
           const Icon(
             Icons.schedule_rounded,
             size: 12,
-            color: _cinzaTexto,
+            color: AppColors.textSecondary,
           ),
           const SizedBox(width: 4),
           Text(
             '$minutos min',
             style: GoogleFonts.inter(
-              color: _cinzaTexto,
+              color: AppColors.textSecondary,
               fontSize: 10,
               fontWeight: FontWeight.w600,
             ),
@@ -1209,9 +1225,9 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
         child: OutlinedButton(
           onPressed: onPressed,
           style: OutlinedButton.styleFrom(
-            foregroundColor: _verde,
+            foregroundColor: AppColors.primary,
             backgroundColor: Colors.white,
-            side: const BorderSide(color: Color(0xFFB7D8D2)),
+            side: const BorderSide(color: AppColors.primaryActionBorder),
             padding: const EdgeInsets.symmetric(horizontal: 8),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
@@ -1236,8 +1252,8 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
           elevation: 0,
-          backgroundColor: const Color(0xFFE8F6F2),
-          foregroundColor: _verde,
+          backgroundColor: AppColors.primaryActionSurface,
+          foregroundColor: AppColors.primary,
           padding: const EdgeInsets.symmetric(horizontal: 8),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
@@ -1257,12 +1273,23 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
   }
 
   void _abrirTreino(TreinoUi treino) {
-  Navigator.of(context).push(
-    MaterialPageRoute(
-      builder: (_) => AlunoTreinoDiaView(
-        treino: treino,
+    final treinoDia = widget.data.detalheDoTreino(treino.id);
+
+    if (treinoDia == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Detalhes deste treino ainda não estão disponíveis.'),
+        ),
+      );
+      return;
+    }
+
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => AlunoTreinoDiaView(
+          data: treinoDia,
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
 }
