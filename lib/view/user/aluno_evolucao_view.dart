@@ -54,9 +54,126 @@ class _AlunoEvolutionViewState extends State<AlunoEvolutionView> {
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
-          child: Column(children: [
-              
-            ]
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                child: Column(
+                  children: [
+                    Text(
+                      'Evolução',
+                      style: GoogleFonts.barlowCondensed(
+                        fontSize: 27,
+                        fontWeight: FontWeight.bold,
+                        color: const Color.fromARGB(255, 0, 30, 45),
+                      ),
+                    ),
+
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: [
+                          ElevatedButton(
+                            onPressed: () {},
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color.fromARGB(
+                                255,
+                                221,
+                                245,
+                                242,
+                              ),
+                              minimumSize: const Size(100, 40),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16.0),
+                              ),
+                            ),
+                            child: const Text('3 Meses'),
+                          ),
+
+                          const SizedBox(width: 10),
+
+                          ElevatedButton(
+                            onPressed: () {},
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color.fromARGB(
+                                255,
+                                221,
+                                245,
+                                242,
+                              ),
+                              minimumSize: const Size(100, 40),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16.0),
+                              ),
+                            ),
+                            child: const Text('6 Meses'),
+                          ),
+
+                          const SizedBox(width: 15),
+
+                          ElevatedButton(
+                            onPressed: () {},
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color.fromARGB(
+                                255,
+                                221,
+                                245,
+                                242,
+                              ),
+                              minimumSize: const Size(100, 40),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16.0),
+                              ),
+                            ),
+                            child: const Text('1 Ano'),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 10),
+
+              Container(
+                child: Column(
+                  children: [
+                    Text(
+                      'Evolução',
+                      style: GoogleFonts.barlowCondensed(
+                        fontSize: 27,
+                        fontWeight: FontWeight.bold,
+                        color: const Color.fromARGB(255, 0, 30, 45),
+                      ),
+                    ),
+
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: [
+                          ElevatedButton(
+                            onPressed: () {},
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color.fromARGB(
+                                255,
+                                221,
+                                245,
+                                242,
+                              ),
+                              minimumSize: const Size(100, 40),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16.0),
+                              ),
+                            ),
+                            child: const Text('6 Meses'),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
       ),
