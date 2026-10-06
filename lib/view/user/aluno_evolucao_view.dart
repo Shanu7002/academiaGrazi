@@ -244,14 +244,35 @@ class _AlunoEvolutionViewState extends State<AlunoEvolutionView> {
 
                           lineBarsData: [
                             LineChartBarData(
+                              color: const Color.fromARGB(255, 2, 89, 79),
+                              isCurved: true,
+                              curveSmoothness: 0.5,
+                              dotData: FlDotData(
+                                show: true,
+                                getDotPainter: (spot, percent, barData, index) {
+                                  return FlDotCirclePainter(
+                                    radius: 6,
+                                    color: Colors.white,
+                                    strokeWidth: 3,
+                                    strokeColor: const Color.fromARGB(
+                                      255,
+                                      2,
+                                      89,
+                                      79,
+                                    ),
+                                  );
+                                },
+                              ),
+                              barWidth: 4,
+                              belowBarData: BarAreaData(
+                                show: true,
+                                color: const Color.fromARGB(80, 2, 89, 79),
+                              ),
                               spots: [
                                 FlSpot(0, 72.4),
-                                FlSpot(1, 71.8),
+                                FlSpot(1, 75.8),
                                 FlSpot(2, 71.2),
                               ],
-                              isCurved: true,
-                              dotData: const FlDotData(show: true),
-                              barWidth: 3,
                             ),
                           ],
                         ),
@@ -566,7 +587,34 @@ class _AlunoEvolutionViewState extends State<AlunoEvolutionView> {
                       ),
                     ),
                     SizedBox(height: 15),
+                  ],
+                ),
+              ),
 
+              SizedBox(height: 15),
+
+              Container(
+                width: screenWidth,
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16.0),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color.fromARGB(
+                        255,
+                        2,
+                        89,
+                        79,
+                      ).withOpacity(0.3),
+                      blurRadius: 6,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
                     Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 14,
@@ -634,6 +682,7 @@ class _AlunoEvolutionViewState extends State<AlunoEvolutionView> {
                         ),
                       ),
                     ),
+                    SizedBox(height: 15),
                   ],
                 ),
               ),
