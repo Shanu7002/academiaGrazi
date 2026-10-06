@@ -60,6 +60,8 @@ class _AlunoEvolutionViewState extends State<AlunoEvolutionView> {
             children: [
               Container(
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
                       'Evolução',
@@ -70,7 +72,7 @@ class _AlunoEvolutionViewState extends State<AlunoEvolutionView> {
                       ),
                     ),
 
-                    SizedBox(height: 5),
+                    SizedBox(height: 8),
 
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
@@ -169,7 +171,7 @@ class _AlunoEvolutionViewState extends State<AlunoEvolutionView> {
                         Text(
                           'Peso Corporal',
                           style: GoogleFonts.barlowCondensed(
-                            fontSize: 20,
+                            fontSize: 24,
                             fontWeight: FontWeight.bold,
                             color: const Color.fromARGB(255, 0, 30, 45),
                           ),
@@ -209,7 +211,7 @@ class _AlunoEvolutionViewState extends State<AlunoEvolutionView> {
                             color: const Color.fromARGB(255, 0, 30, 45),
                           ),
                         ),
-                        SizedBox(width: 8),
+                        SizedBox(width: 4),
                         Text(
                           'kg',
                           style: GoogleFonts.barlowCondensed(
@@ -259,9 +261,9 @@ class _AlunoEvolutionViewState extends State<AlunoEvolutionView> {
                 ),
               ),
 
-              SizedBox(height: 15),
+              SizedBox(height: 20),
 
-              Container(
+              SizedBox(
                 width: screenWidth,
                 child: Row(
                   children: [
@@ -411,6 +413,224 @@ class _AlunoEvolutionViewState extends State<AlunoEvolutionView> {
                               ),
                             ),
                           ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              SizedBox(height: 15),
+
+              SizedBox(
+                width: screenWidth,
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: const Color.fromARGB(255, 209, 236, 255),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      ConstrainedBox(
+                        constraints: const BoxConstraints(
+                          minWidth: 20,
+                          minHeight: 20,
+                          maxWidth: 50,
+                          maxHeight: 50,
+                        ),
+                        child: Image.asset(
+                          'assets/info.png',
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+
+                      const SizedBox(width: 20),
+
+                      Expanded(
+                        child: Text(
+                          'Avaliação presencial marcada com o Prof. Marcos.',
+                          style: GoogleFonts.inter(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: const Color.fromARGB(255, 0, 30, 45),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              SizedBox(height: 15),
+
+              Text(
+                'Histórico de Avaliações',
+                style: GoogleFonts.barlowCondensed(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: const Color.fromARGB(255, 0, 30, 45),
+                ),
+              ),
+
+              SizedBox(height: 15),
+
+              Container(
+                width: screenWidth,
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16.0),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color.fromARGB(
+                        255,
+                        2,
+                        89,
+                        79,
+                      ).withOpacity(0.3),
+                      blurRadius: 6,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: const Color.fromARGB(255, 221, 245, 242),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(
+                          minWidth: 20,
+                          minHeight: 20,
+                          maxWidth: 50,
+                          maxHeight: 50,
+                        ),
+                        child: Image.asset(
+                          'assets/agenda.png',
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(width: 15),
+
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '15 de Junho, 2026',
+                          style: GoogleFonts.inter(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: const Color.fromARGB(255, 0, 30, 45),
+                          ),
+                        ),
+                        Text(
+                          'Avaliação Presencial',
+                          style: GoogleFonts.inter(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: const Color.fromARGB(255, 111, 121, 118),
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    const Spacer(),
+
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 8,
+                      ),
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(
+                          minWidth: 20,
+                          minHeight: 20,
+                          maxWidth: 50,
+                          maxHeight: 50,
+                        ),
+                        child: Image.asset(
+                          'assets/pdf.png',
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 15),
+
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: const Color.fromARGB(255, 221, 245, 242),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(
+                          minWidth: 20,
+                          minHeight: 20,
+                          maxWidth: 50,
+                          maxHeight: 50,
+                        ),
+                        child: Image.asset(
+                          'assets/agenda.png',
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(width: 15),
+
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '10 de Março, 2026',
+                          style: GoogleFonts.inter(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: const Color.fromARGB(255, 0, 30, 45),
+                          ),
+                        ),
+                        Text(
+                          'Avaliação Online',
+                          style: GoogleFonts.inter(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: const Color.fromARGB(255, 111, 121, 118),
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    const Spacer(),
+
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 8,
+                      ),
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(
+                          minWidth: 20,
+                          minHeight: 20,
+                          maxWidth: 50,
+                          maxHeight: 50,
+                        ),
+                        child: Image.asset(
+                          'assets/pdf.png',
+                          fit: BoxFit.contain,
                         ),
                       ),
                     ),
