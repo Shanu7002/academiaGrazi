@@ -258,78 +258,161 @@ class _AlunoEvolutionViewState extends State<AlunoEvolutionView> {
                   ],
                 ),
               ),
+
+              SizedBox(height: 15),
+
               Container(
                 width: screenWidth,
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16.0),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color.fromARGB(
-                        255,
-                        2,
-                        89,
-                        79,
-                      ).withOpacity(0.3),
-                      blurRadius: 6,
-                      offset: const Offset(0, 3),
-                    ),
-                  ],
-                ),
-
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
+                child: Row(
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Column(
+                    Expanded(
+                      child: Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: const Color.fromARGB(255, 231, 234, 238),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 ConstrainedBox(
                                   constraints: const BoxConstraints(
                                     minWidth: 20,
                                     minHeight: 20,
-                                    maxWidth: 50,
-                                    maxHeight: 50,
+                                    maxWidth: 40,
+                                    maxHeight: 40,
                                   ),
                                   child: Image.asset(
-                                    'assets/fogo2.png',
+                                    'assets/gordura.png',
                                     fit: BoxFit.contain,
                                   ),
                                 ),
 
-                                SizedBox(width: 8),
+                                const SizedBox(width: 8),
 
                                 Text(
-                                  '12 dias',
+                                  'Gordura',
                                   style: GoogleFonts.barlowCondensed(
-                                    fontSize: 32,
+                                    fontSize: 24,
                                     fontWeight: FontWeight.bold,
                                     color: const Color.fromARGB(255, 0, 30, 45),
                                   ),
                                 ),
-
-                                const SizedBox(height: 4),
                               ],
                             ),
+
+                            const SizedBox(height: 4),
+
                             Text(
-                              'Você está on fire!',
+                              '28,4 %',
                               style: GoogleFonts.inter(
-                                fontSize: 13,
+                                fontSize: 20,
                                 fontWeight: FontWeight.bold,
                                 color: const Color.fromARGB(255, 0, 65, 100),
                               ),
                             ),
+
+                            const SizedBox(height: 4),
+
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 3,
+                              ),
+                              decoration: BoxDecoration(
+                                color: const Color.fromARGB(255, 136, 207, 193),
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: Text(
+                                '- 0.8 %',
+                                style: GoogleFonts.inter(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                  color: const Color.fromARGB(255, 0, 90, 79),
+                                ),
+                              ),
+                            ),
                           ],
                         ),
-                      ],
+                      ),
+                    ),
+
+                    const SizedBox(width: 12),
+
+                    Expanded(
+                      child: Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: const Color.fromARGB(255, 209, 236, 255),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                ConstrainedBox(
+                                  constraints: const BoxConstraints(
+                                    minWidth: 20,
+                                    minHeight: 20,
+                                    maxWidth: 40,
+                                    maxHeight: 40,
+                                  ),
+                                  child: Image.asset(
+                                    'assets/massaMagra.png',
+                                    fit: BoxFit.contain,
+                                  ),
+                                ),
+
+                                const SizedBox(width: 8),
+
+                                Text(
+                                  'Massa Magra',
+                                  style: GoogleFonts.barlowCondensed(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold,
+                                    color: const Color.fromARGB(255, 0, 30, 45),
+                                  ),
+                                ),
+                              ],
+                            ),
+
+                            const SizedBox(height: 4),
+
+                            Text(
+                              '51,1 kg',
+                              style: GoogleFonts.inter(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: const Color.fromARGB(255, 0, 65, 100),
+                              ),
+                            ),
+
+                            const SizedBox(height: 4),
+
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 3,
+                              ),
+                              decoration: BoxDecoration(
+                                color: const Color.fromARGB(255, 136, 207, 193),
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: Text(
+                                '+ 0.5 kg',
+                                style: GoogleFonts.inter(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                  color: const Color.fromARGB(255, 0, 90, 79),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ],
                 ),
