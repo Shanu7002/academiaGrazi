@@ -1,9 +1,8 @@
 import 'dart:math' as math;
 
+import 'package:academiagrazi/view/login_view.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-
-import 'login_view.dart';
 
 // ================================================================
 // ASSETS DA TELA INICIAL
