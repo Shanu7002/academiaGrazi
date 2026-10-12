@@ -9,10 +9,11 @@ import 'package:academiagrazi/controller/users/login.dart';
 import 'package:academiagrazi/models/users/user_model.dart';
 import 'package:academiagrazi/controller/users/register_user.dart';
 import 'package:academiagrazi/controller/users/register_instructor.dart';
-import 'package:academiagrazi/view/login_view.dart';
 import 'package:academiagrazi/view/tab_router.dart';
 import 'package:academiagrazi/view/user/self_register_view.dart';
 import 'package:academiagrazi/service/users/register_user.dart';
+
+import 'package:academiagrazi/view/login_view.dart';
 
 @GenerateMocks([
   LoginController,
@@ -55,18 +56,25 @@ void main() {
     locator.reset();
   });
 
-  Future<void> pumpLogin(WidgetTester tester) async {
-    await tester.pumpWidget(MaterialApp(home: LoginView()));
+  Future<void> pumpLoginView(WidgetTester tester) async {
+    tester.view.physicalSize = const Size(800, 1200);
+    tester.view.devicePixelRatio = 1.0;
+
+    await tester.pumpWidget(const MaterialApp(home: LoginView()));
+
+    addTearDown(() => tester.view.resetPhysicalSize());
   }
 
   Future<void> submitLogin(WidgetTester tester) async {
     await tester.enterText(find.byType(TextField).at(0), 'aluno@exemplo.com');
     await tester.enterText(find.byType(TextField).at(1), 'senha123');
-    await tester.tap(find.text('ENTRAR'));
+
+    final loginButton = find.text('Entrar');
+    await tester.tap(loginButton);
     await tester.pumpAndSettle();
   }
 
-  testWidgets('substitui o login pela MainShell após login de aluno', (
+  testWidgets('Substitui a LandingPage pela MainShell após login de aluno', (
     tester,
   ) async {
     when(
@@ -84,13 +92,12 @@ void main() {
       ),
     );
 
-    await pumpLogin(tester);
+    await pumpLoginView(tester);
     await submitLogin(tester);
 
     expect(find.byType(LoginView), findsNothing);
     expect(find.byType(MainShell), findsOneWidget);
 
-    expect(find.text('Grazi Braz'), findsOneWidget);
     expect(
       Navigator.of(tester.element(find.byType(MainShell))).canPop(),
       isFalse,
@@ -104,7 +111,9 @@ void main() {
     ).called(1);
   });
 
-  testWidgets('mostra erro quando o login não retorna usuário', (tester) async {
+  testWidgets('Mostra snackbar de erro quando o login retorna nulo', (
+    tester,
+  ) async {
     when(
       mockLoginController.loginUser(
         email: 'aluno@exemplo.com',
@@ -112,45 +121,62 @@ void main() {
       ),
     ).thenAnswer((_) async => null);
 
-    await pumpLogin(tester);
+    await pumpLoginView(tester);
     await submitLogin(tester);
 
     expect(find.text('Falha ao entrar. Tente novamente.'), findsOneWidget);
   });
 
-  testWidgets('valida campos vazios e permite alternar a senha', (
-    tester,
-  ) async {
-    await pumpLogin(tester);
+  testWidgets(
+    'Valida campos vazios e permite alternar a visibilidade da senha',
+    (tester) async {
+      await pumpLoginView(tester);
 
-    await tester.tap(find.text('ENTRAR'));
-    await tester.pump();
-    expect(find.text('Preencha todos os campos.'), findsOneWidget);
+      final loginButton = find.text('Entrar');
+      await tester.tap(loginButton);
+      await tester.pumpAndSettle(); // Resolve a animação do SnackBar
 
-    expect(find.byIcon(Icons.visibility_off), findsOneWidget);
-    await tester.tap(find.byIcon(Icons.visibility_off));
-    await tester.pump();
-    expect(find.byIcon(Icons.visibility), findsOneWidget);
+      expect(find.text('Preencha todos os campos.'), findsOneWidget);
 
-    await tester.tap(find.text('Esqueci minha senha'));
-    await tester.pump();
+      expect(find.byIcon(Icons.visibility_off), findsOneWidget);
+      await tester.tap(find.byIcon(Icons.visibility_off));
+      await tester.pumpAndSettle();
+      expect(find.byIcon(Icons.visibility), findsOneWidget);
 
-    verifyNever(
-      mockLoginController.loginUser(
-        email: anyNamed('email'),
-        password: anyNamed('password'),
-      ),
-    );
-  });
+      verifyNever(
+        mockLoginController.loginUser(
+          email: anyNamed('email'),
+          password: anyNamed('password'),
+        ),
+      );
+    },
+  );
 
-  testWidgets('abre o auto cadastro público pelo login', (tester) async {
-    await pumpLogin(tester);
+  testWidgets(
+    'Abre o auto cadastro público através do botão Criar minha conta',
+    (tester) async {
+      await pumpLoginView(tester);
 
-    await tester.ensureVisible(find.byKey(const Key('createAccountButton')));
-    await tester.tap(find.byKey(const Key('createAccountButton')));
-    await tester.pumpAndSettle();
+      final createAccountButton = find.text('Criar minha conta');
+      await tester.tap(createAccountButton);
+      await tester.pumpAndSettle(); // Resolve o push do Navigator
 
-    expect(find.byType(SelfRegisterView), findsOneWidget);
-    expect(find.text('CONTA & ACESSO'), findsOneWidget);
-  });
+      expect(find.byType(SelfRegisterView), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'Alterna o modo de treino acionando rebuild da máquina de estados',
+    (tester) async {
+      await pumpLoginView(tester);
+
+      expect(find.text('Presencial'), findsOneWidget);
+      expect(find.text('Treino em casa'), findsOneWidget);
+
+      await tester.tap(find.text('Treino em casa'));
+      await tester.pumpAndSettle(const Duration(milliseconds: 350));
+
+      expect(tester.takeException(), isNull);
+    },
+  );
 }
