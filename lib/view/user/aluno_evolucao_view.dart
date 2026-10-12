@@ -13,8 +13,6 @@ class AlunoEvolutionView extends StatefulWidget {
 class _AlunoEvolutionViewState extends State<AlunoEvolutionView> {
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: true,
@@ -72,7 +70,7 @@ class _AlunoEvolutionViewState extends State<AlunoEvolutionView> {
                       ),
                     ),
 
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
 
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
@@ -142,7 +140,7 @@ class _AlunoEvolutionViewState extends State<AlunoEvolutionView> {
               const SizedBox(height: 15),
 
               Container(
-                width: screenWidth,
+                width: double.infinity,
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   color: Colors.white,
@@ -168,16 +166,19 @@ class _AlunoEvolutionViewState extends State<AlunoEvolutionView> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          'Peso Corporal',
-                          style: GoogleFonts.barlowCondensed(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: const Color.fromARGB(255, 0, 30, 45),
+                        Expanded(
+                          child: Text(
+                            'Peso Corporal',
+                            overflow: TextOverflow.ellipsis,
+                            style: GoogleFonts.barlowCondensed(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: const Color.fromARGB(255, 0, 30, 45),
+                            ),
                           ),
                         ),
 
-                        SizedBox(width: 30),
+                        const SizedBox(width: 10),
 
                         Container(
                           padding: const EdgeInsets.symmetric(
@@ -211,7 +212,7 @@ class _AlunoEvolutionViewState extends State<AlunoEvolutionView> {
                             color: const Color.fromARGB(255, 0, 30, 45),
                           ),
                         ),
-                        SizedBox(width: 4),
+                        const SizedBox(width: 4),
                         Text(
                           'kg',
                           style: GoogleFonts.barlowCondensed(
@@ -223,7 +224,7 @@ class _AlunoEvolutionViewState extends State<AlunoEvolutionView> {
                       ],
                     ),
 
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
 
                     SizedBox(
                       height: 200,
@@ -268,7 +269,7 @@ class _AlunoEvolutionViewState extends State<AlunoEvolutionView> {
                                 show: true,
                                 color: const Color.fromARGB(80, 2, 89, 79),
                               ),
-                              spots: [
+                              spots: const [
                                 FlSpot(0, 72.4),
                                 FlSpot(1, 75.8),
                                 FlSpot(2, 71.2),
@@ -282,10 +283,10 @@ class _AlunoEvolutionViewState extends State<AlunoEvolutionView> {
                 ),
               ),
 
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
 
               SizedBox(
-                width: screenWidth,
+                width: double.infinity,
                 child: Row(
                   children: [
                     Expanded(
@@ -317,12 +318,20 @@ class _AlunoEvolutionViewState extends State<AlunoEvolutionView> {
 
                                 const SizedBox(width: 8),
 
-                                Text(
-                                  'Gordura',
-                                  style: GoogleFonts.barlowCondensed(
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.bold,
-                                    color: const Color.fromARGB(255, 0, 30, 45),
+                                Expanded(
+                                  child: Text(
+                                    'Gordura',
+                                    overflow: TextOverflow.ellipsis,
+                                    style: GoogleFonts.barlowCondensed(
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.bold,
+                                      color: const Color.fromARGB(
+                                        255,
+                                        0,
+                                        30,
+                                        45,
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ],
@@ -395,12 +404,20 @@ class _AlunoEvolutionViewState extends State<AlunoEvolutionView> {
 
                                 const SizedBox(width: 8),
 
-                                Text(
-                                  'Massa Magra',
-                                  style: GoogleFonts.barlowCondensed(
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.bold,
-                                    color: const Color.fromARGB(255, 0, 30, 45),
+                                Expanded(
+                                  child: Text(
+                                    'Massa Magra',
+                                    overflow: TextOverflow.ellipsis,
+                                    style: GoogleFonts.barlowCondensed(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: const Color.fromARGB(
+                                        255,
+                                        0,
+                                        30,
+                                        45,
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ],
@@ -445,10 +462,10 @@ class _AlunoEvolutionViewState extends State<AlunoEvolutionView> {
                 ),
               ),
 
-              SizedBox(height: 15),
+              const SizedBox(height: 15),
 
               SizedBox(
-                width: screenWidth,
+                width: double.infinity,
                 child: Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
@@ -479,7 +496,7 @@ class _AlunoEvolutionViewState extends State<AlunoEvolutionView> {
                         child: Text(
                           'Avaliação presencial marcada com o Prof. Marcos.',
                           style: GoogleFonts.inter(
-                            fontSize: 20,
+                            fontSize: 16,
                             fontWeight: FontWeight.bold,
                             color: const Color.fromARGB(255, 0, 30, 45),
                           ),
@@ -490,7 +507,7 @@ class _AlunoEvolutionViewState extends State<AlunoEvolutionView> {
                 ),
               ),
 
-              SizedBox(height: 15),
+              const SizedBox(height: 15),
 
               Text(
                 'Histórico de Avaliações',
@@ -501,10 +518,10 @@ class _AlunoEvolutionViewState extends State<AlunoEvolutionView> {
                 ),
               ),
 
-              SizedBox(height: 15),
+              const SizedBox(height: 15),
 
               Container(
-                width: screenWidth,
+                width: double.infinity,
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   color: Colors.white,
@@ -552,29 +569,31 @@ class _AlunoEvolutionViewState extends State<AlunoEvolutionView> {
 
                     const SizedBox(width: 15),
 
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          '15 de Junho, 2026',
-                          style: GoogleFonts.inter(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: const Color.fromARGB(255, 0, 30, 45),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '15 de Junho, 2026',
+                            style: GoogleFonts.inter(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: const Color.fromARGB(255, 0, 30, 45),
+                            ),
                           ),
-                        ),
-                        Text(
-                          'Avaliação Presencial',
-                          style: GoogleFonts.inter(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: const Color.fromARGB(255, 111, 121, 118),
+                          Text(
+                            'Avaliação Presencial',
+                            style: GoogleFonts.inter(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: const Color.fromARGB(255, 111, 121, 118),
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
 
-                    const Spacer(),
+                    const SizedBox(width: 10),
 
                     Container(
                       padding: const EdgeInsets.symmetric(
@@ -596,15 +615,14 @@ class _AlunoEvolutionViewState extends State<AlunoEvolutionView> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 15),
                   ],
                 ),
               ),
 
-              SizedBox(height: 15),
+              const SizedBox(height: 15),
 
               Container(
-                width: screenWidth,
+                width: double.infinity,
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   color: Colors.white,
@@ -652,29 +670,31 @@ class _AlunoEvolutionViewState extends State<AlunoEvolutionView> {
 
                     const SizedBox(width: 15),
 
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          '10 de Março, 2026',
-                          style: GoogleFonts.inter(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: const Color.fromARGB(255, 0, 30, 45),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '10 de Março, 2026',
+                            style: GoogleFonts.inter(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: const Color.fromARGB(255, 0, 30, 45),
+                            ),
                           ),
-                        ),
-                        Text(
-                          'Avaliação Online',
-                          style: GoogleFonts.inter(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: const Color.fromARGB(255, 111, 121, 118),
+                          Text(
+                            'Avaliação Online',
+                            style: GoogleFonts.inter(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: const Color.fromARGB(255, 111, 121, 118),
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
 
-                    const Spacer(),
+                    const SizedBox(width: 10),
 
                     Container(
                       padding: const EdgeInsets.symmetric(
@@ -696,7 +716,6 @@ class _AlunoEvolutionViewState extends State<AlunoEvolutionView> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 15),
                   ],
                 ),
               ),
