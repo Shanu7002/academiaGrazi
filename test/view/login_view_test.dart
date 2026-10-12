@@ -134,7 +134,7 @@ void main() {
 
       final loginButton = find.text('Entrar');
       await tester.tap(loginButton);
-      await tester.pumpAndSettle(); // Resolve a animação do SnackBar
+      await tester.pumpAndSettle();
 
       expect(find.text('Preencha todos os campos.'), findsOneWidget);
 
@@ -143,12 +143,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byIcon(Icons.visibility), findsOneWidget);
 
-      verifyNever(
-        mockLoginController.loginUser(
-          email: anyNamed('email'),
-          password: anyNamed('password'),
-        ),
-      );
+      verifyZeroInteractions(mockLoginController);
     },
   );
 
@@ -159,7 +154,7 @@ void main() {
 
       final createAccountButton = find.text('Criar minha conta');
       await tester.tap(createAccountButton);
-      await tester.pumpAndSettle(); // Resolve o push do Navigator
+      await tester.pumpAndSettle();
 
       expect(find.byType(SelfRegisterView), findsOneWidget);
     },
@@ -179,4 +174,98 @@ void main() {
       expect(tester.takeException(), isNull);
     },
   );
+
+  testWidgets('Valida fluxo de recuperação de palavra-passe com campo vazio', (
+    tester,
+  ) async {
+    await pumpLoginView(tester);
+
+    final forgotPasswordText = find.text('Esqueci minha senha');
+
+    await tester.scrollUntilVisible(
+      forgotPasswordText,
+      -50.0,
+      scrollable: find.byType(Scrollable).first,
+    );
+
+    await tester.tap(forgotPasswordText);
+
+    await tester.pumpAndSettle();
+
+    expect(
+      find.text('Informe seu e-mail no campo acima para recuperar a senha.'),
+      findsOneWidget,
+    );
+
+    verifyZeroInteractions(mockLoginController);
+  });
+
+  testWidgets('Aciona recuperação de palavra-passe com sucesso', (
+    tester,
+  ) async {
+    when(
+      mockLoginController.resetPassword(email: 'aluno@exemplo.com'),
+    ).thenAnswer((_) async => true);
+
+    await pumpLoginView(tester);
+
+    await tester.enterText(find.byType(TextField).at(0), 'aluno@exemplo.com');
+
+    final forgotPasswordText = find.text('Esqueci minha senha');
+
+    await tester.scrollUntilVisible(
+      forgotPasswordText,
+      -50.0,
+      scrollable: find.byType(Scrollable).first,
+    );
+
+    await tester.tap(forgotPasswordText);
+    await tester.pumpAndSettle();
+
+    expect(
+      find.text('Um link de recuperação foi enviado para seu e-mail.'),
+      findsOneWidget,
+    );
+
+    verify(
+      mockLoginController.resetPassword(email: 'aluno@exemplo.com'),
+    ).called(1);
+  });
+
+  testWidgets('Exibe erro ao falhar na recuperação de palavra-passe', (
+    tester,
+  ) async {
+    when(
+      mockLoginController.resetPassword(email: 'invalido@exemplo.com'),
+    ).thenAnswer((_) async => false);
+
+    await pumpLoginView(tester);
+
+    await tester.enterText(
+      find.byType(TextField).at(0),
+      'invalido@exemplo.com',
+    );
+
+    final forgotPasswordText = find.text('Esqueci minha senha');
+
+    await tester.scrollUntilVisible(
+      forgotPasswordText,
+      -50.0,
+      scrollable: find.byType(Scrollable).first,
+    );
+
+    await tester.tap(forgotPasswordText);
+    await tester.pumpAndSettle();
+
+    expect(
+      find.text(
+        'Não foi possível processar a solicitação. Verifique o e-mail.',
+      ),
+      findsOneWidget,
+    );
+
+    verify(
+      mockLoginController.resetPassword(email: 'invalido@exemplo.com'),
+    ).called(1);
+  });
 }

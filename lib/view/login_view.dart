@@ -81,6 +81,40 @@ class _LandingPageState extends State<LoginView> {
     }
   }
 
+  Future<void> _handlePasswordReset() async {
+    final email = _emailController.text.trim();
+
+    if (email.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Informe seu e-mail no campo acima para recuperar a senha.',
+          ),
+        ),
+      );
+      return;
+    }
+
+    setState(() => _isLoading = true);
+
+    final LoginController controller = locator.get<LoginController>();
+
+    final bool success = await controller.resetPassword(email: email);
+
+    if (!mounted) return;
+    setState(() => _isLoading = false);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          success
+              ? 'Um link de recuperação foi enviado para seu e-mail.'
+              : 'Não foi possível processar a solicitação. Verifique o e-mail.',
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -359,6 +393,8 @@ class _LandingPageState extends State<LoginView> {
 
   Widget _buildForgotPassword() {
     return GestureDetector(
+      // Atribuição direta do callback
+      onTap: _isLoading ? null : _handlePasswordReset,
       child: const Text(
         'Esqueci minha senha',
         style: TextStyle(
