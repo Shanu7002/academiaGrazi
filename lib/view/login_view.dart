@@ -77,135 +77,162 @@ class _LoginViewState extends State<LoginView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFD8D6D6),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 60.0),
-          child: Column(
-            children: [
-              Image.asset('assets/logoLogin.png', height: 250),
-              TextField(
-                controller: _emailController,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  hintText: 'Email',
-                  hintStyle: const TextStyle(color: Color(0xFF757575)),
-                  filled: true,
-                  fillColor: const Color.fromARGB(255, 238, 238, 238),
-                ),
-              ),
-              const SizedBox(height: 20),
-              TextField(
-                controller: _passwordController,
-                obscureText: _obscureText,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  hintText: 'Senha',
-                  hintStyle: const TextStyle(color: Color(0xFF757575)),
-                  filled: true,
-                  fillColor: const Color.fromARGB(255, 238, 238, 238),
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      _obscureText ? Icons.visibility_off : Icons.visibility,
-                      color: const Color(0xFF757575),
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        _obscureText = !_obscureText;
-                      });
-                    },
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
+      backgroundColor: Colors.white,
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Color(0xFFFFC107),
+              Color(0xFFFFE082),
+              Colors.white,
+              Color(0xFFFFE082),
+              Color(0xFFFFC107),
+            ],
+            stops: [0.0, 0.08, 0.5, 0.92, 1.0],
+          ),
+        ),
+        padding: const EdgeInsets.all(2),
+        child: Container(
+          color: Colors.white,
+          child: SafeArea(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 60.0),
+              child: Column(
+                children: [
+                  Image.asset('assets/logoLogin.png', height: 250),
 
-              Align(
-                alignment: Alignment.centerRight,
-                child: SizedBox(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      debugPrint('Esqueci minha senha');
-                    },
-                    style: TextButton.styleFrom(
-                      padding: EdgeInsets.zero,
-                      minimumSize: const Size(0, 0),
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      backgroundColor: Color(0xFFD8D6D6),
+                  TextField(
+                    controller: _emailController,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      hintText: 'Email',
+                      hintStyle: const TextStyle(color: Color(0xFF757575)),
+                      filled: true,
+                      fillColor: const Color(0xFFEEEEEE),
                     ),
-                    child: const Text(
-                      'Esqueci minha senha',
-                      style: TextStyle(
-                        color: Color.fromARGB(255, 21, 73, 116),
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        decoration: TextDecoration.underline,
-                        height: 1,
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  TextField(
+                    controller: _passwordController,
+                    obscureText: _obscureText,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      hintText: 'Senha',
+                      hintStyle: const TextStyle(color: Color(0xFF757575)),
+                      filled: true,
+                      fillColor: const Color(0xFFEEEEEE),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscureText
+                              ? Icons.visibility_off
+                              : Icons.visibility,
+                          color: const Color(0xFF757575),
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _obscureText = !_obscureText;
+                          });
+                        },
                       ),
                     ),
                   ),
-                ),
-              ),
 
-              const SizedBox(height: 50),
+                  const SizedBox(height: 20),
 
-              SizedBox(
-                width: 350,
-                child: ElevatedButton(
-                  onPressed: _isLoading ? null : _executeLogin,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromARGB(255, 2, 89, 79),
-                    padding: const EdgeInsets.symmetric(vertical: 10),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        debugPrint('Esqueci minha senha');
+                      },
+                      style: TextButton.styleFrom(
+                        padding: EdgeInsets.zero,
+                        minimumSize: const Size(0, 0),
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        backgroundColor: const Color(0xFFD8D6D6),
+                      ),
+                      child: const Text(
+                        'Esqueci minha senha',
+                        style: TextStyle(
+                          color: Color(0xFF154974),
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          decoration: TextDecoration.underline,
+                          height: 1,
+                        ),
+                      ),
                     ),
                   ),
-                  child: const Text(
-                    'ENTRAR',
-                    style: TextStyle(
-                      color: Color.fromARGB(255, 255, 255, 255),
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      height: 3,
+
+                  const SizedBox(height: 50),
+
+                  SizedBox(
+                    width: 350,
+                    child: ElevatedButton(
+                      onPressed: _isLoading ? null : _executeLogin,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF02594F),
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: const Text(
+                        'ENTRAR',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          height: 3,
+                        ),
+                      ),
                     ),
                   ),
-                ),
+
+                  const SizedBox(height: 14),
+
+                  SizedBox(
+                    width: 350,
+                    child: OutlinedButton(
+                      key: const Key('createAccountButton'),
+                      onPressed:
+                          _isLoading
+                              ? null
+                              : () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => SelfRegisterView(),
+                                  ),
+                                );
+                              },
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: const Color(0xFF02594F),
+                        side: const BorderSide(color: Color(0xFF02594F)),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: const Text(
+                        'CRIAR CONTA',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 20),
+                ],
               ),
-              const SizedBox(height: 14),
-              SizedBox(
-                width: 350,
-                child: OutlinedButton(
-                  key: const Key('createAccountButton'),
-                  onPressed:
-                      _isLoading
-                          ? null
-                          : () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => SelfRegisterView(),
-                              ),
-                            );
-                          },
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: const Color(0xFF02594F),
-                    side: const BorderSide(color: Color(0xFF02594F)),
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: const Text(
-                    'CRIAR CONTA',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-            ],
+            ),
           ),
         ),
       ),
