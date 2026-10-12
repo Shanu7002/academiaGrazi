@@ -39,4 +39,13 @@ class LoginController {
       return null;
     }
   }
+
+  Future<bool> resetPassword({required String email}) async {
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+      return true;
+    } on FirebaseAuthException catch (e) {
+      return false;
+    }
+  }
 }
