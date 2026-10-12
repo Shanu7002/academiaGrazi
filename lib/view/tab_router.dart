@@ -3,6 +3,7 @@ import 'package:academiagrazi/view/user/aluno_home_view.dart';
 import 'package:academiagrazi/view/user/aluno_profile_view.dart';
 import 'package:academiagrazi/view/user/aluno_treinos_view.dart';
 import 'package:academiagrazi/view/user/mocks/treinos_mock_data.dart';
+import 'package:academiagrazi/view/user/aluno_evolucao_view.dart';
 import 'package:flutter/material.dart';
 
 class MainShell extends StatefulWidget {
@@ -56,10 +57,17 @@ class _MainShellState extends State<MainShell> {
               },
             ),
           ),
-          const Center(
-            child: Text('Evolução'),
-          ),
-          const AlunoProfileView(),
+
+          // =====================================================
+          // EVOLUÇÃO
+          // =====================================================
+          const AlunoEvolutionView(),
+
+          // =====================================================
+          // PERFIL
+          // Mantém a implementação nova da sprint-3.
+          // =====================================================
+          AlunoProfileView(),
         ],
       ),
       bottomNavigationBar: NavigationBar(

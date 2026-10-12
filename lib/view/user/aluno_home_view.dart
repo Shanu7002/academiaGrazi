@@ -552,7 +552,7 @@ class _AlunoHomeViewState extends State<AlunoHomeView> {
                             vertical: 8,
                           ),
                           decoration: BoxDecoration(
-                            color: const Color.fromARGB(255, 136, 207, 193),
+                            color: const Color.fromARGB(255, 168, 240, 225),
                             borderRadius: BorderRadius.circular(16),
                           ),
                           child: Text(
