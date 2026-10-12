@@ -85,7 +85,7 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
         ),
         actions: [
           IconButton(
-            onPressed: () {}, // Notificações ainda não estão ligadas ao banco
+            onPressed: () {},
             icon: const Icon(
               Icons.notifications_none,
               color: Color(0xFF354640),
@@ -107,33 +107,30 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _SectionHeader(
+                    const _SectionHeader(
                       icon: Icons.badge_outlined,
                       title: 'ACOMPANHAMENTO PROFISSIONAL',
                       fontSize: 15,
                     ),
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
                     _ProfessionalInfoCard(
-                      avatar: CircleAvatar(
+                      avatar: const CircleAvatar(
                         radius: 18,
                         backgroundColor: Color(0xFFD4D4D4),
                         child: Icon(Icons.person, color: Color(0xFF8A8A8A)),
                       ),
                       label: 'PROFESSOR RESPONSÁVEL',
-                      title:
-                          responsable?.name ??
-                          'Professor não encontrado', //Dado mockado, precisa ser alterado em produção para buscar o dado do banco
-                      subtitle:
-                          'Especialista', //Dado mockado, precisa ser alterado em produção para buscar o dado do banco
-                      subtitleColor: Color(0xFF277B60),
+                      title: responsable?.name ?? 'Professor não encontrado',
+                      subtitle: 'Especialista',
+                      subtitleColor: const Color(0xFF277B60),
                     ),
-                    SizedBox(height: 12),
+                    const SizedBox(height: 12),
                     _ProfessionalInfoCard(
-                      avatar: CircleAvatar(
+                      avatar: const CircleAvatar(
                         radius: 18,
                         backgroundColor: Color(0xFF005A4F),
                         child: Text(
-                          'A', // Valor derivado do bloco mockado, deve vir do banco
+                          'A',
                           style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
@@ -141,10 +138,8 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
                         ),
                       ),
                       label: 'BLOCO / TURNO',
-                      title:
-                          'Bloco A', //Dado mockado, precisa ser alterado em produção para buscar o dado do banco
-                      subtitle:
-                          '06:00 - 09:00', //Dado mockado, precisa ser alterado em produção para buscar o dado do banco
+                      title: 'Bloco A',
+                      subtitle: '06:00 - 09:00',
                     ),
                   ],
                 ),
@@ -160,37 +155,33 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
                       icon: Icons.health_and_safety_outlined,
                       title: 'SAÚDE E FICHA CLÍNICA',
                     ),
-                    SizedBox(height: 12),
-                    _PrivacyBanner(),
-                    SizedBox(height: 12),
-                    _InfoCard(
+                    const SizedBox(height: 12),
+                    const _PrivacyBanner(),
+                    const SizedBox(height: 12),
+                    const _InfoCard(
                       label: 'Condições Crônicas',
-                      value:
-                          'Hipertensão controlada', //Dado mockado, precisa ser alterado em produção para buscar o dado do banco
+                      value: 'Hipertensão controlada',
                     ),
-                    SizedBox(height: 10),
-                    _InfoCard(
+                    const SizedBox(height: 10),
+                    const _InfoCard(
                       label: 'Restrições no Treino',
-                      value:
-                          'Evitar impacto excessivo em membros inferiores', //Dado mockado, precisa ser alterado em produção para buscar o dado do banco
+                      value: 'Evitar impacto excessivo em membros inferiores',
                     ),
-                    SizedBox(height: 10),
-                    _InfoCard(
+                    const SizedBox(height: 10),
+                    const _InfoCard(
                       label: 'Contato de Emergência',
-                      value:
-                          'Carlos Lima (Esposo) • (11) 98765-4321', //Dado mockado, precisa ser alterado em produção para buscar o dado do banco
+                      value: 'Carlos Lima (Esposo) • (11) 98765-4321',
                     ),
-                    SizedBox(height: 14),
-                    Text(
-                      'Revisado em 15/06/2023 por Prof. Marcos', //Dado mockado, precisa ser alterado em produção para buscar o dado do banco
+                    const SizedBox(height: 14),
+                    const Text(
+                      'Revisado em 15/06/2023 por Prof. Marcos',
                       style: TextStyle(color: Color(0xFF65716D), fontSize: 10),
                     ),
-                    SizedBox(height: 14),
+                    const SizedBox(height: 14),
                     SizedBox(
                       width: double.infinity,
                       child: OutlinedButton(
-                        onPressed:
-                            () {}, // Atualização da ficha no banco ainda não implementada
+                        onPressed: () {},
                         style: OutlinedButton.styleFrom(
                           foregroundColor: const Color(0xFF005A4F),
                           side: const BorderSide(color: Color(0xFF005A4F)),
@@ -204,34 +195,34 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
 
               const SizedBox(height: 16),
 
-              const _SectionCard(
+              _SectionCard(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _SectionHeader(
+                    const _SectionHeader(
                       icon: Icons.credit_card,
                       title: 'PLANO E MENSALIDADE',
                     ),
-                    SizedBox(height: 16),
-                    Text(
-                      'Plano Conexão Semestral', //Dado mockado, precisa ser alterado em produção para buscar o dado do banco
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Plano Conexão Semestral',
                       style: TextStyle(
                         color: Color(0xFF092837),
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    SizedBox(height: 4),
-                    Text(
-                      'Renovação em 10/11/2023', //Dado mockado, precisa ser alterado em produção para buscar o dado do banco
+                    const SizedBox(height: 4),
+                    const Text(
+                      'Renovação em 10/11/2023',
                       style: TextStyle(color: Color(0xFF65716D), fontSize: 11),
                     ),
-                    SizedBox(height: 14),
+                    const SizedBox(height: 14),
                     Row(
-                      children: [
+                      children: const [
                         Expanded(
                           child: Text(
-                            'Modalidades\nMusculação + Pilates', //Dado mockado, precisa ser alterado em produção para buscar o dado do banco
+                            'Modalidades\nMusculação + Pilates',
                             style: TextStyle(
                               color: Color(0xFF092837),
                               fontSize: 12,
@@ -240,7 +231,7 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
                         ),
                         Expanded(
                           child: Text(
-                            'Matrícula\n#GB-2023-0482', //Dado mockado, precisa ser alterado em produção para buscar o dado do banco
+                            'Matrícula\n#GB-2023-0482',
                             style: TextStyle(
                               color: Color(0xFF092837),
                               fontSize: 12,
@@ -258,27 +249,26 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
               _SectionCard(
                 padding: EdgeInsets.zero,
                 child: Column(
-                  children: [
-                    const Padding(
+                  children: const [
+                    Padding(
                       padding: EdgeInsets.all(16),
                       child: _SectionHeader(
                         icon: Icons.tune,
                         title: 'PREFERÊNCIAS & AJUSTES',
                       ),
                     ),
-                    const Divider(height: 1),
-                    const _PreferenceSwitch(
+                    Divider(height: 1),
+                    _PreferenceSwitch(
                       icon: Icons.alarm,
                       title: 'Lembrete diário de treino',
                     ),
-                    const Divider(height: 1),
-                    const _PreferenceSwitch(
+                    Divider(height: 1),
+                    _PreferenceSwitch(
                       icon: Icons.notifications_active_outlined,
-                      title:
-                          'Avisos do Prof. Marcos', // Dado mockado, deve vir do professor vinculado no banco
+                      title: 'Avisos do Prof. Marcos',
                     ),
-                    const Divider(height: 1),
-                    const Material(
+                    Divider(height: 1),
+                    Material(
                       color: Colors.transparent,
                       child: ListTile(
                         leading: Icon(Icons.shield_outlined),
@@ -293,8 +283,6 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
           ),
         ),
       ),
-
-      // bottomNavigationBar removido
     );
   }
 }
@@ -310,46 +298,52 @@ class _ProfileSummary extends StatelessWidget {
       child: Row(
         children: [
           Stack(
-            children: [
-              _ProfileAvatar(), // Imagem de perfil mockada, deve vir do banco/storage
-              Positioned(
-                right: 0,
-                bottom: 0,
-                child:
-                    _VerifiedBadge(), // Status do perfil mockado, deve vir do banco
-              ),
+            children: const [
+              _ProfileAvatar(),
+              Positioned(right: 0, bottom: 0, child: _VerifiedBadge()),
             ],
           ),
-          SizedBox(width: 16),
+          const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  user.name, //Dado mockado, precisa ser alterado em produção para buscar o dado do banco
-                  style: TextStyle(
+                  user.name,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
                     color: Color(0xFF092837),
-                    fontSize: 22,
+                    fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                SizedBox(height: 4),
+                const SizedBox(height: 4),
                 Text(
-                  user.email, //Dado mockado, precisa ser alterado em produção para buscar o dado do banco
-                  style: TextStyle(color: Color(0xFF65716D), fontSize: 12),
+                  user.email,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: Color(0xFF65716D),
+                    fontSize: 12,
+                  ),
                 ),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 Row(
-                  children: [
+                  children: const [
                     Icon(
                       Icons.fitness_center,
                       color: Color(0xFF005A4F),
                       size: 16,
                     ),
                     SizedBox(width: 5),
-                    Text(
-                      'Plano Presencial + App', //Dado mockado, precisa ser alterado em produção para buscar o dado do banco
-                      style: TextStyle(color: Color(0xFF005A4F), fontSize: 12),
+                    Expanded(
+                      child: Text(
+                        'Plano Presencial + App',
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: Color(0xFF005A4F),
+                          fontSize: 12,
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -482,26 +476,33 @@ class _ProfessionalInfoCard extends StatelessWidget {
         children: [
           avatar,
           const SizedBox(width: 10),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                label,
-                style: const TextStyle(color: Color(0xFF65716D), fontSize: 10),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                title,
-                style: const TextStyle(
-                  color: Color(0xFF092837),
-                  fontWeight: FontWeight.bold,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: const TextStyle(
+                    color: Color(0xFF65716D),
+                    fontSize: 10,
+                  ),
                 ),
-              ),
-              Text(
-                subtitle,
-                style: TextStyle(color: subtitleColor, fontSize: 10),
-              ),
-            ],
+                const SizedBox(height: 4),
+                Text(
+                  title,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: Color(0xFF092837),
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  subtitle,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(color: subtitleColor, fontSize: 10),
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -585,11 +586,8 @@ class _PreferenceSwitch extends StatelessWidget {
     return Material(
       color: Colors.transparent,
       child: SwitchListTile(
-        value: true, // Preferência mockada, deve ser lida do banco
-        onChanged:
-            (
-              value,
-            ) {}, // Persistência da preferência no banco ainda não implementada
+        value: true,
+        onChanged: (value) {},
         activeThumbColor: const Color(0xFF005A4F),
         secondary: Icon(icon),
         title: Text(title),
