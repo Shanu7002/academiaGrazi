@@ -1,6 +1,8 @@
+import 'package:academiagrazi/theme/app_colors.dart';
 import 'package:academiagrazi/view/user/aluno_home_view.dart';
 import 'package:academiagrazi/view/user/aluno_profile_view.dart';
 import 'package:academiagrazi/view/user/aluno_treinos_view.dart';
+import 'package:academiagrazi/view/user/mocks/treinos_mock_data.dart';
 import 'package:academiagrazi/view/user/aluno_evolucao_view.dart';
 import 'package:flutter/material.dart';
 
@@ -23,9 +25,6 @@ class _MainShellState extends State<MainShell> {
       body: IndexedStack(
         index: _selectedIndex,
         children: [
-          // =====================================================
-          // INÍCIO
-          // =====================================================
           NavigatorPopHandler<Object?>(
             enabled: _selectedIndex == 0,
             onPopWithResult: (_) {
@@ -41,10 +40,6 @@ class _MainShellState extends State<MainShell> {
               },
             ),
           ),
-
-          // =====================================================
-          // TREINOS
-          // =====================================================
           NavigatorPopHandler<Object?>(
             enabled: _selectedIndex == 1,
             onPopWithResult: (_) {
@@ -55,7 +50,9 @@ class _MainShellState extends State<MainShell> {
               onGenerateRoute: (settings) {
                 return MaterialPageRoute(
                   settings: settings,
-                  builder: (_) => const AlunoTreinosView(),
+                  builder: (_) => const AlunoTreinosView(
+                    data: TreinosMockData.alunoTreinos,
+                  ),
                 );
               },
             ),
@@ -73,18 +70,16 @@ class _MainShellState extends State<MainShell> {
           AlunoProfileView(),
         ],
       ),
-
       bottomNavigationBar: NavigationBar(
-        indicatorColor: const Color(0xFFFF7943),
+        indicatorColor: AppColors.accent,
         selectedIndex: _selectedIndex,
-
         onDestinationSelected: (index) {
-          // Ao tocar em Início, volta para a raiz da Home.
           if (index == 0) {
-            _homeNavigatorKey.currentState?.popUntil((route) => route.isFirst);
+            _homeNavigatorKey.currentState?.popUntil(
+              (route) => route.isFirst,
+            );
           }
 
-          // Ao tocar em Treinos, volta para a lista de treinos.
           if (index == 1) {
             _treinosNavigatorKey.currentState?.popUntil(
               (route) => route.isFirst,
@@ -97,7 +92,6 @@ class _MainShellState extends State<MainShell> {
             });
           }
         },
-
         destinations: const [
           NavigationDestination(
             icon: Icon(Icons.home_outlined),

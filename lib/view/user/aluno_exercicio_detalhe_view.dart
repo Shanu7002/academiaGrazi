@@ -1,13 +1,14 @@
-import 'package:academiagrazi/view/user/treino_ui_data.dart';
+import 'package:academiagrazi/theme/app_colors.dart';
+import 'package:academiagrazi/view/user/ui_data/aluno_exercicio_detalhe_ui_data.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AlunoExercicioDetalheView extends StatefulWidget {
-  final ExercicioTreinoUi exercicio;
+  final AlunoExercicioDetalheUiData data;
 
   const AlunoExercicioDetalheView({
     super.key,
-    required this.exercicio,
+    required this.data,
   });
 
   @override
@@ -17,14 +18,6 @@ class AlunoExercicioDetalheView extends StatefulWidget {
 
 class _AlunoExercicioDetalheViewState
     extends State<AlunoExercicioDetalheView> {
-  static const Color _background = Color(0xFFF4F7FA);
-  static const Color _verde = Color(0xFF005A4F);
-  static const Color _verdeEscuro = Color(0xFF003D36);
-  static const Color _laranja = Color(0xFFFF7943);
-  static const Color _azulEscuro = Color(0xFF092837);
-  static const Color _cinzaTexto = Color(0xFF64748B);
-  static const Color _cinzaBorda = Color(0xFFE2E8F0);
-  static const Color _cinzaClaro = Color(0xFFF8FAFC);
 
   late final List<TextEditingController> _cargaControllers;
   final Set<int> _seriesConcluidas = <int>{};
@@ -51,7 +44,7 @@ class _AlunoExercicioDetalheViewState
   }
 
   int get _quantidadeSeries {
-    final valor = widget.exercicio.series.trim();
+    final valor = widget.data.exercicio.series.trim();
 
     if (valor.contains('x')) {
       final partes = valor.split('x');
@@ -66,7 +59,7 @@ class _AlunoExercicioDetalheViewState
   }
 
   String get _repeticoes {
-    final valor = widget.exercicio.series.trim();
+    final valor = widget.data.exercicio.series.trim();
 
     if (!valor.contains('x')) {
       return valor;
@@ -82,33 +75,16 @@ class _AlunoExercicioDetalheViewState
   }
 
   String get _cargaInicial {
-    final somenteNumeros = widget.exercicio.carga
+    final somenteNumeros = widget.data.exercicio.carga
         .replaceAll(RegExp(r'[^0-9,.]'), '')
         .replaceAll(',', '.');
 
     return somenteNumeros;
   }
 
-  String get _descanso {
-    if (widget.exercicio.id == 'agachamento') {
-      return '75s';
-    }
+  String get _descanso => widget.data.descanso;
 
-    return '—';
-  }
-
-  String get _orientacoes {
-    if (widget.exercicio.id == 'agachamento') {
-      return 'Mantenha as costas retas e o core contraído. '
-          'Posicione os pés na largura dos ombros, apontando '
-          'ligeiramente para fora. Desça flexionando joelhos '
-          'e quadril, como se fosse sentar em uma cadeira, '
-          'até que as coxas fiquem paralelas ao chão.';
-    }
-
-    return 'As orientações específicas deste exercício serão '
-        'exibidas aqui quando estiverem cadastradas na prescrição.';
-  }
+  String get _orientacoes => widget.data.orientacoes;
 
   int? get _proximaSeriePendente {
     for (var i = 0; i < _quantidadeSeries; i++) {
@@ -159,7 +135,7 @@ class _AlunoExercicioDetalheViewState
     final proximaSerie = _proximaSeriePendente;
 
     return Scaffold(
-      backgroundColor: _background,
+      backgroundColor: AppColors.background,
       body: SafeArea(
         bottom: false,
         child: Column(
@@ -224,7 +200,7 @@ class _AlunoExercicioDetalheViewState
             color: Colors.white,
             border: Border(
               top: BorderSide(
-                color: _cinzaBorda,
+                color: AppColors.border,
               ),
             ),
           ),
@@ -240,9 +216,10 @@ class _AlunoExercicioDetalheViewState
                     width: double.infinity,
                     height: 50,
                     child: FilledButton(
+                      key: const Key('concluir_serie'),
                       onPressed: _concluirProximaSerie,
                       style: FilledButton.styleFrom(
-                        backgroundColor: _laranja,
+                        backgroundColor: AppColors.accent,
                         foregroundColor: Colors.white,
                         elevation: 0,
                         shape: RoundedRectangleBorder(
@@ -278,7 +255,7 @@ class _AlunoExercicioDetalheViewState
         color: Colors.white,
         border: Border(
           bottom: BorderSide(
-            color: _cinzaBorda,
+            color: AppColors.border,
           ),
         ),
       ),
@@ -298,19 +275,19 @@ class _AlunoExercicioDetalheViewState
                   },
                   icon: const Icon(
                     Icons.arrow_back_ios_new_rounded,
-                    color: _verde,
+                    color: AppColors.primary,
                     size: 18,
                   ),
                 ),
               ),
               Expanded(
                 child: Text(
-                  widget.exercicio.nome,
+                  widget.data.exercicio.nome,
                   textAlign: TextAlign.center,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: GoogleFonts.barlowCondensed(
-                    color: _azulEscuro,
+                    color: AppColors.textPrimary,
                     fontSize: 21,
                     fontWeight: FontWeight.w800,
                   ),
@@ -323,7 +300,7 @@ class _AlunoExercicioDetalheViewState
                   onPressed: () {},
                   icon: const Icon(
                     Icons.more_vert_rounded,
-                    color: _azulEscuro,
+                    color: AppColors.textPrimary,
                     size: 22,
                   ),
                 ),
@@ -345,9 +322,9 @@ class _AlunoExercicioDetalheViewState
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              Color(0xFFB8CBC8),
-              Color(0xFF7C9691),
-              Color(0xFF4E6964),
+              AppColors.videoGradientStart,
+              AppColors.videoGradientMiddle,
+              AppColors.videoGradientEnd,
             ],
           ),
         ),
@@ -365,7 +342,7 @@ class _AlunoExercicioDetalheViewState
                     shape: BoxShape.circle,
                     boxShadow: const [
                       BoxShadow(
-                        color: Color(0x33000000),
+                        color: AppColors.shadowBlack20,
                         blurRadius: 18,
                         offset: Offset(0, 6),
                       ),
@@ -373,7 +350,7 @@ class _AlunoExercicioDetalheViewState
                   ),
                   child: const Icon(
                     Icons.play_arrow_rounded,
-                    color: _verdeEscuro,
+                    color: AppColors.primaryDark,
                     size: 40,
                   ),
                 ),
@@ -388,7 +365,7 @@ class _AlunoExercicioDetalheViewState
                   vertical: 6,
                 ),
                 decoration: BoxDecoration(
-                  color: const Color(0xE6FFFFFF),
+                  color: AppColors.white90,
                   borderRadius: BorderRadius.circular(999),
                 ),
                 child: Row(
@@ -396,14 +373,14 @@ class _AlunoExercicioDetalheViewState
                   children: [
                     const Icon(
                       Icons.timer_outlined,
-                      color: _azulEscuro,
+                      color: AppColors.textPrimary,
                       size: 15,
                     ),
                     const SizedBox(width: 5),
                     Text(
-                      '01:45',
+                      widget.data.tempoVideo,
                       style: GoogleFonts.inter(
-                        color: _azulEscuro,
+                        color: AppColors.textPrimary,
                         fontSize: 11,
                         fontWeight: FontWeight.w700,
                       ),
@@ -420,9 +397,9 @@ class _AlunoExercicioDetalheViewState
 
   Widget _buildTitulo() {
     return Text(
-      widget.exercicio.nome,
+      widget.data.exercicio.nome,
       style: GoogleFonts.barlowCondensed(
-        color: _azulEscuro,
+        color: AppColors.textPrimary,
         fontSize: 30,
         fontWeight: FontWeight.w800,
         height: 1,
@@ -473,13 +450,13 @@ class _AlunoExercicioDetalheViewState
       ),
       decoration: BoxDecoration(
         color: destaque
-            ? const Color(0xFFFFEEE7)
+            ? AppColors.accentSurface
             : Colors.white,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
           color: destaque
-              ? const Color(0x33FF7943)
-              : _cinzaBorda,
+              ? AppColors.accentBorderTransparent
+              : AppColors.border,
         ),
       ),
       child: Column(
@@ -491,8 +468,8 @@ class _AlunoExercicioDetalheViewState
             overflow: TextOverflow.ellipsis,
             style: GoogleFonts.barlowCondensed(
               color: destaque
-                  ? _laranja
-                  : _azulEscuro,
+                  ? AppColors.accent
+                  : AppColors.textPrimary,
               fontSize: 23,
               fontWeight: FontWeight.w800,
             ),
@@ -503,7 +480,7 @@ class _AlunoExercicioDetalheViewState
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: GoogleFonts.inter(
-              color: _cinzaTexto,
+              color: AppColors.textSecondary,
               fontSize: 10,
               fontWeight: FontWeight.w600,
             ),
@@ -520,7 +497,7 @@ class _AlunoExercicioDetalheViewState
         Text(
           'Orientações',
           style: GoogleFonts.barlowCondensed(
-            color: _azulEscuro,
+            color: AppColors.textPrimary,
             fontSize: 23,
             fontWeight: FontWeight.w800,
           ),
@@ -533,13 +510,13 @@ class _AlunoExercicioDetalheViewState
             color: Colors.white,
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
-              color: _cinzaBorda,
+              color: AppColors.border,
             ),
           ),
           child: Text(
             _orientacoes,
             style: GoogleFonts.inter(
-              color: const Color(0xFF334155),
+              color: AppColors.textBody,
               fontSize: 13,
               height: 1.55,
             ),
@@ -556,7 +533,7 @@ class _AlunoExercicioDetalheViewState
         Text(
           'Séries',
           style: GoogleFonts.barlowCondensed(
-            color: _azulEscuro,
+            color: AppColors.textPrimary,
             fontSize: 23,
             fontWeight: FontWeight.w800,
           ),
@@ -568,7 +545,7 @@ class _AlunoExercicioDetalheViewState
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: _cinzaBorda,
+              color: AppColors.border,
             ),
           ),
           child: Column(
@@ -590,7 +567,7 @@ class _AlunoExercicioDetalheViewState
         vertical: 12,
       ),
       decoration: const BoxDecoration(
-        color: _cinzaClaro,
+        color: AppColors.surfaceSoft,
         borderRadius: BorderRadius.vertical(
           top: Radius.circular(16),
         ),
@@ -637,7 +614,7 @@ class _AlunoExercicioDetalheViewState
           top: BorderSide(
             color: indice == 0
                 ? Colors.transparent
-                : _cinzaBorda,
+                : AppColors.border,
           ),
         ),
       ),
@@ -648,7 +625,7 @@ class _AlunoExercicioDetalheViewState
             child: Text(
               '${indice + 1}',
               style: GoogleFonts.barlowCondensed(
-                color: _azulEscuro,
+                color: AppColors.textPrimary,
                 fontSize: 19,
                 fontWeight: FontWeight.w700,
               ),
@@ -667,7 +644,7 @@ class _AlunoExercicioDetalheViewState
                   ),
                   textAlign: TextAlign.center,
                   style: GoogleFonts.inter(
-                    color: _azulEscuro,
+                    color: AppColors.textPrimary,
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
                   ),
@@ -678,17 +655,17 @@ class _AlunoExercicioDetalheViewState
                       vertical: 8,
                     ),
                     filled: true,
-                    fillColor: _cinzaClaro,
+                    fillColor: AppColors.surfaceSoft,
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                       borderSide: const BorderSide(
-                        color: _cinzaBorda,
+                        color: AppColors.border,
                       ),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                       borderSide: const BorderSide(
-                        color: _verde,
+                        color: AppColors.primary,
                         width: 1.4,
                       ),
                     ),
@@ -713,13 +690,13 @@ class _AlunoExercicioDetalheViewState
                   height: 34,
                   decoration: BoxDecoration(
                     color: concluida
-                        ? _verde
+                        ? AppColors.primary
                         : Colors.white,
                     shape: BoxShape.circle,
                     border: Border.all(
                       color: concluida
-                          ? _verde
-                          : const Color(0xFFCBD5E1),
+                          ? AppColors.primary
+                          : AppColors.inactive,
                       width: 2,
                     ),
                   ),
@@ -729,7 +706,7 @@ class _AlunoExercicioDetalheViewState
                         : Icons.circle_outlined,
                     color: concluida
                         ? Colors.white
-                        : const Color(0xFFCBD5E1),
+                        : AppColors.inactive,
                     size: 20,
                   ),
                 ),
@@ -743,7 +720,7 @@ class _AlunoExercicioDetalheViewState
 
   TextStyle _tableHeaderStyle() {
     return GoogleFonts.inter(
-      color: _cinzaTexto,
+      color: AppColors.textSecondary,
       fontSize: 10,
       fontWeight: FontWeight.w700,
       letterSpacing: 0.35,

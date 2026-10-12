@@ -1,14 +1,16 @@
+import 'package:academiagrazi/theme/app_colors.dart';
 import 'package:academiagrazi/view/user/aluno_exercicio_detalhe_view.dart';
-import 'package:academiagrazi/view/user/treino_ui_data.dart';
+import 'package:academiagrazi/view/user/ui_data/aluno_treino_dia_ui_data.dart';
+import 'package:academiagrazi/view/user/ui_models/treino_ui_models.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AlunoTreinoDiaView extends StatefulWidget {
-  final TreinoUi treino;
+  final AlunoTreinoDiaUiData data;
 
   const AlunoTreinoDiaView({
     super.key,
-    required this.treino,
+    required this.data,
   });
 
   @override
@@ -16,14 +18,6 @@ class AlunoTreinoDiaView extends StatefulWidget {
 }
 
 class _AlunoTreinoDiaViewState extends State<AlunoTreinoDiaView> {
-  static const Color _background = Color(0xFFF4F7FA);
-  static const Color _verde = Color(0xFF005A4F);
-  static const Color _verdeEscuro = Color(0xFF003D36);
-  static const Color _laranja = Color(0xFFFF7943);
-  static const Color _azulEscuro = Color(0xFF092837);
-  static const Color _cinzaTexto = Color(0xFF64748B);
-  static const Color _cinzaBorda = Color(0xFFE2E8F0);
-  static const Color _cinzaClaro = Color(0xFFF8FAFC);
 
   final Set<String> _concluidos = <String>{};
   bool _aquecimentoConcluido = false;
@@ -32,18 +26,12 @@ class _AlunoTreinoDiaViewState extends State<AlunoTreinoDiaView> {
   void initState() {
     super.initState();
 
-    // Estado temporário para reproduzir o protótipo do Figma.
-    // Depois o progresso virá do backend/Firebase.
-    final quantidadeInicial = widget.treino.exercicios.length >= 2
-        ? 2
-        : widget.treino.exercicios.length;
-
-    for (var i = 0; i < quantidadeInicial; i++) {
-      _concluidos.add(widget.treino.exercicios[i].id);
-    }
+    _concluidos.addAll(
+      widget.data.exerciciosConcluidosIniciais,
+    );
   }
 
-  int get _totalExercicios => widget.treino.exercicios.length;
+  int get _totalExercicios => widget.data.treino.exercicios.length;
 
   int get _quantidadeConcluida => _concluidos.length;
 
@@ -58,16 +46,16 @@ class _AlunoTreinoDiaViewState extends State<AlunoTreinoDiaView> {
   int get _percentualProgresso => (_progresso * 100).round();
 
   String get _tituloTreino {
-    final partes = widget.treino.nome.split('—');
+    final partes = widget.data.treino.nome.split('—');
 
     if (partes.length < 2) {
-      return widget.treino.nome;
+      return widget.data.treino.nome;
     }
 
     final descricao = partes.last.trim().toLowerCase();
 
     if (descricao.isEmpty) {
-      return widget.treino.nome;
+      return widget.data.treino.nome;
     }
 
     return descricao[0].toUpperCase() + descricao.substring(1);
@@ -86,10 +74,21 @@ class _AlunoTreinoDiaViewState extends State<AlunoTreinoDiaView> {
   void _abrirExercicio(
     ExercicioTreinoUi exercicio,
   ) {
+    final detalhe = widget.data.detalheDoExercicio(exercicio.id);
+
+    if (detalhe == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Detalhes deste exercício ainda não estão disponíveis.'),
+        ),
+      );
+      return;
+    }
+
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => AlunoExercicioDetalheView(
-          exercicio: exercicio,
+          data: detalhe,
         ),
       ),
     );
@@ -98,7 +97,7 @@ class _AlunoTreinoDiaViewState extends State<AlunoTreinoDiaView> {
   void _continuarTreino() {
     ExercicioTreinoUi? primeiroPendente;
 
-    for (final exercicio in widget.treino.exercicios) {
+    for (final exercicio in widget.data.treino.exercicios) {
       if (!_concluidos.contains(exercicio.id)) {
         primeiroPendente = exercicio;
         break;
@@ -122,7 +121,7 @@ class _AlunoTreinoDiaViewState extends State<AlunoTreinoDiaView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: _background,
+      backgroundColor: AppColors.background,
       body: SafeArea(
         bottom: false,
         child: Column(
@@ -153,7 +152,7 @@ class _AlunoTreinoDiaViewState extends State<AlunoTreinoDiaView> {
                         const SizedBox(height: 26),
                         _buildTituloSecao('SÉRIE PRINCIPAL'),
                         const SizedBox(height: 10),
-                        ...widget.treino.exercicios.map(
+                        ...widget.data.treino.exercicios.map(
                           (exercicio) => Padding(
                             padding: const EdgeInsets.only(
                               bottom: 12,
@@ -184,7 +183,7 @@ class _AlunoTreinoDiaViewState extends State<AlunoTreinoDiaView> {
             color: Colors.white,
             border: Border(
               top: BorderSide(
-                color: _cinzaBorda,
+                color: AppColors.border,
               ),
             ),
           ),
@@ -200,9 +199,10 @@ class _AlunoTreinoDiaViewState extends State<AlunoTreinoDiaView> {
                     width: double.infinity,
                     height: 50,
                     child: FilledButton(
+                      key: const Key('continuar_treino'),
                       onPressed: _continuarTreino,
                       style: FilledButton.styleFrom(
-                        backgroundColor: _laranja,
+                        backgroundColor: AppColors.accent,
                         foregroundColor: Colors.white,
                         elevation: 0,
                         shape: RoundedRectangleBorder(
@@ -244,7 +244,7 @@ class _AlunoTreinoDiaViewState extends State<AlunoTreinoDiaView> {
         color: Colors.white,
         border: Border(
           bottom: BorderSide(
-            color: _cinzaBorda,
+            color: AppColors.border,
           ),
         ),
       ),
@@ -268,7 +268,7 @@ class _AlunoTreinoDiaViewState extends State<AlunoTreinoDiaView> {
                         },
                         icon: const Icon(
                           Icons.arrow_back_ios_new_rounded,
-                          color: _verde,
+                          color: AppColors.primary,
                           size: 18,
                         ),
                       ),
@@ -278,7 +278,7 @@ class _AlunoTreinoDiaViewState extends State<AlunoTreinoDiaView> {
                         'GRAZI BRAZ',
                         textAlign: TextAlign.center,
                         style: GoogleFonts.anton(
-                          color: _verde,
+                          color: AppColors.primary,
                           fontSize: 23,
                           letterSpacing: 0.6,
                           height: 1,
@@ -292,7 +292,7 @@ class _AlunoTreinoDiaViewState extends State<AlunoTreinoDiaView> {
                         onPressed: () {},
                         icon: const Icon(
                           Icons.more_vert_rounded,
-                          color: _azulEscuro,
+                          color: AppColors.textPrimary,
                           size: 22,
                         ),
                       ),
@@ -315,17 +315,17 @@ class _AlunoTreinoDiaViewState extends State<AlunoTreinoDiaView> {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: GoogleFonts.inter(
-                        color: _azulEscuro,
+                        color: AppColors.textPrimary,
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      TreinosFrontData.professorNome,
+                      widget.data.professorNome,
                       textAlign: TextAlign.center,
                       style: GoogleFonts.inter(
-                        color: _cinzaTexto,
+                        color: AppColors.textSecondary,
                         fontSize: 11,
                         fontWeight: FontWeight.w500,
                       ),
@@ -348,11 +348,11 @@ class _AlunoTreinoDiaViewState extends State<AlunoTreinoDiaView> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
         border: Border.all(
-          color: _cinzaBorda,
+          color: AppColors.border,
         ),
         boxShadow: const [
           BoxShadow(
-            color: Color(0x0F0F172A),
+            color: AppColors.shadowCard,
             blurRadius: 18,
             offset: Offset(0, 8),
           ),
@@ -367,7 +367,7 @@ class _AlunoTreinoDiaViewState extends State<AlunoTreinoDiaView> {
                 Text(
                   'Seu Progresso',
                   style: GoogleFonts.barlowCondensed(
-                    color: _azulEscuro,
+                    color: AppColors.textPrimary,
                     fontSize: 24,
                     fontWeight: FontWeight.w800,
                   ),
@@ -377,7 +377,7 @@ class _AlunoTreinoDiaViewState extends State<AlunoTreinoDiaView> {
                   '$_quantidadeConcluida de $_totalExercicios '
                   'exercícios concluídos',
                   style: GoogleFonts.inter(
-                    color: _cinzaTexto,
+                    color: AppColors.textSecondary,
                     fontSize: 12,
                     fontWeight: FontWeight.w500,
                   ),
@@ -398,9 +398,9 @@ class _AlunoTreinoDiaViewState extends State<AlunoTreinoDiaView> {
                   child: CircularProgressIndicator(
                     value: _progresso,
                     strokeWidth: 7,
-                    backgroundColor: const Color(0xFFE8F1F0),
+                    backgroundColor: AppColors.progressTrack,
                     valueColor: const AlwaysStoppedAnimation<Color>(
-                      _verde,
+                      AppColors.primary,
                     ),
                     strokeCap: StrokeCap.round,
                   ),
@@ -408,7 +408,7 @@ class _AlunoTreinoDiaViewState extends State<AlunoTreinoDiaView> {
                 Text(
                   '$_percentualProgresso%',
                   style: GoogleFonts.barlowCondensed(
-                    color: _azulEscuro,
+                    color: AppColors.textPrimary,
                     fontSize: 18,
                     fontWeight: FontWeight.w800,
                   ),
@@ -425,7 +425,7 @@ class _AlunoTreinoDiaViewState extends State<AlunoTreinoDiaView> {
     return Text(
       titulo,
       style: GoogleFonts.barlowCondensed(
-        color: _azulEscuro,
+        color: AppColors.textPrimary,
         fontSize: 21,
         fontWeight: FontWeight.w800,
         letterSpacing: 0.4,
@@ -451,8 +451,8 @@ class _AlunoTreinoDiaViewState extends State<AlunoTreinoDiaView> {
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
               color: _aquecimentoConcluido
-                  ? const Color(0xFF99D5CA)
-                  : _cinzaBorda,
+                  ? AppColors.completedBorder
+                  : AppColors.border,
             ),
           ),
           child: Row(
@@ -466,20 +466,20 @@ class _AlunoTreinoDiaViewState extends State<AlunoTreinoDiaView> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Mobilidade de quadril',
+                      widget.data.aquecimentoNome,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: GoogleFonts.barlowCondensed(
-                        color: _azulEscuro,
+                        color: AppColors.textPrimary,
                         fontSize: 20,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      '1 série • 60 seg',
+                      widget.data.aquecimentoResumo,
                       style: GoogleFonts.inter(
-                        color: _cinzaTexto,
+                        color: AppColors.textSecondary,
                         fontSize: 11,
                         fontWeight: FontWeight.w600,
                       ),
@@ -513,6 +513,7 @@ class _AlunoTreinoDiaViewState extends State<AlunoTreinoDiaView> {
       color: Colors.white,
       borderRadius: BorderRadius.circular(16),
       child: InkWell(
+        key: Key('exercicio_${exercicio.id}'),
         borderRadius: BorderRadius.circular(16),
         onTap: () {
           _abrirExercicio(exercicio);
@@ -524,8 +525,8 @@ class _AlunoTreinoDiaViewState extends State<AlunoTreinoDiaView> {
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
               color: concluido
-                  ? const Color(0xFF99D5CA)
-                  : _cinzaBorda,
+                  ? AppColors.completedBorder
+                  : AppColors.border,
             ),
           ),
           child: Row(
@@ -544,7 +545,7 @@ class _AlunoTreinoDiaViewState extends State<AlunoTreinoDiaView> {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: GoogleFonts.barlowCondensed(
-                        color: _azulEscuro,
+                        color: AppColors.textPrimary,
                         fontSize: 20,
                         fontWeight: FontWeight.w700,
                         height: 1.1,
@@ -598,8 +599,8 @@ class _AlunoTreinoDiaViewState extends State<AlunoTreinoDiaView> {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            Color(0xFFE1EEEC),
-            Color(0xFFF1F5F9),
+            AppColors.thumbnailStart,
+            AppColors.slateSurface,
           ],
         ),
       ),
@@ -608,7 +609,7 @@ class _AlunoTreinoDiaViewState extends State<AlunoTreinoDiaView> {
         children: [
           Icon(
             icon,
-            color: _verde,
+            color: AppColors.primary,
             size: 31,
           ),
           Positioned(
@@ -618,7 +619,7 @@ class _AlunoTreinoDiaViewState extends State<AlunoTreinoDiaView> {
               width: 24,
               height: 24,
               decoration: const BoxDecoration(
-                color: _verdeEscuro,
+                color: AppColors.primaryDark,
                 shape: BoxShape.circle,
               ),
               child: const Icon(
@@ -645,12 +646,12 @@ class _AlunoTreinoDiaViewState extends State<AlunoTreinoDiaView> {
         width: 34,
         height: 34,
         decoration: BoxDecoration(
-          color: concluido ? _verde : Colors.white,
+          color: concluido ? AppColors.primary : Colors.white,
           shape: BoxShape.circle,
           border: Border.all(
             color: concluido
-                ? _verde
-                : const Color(0xFFCBD5E1),
+                ? AppColors.primary
+                : AppColors.inactive,
             width: 2,
           ),
         ),
@@ -660,7 +661,7 @@ class _AlunoTreinoDiaViewState extends State<AlunoTreinoDiaView> {
               : Icons.circle_outlined,
           color: concluido
               ? Colors.white
-              : const Color(0xFFCBD5E1),
+              : AppColors.inactive,
           size: 20,
         ),
       ),
@@ -678,19 +679,19 @@ class _AlunoTreinoDiaViewState extends State<AlunoTreinoDiaView> {
       ),
       decoration: BoxDecoration(
         color: destaque
-            ? const Color(0xFFE5F6F2)
-            : _cinzaClaro,
+            ? AppColors.primaryChipSurface
+            : AppColors.surfaceSoft,
         borderRadius: BorderRadius.circular(999),
         border: Border.all(
           color: destaque
-              ? const Color(0xFFB9E5DC)
-              : _cinzaBorda,
+              ? AppColors.primaryChipBorder
+              : AppColors.border,
         ),
       ),
       child: Text(
         texto,
         style: GoogleFonts.inter(
-          color: destaque ? _verde : _cinzaTexto,
+          color: destaque ? AppColors.primary : AppColors.textSecondary,
           fontSize: 9,
           fontWeight: FontWeight.w700,
           letterSpacing: 0.3,
