@@ -1,6 +1,7 @@
 import 'package:academiagrazi/view/user/aluno_home_view.dart';
 import 'package:academiagrazi/view/user/aluno_profile_view.dart';
 import 'package:academiagrazi/view/user/aluno_treinos_view.dart';
+import 'package:academiagrazi/view/user/aluno_evolucao_view.dart';
 import 'package:flutter/material.dart';
 
 class MainShell extends StatefulWidget {
@@ -63,7 +64,7 @@ class _MainShellState extends State<MainShell> {
           // =====================================================
           // EVOLUÇÃO
           // =====================================================
-          const Center(child: Text('Evolução')),
+          const AlunoEvolutionView(),
 
           // =====================================================
           // PERFIL
