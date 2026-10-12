@@ -15,7 +15,6 @@ class _MainShellState extends State<MainShell> {
   int _selectedIndex = 0;
 
   final _homeNavigatorKey = GlobalKey<NavigatorState>();
-  final _evolucaoNavigatorKey = GlobalKey<NavigatorState>();
   final _treinosNavigatorKey = GlobalKey<NavigatorState>();
 
   @override

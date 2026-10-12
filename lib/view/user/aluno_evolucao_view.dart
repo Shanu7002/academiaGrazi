@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:fl_chart/fl_chart.dart';
 
@@ -307,8 +307,10 @@ class _AlunoEvolutionViewState extends State<AlunoEvolutionView> {
                                     maxWidth: 40,
                                     maxHeight: 40,
                                   ),
-                                  child: Image.asset(
-                                    'assets/gordura.png',
+                                  child: SvgPicture.asset(
+                                    'assets/gordura.svg',
+                                    width: 24,
+                                    height: 24,
                                     fit: BoxFit.contain,
                                   ),
                                 ),
@@ -383,8 +385,10 @@ class _AlunoEvolutionViewState extends State<AlunoEvolutionView> {
                                     maxWidth: 40,
                                     maxHeight: 40,
                                   ),
-                                  child: Image.asset(
-                                    'assets/massaMagra.png',
+                                  child: SvgPicture.asset(
+                                    'assets/massaMagra.svg',
+                                    width: 24,
+                                    height: 24,
                                     fit: BoxFit.contain,
                                   ),
                                 ),
@@ -461,8 +465,10 @@ class _AlunoEvolutionViewState extends State<AlunoEvolutionView> {
                           maxWidth: 50,
                           maxHeight: 50,
                         ),
-                        child: Image.asset(
-                          'assets/info.png',
+                        child: SvgPicture.asset(
+                          'assets/info.svg',
+                          width: 24,
+                          height: 24,
                           fit: BoxFit.contain,
                         ),
                       ),
@@ -535,8 +541,10 @@ class _AlunoEvolutionViewState extends State<AlunoEvolutionView> {
                           maxWidth: 50,
                           maxHeight: 50,
                         ),
-                        child: Image.asset(
-                          'assets/agenda.png',
+                        child: SvgPicture.asset(
+                          'assets/calendar.svg',
+                          width: 24,
+                          height: 24,
                           fit: BoxFit.contain,
                         ),
                       ),
@@ -580,8 +588,10 @@ class _AlunoEvolutionViewState extends State<AlunoEvolutionView> {
                           maxWidth: 50,
                           maxHeight: 50,
                         ),
-                        child: Image.asset(
-                          'assets/pdf.png',
+                        child: SvgPicture.asset(
+                          'assets/pdf.svg',
+                          width: 24,
+                          height: 24,
                           fit: BoxFit.contain,
                         ),
                       ),
@@ -631,8 +641,10 @@ class _AlunoEvolutionViewState extends State<AlunoEvolutionView> {
                           maxWidth: 50,
                           maxHeight: 50,
                         ),
-                        child: Image.asset(
-                          'assets/agenda.png',
+                        child: SvgPicture.asset(
+                          'assets/calendar.svg',
+                          width: 24,
+                          height: 24,
                           fit: BoxFit.contain,
                         ),
                       ),
@@ -676,8 +688,10 @@ class _AlunoEvolutionViewState extends State<AlunoEvolutionView> {
                           maxWidth: 50,
                           maxHeight: 50,
                         ),
-                        child: Image.asset(
-                          'assets/pdf.png',
+                        child: SvgPicture.asset(
+                          'assets/pdf.svg',
+                          width: 24,
+                          height: 24,
                           fit: BoxFit.contain,
                         ),
                       ),
