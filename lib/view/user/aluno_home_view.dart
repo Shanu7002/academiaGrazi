@@ -15,53 +15,63 @@ class _AlunoHomeViewState extends State<AlunoHomeView> {
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: true,
-        backgroundColor: Colors.white,
-        elevation: 0,
-        title: Row(
-          children: [
-            const CircleAvatar(
-              radius: 20,
-              backgroundColor: Color(0xFFD6D6D6),
-              child: Icon(Icons.person, color: Color(0xFF8A8A8A)),
-            ),
-            const SizedBox(width: 12),
-            Text(
-              'Grazi Braz',
-              style: GoogleFonts.barlowCondensed(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: const Color.fromARGB(255, 0, 65, 100),
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(kToolbarHeight),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 430),
+            child: AppBar(
+              automaticallyImplyLeading: true,
+              backgroundColor: Colors.white,
+              elevation: 0,
+              title: Row(
+                children: [
+                  const CircleAvatar(
+                    radius: 20,
+                    backgroundColor: Color(0xFFD6D6D6),
+                    child: Icon(Icons.person, color: Color(0xFF8A8A8A)),
+                  ),
+                  const SizedBox(width: 12),
+                  Text(
+                    'Grazi Braz',
+                    style: GoogleFonts.barlowCondensed(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: const Color.fromARGB(255, 0, 65, 100),
+                    ),
+                  ),
+                ],
               ),
-            ),
-          ],
-        ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16.0),
-            child: IconButton(
-              icon: const Icon(
-                Icons.notifications_none_rounded,
-                color: Colors.black87,
-                size: 24,
-              ),
-              onPressed: () {},
+              actions: [
+                Padding(
+                  padding: const EdgeInsets.only(right: 16.0),
+                  child: IconButton(
+                    icon: const Icon(
+                      Icons.notifications_none_rounded,
+                      color: Colors.black87,
+                      size: 24,
+                    ),
+                    onPressed: () {},
+                  ),
+                ),
+              ],
             ),
           ),
-        ],
+        ),
       ),
       body: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 430),
           child: Column(
             children: [
               Container(
-                width: screenWidth,
+                width: double.infinity,
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(16.0),
+                  borderRadius: const BorderRadius.vertical(
+                    bottom: Radius.circular(16.0),
+                  ),
                   boxShadow: [
                     BoxShadow(
                       color: const Color.fromARGB(

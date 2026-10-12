@@ -21,98 +21,108 @@ class _MainShellState extends State<MainShell> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: IndexedStack(
-        index: _selectedIndex,
-        children: [
-          NavigatorPopHandler<Object?>(
-            enabled: _selectedIndex == 0,
-            onPopWithResult: (_) {
-              _homeNavigatorKey.currentState?.pop();
-            },
-            child: Navigator(
-              key: _homeNavigatorKey,
-              onGenerateRoute: (settings) {
-                return MaterialPageRoute(
-                  settings: settings,
-                  builder: (_) => const AlunoHomeView(),
-                );
-              },
-            ),
-          ),
-          NavigatorPopHandler<Object?>(
-            enabled: _selectedIndex == 1,
-            onPopWithResult: (_) {
-              _treinosNavigatorKey.currentState?.pop();
-            },
-            child: Navigator(
-              key: _treinosNavigatorKey,
-              onGenerateRoute: (settings) {
-                return MaterialPageRoute(
-                  settings: settings,
-                  builder: (_) => const AlunoTreinosView(
-                    data: TreinosMockData.alunoTreinos,
+    // Aloca uma cor de fundo estática para o espaço fora da constraint
+    return ColoredBox(
+      color: const Color(0xFFE5E5E5),
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 430),
+          child: Scaffold(
+            body: IndexedStack(
+              index: _selectedIndex,
+              children: [
+                NavigatorPopHandler<Object?>(
+                  enabled: _selectedIndex == 0,
+                  onPopWithResult: (_) {
+                    _homeNavigatorKey.currentState?.pop();
+                  },
+                  child: Navigator(
+                    key: _homeNavigatorKey,
+                    onGenerateRoute: (settings) {
+                      return MaterialPageRoute(
+                        settings: settings,
+                        builder: (_) => const AlunoHomeView(),
+                      );
+                    },
                   ),
-                );
+                ),
+                NavigatorPopHandler<Object?>(
+                  enabled: _selectedIndex == 1,
+                  onPopWithResult: (_) {
+                    _treinosNavigatorKey.currentState?.pop();
+                  },
+                  child: Navigator(
+                    key: _treinosNavigatorKey,
+                    onGenerateRoute: (settings) {
+                      return MaterialPageRoute(
+                        settings: settings,
+                        builder:
+                            (_) => const AlunoTreinosView(
+                              data: TreinosMockData.alunoTreinos,
+                            ),
+                      );
+                    },
+                  ),
+                ),
+
+                // =====================================================
+                // EVOLUÇÃO
+                // =====================================================
+                const AlunoEvolutionView(),
+
+                // =====================================================
+                // PERFIL
+                // Mantém a implementação nova da sprint-3.
+                // =====================================================
+                AlunoProfileView(),
+              ],
+            ),
+            bottomNavigationBar: NavigationBar(
+              indicatorColor: AppColors.accent,
+              selectedIndex: _selectedIndex,
+              onDestinationSelected: (index) {
+                if (index == 0) {
+                  _homeNavigatorKey.currentState?.popUntil(
+                    (route) => route.isFirst,
+                  );
+                }
+
+                if (index == 1) {
+                  _treinosNavigatorKey.currentState?.popUntil(
+                    (route) => route.isFirst,
+                  );
+                }
+
+                if (index != _selectedIndex) {
+                  setState(() {
+                    _selectedIndex = index;
+                  });
+                }
               },
+              destinations: const [
+                NavigationDestination(
+                  icon: Icon(Icons.home_outlined),
+                  selectedIcon: Icon(Icons.home),
+                  label: 'Início',
+                ),
+                NavigationDestination(
+                  icon: Icon(Icons.fitness_center),
+                  label: 'Treinos',
+                ),
+                NavigationDestination(
+                  icon: Icon(Icons.insights_outlined),
+                  selectedIcon: Icon(Icons.insights),
+                  label: 'Evolução',
+                ),
+                NavigationDestination(
+                  icon: Icon(Icons.person_outline),
+                  selectedIcon: Icon(Icons.person),
+                  label: 'Perfil',
+                ),
+              ],
             ),
           ),
-
-          // =====================================================
-          // EVOLUÇÃO
-          // =====================================================
-          const AlunoEvolutionView(),
-
-          // =====================================================
-          // PERFIL
-          // Mantém a implementação nova da sprint-3.
-          // =====================================================
-          AlunoProfileView(),
-        ],
-      ),
-      bottomNavigationBar: NavigationBar(
-        indicatorColor: AppColors.accent,
-        selectedIndex: _selectedIndex,
-        onDestinationSelected: (index) {
-          if (index == 0) {
-            _homeNavigatorKey.currentState?.popUntil(
-              (route) => route.isFirst,
-            );
-          }
-
-          if (index == 1) {
-            _treinosNavigatorKey.currentState?.popUntil(
-              (route) => route.isFirst,
-            );
-          }
-
-          if (index != _selectedIndex) {
-            setState(() {
-              _selectedIndex = index;
-            });
-          }
-        },
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.home_outlined),
-            selectedIcon: Icon(Icons.home),
-            label: 'Início',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.fitness_center),
-            label: 'Treinos',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.insights_outlined),
-            selectedIcon: Icon(Icons.insights),
-            label: 'Evolução',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.person_outline),
-            selectedIcon: Icon(Icons.person),
-            label: 'Perfil',
-          ),
-        ],
+        ),
       ),
     );
   }
