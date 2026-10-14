@@ -8,17 +8,13 @@ import 'package:google_fonts/google_fonts.dart';
 class AlunoTreinosView extends StatefulWidget {
   final AlunoTreinosUiData data;
 
-  const AlunoTreinosView({
-    super.key,
-    required this.data,
-  });
+  const AlunoTreinosView({super.key, required this.data});
 
   @override
   State<AlunoTreinosView> createState() => _AlunoTreinosViewState();
 }
 
 class _AlunoTreinosViewState extends State<AlunoTreinosView> {
-
   bool _fichaPresencialSelecionada = true;
 
   @override
@@ -94,9 +90,7 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
       padding: const EdgeInsets.symmetric(horizontal: 16),
       decoration: const BoxDecoration(
         color: AppColors.headerSurface,
-        border: Border(
-          bottom: BorderSide(color: AppColors.borderTranslucent),
-        ),
+        border: Border(bottom: BorderSide(color: AppColors.borderTranslucent)),
       ),
       child: Row(
         children: [
@@ -182,10 +176,7 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
             decoration: BoxDecoration(
               color: AppColors.avatarBackground,
               shape: BoxShape.circle,
-              border: Border.all(
-                color: AppColors.avatarBackground,
-                width: 2,
-              ),
+              border: Border.all(color: AppColors.avatarBackground, width: 2),
             ),
             child: const Icon(
               Icons.person_rounded,
@@ -359,7 +350,8 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
               Icon(
                 icone,
                 size: 16,
-                color: selecionado ? AppColors.primary : AppColors.textSecondary,
+                color:
+                    selecionado ? AppColors.primary : AppColors.textSecondary,
               ),
               const SizedBox(width: 6),
               Flexible(
@@ -368,7 +360,10 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: GoogleFonts.inter(
-                    color: selecionado ? AppColors.primary : AppColors.textSecondary,
+                    color:
+                        selecionado
+                            ? AppColors.primary
+                            : AppColors.textSecondary,
                     fontSize: 10,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 0.25,
@@ -512,12 +507,16 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
       constraints: const BoxConstraints(minHeight: 76),
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: destaque ? AppColors.accentSurfaceTransparent : AppColors.surfaceSoft,
+        color:
+            destaque
+                ? AppColors.accentSurfaceTransparent
+                : AppColors.surfaceSoft,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: destaque
-              ? AppColors.accentBorderTransparent
-              : AppColors.borderSoftAlpha,
+          color:
+              destaque
+                  ? AppColors.accentBorderTransparent
+                  : AppColors.borderSoftAlpha,
         ),
       ),
       child: Column(
@@ -967,9 +966,10 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
         LayoutBuilder(
           builder: (context, constraints) {
             final empilhar = constraints.maxWidth < 330;
-            final cards = widget.data.complementares
-                .map((treino) => _buildComplementarCard(treino))
-                .toList();
+            final cards =
+                widget.data.complementares
+                    .map((treino) => _buildComplementarCard(treino))
+                    .toList();
 
             if (empilhar) {
               return Column(
@@ -1065,19 +1065,13 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
         ),
         child: Text(
           'VER FICHAS E CICLOS ANTERIORES',
-          style: GoogleFonts.inter(
-            fontSize: 11,
-            fontWeight: FontWeight.w700,
-          ),
+          style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w700),
         ),
       ),
     );
   }
 
-  Widget _buildResumoExercicios(
-    TreinoUi treino, {
-    bool destaque = false,
-  }) {
+  Widget _buildResumoExercicios(TreinoUi treino, {bool destaque = false}) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(12),
@@ -1085,9 +1079,8 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
         color: destaque ? AppColors.white90 : AppColors.surfaceSoft,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: destaque
-              ? AppColors.primarySoftBorder
-              : AppColors.slateSurface,
+          color:
+              destaque ? AppColors.primarySoftBorder : AppColors.slateSurface,
         ),
       ),
       child: Column(
@@ -1101,9 +1094,8 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: GoogleFonts.inter(
-                    color: destaque
-                        ? AppColors.primaryText
-                        : AppColors.textMuted,
+                    color:
+                        destaque ? AppColors.primaryText : AppColors.textMuted,
                     fontSize: 10,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 0.5,
@@ -1183,11 +1175,7 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
       ),
       child: Text(
         letra,
-        style: GoogleFonts.anton(
-          color: Colors.white,
-          fontSize: 17,
-          height: 1,
-        ),
+        style: GoogleFonts.anton(color: Colors.white, fontSize: 17, height: 1),
       ),
     );
   }
@@ -1237,10 +1225,7 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
             texto,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: GoogleFonts.inter(
-              fontSize: 10,
-              fontWeight: FontWeight.w700,
-            ),
+            style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w700),
           ),
         ),
       );
@@ -1263,10 +1248,7 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
           texto,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: GoogleFonts.inter(
-            fontSize: 10,
-            fontWeight: FontWeight.w700,
-          ),
+          style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w700),
         ),
       ),
     );
@@ -1285,11 +1267,7 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
     }
 
     Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => AlunoTreinoDiaView(
-          data: treinoDia,
-        ),
-      ),
+      MaterialPageRoute(builder: (_) => AlunoTreinoDiaView(data: treinoDia)),
     );
   }
 }

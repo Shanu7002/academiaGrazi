@@ -20,18 +20,32 @@ class _AlunoEvolutionViewState extends State<AlunoEvolutionView> {
         elevation: 0,
         title: Row(
           children: [
+            SizedBox(
+              width: 40,
+              height: 40,
+              child: IconButton(
+                padding: EdgeInsets.zero,
+                onPressed: () => Navigator.maybePop(context),
+                icon: const Icon(
+                  Icons.arrow_back_ios_new_rounded,
+                  color: Color.fromARGB(255, 136, 207, 193),
+                  size: 18,
+                ),
+              ),
+            ),
+            const SizedBox(width: 10),
             const CircleAvatar(
               radius: 20,
               backgroundColor: Color(0xFFD6D6D6),
               child: Icon(Icons.person, color: Color(0xFF8A8A8A)),
             ),
             const SizedBox(width: 12),
-            Text(
-              'Grazi Braz',
-              style: GoogleFonts.barlowCondensed(
-                fontSize: 16,
+            const Text(
+              'GRAZI BRAZ',
+              style: TextStyle(
+                color: Color(0xFF005A4F),
+                fontSize: 22,
                 fontWeight: FontWeight.bold,
-                color: const Color.fromARGB(255, 0, 65, 100),
               ),
             ),
           ],
