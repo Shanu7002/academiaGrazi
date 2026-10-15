@@ -95,7 +95,7 @@ void main() {
     await tester.tap(find.text('Início'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Grazi Braz'), findsOneWidget);
+    expect(find.text('GRAZI BRAZ'), findsOneWidget);
     expect(find.text('Treino do dia'), findsOneWidget);
     expect(find.byType(NavigationBar), findsOneWidget);
   });
