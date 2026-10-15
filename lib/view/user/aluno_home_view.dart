@@ -13,18 +13,7 @@ class _AlunoHomeViewState extends State<AlunoHomeView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(kToolbarHeight),
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 430),
-            child: CustomAppBar(
-              title: 'GRAZI BRAZ',
-              backgroundColor: Colors.deepPurple,
-            ),
-          ),
-        ),
-      ),
+      appBar: const CustomAppBar(title: 'Grazi Braz'),
       body: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 430),

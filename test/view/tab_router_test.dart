@@ -97,6 +97,7 @@ void main() {
 
     expect(find.text('GRAZI BRAZ'), findsOneWidget);
     expect(find.text('Treino do dia'), findsOneWidget);
+    expect(find.byType(NavigationBar), findsOneWidget);
   });
 
   testWidgets('alterna entre as páginas sem remover a NavigationBar', (
