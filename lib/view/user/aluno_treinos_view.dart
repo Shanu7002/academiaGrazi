@@ -1,4 +1,5 @@
 import 'package:academiagrazi/theme/app_colors.dart';
+import 'package:academiagrazi/view/components/app_bar.dart';
 import 'package:academiagrazi/view/user/aluno_treino_dia_view.dart';
 import 'package:academiagrazi/view/user/ui_data/aluno_treinos_ui_data.dart';
 import 'package:academiagrazi/view/user/ui_models/treino_ui_models.dart';
@@ -20,12 +21,15 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: CustomAppBar(
+        title: 'GRAZI BRAZ',
+        backgroundColor: Colors.deepPurple,
+      ),
       backgroundColor: AppColors.trainingListBackground,
       body: SafeArea(
         bottom: false,
         child: Column(
           children: [
-            _buildHeader(),
             Expanded(
               child: Center(
                 child: ConstrainedBox(
@@ -81,112 +85,6 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
     }
 
     return cards;
-  }
-
-  Widget _buildHeader() {
-    return Container(
-      height: 64,
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      decoration: const BoxDecoration(
-        color: AppColors.headerSurface,
-        border: Border(bottom: BorderSide(color: AppColors.borderTranslucent)),
-      ),
-      child: Row(
-        children: [
-          SizedBox(
-            width: 40,
-            height: 40,
-            child: IconButton(
-              padding: EdgeInsets.zero,
-              onPressed: () => Navigator.maybePop(context),
-              icon: const Icon(
-                Icons.arrow_back_ios_new_rounded,
-                color: AppColors.primary,
-                size: 18,
-              ),
-            ),
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'GRAZI BRAZ',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.anton(
-                    color: AppColors.primary,
-                    fontSize: 24,
-                    letterSpacing: 0.6,
-                    height: 1,
-                  ),
-                ),
-                const SizedBox(height: 3),
-                Text(
-                  'METODOLOGIA & PERFORMANCE',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.inter(
-                    color: AppColors.textSecondary,
-                    fontSize: 10,
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: 0.5,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Stack(
-            clipBehavior: Clip.none,
-            children: [
-              SizedBox(
-                width: 40,
-                height: 40,
-                child: IconButton(
-                  onPressed: () {},
-                  icon: const Icon(
-                    Icons.notifications_none_rounded,
-                    color: AppColors.textPrimary,
-                    size: 23,
-                  ),
-                ),
-              ),
-              Positioned(
-                right: 8,
-                top: 7,
-                child: Container(
-                  width: 10,
-                  height: 10,
-                  decoration: BoxDecoration(
-                    color: AppColors.accent,
-                    shape: BoxShape.circle,
-                    border: Border.all(color: Colors.white, width: 2),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(width: 6),
-          Container(
-            width: 36,
-            height: 36,
-            decoration: BoxDecoration(
-              color: AppColors.avatarBackground,
-              shape: BoxShape.circle,
-              border: Border.all(color: AppColors.avatarBackground, width: 2),
-            ),
-            child: const Icon(
-              Icons.person_rounded,
-              color: AppColors.primary,
-              size: 21,
-            ),
-          ),
-        ],
-      ),
-    );
   }
 
   Widget _buildCabecalhoTela() {
