@@ -63,7 +63,7 @@ void main() {
 
     await tester.pumpWidget(const MaterialApp(home: MainShell()));
 
-    expect(find.text('Grazi Braz'), findsOneWidget);
+    expect(find.text('GRAZI BRAZ'), findsOneWidget);
     expect(find.byType(NavigationBar), findsOneWidget);
 
     await tester.ensureVisible(find.byKey(const Key('botao_iniciar_treino')));
