@@ -1,4 +1,5 @@
 import 'package:academiagrazi/locator.dart';
+import 'package:academiagrazi/models/users/registration_profile.dart';
 import 'package:academiagrazi/models/users/user_model.dart';
 import 'package:academiagrazi/service/users/register_user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -67,6 +68,33 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
 
     final user = _currentUser!;
     final responsable = _currentResponsable;
+
+    String formatPhone(String phone) {
+      final digits = phone.replaceAll(RegExp(r'\D'), '');
+
+      if (digits.length == 11) {
+        return '(${digits.substring(0, 2)}) '
+            '${digits.substring(2, 7)}-${digits.substring(7)}';
+      }
+
+      if (digits.length == 10) {
+        return '(${digits.substring(0, 2)}) '
+            '${digits.substring(2, 6)}-${digits.substring(6)}';
+      }
+
+      return phone;
+    }
+
+    final profile = user.registrationProfile;
+
+    final List<String> emergencyContact =
+        profile == null
+            ? []
+            : [
+              profile.emergencyContact.name,
+              formatPhone(profile.emergencyContact.phone),
+              profile.emergencyContact.relationship,
+            ];
 
     return Scaffold(
       backgroundColor: const Color(0xFFF5FAFF),
@@ -158,19 +186,24 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
                     const SizedBox(height: 12),
                     const _PrivacyBanner(),
                     const SizedBox(height: 12),
-                    const _InfoCard(
+                    _InfoCardList(
                       label: 'Condições Crônicas',
-                      value: 'Hipertensão controlada',
+                      value: user.registrationProfile?.health.conditions,
                     ),
                     const SizedBox(height: 10),
-                    const _InfoCard(
+                    _InfoCardList(
                       label: 'Restrições no Treino',
-                      value: 'Evitar impacto excessivo em membros inferiores',
+                      value: user.registrationProfile?.health.restrictions,
                     ),
                     const SizedBox(height: 10),
-                    const _InfoCard(
+                    _InfoCardString(
+                      label: 'Restrições no Treino',
+                      value: user.registrationProfile?.health.notes,
+                    ),
+                    const SizedBox(height: 10),
+                    _InfoCardList(
                       label: 'Contato de Emergência',
-                      value: 'Carlos Lima (Esposo) • (11) 98765-4321',
+                      value: emergencyContact,
                     ),
                     const SizedBox(height: 14),
                     const Text(
@@ -539,14 +572,17 @@ class _PrivacyBanner extends StatelessWidget {
   }
 }
 
-class _InfoCard extends StatelessWidget {
-  const _InfoCard({required this.label, required this.value});
+class _InfoCardList extends StatelessWidget {
+  const _InfoCardList({required this.label, required this.value});
 
   final String label;
-  final String value;
+  final List<String>? value;
 
   @override
   Widget build(BuildContext context) {
+    final String displayValue =
+        value == null || value!.isEmpty ? 'Não informado' : value!.join('\n');
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(12),
@@ -563,7 +599,46 @@ class _InfoCard extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            value,
+            displayValue,
+            style: const TextStyle(
+              color: Color(0xFF092837),
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _InfoCardString extends StatelessWidget {
+  const _InfoCardString({required this.label, required this.value});
+
+  final String label;
+  final String? value;
+
+  @override
+  Widget build(BuildContext context) {
+    final String displayValue =
+        value == null || value!.isEmpty ? 'Não informado' : value!;
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF8FAFB),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: const TextStyle(color: Color(0xFF65716D), fontSize: 11),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            displayValue,
             style: const TextStyle(
               color: Color(0xFF092837),
               fontWeight: FontWeight.bold,

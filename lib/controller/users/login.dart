@@ -45,6 +45,7 @@ class LoginController {
       await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
       return true;
     } on FirebaseAuthException catch (e) {
+      log("Generic error occured in resetPassword", error: e);
       return false;
     }
   }
