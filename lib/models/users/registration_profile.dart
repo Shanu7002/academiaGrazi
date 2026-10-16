@@ -33,11 +33,11 @@ class BodyMeasurements {
 }
 
 class HealthProfile {
-  final List<String> conditions;
-  final String notes;
-  final List<String> restrictions;
+  List<String> conditions;
+  String notes;
+  List<String> restrictions;
 
-  const HealthProfile({
+  HealthProfile({
     required this.conditions,
     required this.notes,
     required this.restrictions,
