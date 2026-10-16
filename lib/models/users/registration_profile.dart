@@ -139,9 +139,9 @@ class RegistrationDraft {
   int heightCm = 165;
   double weightKg = 68.5;
   PrimaryGoal? primaryGoal;
-  final Set<String> conditions = {'none'};
+  final Set<String> conditions = {'Nenhuma dor'};
   String healthNotes = '';
-  final Set<String> restrictions = {'none'};
+  final Set<String> restrictions = {'Não possuo'};
   String emergencyName = '';
   String emergencyRelationship = '';
   String emergencyPhone = '';

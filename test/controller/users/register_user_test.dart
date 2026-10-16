@@ -51,7 +51,7 @@ void main() {
         ..instructorCode = 'ABCD2345'
         ..primaryGoal = PrimaryGoal.conditioning
         ..emergencyName = 'Contato'
-        ..emergencyRelationship = 'friend'
+        ..emergencyRelationship = 'Amigo(a) Próximo(a)'
         ..emergencyPhone = '11999999999';
     }
 

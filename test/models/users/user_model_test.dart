@@ -118,17 +118,21 @@ void main() {
       responsable: 'instructor-1',
       onboardingCompleted: true,
       termsAcceptedAt: acceptedAt,
-      registrationProfile: const RegistrationProfile(
-        measurements: BodyMeasurements(age: 28, heightCm: 165, weightKg: 68.5),
+      registrationProfile: RegistrationProfile(
+        measurements: const BodyMeasurements(
+          age: 28,
+          heightCm: 165,
+          weightKg: 68.5,
+        ),
         primaryGoal: PrimaryGoal.conditioning,
         health: HealthProfile(
-          conditions: ['knee'],
+          conditions: ['Joelho'],
           notes: 'Cuidado com impacto',
-          restrictions: ['asthmaBronchitis'],
+          restrictions: ['Asma/Bronquite'],
         ),
-        emergencyContact: EmergencyContact(
+        emergencyContact: const EmergencyContact(
           name: 'Carlos',
-          relationship: 'partner',
+          relationship: 'Cônjuge / Parceiro(a)',
           phone: '11999999999',
         ),
       ),
@@ -142,7 +146,7 @@ void main() {
     expect(parsed.termsAcceptedAt, acceptedAt);
     expect(parsed.registrationProfile?.measurements.weightKg, 68.5);
     expect(parsed.registrationProfile?.primaryGoal, PrimaryGoal.conditioning);
-    expect(parsed.registrationProfile?.health.conditions, ['knee']);
+    expect(parsed.registrationProfile?.health.conditions, ['Joelho']);
     expect(parsed.registrationProfile?.emergencyContact.phone, '11999999999');
   });
 }
