@@ -1,5 +1,4 @@
 import 'package:academiagrazi/locator.dart';
-import 'package:academiagrazi/models/users/registration_profile.dart';
 import 'package:academiagrazi/models/users/user_model.dart';
 import 'package:academiagrazi/service/users/register_user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -18,12 +17,20 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
   UserModel? _currentUser;
   UserModel? _currentResponsable;
   bool _isLoading = true;
+
   bool _editingHealth = false;
   bool _savingHealth = false;
-
   List<String> _selectedConditions = [];
   List<String> _selectedRestrictions = [];
   final TextEditingController _healthNotesController = TextEditingController();
+
+  bool _editingEmergency = false;
+  bool _savingEmergency = false;
+  final TextEditingController _emergencyNameController =
+      TextEditingController();
+  final TextEditingController _emergencyPhoneController =
+      TextEditingController();
+  String? _selectedRelationship;
 
   final List<String> conditionOptions = [
     'Nenhuma dor',
@@ -41,6 +48,15 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
     'Outras',
   ];
 
+  final Map<String, String> relationshipOptions = {
+    'partner': 'Cônjuge / Parceiro(a)',
+    'parent': 'Pai / Mãe',
+    'sibling': 'Irmão / Irmã',
+    'child': 'Filho(a)',
+    'friend': 'Amigo(a) Próximo(a)',
+    'other': 'Outro',
+  };
+
   @override
   void initState() {
     super.initState();
@@ -50,6 +66,8 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
   @override
   void dispose() {
     _healthNotesController.dispose();
+    _emergencyNameController.dispose();
+    _emergencyPhoneController.dispose();
     super.dispose();
   }
 
@@ -99,30 +117,18 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
 
     String formatPhone(String phone) {
       final digits = phone.replaceAll(RegExp(r'\D'), '');
-
       if (digits.length == 11) {
         return '(${digits.substring(0, 2)}) '
             '${digits.substring(2, 7)}-${digits.substring(7)}';
       }
-
       if (digits.length == 10) {
         return '(${digits.substring(0, 2)}) '
             '${digits.substring(2, 6)}-${digits.substring(6)}';
       }
-
       return phone;
     }
 
     final profile = user.registrationProfile;
-
-    final List<String> emergencyContact =
-        profile == null
-            ? <String>[]
-            : <String>[
-              profile.emergencyContact.name,
-              formatPhone(profile.emergencyContact.phone),
-              profile.emergencyContact.relationship,
-            ];
 
     return Scaffold(
       backgroundColor: const Color(0xFFF5FAFF),
@@ -155,6 +161,7 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
             children: [
               _ProfileSummary(user: user),
               const SizedBox(height: 16),
+
               _SectionCard(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -197,9 +204,10 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
                 ),
               ),
               const SizedBox(height: 16),
+
               _SectionCard(
                 child: StatefulBuilder(
-                  builder: (context, refreshCard) {
+                  builder: (context, refreshHealthCard) {
                     final health = user.registrationProfile?.health;
 
                     return Column(
@@ -245,7 +253,7 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
                                       ),
                                     ),
                                     onSelected: (selected) {
-                                      refreshCard(() {
+                                      refreshHealthCard(() {
                                         if (option == 'Nenhuma dor') {
                                           _selectedConditions.clear();
                                           if (selected) {
@@ -299,7 +307,7 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
                                       ),
                                     ),
                                     onSelected: (selected) {
-                                      refreshCard(() {
+                                      refreshHealthCard(() {
                                         if (option == 'Não possuo') {
                                           _selectedRestrictions.clear();
                                           if (selected) {
@@ -347,20 +355,7 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
                             label: 'Observações',
                             value: health?.notes,
                           ),
-                          const SizedBox(height: 10),
-                          _InfoCardList(
-                            label: 'Contato de Emergência',
-                            value: emergencyContact,
-                          ),
                         ],
-                        const SizedBox(height: 14),
-                        const Text(
-                          'Mantenha suas informações de saúde atualizadas.',
-                          style: TextStyle(
-                            color: Color(0xFF65716D),
-                            fontSize: 10,
-                          ),
-                        ),
                         const SizedBox(height: 14),
                         if (_editingHealth) ...[
                           SizedBox(
@@ -370,7 +365,7 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
                                   _savingHealth
                                       ? null
                                       : () {
-                                        refreshCard(() {
+                                        refreshHealthCard(() {
                                           _editingHealth = false;
                                         });
                                       },
@@ -387,34 +382,26 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
                                     ? null
                                     : () async {
                                       if (!_editingHealth) {
-                                        // Buscar condições existentes com segurança
                                         final List<String> safeConditions = [];
                                         if (health?.conditions != null) {
                                           for (var item in health!.conditions) {
-                                            if (item != null)
-                                              safeConditions.add(
-                                                item.toString(),
-                                              );
+                                            safeConditions.add(item.toString());
                                           }
                                         }
-                                        // NOVO: Adicionar o default se estiver vazio
                                         if (safeConditions.isEmpty) {
                                           safeConditions.add('Nenhuma dor');
                                         }
 
-                                        // Buscar restrições existentes com segurança
                                         final List<String> safeRestrictions =
                                             [];
                                         if (health?.restrictions != null) {
                                           for (var item
                                               in health!.restrictions) {
-                                            if (item != null)
-                                              safeRestrictions.add(
-                                                item.toString(),
-                                              );
+                                            safeRestrictions.add(
+                                              item.toString(),
+                                            );
                                           }
                                         }
-                                        // NOVO: Adicionar o default se estiver vazio
                                         if (safeRestrictions.isEmpty) {
                                           safeRestrictions.add('Não possuo');
                                         }
@@ -425,13 +412,13 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
                                         _healthNotesController.text =
                                             health?.notes ?? '';
 
-                                        refreshCard(() {
+                                        refreshHealthCard(() {
                                           _editingHealth = true;
                                         });
                                         return;
                                       }
 
-                                      refreshCard(() {
+                                      refreshHealthCard(() {
                                         _savingHealth = true;
                                       });
 
@@ -439,19 +426,8 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
                                         final newNotes =
                                             _healthNotesController.text.trim();
 
-                                        // TODO: Call your Firebase update method here
-                                        // await _userService.updateUserHealth(
-                                        //   user.id,
-                                        //   _selectedConditions,
-                                        //   _selectedRestrictions,
-                                        //   newNotes,
-                                        // );
+                                        // TODO: Update no Firebase aq
 
-                                        await Future.delayed(
-                                          const Duration(seconds: 1),
-                                        );
-
-                                        // Update local UI state securely
                                         if (health != null) {
                                           health.conditions.clear();
                                           health.conditions.addAll(
@@ -466,13 +442,11 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
                                           health.notes = newNotes;
                                         }
 
-                                        refreshCard(() {
+                                        refreshHealthCard(() {
                                           _editingHealth = false;
                                         });
-                                      } catch (e) {
-                                        // Optional: Add a scaffold messenger here to show error toast
                                       } finally {
-                                        refreshCard(() {
+                                        refreshHealthCard(() {
                                           _savingHealth = false;
                                         });
                                       }
@@ -504,6 +478,192 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
                 ),
               ),
               const SizedBox(height: 16),
+
+              _SectionCard(
+                child: StatefulBuilder(
+                  builder: (context, refreshEmergencyCard) {
+                    final emergency = profile?.emergencyContact;
+
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const _SectionHeader(
+                          icon: Icons.contact_phone_outlined,
+                          title: 'CONTATO DE EMERGÊNCIA',
+                        ),
+                        const SizedBox(height: 16),
+
+                        if (_editingEmergency) ...[
+                          TextField(
+                            controller: _emergencyNameController,
+                            decoration: const InputDecoration(
+                              labelText: 'Nome do contato',
+                              border: OutlineInputBorder(),
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          TextField(
+                            controller: _emergencyPhoneController,
+                            keyboardType: TextInputType.phone,
+                            decoration: const InputDecoration(
+                              labelText: 'Telefone',
+                              hintText: 'Apenas números (DDD + Número)',
+                              border: OutlineInputBorder(),
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          DropdownButtonFormField<String>(
+                            value: _selectedRelationship,
+                            decoration: const InputDecoration(
+                              labelText: 'Grau de Parentesco',
+                              border: OutlineInputBorder(),
+                            ),
+                            items:
+                                relationshipOptions.entries.map((entry) {
+                                  return DropdownMenuItem<String>(
+                                    value: entry.key,
+                                    child: Text(entry.value),
+                                  );
+                                }).toList(),
+                            onChanged: (value) {
+                              refreshEmergencyCard(() {
+                                _selectedRelationship = value;
+                              });
+                            },
+                          ),
+                          const SizedBox(height: 16),
+                          SizedBox(
+                            width: double.infinity,
+                            child: OutlinedButton(
+                              onPressed:
+                                  _savingEmergency
+                                      ? null
+                                      : () {
+                                        refreshEmergencyCard(() {
+                                          _editingEmergency = false;
+                                        });
+                                      },
+                              child: const Text('CANCELAR'),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                        ] else ...[
+                          _InfoCardList(
+                            label: 'Contato Salvo',
+                            value:
+                                emergency != null
+                                    ? [
+                                      emergency.name,
+                                      formatPhone(emergency.phone),
+                                      relationshipOptions[emergency
+                                              .relationship] ??
+                                          emergency.relationship,
+                                    ]
+                                    : ['Não informado'],
+                          ),
+                          const SizedBox(height: 14),
+                        ],
+
+                        SizedBox(
+                          width: double.infinity,
+                          child: OutlinedButton(
+                            onPressed:
+                                _savingEmergency
+                                    ? null
+                                    : () async {
+                                      if (!_editingEmergency) {
+                                        _emergencyNameController.text =
+                                            emergency?.name ?? '';
+                                        _emergencyPhoneController.text =
+                                            emergency?.phone ?? '';
+
+                                        if (emergency?.relationship != null &&
+                                            relationshipOptions.containsKey(
+                                              emergency!.relationship,
+                                            )) {
+                                          _selectedRelationship =
+                                              emergency.relationship;
+                                        } else {
+                                          _selectedRelationship = 'other';
+                                        }
+
+                                        refreshEmergencyCard(() {
+                                          _editingEmergency = true;
+                                        });
+                                        return;
+                                      }
+
+                                      refreshEmergencyCard(() {
+                                        _savingEmergency = true;
+                                      });
+
+                                      try {
+                                        final newName =
+                                            _emergencyNameController.text
+                                                .trim();
+                                        final newPhone =
+                                            _emergencyPhoneController.text
+                                                .trim()
+                                                .replaceAll(RegExp(r'\D'), '');
+                                        final newRelationship =
+                                            _selectedRelationship ?? 'other';
+
+                                        // TODO: Chamar o método do Firebase aqui
+                                        // await _userService.updateEmergencyContact(
+                                        //   user.id,
+                                        //   newName,
+                                        //   newPhone,
+                                        //   newRelationship,
+                                        // );
+
+                                        await Future.delayed(
+                                          const Duration(seconds: 1),
+                                        );
+
+                                        if (emergency != null) {
+                                          emergency.name = newName;
+                                          emergency.phone = newPhone;
+                                          emergency.relationship =
+                                              newRelationship;
+                                        }
+
+                                        refreshEmergencyCard(() {
+                                          _editingEmergency = false;
+                                        });
+                                      } finally {
+                                        refreshEmergencyCard(() {
+                                          _savingEmergency = false;
+                                        });
+                                      }
+                                    },
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: const Color(0xFF005A4F),
+                              side: const BorderSide(color: Color(0xFF005A4F)),
+                            ),
+                            child:
+                                _savingEmergency
+                                    ? const SizedBox(
+                                      height: 20,
+                                      width: 20,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        color: Color(0xFF005A4F),
+                                      ),
+                                    )
+                                    : Text(
+                                      _editingEmergency
+                                          ? 'SALVAR CONTATO'
+                                          : 'ATUALIZAR CONTATO',
+                                    ),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(height: 16),
+
               _SectionCard(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -553,6 +713,7 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
                 ),
               ),
               const SizedBox(height: 16),
+
               _SectionCard(
                 padding: EdgeInsets.zero,
                 child: Column(
@@ -850,7 +1011,7 @@ class _InfoCardList extends StatelessWidget {
   const _InfoCardList({required this.label, required this.value});
 
   final String label;
-  final List<dynamic>? value; // Changed to dynamic to prevent casting errors
+  final List<dynamic>? value;
 
   @override
   Widget build(BuildContext context) {

@@ -119,18 +119,14 @@ void main() {
       onboardingCompleted: true,
       termsAcceptedAt: acceptedAt,
       registrationProfile: RegistrationProfile(
-        measurements: const BodyMeasurements(
-          age: 28,
-          heightCm: 165,
-          weightKg: 68.5,
-        ),
+        measurements: BodyMeasurements(age: 28, heightCm: 165, weightKg: 68.5),
         primaryGoal: PrimaryGoal.conditioning,
         health: HealthProfile(
           conditions: ['Joelho'],
           notes: 'Cuidado com impacto',
           restrictions: ['Asma/Bronquite'],
         ),
-        emergencyContact: const EmergencyContact(
+        emergencyContact: EmergencyContact(
           name: 'Carlos',
           relationship: 'Cônjuge / Parceiro(a)',
           phone: '11999999999',
