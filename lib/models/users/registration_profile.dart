@@ -61,11 +61,11 @@ class HealthProfile {
 }
 
 class EmergencyContact {
-  final String name;
-  final String relationship;
-  final String phone;
+  String name;
+  String relationship;
+  String phone;
 
-  const EmergencyContact({
+  EmergencyContact({
     required this.name,
     required this.relationship,
     required this.phone,

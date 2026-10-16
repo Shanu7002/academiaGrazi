@@ -118,7 +118,7 @@ void main() {
       responsable: 'instructor-1',
       onboardingCompleted: true,
       termsAcceptedAt: acceptedAt,
-      registrationProfile: const RegistrationProfile(
+      registrationProfile: RegistrationProfile(
         measurements: BodyMeasurements(age: 28, heightCm: 165, weightKg: 68.5),
         primaryGoal: PrimaryGoal.conditioning,
         health: HealthProfile(
