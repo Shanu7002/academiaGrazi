@@ -58,13 +58,13 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
     'Outras',
   ];
 
-  final Map<String, String> relationshipOptions = {
-    'partner': 'Cônjuge / Parceiro(a)',
-    'parent': 'Pai / Mãe',
-    'sibling': 'Irmão / Irmã',
-    'child': 'Filho(a)',
-    'friend': 'Amigo(a) Próximo(a)',
-    'other': 'Outro',
+  final Set<String> relationshipOptions = {
+    'Cônjuge / Parceiro(a)',
+    'Pai / Mãe',
+    'Irmão / Irmã',
+    'Filho(a)',
+    'Amigo(a) Próximo(a)',
+    'Outro',
   };
 
   @override
@@ -565,10 +565,10 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
                               border: OutlineInputBorder(),
                             ),
                             items:
-                                relationshipOptions.entries.map((entry) {
+                                relationshipOptions.map((entry) {
                                   return DropdownMenuItem<String>(
-                                    value: entry.key,
-                                    child: Text(entry.value),
+                                    value: entry,
+                                    child: Text(entry),
                                   );
                                 }).toList(),
                             onChanged: (value) {
@@ -601,8 +601,7 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
                                     ? [
                                       emergency.name,
                                       formatPhone(emergency.phone),
-                                      relationshipOptions[emergency
-                                              .relationship] ??
+                                      relationshipOptions ??
                                           emergency.relationship,
                                     ]
                                     : ['Não informado'],
@@ -625,7 +624,7 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
                                             .maskText(emergency?.phone ?? '');
 
                                         if (emergency?.relationship != null &&
-                                            relationshipOptions.containsKey(
+                                            relationshipOptions.contains(
                                               emergency!.relationship,
                                             )) {
                                           _selectedRelationship =
