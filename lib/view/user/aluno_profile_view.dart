@@ -1,3 +1,5 @@
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
+import 'package:academiagrazi/controller/users/update_data.dart';
 import 'package:academiagrazi/locator.dart';
 import 'package:academiagrazi/models/users/user_model.dart';
 import 'package:academiagrazi/service/users/register_user.dart';
@@ -14,6 +16,8 @@ class AlunoProfileView extends StatefulWidget {
 class _AlunoProfileViewState extends State<AlunoProfileView> {
   final FirebaseAuth _authInstance = locator<FirebaseAuth>();
   final RegisterUserService _userService = locator<RegisterUserService>();
+  final UpdateDataController _updateDataController =
+      locator<UpdateDataController>();
   UserModel? _currentUser;
   UserModel? _currentResponsable;
   bool _isLoading = true;
@@ -30,6 +34,12 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
       TextEditingController();
   final TextEditingController _emergencyPhoneController =
       TextEditingController();
+
+  final MaskTextInputFormatter _phoneMaskFormatter = MaskTextInputFormatter(
+    mask: '(##) #####-####',
+    filter: {"#": RegExp(r'[0-9]')},
+    type: MaskAutoCompletionType.lazy,
+  );
   String? _selectedRelationship;
 
   final List<String> conditionOptions = [
@@ -426,7 +436,14 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
                                         final newNotes =
                                             _healthNotesController.text.trim();
 
-                                        // TODO: Update no Firebase aq
+                                        await _updateDataController
+                                            .updateHealthProfile(
+                                              userId: user.id,
+                                              conditions: _selectedConditions,
+                                              restrictions:
+                                                  _selectedRestrictions,
+                                              notes: newNotes,
+                                            );
 
                                         if (health != null) {
                                           health.conditions.clear();
@@ -445,6 +462,34 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
                                         refreshHealthCard(() {
                                           _editingHealth = false;
                                         });
+
+                                        if (mounted) {
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            const SnackBar(
+                                              content: Text(
+                                                'Ficha de saúde salva com sucesso!',
+                                              ),
+                                              backgroundColor: Color(
+                                                0xFF16794E,
+                                              ),
+                                            ),
+                                          );
+                                        }
+                                      } catch (e) {
+                                        if (mounted) {
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            const SnackBar(
+                                              content: Text(
+                                                'Falha ao salvar. Tente novamente.',
+                                              ),
+                                              backgroundColor: Colors.red,
+                                            ),
+                                          );
+                                        }
                                       } finally {
                                         refreshHealthCard(() {
                                           _savingHealth = false;
@@ -505,9 +550,10 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
                           TextField(
                             controller: _emergencyPhoneController,
                             keyboardType: TextInputType.phone,
+                            inputFormatters: [_phoneMaskFormatter],
                             decoration: const InputDecoration(
                               labelText: 'Telefone',
-                              hintText: 'Apenas números (DDD + Número)',
+                              hintText: '(11) 99999-9999',
                               border: OutlineInputBorder(),
                             ),
                           ),
@@ -574,8 +620,9 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
                                       if (!_editingEmergency) {
                                         _emergencyNameController.text =
                                             emergency?.name ?? '';
-                                        _emergencyPhoneController.text =
-                                            emergency?.phone ?? '';
+                                        _emergencyPhoneController
+                                            .text = _phoneMaskFormatter
+                                            .maskText(emergency?.phone ?? '');
 
                                         if (emergency?.relationship != null &&
                                             relationshipOptions.containsKey(
@@ -608,17 +655,13 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
                                         final newRelationship =
                                             _selectedRelationship ?? 'other';
 
-                                        // TODO: Chamar o método do Firebase aqui
-                                        // await _userService.updateEmergencyContact(
-                                        //   user.id,
-                                        //   newName,
-                                        //   newPhone,
-                                        //   newRelationship,
-                                        // );
-
-                                        await Future.delayed(
-                                          const Duration(seconds: 1),
-                                        );
+                                        await _updateDataController
+                                            .updateEmergencyContact(
+                                              userId: user.id,
+                                              name: newName,
+                                              phone: newPhone,
+                                              relationship: newRelationship,
+                                            );
 
                                         if (emergency != null) {
                                           emergency.name = newName;
@@ -630,6 +673,34 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
                                         refreshEmergencyCard(() {
                                           _editingEmergency = false;
                                         });
+
+                                        if (mounted) {
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            const SnackBar(
+                                              content: Text(
+                                                'Contato salvo com sucesso!',
+                                              ),
+                                              backgroundColor: Color(
+                                                0xFF16794E,
+                                              ),
+                                            ),
+                                          );
+                                        }
+                                      } catch (e) {
+                                        if (mounted) {
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            const SnackBar(
+                                              content: Text(
+                                                'Falha ao salvar contato. Tente novamente.',
+                                              ),
+                                              backgroundColor: Colors.red,
+                                            ),
+                                          );
+                                        }
                                       } finally {
                                         refreshEmergencyCard(() {
                                           _savingEmergency = false;
