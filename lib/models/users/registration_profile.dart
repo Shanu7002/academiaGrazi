@@ -33,11 +33,11 @@ class BodyMeasurements {
 }
 
 class HealthProfile {
-  final List<String> conditions;
-  final String notes;
-  final List<String> restrictions;
+  List<String> conditions;
+  String notes;
+  List<String> restrictions;
 
-  const HealthProfile({
+  HealthProfile({
     required this.conditions,
     required this.notes,
     required this.restrictions,
@@ -61,11 +61,11 @@ class HealthProfile {
 }
 
 class EmergencyContact {
-  final String name;
-  final String relationship;
-  final String phone;
+  String name;
+  String relationship;
+  String phone;
 
-  const EmergencyContact({
+  EmergencyContact({
     required this.name,
     required this.relationship,
     required this.phone,
@@ -139,9 +139,9 @@ class RegistrationDraft {
   int heightCm = 165;
   double weightKg = 68.5;
   PrimaryGoal? primaryGoal;
-  final Set<String> conditions = {'none'};
+  final Set<String> conditions = {'Nenhuma dor'};
   String healthNotes = '';
-  final Set<String> restrictions = {'none'};
+  final Set<String> restrictions = {'Não possuo'};
   String emergencyName = '';
   String emergencyRelationship = '';
   String emergencyPhone = '';

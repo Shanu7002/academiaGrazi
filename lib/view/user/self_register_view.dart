@@ -581,20 +581,20 @@ class _SelfRegisterViewState extends State<SelfRegisterView> {
   }
 
   Widget _healthStep() {
-    const conditionOptions = {
-      'none': 'Nenhuma dor',
-      'lowerBack': 'Coluna/Lombar',
-      'knee': 'Joelho',
-      'shoulder': 'Ombro',
-      'hypertension': 'Hipertensão',
-      'other': 'Outra',
-    };
-    const restrictionOptions = {
-      'none': 'Não possuo',
-      'asthmaBronchitis': 'Asma/Bronquite',
-      'latexElastic': 'Látex/Elásticos',
-      'other': 'Outras',
-    };
+    const conditionOptions = [
+      'Nenhuma dor',
+      'Coluna/Lombar',
+      'Joelho',
+      'Ombro',
+      'Hipertensão',
+      'Outra',
+    ];
+    const restrictionOptions = [
+      'Não possuo',
+      'Asma/Bronquite',
+      'Látex/Elásticos',
+      'Outras',
+    ];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -634,14 +634,14 @@ class _SelfRegisterViewState extends State<SelfRegisterView> {
   }
 
   Widget _emergencyStep() {
-    const relationships = {
-      'partner': 'Cônjuge / Parceiro(a)',
-      'parent': 'Pai / Mãe',
-      'sibling': 'Irmão / Irmã',
-      'child': 'Filho(a)',
-      'friend': 'Amigo(a) Próximo(a)',
-      'other': 'Outro',
-    };
+    const relationships = [
+      'Cônjuge / Parceiro(a)',
+      'Pai / Mãe',
+      'Irmão / Irmã',
+      'Filho(a)',
+      'Amigo(a) Próximo(a)',
+      'Outro',
+    ];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -676,11 +676,11 @@ class _SelfRegisterViewState extends State<SelfRegisterView> {
             icon: Icons.diversity_1,
           ),
           items:
-              relationships.entries
+              relationships
                   .map(
-                    (entry) => DropdownMenuItem(
-                      value: entry.key,
-                      child: Text(entry.value),
+                    (relationship) => DropdownMenuItem(
+                      value: relationship,
+                      child: Text(relationship),
                     ),
                   )
                   .toList(),
@@ -702,17 +702,18 @@ class _SelfRegisterViewState extends State<SelfRegisterView> {
     );
   }
 
-  Widget _chipGroup(Map<String, String> options, Set<String> selected) {
+  Widget _chipGroup(List<String> options, Set<String> selected) {
+    final noneOption = options.first;
     return Wrap(
       spacing: 8,
       runSpacing: 8,
       children:
-          options.entries.map((entry) {
-            final isSelected = selected.contains(entry.key);
+          options.map((option) {
+            final isSelected = selected.contains(option);
             return FilterChip(
-              key: Key('health-${entry.key}-${entry.value}'),
+              key: Key('health-$option'),
               selected: isSelected,
-              label: Text(entry.value),
+              label: Text(option),
               selectedColor: _primary,
               checkmarkColor: Colors.white,
               labelStyle: TextStyle(
@@ -721,15 +722,15 @@ class _SelfRegisterViewState extends State<SelfRegisterView> {
               ),
               onSelected: (_) {
                 setState(() {
-                  if (entry.key == 'none') {
+                  if (option == noneOption) {
                     selected
                       ..clear()
-                      ..add('none');
+                      ..add(noneOption);
                     return;
                   }
-                  selected.remove('none');
-                  if (!selected.add(entry.key)) selected.remove(entry.key);
-                  if (selected.isEmpty) selected.add('none');
+                  selected.remove(noneOption);
+                  if (!selected.add(option)) selected.remove(option);
+                  if (selected.isEmpty) selected.add(noneOption);
                 });
               },
             );

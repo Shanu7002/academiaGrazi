@@ -4,15 +4,17 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:academiagrazi/controller/users/update_data.dart';
 
 import 'package:academiagrazi/models/users/user_model.dart';
 import 'package:academiagrazi/service/users/register_user.dart';
 import 'package:academiagrazi/view/user/aluno_profile_view.dart';
 
-@GenerateMocks([RegisterUserService, FirebaseAuth, User])
+@GenerateMocks([RegisterUserService, UpdateDataController, FirebaseAuth, User])
 import 'aluno_profile_view_test.mocks.dart';
 
 void main() {
+  late MockUpdateDataController mockUpdateDataController;
   late MockRegisterUserService mockUserService;
   late MockFirebaseAuth mockAuth;
   late MockUser mockFirebaseUser;
@@ -21,11 +23,13 @@ void main() {
     locator.reset();
     locator.allowReassignment = true;
 
+    mockUpdateDataController = MockUpdateDataController();
     mockUserService = MockRegisterUserService();
     mockAuth = MockFirebaseAuth();
     mockFirebaseUser = MockUser();
 
     locator.registerSingleton<RegisterUserService>(mockUserService);
+    locator.registerSingleton<UpdateDataController>(mockUpdateDataController);
     locator.registerSingleton<FirebaseAuth>(mockAuth);
   });
 
@@ -67,4 +71,61 @@ void main() {
     verify(mockAuth.currentUser).called(1);
     verify(mockUserService.getUserById('uid_123')).called(1);
   });
+
+  testWidgets(
+    'Deve habilitar a edição e chamar updateHealthProfile ao salvar a ficha de saúde',
+    (WidgetTester tester) async {
+      when(mockFirebaseUser.uid).thenReturn("uid_123");
+      when(mockAuth.currentUser).thenReturn(mockFirebaseUser);
+
+      final testUserModel = UserModel(
+        id: 'uid_123',
+        name: 'Test',
+        email: 'test@example.com',
+      );
+
+      when(
+        mockUserService.getUserById("uid_123"),
+      ).thenAnswer((_) async => testUserModel);
+      when(mockUserService.getResponsableData(any)).thenAnswer(
+        (_) async =>
+            UserModel(id: 'resp', name: 'Resp', email: 'resp@test.com'),
+      );
+
+      when(
+        mockUpdateDataController.updateHealthProfile(
+          userId: 'uid_123',
+          conditions: ['Nenhuma dor'],
+          restrictions: ['Não possuo'],
+          notes: '',
+        ),
+      ).thenAnswer((_) async => Future.value());
+
+      await tester.pumpWidget(const MaterialApp(home: AlunoProfileView()));
+      await tester.pumpAndSettle();
+
+      final updateButton = find.text('ATUALIZAR FICHA DE SAÚDE');
+      expect(updateButton, findsOneWidget);
+
+      await tester.ensureVisible(updateButton);
+      await tester.tap(updateButton);
+      await tester.pumpAndSettle();
+
+      final saveButton = find.text('SALVAR ALTERAÇÕES');
+      expect(saveButton, findsOneWidget);
+
+      await tester.ensureVisible(saveButton);
+      await tester.tap(saveButton);
+      await tester.pumpAndSettle();
+
+      verify(
+        mockUpdateDataController.updateHealthProfile(
+          userId: 'uid_123',
+          conditions: ['Nenhuma dor'],
+          restrictions: ['Não possuo'],
+          notes: '',
+        ),
+      ).called(1);
+    },
+  );
 }
