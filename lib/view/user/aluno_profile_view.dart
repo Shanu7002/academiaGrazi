@@ -543,7 +543,12 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
                           ),
                           const SizedBox(height: 12),
                           DropdownButtonFormField<String>(
-                            value: _selectedRelationship,
+                            value:
+                                relationshipOptions.contains(
+                                      _selectedRelationship,
+                                    )
+                                    ? _selectedRelationship
+                                    : null,
                             decoration: const InputDecoration(
                               labelText: 'Grau de Parentesco',
                               border: OutlineInputBorder(),
@@ -585,8 +590,7 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
                                     ? [
                                       emergency.name,
                                       formatPhone(emergency.phone),
-                                      relationshipOptions ??
-                                          emergency.relationship,
+                                      emergency.relationship,
                                     ]
                                     : ['Não informado'],
                           ),
@@ -614,7 +618,7 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
                                           _selectedRelationship =
                                               emergency.relationship;
                                         } else {
-                                          _selectedRelationship = 'other';
+                                          _selectedRelationship = 'Outro';
                                         }
 
                                         refreshEmergencyCard(() {
@@ -636,7 +640,7 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
                                                 .trim()
                                                 .replaceAll(RegExp(r'\D'), '');
                                         final newRelationship =
-                                            _selectedRelationship ?? 'other';
+                                            _selectedRelationship ?? 'Outro';
 
                                         await _updateDataController
                                             .updateEmergencyContact(
