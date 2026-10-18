@@ -3,6 +3,7 @@ import 'package:academiagrazi/controller/users/update_data.dart';
 import 'package:academiagrazi/locator.dart';
 import 'package:academiagrazi/models/users/user_model.dart';
 import 'package:academiagrazi/service/users/register_user.dart';
+import 'package:academiagrazi/view/components/app_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -142,27 +143,10 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
 
     return Scaffold(
       backgroundColor: const Color(0xFFF5FAFF),
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        automaticallyImplyLeading: false,
-        title: const Text(
-          'GRAZI BRAZ',
-          style: TextStyle(
-            color: Color(0xFF005A4F),
-            fontSize: 22,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        actions: [
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(
-              Icons.notifications_none,
-              color: Color(0xFF354640),
-            ),
-          ),
-        ],
+
+      appBar: CustomAppBar(
+        title: 'GRAZI BRAZ',
+        backgroundColor: Colors.deepPurple,
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -559,7 +543,12 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
                           ),
                           const SizedBox(height: 12),
                           DropdownButtonFormField<String>(
-                            value: _selectedRelationship,
+                            value:
+                                relationshipOptions.contains(
+                                      _selectedRelationship,
+                                    )
+                                    ? _selectedRelationship
+                                    : null,
                             decoration: const InputDecoration(
                               labelText: 'Grau de Parentesco',
                               border: OutlineInputBorder(),
@@ -601,8 +590,7 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
                                     ? [
                                       emergency.name,
                                       formatPhone(emergency.phone),
-                                      relationshipOptions ??
-                                          emergency.relationship,
+                                      emergency.relationship,
                                     ]
                                     : ['Não informado'],
                           ),
@@ -630,7 +618,7 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
                                           _selectedRelationship =
                                               emergency.relationship;
                                         } else {
-                                          _selectedRelationship = 'other';
+                                          _selectedRelationship = 'Outro';
                                         }
 
                                         refreshEmergencyCard(() {
@@ -652,7 +640,7 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
                                                 .trim()
                                                 .replaceAll(RegExp(r'\D'), '');
                                         final newRelationship =
-                                            _selectedRelationship ?? 'other';
+                                            _selectedRelationship ?? 'Outro';
 
                                         await _updateDataController
                                             .updateEmergencyContact(

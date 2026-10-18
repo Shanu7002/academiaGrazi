@@ -1,3 +1,4 @@
+import 'package:academiagrazi/view/components/app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -12,50 +13,7 @@ class _AlunoHomeViewState extends State<AlunoHomeView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(kToolbarHeight),
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 430),
-            child: AppBar(
-              automaticallyImplyLeading: true,
-              backgroundColor: Colors.white,
-              elevation: 0,
-              title: Row(
-                children: [
-                  const CircleAvatar(
-                    radius: 20,
-                    backgroundColor: Color(0xFFD6D6D6),
-                    child: Icon(Icons.person, color: Color(0xFF8A8A8A)),
-                  ),
-                  const SizedBox(width: 12),
-                  Text(
-                    'Grazi Braz',
-                    style: GoogleFonts.barlowCondensed(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: const Color.fromARGB(255, 0, 65, 100),
-                    ),
-                  ),
-                ],
-              ),
-              actions: [
-                Padding(
-                  padding: const EdgeInsets.only(right: 16.0),
-                  child: IconButton(
-                    icon: const Icon(
-                      Icons.notifications_none_rounded,
-                      color: Colors.black87,
-                      size: 24,
-                    ),
-                    onPressed: () {},
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
+      appBar: const CustomAppBar(title: 'Grazi Braz'),
       body: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 430),
