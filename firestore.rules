@@ -1,0 +1,62 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{userId} {
+      // O usuário pode acessar o próprio documento.
+      allow read, write: if request.auth != null
+        && request.auth.uid == userId;
+
+      // O aluno pode ler o documento do seu responsável.
+      allow read: if request.auth != null
+        && get(
+          /databases/$(database)/documents/users/$(request.auth.uid)
+        ).data.responsable == userId;
+    }
+
+    match /instructorCodes/{code} {
+      // O onboarding consulta somente um código conhecido; listagens continuam
+      // bloqueadas e nenhum perfil de usuário fica público.
+      allow get: if true;
+      allow list: if false;
+
+      // O instrutor autenticado pode reservar o próprio código.
+      allow create: if request.auth != null
+        && request.auth.uid == request.resource.data.instructorId
+        && get(
+          /databases/$(database)/documents/users/$(request.auth.uid)
+        ).data.type == 'instructor'
+        && request.resource.data.active == true
+        && request.resource.data.instructorName is string
+        && request.resource.data.instructorName.size() > 0
+        && request.resource.data.keys().hasOnly([
+          'instructorId',
+          'instructorName',
+          'active',
+          'createdAt'
+        ]);
+
+      // Permite desativar ou atualizar o nome, sem trocar o proprietário.
+      allow update: if request.auth != null
+        && request.auth.uid == resource.data.instructorId
+        && request.resource.data.instructorId == resource.data.instructorId
+        && request.resource.data.createdAt == resource.data.createdAt
+        && request.resource.data.instructorName is string
+        && request.resource.data.instructorName.size() > 0
+        && request.resource.data.active is bool
+        && request.resource.data.keys().hasOnly([
+          'instructorId',
+          'instructorName',
+          'active',
+          'createdAt'
+        ]);
+
+      allow delete: if false;
+    }
+
+    match /gym_classes/{classId} {
+      allow read: if request.auth != null;
+      allow write: if false;
+    }
+  }
+}

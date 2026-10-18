@@ -1,4 +1,6 @@
+import 'package:academiagrazi/locator.dart';
 import 'package:flutter/material.dart';
+import 'package:academiagrazi/controller/users/update_data.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
@@ -6,21 +8,30 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:academiagrazi/view/tab_router.dart';
 import 'package:academiagrazi/models/users/user_model.dart';
-import 'package:academiagrazi/service/users/register.dart';
+import 'package:academiagrazi/service/users/register_user.dart';
 
-@GenerateMocks([RegisterService, FirebaseAuth, User])
+@GenerateMocks([RegisterUserService, UpdateDataController, FirebaseAuth, User])
 import 'tab_router_test.mocks.dart';
 
 void main() {
-  late MockRegisterService mockUserService;
+  late MockUpdateDataController mockUpdateDataController;
+  late MockRegisterUserService mockUserService;
   late MockFirebaseAuth mockAuth;
   late MockUser mockFirebaseUser;
   late void Function(FlutterErrorDetails)? previousFlutterError;
 
   setUp(() {
-    mockUserService = MockRegisterService();
+    locator.reset();
+    locator.allowReassignment = true;
+
+    mockUserService = MockRegisterUserService();
     mockAuth = MockFirebaseAuth();
     mockFirebaseUser = MockUser();
+    mockUpdateDataController = MockUpdateDataController();
+
+    locator.registerSingleton<UpdateDataController>(mockUpdateDataController);
+    locator.registerSingleton<RegisterUserService>(mockUserService);
+    locator.registerSingleton<FirebaseAuth>(mockAuth);
 
     when(mockFirebaseUser.uid).thenReturn('uid_test');
     when(mockAuth.currentUser).thenReturn(mockFirebaseUser);
@@ -32,6 +43,10 @@ void main() {
         email: 'test@bigtech.com',
       ),
     );
+  });
+
+  tearDown(() {
+    locator.reset();
   });
 
   void ignorePlaceholderImageError() {
@@ -50,21 +65,15 @@ void main() {
   ) async {
     ignorePlaceholderImageError();
 
-    await tester.pumpWidget(
-      MaterialApp(
-        home: MainShell(userService: mockUserService, authInstance: mockAuth),
-      ),
-    );
+    await tester.pumpWidget(const MaterialApp(home: MainShell()));
 
-    expect(find.text('Grazi Braz'), findsOneWidget);
+    expect(find.text('GRAZI BRAZ'), findsOneWidget);
     expect(find.byType(NavigationBar), findsOneWidget);
 
-    await tester.scrollUntilVisible(
-      find.text('Iniciar treino'),
-      500,
-      scrollable: find.byType(Scrollable),
-    );
-    await tester.tap(find.text('Iniciar treino'));
+    await tester.ensureVisible(find.byKey(const Key('botao_iniciar_treino')));
+
+    await tester.tap(find.byKey(const Key('botao_iniciar_treino')));
+
     await tester.pumpAndSettle();
 
     expect(find.text('Treino do dia'), findsOneWidget);
@@ -76,18 +85,12 @@ void main() {
   ) async {
     ignorePlaceholderImageError();
 
-    await tester.pumpWidget(
-      MaterialApp(
-        home: MainShell(userService: mockUserService, authInstance: mockAuth),
-      ),
-    );
+    await tester.pumpWidget(MaterialApp(home: MainShell()));
 
-    await tester.scrollUntilVisible(
-      find.text('Iniciar treino'),
-      500,
-      scrollable: find.byType(Scrollable),
-    );
-    await tester.tap(find.text('Iniciar treino'));
+    await tester.ensureVisible(find.byKey(const Key('botao_iniciar_treino')));
+
+    await tester.tap(find.byKey(const Key('botao_iniciar_treino')));
+
     await tester.pumpAndSettle();
 
     await tester.binding.handlePopRoute();
@@ -96,7 +99,7 @@ void main() {
     await tester.tap(find.text('Início'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Grazi Braz'), findsOneWidget);
+    expect(find.text('GRAZI BRAZ'), findsOneWidget);
     expect(find.text('Treino do dia'), findsOneWidget);
     expect(find.byType(NavigationBar), findsOneWidget);
   });
@@ -104,11 +107,7 @@ void main() {
   testWidgets('alterna entre as páginas sem remover a NavigationBar', (
     tester,
   ) async {
-    await tester.pumpWidget(
-      MaterialApp(
-        home: MainShell(userService: mockUserService, authInstance: mockAuth),
-      ),
-    );
+    await tester.pumpWidget(MaterialApp(home: MainShell()));
 
     await tester.tap(find.text('Treinos'));
     await tester.pumpAndSettle();

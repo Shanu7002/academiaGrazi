@@ -1,11 +1,11 @@
 import "package:cloud_firestore/cloud_firestore.dart";
 import "../../models/users/user_model.dart";
 
-class RegisterService {
+class RegisterUserService {
   final FirebaseFirestore _db;
 
   // coverage:ignore-start
-  RegisterService({FirebaseFirestore? db})
+  RegisterUserService({FirebaseFirestore? db})
     : _db = db ?? FirebaseFirestore.instance;
   // coverage:ignore-end
 
@@ -14,8 +14,7 @@ class RegisterService {
   }
 
   Future<UserModel?> getUserById(String uid) async {
-    final doc =
-        await FirebaseFirestore.instance.collection('users').doc(uid).get();
+    final doc = await _db.collection("users").doc(uid).get();
 
     if (!doc.exists) {
       return null;
@@ -25,8 +24,7 @@ class RegisterService {
   }
 
   Future<UserModel?> getResponsableData(String uid) async {
-    final doc =
-        await FirebaseFirestore.instance.collection('users').doc(uid).get();
+    final doc = await _db.collection("users").doc(uid).get();
 
     if (!doc.exists) {
       return null;

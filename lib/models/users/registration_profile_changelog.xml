@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xml>
+<changelog>
+    <model>
+        <version>1.0</version>
+        <owner>Bayer-07</owner>
+        <description>Initial registration profile and in-memory registration draft creation</description>
+        <actualModel>
+            registrationProfile = {
+                measurements: {
+                    age: int
+                    heightCm: int
+                    weightKg: double
+                }
+                primaryGoal: PrimaryGoal enum serialized as string
+                health: {
+                    conditions: array[string]
+                    notes: string
+                    restrictions: array[string]
+                }
+                emergencyContact: {
+                    name: string
+                    relationship: string
+                    phone: string --somente digitos
+                }
+            }
+
+            RegistrationDraft armazena temporariamente os dados das seis etapas,
+            incluindo senha e confirmacao somente em memoria. Senhas nunca sao
+            serializadas ou persistidas no Firebase.
+        </actualModel>
+    </model>
+</changelog>
