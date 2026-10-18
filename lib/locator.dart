@@ -1,3 +1,4 @@
+import 'package:academiagrazi/controller/users/update_data.dart';
 import 'package:academiagrazi/service/users/register_instructor.dart';
 import 'package:get_it/get_it.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -23,6 +24,9 @@ void setupLocator() {
   );
   locator.registerLazySingleton<RegisterUserService>(
     () => RegisterUserService(),
+  );
+  locator.registerLazySingleton<UpdateDataController>(
+    () => UpdateDataController(),
   );
 
   // Instructor register

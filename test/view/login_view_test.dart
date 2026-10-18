@@ -1,3 +1,4 @@
+import 'package:academiagrazi/controller/users/update_data.dart';
 import 'package:academiagrazi/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -17,6 +18,7 @@ import 'package:academiagrazi/view/login_view.dart';
 
 @GenerateMocks([
   LoginController,
+  UpdateDataController,
   FirebaseAuth,
   RegisterUserService,
   RegisterUserController,
@@ -26,6 +28,7 @@ import 'login_view_test.mocks.dart';
 
 void main() {
   late MockLoginController mockLoginController;
+  late MockUpdateDataController mockUpdateDataController;
   late MockFirebaseAuth mockAuth;
   late MockRegisterUserService mockRegisterUserService;
   late MockRegisterUserController mockRegisterUserController;
@@ -36,12 +39,14 @@ void main() {
     locator.allowReassignment = true;
 
     mockLoginController = MockLoginController();
+    mockUpdateDataController = MockUpdateDataController();
     mockAuth = MockFirebaseAuth();
     mockRegisterUserService = MockRegisterUserService();
     mockRegisterUserController = MockRegisterUserController();
     mockRegisterInstructorController = MockRegisterInstructorController();
 
     locator.registerSingleton<LoginController>(mockLoginController);
+    locator.registerSingleton<UpdateDataController>(mockUpdateDataController);
     locator.registerSingleton<FirebaseAuth>(mockAuth);
     locator.registerSingleton<RegisterUserService>(mockRegisterUserService);
     locator.registerSingleton<RegisterUserController>(

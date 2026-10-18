@@ -1,3 +1,5 @@
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
+import 'package:academiagrazi/controller/users/update_data.dart';
 import 'package:academiagrazi/locator.dart';
 import 'package:academiagrazi/models/users/user_model.dart';
 import 'package:academiagrazi/service/users/register_user.dart';
@@ -15,14 +17,69 @@ class AlunoProfileView extends StatefulWidget {
 class _AlunoProfileViewState extends State<AlunoProfileView> {
   final FirebaseAuth _authInstance = locator<FirebaseAuth>();
   final RegisterUserService _userService = locator<RegisterUserService>();
+  final UpdateDataController _updateDataController =
+      locator<UpdateDataController>();
   UserModel? _currentUser;
   UserModel? _currentResponsable;
   bool _isLoading = true;
+
+  bool _editingHealth = false;
+  bool _savingHealth = false;
+  List<String> _selectedConditions = [];
+  List<String> _selectedRestrictions = [];
+  final TextEditingController _healthNotesController = TextEditingController();
+
+  bool _editingEmergency = false;
+  bool _savingEmergency = false;
+  final TextEditingController _emergencyNameController =
+      TextEditingController();
+  final TextEditingController _emergencyPhoneController =
+      TextEditingController();
+
+  final MaskTextInputFormatter _phoneMaskFormatter = MaskTextInputFormatter(
+    mask: '(##) #####-####',
+    filter: {"#": RegExp(r'[0-9]')},
+    type: MaskAutoCompletionType.lazy,
+  );
+  String? _selectedRelationship;
+
+  final List<String> conditionOptions = [
+    'Nenhuma dor',
+    'Coluna/Lombar',
+    'Joelho',
+    'Ombro',
+    'Hipertensão',
+    'Outra',
+  ];
+
+  final List<String> restrictionOptions = [
+    'Não possuo',
+    'Asma/Bronquite',
+    'Látex/Elásticos',
+    'Outras',
+  ];
+
+  final Set<String> relationshipOptions = {
+    'Cônjuge / Parceiro(a)',
+    'Pai / Mãe',
+    'Irmão / Irmã',
+    'Filho(a)',
+    'Amigo(a) Próximo(a)',
+    'Outro',
+  };
 
   @override
   void initState() {
     super.initState();
     _loadCurrentUser();
+  }
+
+  @override
+  void dispose() {
+    _healthNotesController.dispose();
+    _emergencyNameController.dispose();
+    _emergencyPhoneController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadCurrentUser() async {
@@ -69,6 +126,21 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
     final user = _currentUser!;
     final responsable = _currentResponsable;
 
+    String formatPhone(String phone) {
+      final digits = phone.replaceAll(RegExp(r'\D'), '');
+      if (digits.length == 11) {
+        return '(${digits.substring(0, 2)}) '
+            '${digits.substring(2, 7)}-${digits.substring(7)}';
+      }
+      if (digits.length == 10) {
+        return '(${digits.substring(0, 2)}) '
+            '${digits.substring(2, 6)}-${digits.substring(6)}';
+      }
+      return phone;
+    }
+
+    final profile = user.registrationProfile;
+
     return Scaffold(
       backgroundColor: const Color(0xFFF5FAFF),
 
@@ -76,14 +148,12 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
         title: 'GRAZI BRAZ',
         backgroundColor: Colors.deepPurple,
       ),
-
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
           child: Column(
             children: [
               _ProfileSummary(user: user),
-
               const SizedBox(height: 16),
 
               _SectionCard(
@@ -127,55 +197,525 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
                   ],
                 ),
               ),
-
               const SizedBox(height: 16),
 
               _SectionCard(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const _SectionHeader(
-                      icon: Icons.health_and_safety_outlined,
-                      title: 'SAÚDE E FICHA CLÍNICA',
-                    ),
-                    const SizedBox(height: 12),
-                    const _PrivacyBanner(),
-                    const SizedBox(height: 12),
-                    const _InfoCard(
-                      label: 'Condições Crônicas',
-                      value: 'Hipertensão controlada',
-                    ),
-                    const SizedBox(height: 10),
-                    const _InfoCard(
-                      label: 'Restrições no Treino',
-                      value: 'Evitar impacto excessivo em membros inferiores',
-                    ),
-                    const SizedBox(height: 10),
-                    const _InfoCard(
-                      label: 'Contato de Emergência',
-                      value: 'Carlos Lima (Esposo) • (11) 98765-4321',
-                    ),
-                    const SizedBox(height: 14),
-                    const Text(
-                      'Revisado em 15/06/2023 por Prof. Marcos',
-                      style: TextStyle(color: Color(0xFF65716D), fontSize: 10),
-                    ),
-                    const SizedBox(height: 14),
-                    SizedBox(
-                      width: double.infinity,
-                      child: OutlinedButton(
-                        onPressed: () {},
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: const Color(0xFF005A4F),
-                          side: const BorderSide(color: Color(0xFF005A4F)),
+                child: StatefulBuilder(
+                  builder: (context, refreshHealthCard) {
+                    final health = user.registrationProfile?.health;
+
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const _SectionHeader(
+                          icon: Icons.health_and_safety_outlined,
+                          title: 'SAÚDE E FICHA CLÍNICA',
                         ),
-                        child: const Text('ATUALIZAR FICHA DE SAÚDE'),
-                      ),
-                    ),
-                  ],
+                        const SizedBox(height: 12),
+                        const _PrivacyBanner(),
+                        const SizedBox(height: 12),
+                        if (_editingHealth) ...[
+                          const Text(
+                            'Condições crônicas',
+                            style: TextStyle(
+                              color: Color(0xFF092837),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 13,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Wrap(
+                            spacing: 8,
+                            runSpacing: 4,
+                            children:
+                                conditionOptions.map((option) {
+                                  final isSelected = _selectedConditions
+                                      .contains(option);
+                                  return FilterChip(
+                                    label: Text(option),
+                                    selected: isSelected,
+                                    selectedColor: const Color(0xFFD5F3ED),
+                                    checkmarkColor: const Color(0xFF005A4F),
+                                    backgroundColor: const Color(0xFFF5FAFF),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20),
+                                      side: BorderSide(
+                                        color:
+                                            isSelected
+                                                ? const Color(0xFF005A4F)
+                                                : const Color(0xFFE9EEEC),
+                                      ),
+                                    ),
+                                    onSelected: (selected) {
+                                      refreshHealthCard(() {
+                                        if (option == 'Nenhuma dor') {
+                                          _selectedConditions.clear();
+                                          if (selected) {
+                                            _selectedConditions.add(option);
+                                          }
+                                        } else {
+                                          _selectedConditions.remove(
+                                            'Nenhuma dor',
+                                          );
+                                          if (selected) {
+                                            _selectedConditions.add(option);
+                                          } else {
+                                            _selectedConditions.remove(option);
+                                          }
+                                        }
+                                      });
+                                    },
+                                  );
+                                }).toList(),
+                          ),
+                          const SizedBox(height: 16),
+                          const Text(
+                            'Restrições no treino',
+                            style: TextStyle(
+                              color: Color(0xFF092837),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 13,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Wrap(
+                            spacing: 8,
+                            runSpacing: 4,
+                            children:
+                                restrictionOptions.map((option) {
+                                  final isSelected = _selectedRestrictions
+                                      .contains(option);
+                                  return FilterChip(
+                                    label: Text(option),
+                                    selected: isSelected,
+                                    selectedColor: const Color(0xFFD5F3ED),
+                                    checkmarkColor: const Color(0xFF005A4F),
+                                    backgroundColor: const Color(0xFFF5FAFF),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20),
+                                      side: BorderSide(
+                                        color:
+                                            isSelected
+                                                ? const Color(0xFF005A4F)
+                                                : const Color(0xFFE9EEEC),
+                                      ),
+                                    ),
+                                    onSelected: (selected) {
+                                      refreshHealthCard(() {
+                                        if (option == 'Não possuo') {
+                                          _selectedRestrictions.clear();
+                                          if (selected) {
+                                            _selectedRestrictions.add(option);
+                                          }
+                                        } else {
+                                          _selectedRestrictions.remove(
+                                            'Não possuo',
+                                          );
+                                          if (selected) {
+                                            _selectedRestrictions.add(option);
+                                          } else {
+                                            _selectedRestrictions.remove(
+                                              option,
+                                            );
+                                          }
+                                        }
+                                      });
+                                    },
+                                  );
+                                }).toList(),
+                          ),
+                          const SizedBox(height: 16),
+                          TextField(
+                            controller: _healthNotesController,
+                            maxLines: 3,
+                            decoration: const InputDecoration(
+                              labelText: 'Observações adicionais (opcional)',
+                              hintText: 'Detalhe dores, cirurgias, etc.',
+                              border: OutlineInputBorder(),
+                            ),
+                          ),
+                        ] else ...[
+                          _InfoCardList(
+                            label: 'Condições Crônicas',
+                            value: health?.conditions,
+                          ),
+                          const SizedBox(height: 10),
+                          _InfoCardList(
+                            label: 'Restrições no Treino',
+                            value: health?.restrictions,
+                          ),
+                          const SizedBox(height: 10),
+                          _InfoCardString(
+                            label: 'Observações',
+                            value: health?.notes,
+                          ),
+                        ],
+                        const SizedBox(height: 14),
+                        if (_editingHealth) ...[
+                          SizedBox(
+                            width: double.infinity,
+                            child: OutlinedButton(
+                              onPressed:
+                                  _savingHealth
+                                      ? null
+                                      : () {
+                                        refreshHealthCard(() {
+                                          _editingHealth = false;
+                                        });
+                                      },
+                              child: const Text('CANCELAR'),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                        ],
+                        SizedBox(
+                          width: double.infinity,
+                          child: OutlinedButton(
+                            onPressed:
+                                _savingHealth
+                                    ? null
+                                    : () async {
+                                      if (!_editingHealth) {
+                                        final List<String> safeConditions = [];
+                                        if (health?.conditions != null) {
+                                          for (var item in health!.conditions) {
+                                            safeConditions.add(item.toString());
+                                          }
+                                        }
+                                        if (safeConditions.isEmpty) {
+                                          safeConditions.add('Nenhuma dor');
+                                        }
+
+                                        final List<String> safeRestrictions =
+                                            [];
+                                        if (health?.restrictions != null) {
+                                          for (var item
+                                              in health!.restrictions) {
+                                            safeRestrictions.add(
+                                              item.toString(),
+                                            );
+                                          }
+                                        }
+                                        if (safeRestrictions.isEmpty) {
+                                          safeRestrictions.add('Não possuo');
+                                        }
+
+                                        _selectedConditions = safeConditions;
+                                        _selectedRestrictions =
+                                            safeRestrictions;
+                                        _healthNotesController.text =
+                                            health?.notes ?? '';
+
+                                        refreshHealthCard(() {
+                                          _editingHealth = true;
+                                        });
+                                        return;
+                                      }
+
+                                      refreshHealthCard(() {
+                                        _savingHealth = true;
+                                      });
+
+                                      try {
+                                        final newNotes =
+                                            _healthNotesController.text.trim();
+
+                                        await _updateDataController
+                                            .updateHealthProfile(
+                                              userId: user.id,
+                                              conditions: _selectedConditions,
+                                              restrictions:
+                                                  _selectedRestrictions,
+                                              notes: newNotes,
+                                            );
+
+                                        if (health != null) {
+                                          health.conditions.clear();
+                                          health.conditions.addAll(
+                                            _selectedConditions,
+                                          );
+
+                                          health.restrictions.clear();
+                                          health.restrictions.addAll(
+                                            _selectedRestrictions,
+                                          );
+
+                                          health.notes = newNotes;
+                                        }
+
+                                        refreshHealthCard(() {
+                                          _editingHealth = false;
+                                        });
+
+                                        if (mounted) {
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            const SnackBar(
+                                              content: Text(
+                                                'Ficha de saúde salva com sucesso!',
+                                              ),
+                                              backgroundColor: Color(
+                                                0xFF16794E,
+                                              ),
+                                            ),
+                                          );
+                                        }
+                                      } catch (e) {
+                                        if (mounted) {
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            const SnackBar(
+                                              content: Text(
+                                                'Falha ao salvar. Tente novamente.',
+                                              ),
+                                              backgroundColor: Colors.red,
+                                            ),
+                                          );
+                                        }
+                                      } finally {
+                                        refreshHealthCard(() {
+                                          _savingHealth = false;
+                                        });
+                                      }
+                                    },
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: const Color(0xFF005A4F),
+                              side: const BorderSide(color: Color(0xFF005A4F)),
+                            ),
+                            child:
+                                _savingHealth
+                                    ? const SizedBox(
+                                      height: 20,
+                                      width: 20,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        color: Color(0xFF005A4F),
+                                      ),
+                                    )
+                                    : Text(
+                                      _editingHealth
+                                          ? 'SALVAR ALTERAÇÕES'
+                                          : 'ATUALIZAR FICHA DE SAÚDE',
+                                    ),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
                 ),
               ),
+              const SizedBox(height: 16),
 
+              _SectionCard(
+                child: StatefulBuilder(
+                  builder: (context, refreshEmergencyCard) {
+                    final emergency = profile?.emergencyContact;
+
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const _SectionHeader(
+                          icon: Icons.contact_phone_outlined,
+                          title: 'CONTATO DE EMERGÊNCIA',
+                        ),
+                        const SizedBox(height: 16),
+
+                        if (_editingEmergency) ...[
+                          TextField(
+                            controller: _emergencyNameController,
+                            decoration: const InputDecoration(
+                              labelText: 'Nome do contato',
+                              border: OutlineInputBorder(),
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          TextField(
+                            controller: _emergencyPhoneController,
+                            keyboardType: TextInputType.phone,
+                            inputFormatters: [_phoneMaskFormatter],
+                            decoration: const InputDecoration(
+                              labelText: 'Telefone',
+                              hintText: '(11) 99999-9999',
+                              border: OutlineInputBorder(),
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          DropdownButtonFormField<String>(
+                            value: _selectedRelationship,
+                            decoration: const InputDecoration(
+                              labelText: 'Grau de Parentesco',
+                              border: OutlineInputBorder(),
+                            ),
+                            items:
+                                relationshipOptions.map((entry) {
+                                  return DropdownMenuItem<String>(
+                                    value: entry,
+                                    child: Text(entry),
+                                  );
+                                }).toList(),
+                            onChanged: (value) {
+                              refreshEmergencyCard(() {
+                                _selectedRelationship = value;
+                              });
+                            },
+                          ),
+                          const SizedBox(height: 16),
+                          SizedBox(
+                            width: double.infinity,
+                            child: OutlinedButton(
+                              onPressed:
+                                  _savingEmergency
+                                      ? null
+                                      : () {
+                                        refreshEmergencyCard(() {
+                                          _editingEmergency = false;
+                                        });
+                                      },
+                              child: const Text('CANCELAR'),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                        ] else ...[
+                          _InfoCardList(
+                            label: 'Contato Salvo',
+                            value:
+                                emergency != null
+                                    ? [
+                                      emergency.name,
+                                      formatPhone(emergency.phone),
+                                      relationshipOptions ??
+                                          emergency.relationship,
+                                    ]
+                                    : ['Não informado'],
+                          ),
+                          const SizedBox(height: 14),
+                        ],
+
+                        SizedBox(
+                          width: double.infinity,
+                          child: OutlinedButton(
+                            onPressed:
+                                _savingEmergency
+                                    ? null
+                                    : () async {
+                                      if (!_editingEmergency) {
+                                        _emergencyNameController.text =
+                                            emergency?.name ?? '';
+                                        _emergencyPhoneController
+                                            .text = _phoneMaskFormatter
+                                            .maskText(emergency?.phone ?? '');
+
+                                        if (emergency?.relationship != null &&
+                                            relationshipOptions.contains(
+                                              emergency!.relationship,
+                                            )) {
+                                          _selectedRelationship =
+                                              emergency.relationship;
+                                        } else {
+                                          _selectedRelationship = 'other';
+                                        }
+
+                                        refreshEmergencyCard(() {
+                                          _editingEmergency = true;
+                                        });
+                                        return;
+                                      }
+
+                                      refreshEmergencyCard(() {
+                                        _savingEmergency = true;
+                                      });
+
+                                      try {
+                                        final newName =
+                                            _emergencyNameController.text
+                                                .trim();
+                                        final newPhone =
+                                            _emergencyPhoneController.text
+                                                .trim()
+                                                .replaceAll(RegExp(r'\D'), '');
+                                        final newRelationship =
+                                            _selectedRelationship ?? 'other';
+
+                                        await _updateDataController
+                                            .updateEmergencyContact(
+                                              userId: user.id,
+                                              name: newName,
+                                              phone: newPhone,
+                                              relationship: newRelationship,
+                                            );
+
+                                        if (emergency != null) {
+                                          emergency.name = newName;
+                                          emergency.phone = newPhone;
+                                          emergency.relationship =
+                                              newRelationship;
+                                        }
+
+                                        refreshEmergencyCard(() {
+                                          _editingEmergency = false;
+                                        });
+
+                                        if (mounted) {
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            const SnackBar(
+                                              content: Text(
+                                                'Contato salvo com sucesso!',
+                                              ),
+                                              backgroundColor: Color(
+                                                0xFF16794E,
+                                              ),
+                                            ),
+                                          );
+                                        }
+                                      } catch (e) {
+                                        if (mounted) {
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            const SnackBar(
+                                              content: Text(
+                                                'Falha ao salvar contato. Tente novamente.',
+                                              ),
+                                              backgroundColor: Colors.red,
+                                            ),
+                                          );
+                                        }
+                                      } finally {
+                                        refreshEmergencyCard(() {
+                                          _savingEmergency = false;
+                                        });
+                                      }
+                                    },
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: const Color(0xFF005A4F),
+                              side: const BorderSide(color: Color(0xFF005A4F)),
+                            ),
+                            child:
+                                _savingEmergency
+                                    ? const SizedBox(
+                                      height: 20,
+                                      width: 20,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        color: Color(0xFF005A4F),
+                                      ),
+                                    )
+                                    : Text(
+                                      _editingEmergency
+                                          ? 'SALVAR CONTATO'
+                                          : 'ATUALIZAR CONTATO',
+                                    ),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+              ),
               const SizedBox(height: 16),
 
               _SectionCard(
@@ -226,7 +766,6 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
                   ],
                 ),
               ),
-
               const SizedBox(height: 16),
 
               _SectionCard(
@@ -522,14 +1061,17 @@ class _PrivacyBanner extends StatelessWidget {
   }
 }
 
-class _InfoCard extends StatelessWidget {
-  const _InfoCard({required this.label, required this.value});
+class _InfoCardList extends StatelessWidget {
+  const _InfoCardList({required this.label, required this.value});
 
   final String label;
-  final String value;
+  final List<dynamic>? value;
 
   @override
   Widget build(BuildContext context) {
+    final String displayValue =
+        value == null || value!.isEmpty ? 'Não informado' : value!.join('\n');
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(12),
@@ -546,7 +1088,46 @@ class _InfoCard extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            value,
+            displayValue,
+            style: const TextStyle(
+              color: Color(0xFF092837),
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _InfoCardString extends StatelessWidget {
+  const _InfoCardString({required this.label, required this.value});
+
+  final String label;
+  final String? value;
+
+  @override
+  Widget build(BuildContext context) {
+    final String displayValue =
+        value == null || value!.isEmpty ? 'Não informado' : value!;
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF8FAFB),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: const TextStyle(color: Color(0xFF65716D), fontSize: 11),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            displayValue,
             style: const TextStyle(
               color: Color(0xFF092837),
               fontWeight: FontWeight.bold,

@@ -167,8 +167,8 @@ void main() {
     await completePersonalDataStep(tester);
     await completeGoalsStep(tester);
 
-    final noneFinder = find.byKey(const Key('health-none-Nenhuma dor'));
-    final kneeFinder = find.byKey(const Key('health-knee-Joelho'));
+    final noneFinder = find.byKey(const Key('health-Nenhuma dor'));
+    final kneeFinder = find.byKey(const Key('health-Joelho'));
 
     await tester.ensureVisible(noneFinder);
     expect(tester.widget<FilterChip>(noneFinder).selected, isTrue);
