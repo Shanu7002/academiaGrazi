@@ -1,3 +1,5 @@
+import 'package:academiagrazi/view/login_view.dart';
+import 'package:academiagrazi/view/user/self_register_view.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:academiagrazi/controller/users/update_data.dart';
 import 'package:academiagrazi/locator.dart';
@@ -108,6 +110,16 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
     } catch (e) {
       if (!mounted) return;
       setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> logout() async {
+    try {
+      print('Executing sign out...');
+      await _authInstance.signOut();
+      print('Sign out successful.');
+    } catch (e) {
+      print('Logout Error: $e');
     }
   }
 
@@ -803,6 +815,13 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
                       ),
                     ),
                   ],
+                ),
+              ),
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton(
+                  onPressed: () => logout(),
+                  child: const Text('Sair'),
                 ),
               ),
             ],
