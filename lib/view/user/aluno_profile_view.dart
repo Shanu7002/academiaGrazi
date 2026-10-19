@@ -1,5 +1,3 @@
-import 'package:academiagrazi/view/login_view.dart';
-import 'package:academiagrazi/view/user/self_register_view.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:academiagrazi/controller/users/update_data.dart';
 import 'package:academiagrazi/locator.dart';

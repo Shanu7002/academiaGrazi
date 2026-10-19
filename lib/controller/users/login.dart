@@ -42,11 +42,19 @@ class LoginController {
 
   Future<bool> resetPassword({required String email}) async {
     try {
-      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+      await _auth.sendPasswordResetEmail(email: email);
       return true;
     } on FirebaseAuthException catch (e) {
       log("Generic error occured in resetPassword", error: e);
       return false;
+    }
+  }
+
+  Future<void> logoff() async {
+    try {
+      await _auth.signOut();
+    } on FirebaseAuthException catch (e) {
+      log("Generic error occured in logoff", error: e);
     }
   }
 }

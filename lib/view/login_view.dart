@@ -2,6 +2,7 @@ import 'package:academiagrazi/controller/users/login.dart';
 import 'package:academiagrazi/locator.dart';
 import 'package:academiagrazi/models/users/user_model.dart';
 import 'package:academiagrazi/view/admin/register_instructor_view.dart';
+import 'package:academiagrazi/view/auth_wrapper.dart';
 import 'package:academiagrazi/view/tab_router.dart';
 import 'package:academiagrazi/view/user/self_register_view.dart';
 import 'package:flutter/material.dart';
@@ -58,22 +59,11 @@ class _LandingPageState extends State<LoginView> {
     setState(() => _isLoading = false);
 
     if (user != null) {
-      if (user.type == UserType.user) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => MainShell()),
-        );
-      } else if (user.type == UserType.instructor) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => MainShell()),
-        );
-      } else {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => RegisterInstructorView()),
-        );
-      }
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => const AuthWrapper()),
+        (route) => false,
+      );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Falha ao entrar. Tente novamente.')),
