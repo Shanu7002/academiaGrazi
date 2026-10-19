@@ -1,5 +1,6 @@
 import 'package:academiagrazi/controller/users/update_data.dart';
 import 'package:academiagrazi/locator.dart';
+import 'package:academiagrazi/view/auth_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
@@ -10,9 +11,9 @@ import 'package:academiagrazi/controller/users/login.dart';
 import 'package:academiagrazi/models/users/user_model.dart';
 import 'package:academiagrazi/controller/users/register_user.dart';
 import 'package:academiagrazi/controller/users/register_instructor.dart';
-import 'package:academiagrazi/view/tab_router.dart';
 import 'package:academiagrazi/view/user/self_register_view.dart';
 import 'package:academiagrazi/service/users/register_user.dart';
+import 'package:academiagrazi/view/preferences_service.dart';
 
 import 'package:academiagrazi/view/login_view.dart';
 
@@ -20,6 +21,7 @@ import 'package:academiagrazi/view/login_view.dart';
   LoginController,
   UpdateDataController,
   FirebaseAuth,
+  PreferencesService,
   RegisterUserService,
   RegisterUserController,
   RegisterInstructorController,
@@ -33,6 +35,7 @@ void main() {
   late MockRegisterUserService mockRegisterUserService;
   late MockRegisterUserController mockRegisterUserController;
   late MockRegisterInstructorController mockRegisterInstructorController;
+  late MockPreferencesService mockPreferencesService;
 
   setUp(() {
     locator.reset();
@@ -44,6 +47,7 @@ void main() {
     mockRegisterUserService = MockRegisterUserService();
     mockRegisterUserController = MockRegisterUserController();
     mockRegisterInstructorController = MockRegisterInstructorController();
+    mockPreferencesService = MockPreferencesService();
 
     locator.registerSingleton<LoginController>(mockLoginController);
     locator.registerSingleton<UpdateDataController>(mockUpdateDataController);
@@ -55,6 +59,11 @@ void main() {
     locator.registerSingleton<RegisterInstructorController>(
       mockRegisterInstructorController,
     );
+    locator.registerSingleton<PreferencesService>(mockPreferencesService);
+
+    when(mockPreferencesService.dailyReminder).thenReturn(false);
+    when(mockPreferencesService.professorNotices).thenReturn(true);
+    when(mockAuth.authStateChanges()).thenAnswer((_) => Stream.value(null));
   });
 
   tearDown(() {
@@ -76,7 +85,9 @@ void main() {
 
     final loginButton = find.text('Entrar');
     await tester.tap(loginButton);
-    await tester.pumpAndSettle();
+
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 1));
   }
 
   testWidgets('Substitui a LandingPage pela MainShell após login de aluno', (
@@ -101,10 +112,10 @@ void main() {
     await submitLogin(tester);
 
     expect(find.byType(LoginView), findsNothing);
-    expect(find.byType(MainShell), findsOneWidget);
+    expect(find.byType(AuthWrapper), findsOneWidget);
 
     expect(
-      Navigator.of(tester.element(find.byType(MainShell))).canPop(),
+      Navigator.of(tester.element(find.byType(AuthWrapper))).canPop(),
       isFalse,
     );
 
