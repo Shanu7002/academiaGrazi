@@ -2,15 +2,14 @@ import 'package:academiagrazi/firebase_options.dart';
 import 'package:academiagrazi/locator.dart';
 import 'package:academiagrazi/theme/app_theme.dart';
 import 'package:academiagrazi/view/welcome_view.dart';
+import 'package:academiagrazi/view/user/teacher/professor_dashboard_view.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   setupLocator();
 
@@ -26,7 +25,8 @@ class MyApp extends StatelessWidget {
       title: 'Academia Grazi',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
-      home: const WelcomeView(),
+      //home: const WelcomeView(),
+      home: const ProfessorDashboardView(),
     );
   }
 }
