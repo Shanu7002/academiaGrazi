@@ -1,5 +1,4 @@
-import 'package:academiagrazi/view/login_view.dart';
-import 'package:academiagrazi/view/user/self_register_view.dart';
+import 'package:academiagrazi/view/preferences_service.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:academiagrazi/controller/users/update_data.dart';
 import 'package:academiagrazi/locator.dart';
@@ -787,26 +786,28 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
               _SectionCard(
                 padding: EdgeInsets.zero,
                 child: Column(
-                  children: const [
-                    Padding(
+                  children: [
+                    const Padding(
                       padding: EdgeInsets.all(16),
                       child: _SectionHeader(
                         icon: Icons.tune,
                         title: 'PREFERÊNCIAS & AJUSTES',
                       ),
                     ),
-                    Divider(height: 1),
+                    const Divider(height: 1),
                     _PreferenceSwitch(
                       icon: Icons.alarm,
                       title: 'Lembrete diário de treino',
+                      type: PreferenceType.dailyReminder,
                     ),
-                    Divider(height: 1),
+                    const Divider(height: 1),
                     _PreferenceSwitch(
                       icon: Icons.notifications_active_outlined,
                       title: 'Avisos do Prof. Marcos',
+                      type: PreferenceType.professorNotices,
                     ),
-                    Divider(height: 1),
-                    Material(
+                    const Divider(height: 1),
+                    const Material(
                       color: Colors.transparent,
                       child: ListTile(
                         leading: Icon(Icons.shield_outlined),
@@ -957,6 +958,64 @@ class _SectionCard extends StatelessWidget {
         border: Border.all(color: const Color(0xFFE9EEEC)),
       ),
       child: child,
+    );
+  }
+}
+
+enum PreferenceType { dailyReminder, professorNotices }
+
+class _PreferenceSwitch extends StatefulWidget {
+  const _PreferenceSwitch({
+    Key? key,
+    required this.icon,
+    required this.title,
+    required this.type,
+  }) : super(key: key);
+
+  final IconData icon;
+  final String title;
+  final PreferenceType type;
+
+  @override
+  State<_PreferenceSwitch> createState() => _PreferenceSwitchState();
+}
+
+class _PreferenceSwitchState extends State<_PreferenceSwitch> {
+  bool _currentValue = false;
+  late final PreferencesService _prefs;
+
+  @override
+  void initState() {
+    super.initState();
+    _prefs = locator<PreferencesService>();
+
+    _currentValue =
+        widget.type == PreferenceType.dailyReminder
+            ? _prefs.dailyReminder
+            : _prefs.professorNotices;
+  }
+
+  Future<void> _handleToggle(bool value) async {
+    setState(() => _currentValue = value);
+
+    if (widget.type == PreferenceType.dailyReminder) {
+      await _prefs.setDailyReminder(value);
+    } else {
+      await _prefs.setProfessorNotices(value);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: SwitchListTile(
+        value: _currentValue,
+        onChanged: _handleToggle,
+        activeThumbColor: const Color(0xFF005A4F),
+        secondary: Icon(widget.icon),
+        title: Text(widget.title),
+      ),
     );
   }
 }
@@ -1157,27 +1216,6 @@ class _InfoCardString extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _PreferenceSwitch extends StatelessWidget {
-  const _PreferenceSwitch({required this.icon, required this.title});
-
-  final IconData icon;
-  final String title;
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: SwitchListTile(
-        value: true,
-        onChanged: (value) {},
-        activeThumbColor: const Color(0xFF005A4F),
-        secondary: Icon(icon),
-        title: Text(title),
       ),
     );
   }

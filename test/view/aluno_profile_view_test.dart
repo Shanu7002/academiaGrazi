@@ -9,8 +9,15 @@ import 'package:academiagrazi/controller/users/update_data.dart';
 import 'package:academiagrazi/models/users/user_model.dart';
 import 'package:academiagrazi/service/users/register_user.dart';
 import 'package:academiagrazi/view/user/aluno_profile_view.dart';
+import 'package:academiagrazi/view/preferences_service.dart';
 
-@GenerateMocks([RegisterUserService, UpdateDataController, FirebaseAuth, User])
+@GenerateMocks([
+  RegisterUserService,
+  UpdateDataController,
+  PreferencesService,
+  FirebaseAuth,
+  User,
+])
 import 'aluno_profile_view_test.mocks.dart';
 
 void main() {
@@ -18,6 +25,7 @@ void main() {
   late MockRegisterUserService mockUserService;
   late MockFirebaseAuth mockAuth;
   late MockUser mockFirebaseUser;
+  late MockPreferencesService mockPreferencesService;
 
   setUp(() {
     locator.reset();
@@ -27,10 +35,15 @@ void main() {
     mockUserService = MockRegisterUserService();
     mockAuth = MockFirebaseAuth();
     mockFirebaseUser = MockUser();
+    mockPreferencesService = MockPreferencesService();
 
     locator.registerSingleton<RegisterUserService>(mockUserService);
     locator.registerSingleton<UpdateDataController>(mockUpdateDataController);
     locator.registerSingleton<FirebaseAuth>(mockAuth);
+    locator.registerSingleton<PreferencesService>(mockPreferencesService);
+
+    when(mockPreferencesService.dailyReminder).thenReturn(false);
+    when(mockPreferencesService.professorNotices).thenReturn(true);
   });
 
   testWidgets('AlunoProfileView renders user data properly', (
