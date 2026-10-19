@@ -1,9 +1,7 @@
 import 'package:academiagrazi/controller/users/login.dart';
 import 'package:academiagrazi/locator.dart';
 import 'package:academiagrazi/models/users/user_model.dart';
-import 'package:academiagrazi/view/admin/register_instructor_view.dart';
 import 'package:academiagrazi/view/auth_wrapper.dart';
-import 'package:academiagrazi/view/tab_router.dart';
 import 'package:academiagrazi/view/user/self_register_view.dart';
 import 'package:flutter/material.dart';
 
@@ -383,7 +381,6 @@ class _LandingPageState extends State<LoginView> {
 
   Widget _buildForgotPassword() {
     return GestureDetector(
-      // Atribuição direta do callback
       onTap: _isLoading ? null : _handlePasswordReset,
       child: const Text(
         'Esqueci minha senha',

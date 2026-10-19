@@ -10,7 +10,7 @@ void main() async {
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  setupLocator();
+  await setupLocator();
 
   runApp(const MyApp());
 }
