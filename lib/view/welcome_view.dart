@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:academiagrazi/view/login_view.dart';
@@ -121,6 +122,9 @@ class _WelcomeViewState extends State<WelcomeView>
 
   bool _navigated = false;
 
+  // Garante o início da animação se o carregamento demorar.
+  Timer? _startFallback;
+
   @override
   void initState() {
     super.initState();
@@ -162,11 +166,17 @@ class _WelcomeViewState extends State<WelcomeView>
     ];
 
     // Se algo demorar demais, a animação começa mesmo assim.
-    await Future.wait(
-      loading,
-    ).timeout(const Duration(milliseconds: 800), onTimeout: () => const []);
+    _startFallback = Timer(const Duration(milliseconds: 800), _startAnimation);
 
-    if (!mounted) return;
+    await Future.wait(loading);
+
+    _startAnimation();
+  }
+
+  void _startAnimation() {
+    _startFallback?.cancel();
+
+    if (!mounted || _controller.isAnimating || _controller.value > 0) return;
 
     _controller.forward();
   }
@@ -217,6 +227,7 @@ class _WelcomeViewState extends State<WelcomeView>
 
   @override
   void dispose() {
+    _startFallback?.cancel();
     _controller.dispose();
 
     super.dispose();
