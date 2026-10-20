@@ -1,4 +1,4 @@
-import 'package:academiagrazi/theme/app_colors.dart';
+import 'package:academiagrazi/view/components/app_bottom_navigation.dart';
 import 'package:academiagrazi/view/user/aluno_home_view.dart';
 import 'package:academiagrazi/view/user/aluno_profile_view.dart';
 import 'package:academiagrazi/view/user/aluno_treinos_view.dart';
@@ -6,6 +6,10 @@ import 'package:academiagrazi/view/user/mocks/treinos_mock_data.dart';
 import 'package:academiagrazi/view/user/aluno_evolucao_view.dart';
 import 'package:flutter/material.dart';
 
+/// Navegação principal do aluno.
+///
+/// Utiliza a mesma barra visual do professor,
+/// mas controla exclusivamente as telas do aluno.
 class MainShell extends StatefulWidget {
   const MainShell({super.key});
 
@@ -16,21 +20,44 @@ class MainShell extends StatefulWidget {
 class _MainShellState extends State<MainShell> {
   int _selectedIndex = 0;
 
+  // Navegadores independentes das abas Início e Treinos.
   final _homeNavigatorKey = GlobalKey<NavigatorState>();
   final _treinosNavigatorKey = GlobalKey<NavigatorState>();
 
+  /// Controla a seleção das abas do aluno.
+  ///
+  /// Mantém o comportamento existente:
+  /// tocar em Início ou Treinos retorna à primeira
+  /// página do navegador correspondente.
+  void _selecionarAba(int index) {
+    if (index == 0) {
+      _homeNavigatorKey.currentState?.popUntil((route) => route.isFirst);
+    }
+
+    if (index == 1) {
+      _treinosNavigatorKey.currentState?.popUntil((route) => route.isFirst);
+    }
+
+    if (index != _selectedIndex) {
+      setState(() {
+        _selectedIndex = index;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    // Aloca uma cor de fundo estática para o espaço fora da constraint
     return ColoredBox(
       color: const Color(0xFFE5E5E5),
       child: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 430),
           child: Scaffold(
+            // Preserva as telas e seus respectivos estados.
             body: IndexedStack(
               index: _selectedIndex,
               children: [
+                // ABA 0 - INÍCIO
                 NavigatorPopHandler<Object?>(
                   enabled: _selectedIndex == 0,
                   onPopWithResult: (_) {
@@ -46,6 +73,8 @@ class _MainShellState extends State<MainShell> {
                     },
                   ),
                 ),
+
+                // ABA 1 - TREINOS
                 NavigatorPopHandler<Object?>(
                   enabled: _selectedIndex == 1,
                   onPopWithResult: (_) {
@@ -65,61 +94,20 @@ class _MainShellState extends State<MainShell> {
                   ),
                 ),
 
-                // =====================================================
-                // EVOLUÇÃO
-                // =====================================================
+                // ABA 2 - EVOLUÇÃO
                 const AlunoEvolutionView(),
 
-                // =====================================================
-                // PERFIL
-                // Mantém a implementação nova da sprint-3.
-                // =====================================================
+                // ABA 3 - PERFIL
                 AlunoProfileView(),
               ],
             ),
-            bottomNavigationBar: NavigationBar(
-              indicatorColor: AppColors.accent,
+
+            // Componente visual compartilhado
+            // com a área do professor.
+            bottomNavigationBar: AppBottomNavigation(
+              keyPrefix: 'aluno',
               selectedIndex: _selectedIndex,
-              onDestinationSelected: (index) {
-                if (index == 0) {
-                  _homeNavigatorKey.currentState?.popUntil(
-                    (route) => route.isFirst,
-                  );
-                }
-
-                if (index == 1) {
-                  _treinosNavigatorKey.currentState?.popUntil(
-                    (route) => route.isFirst,
-                  );
-                }
-
-                if (index != _selectedIndex) {
-                  setState(() {
-                    _selectedIndex = index;
-                  });
-                }
-              },
-              destinations: const [
-                NavigationDestination(
-                  icon: Icon(Icons.home_outlined),
-                  selectedIcon: Icon(Icons.home),
-                  label: 'Início',
-                ),
-                NavigationDestination(
-                  icon: Icon(Icons.fitness_center),
-                  label: 'Treinos',
-                ),
-                NavigationDestination(
-                  icon: Icon(Icons.insights_outlined),
-                  selectedIcon: Icon(Icons.insights),
-                  label: 'Evolução',
-                ),
-                NavigationDestination(
-                  icon: Icon(Icons.person_outline),
-                  selectedIcon: Icon(Icons.person),
-                  label: 'Perfil',
-                ),
-              ],
+              onDestinationSelected: _selecionarAba,
             ),
           ),
         ),
