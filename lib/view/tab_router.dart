@@ -7,7 +7,10 @@ import 'package:academiagrazi/view/user/aluno_evolucao_view.dart';
 import 'package:flutter/material.dart';
 
 class MainShell extends StatefulWidget {
-  const MainShell({super.key});
+  /// Tela exibida na aba Início. O admin usa a AdminHomeView.
+  final Widget home;
+
+  const MainShell({super.key, this.home = const AlunoHomeView()});
 
   @override
   State<MainShell> createState() => _MainShellState();
@@ -41,7 +44,7 @@ class _MainShellState extends State<MainShell> {
                     onGenerateRoute: (settings) {
                       return MaterialPageRoute(
                         settings: settings,
-                        builder: (_) => const AlunoHomeView(),
+                        builder: (_) => widget.home,
                       );
                     },
                   ),
