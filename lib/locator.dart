@@ -1,4 +1,5 @@
 import 'package:academiagrazi/controller/users/update_data.dart';
+import 'package:academiagrazi/service/admin/admin_dashboard.dart';
 import 'package:academiagrazi/service/users/register_instructor.dart';
 import 'package:academiagrazi/view/preferences_service.dart';
 import 'package:get_it/get_it.dart';
@@ -43,6 +44,11 @@ Future<void> setupLocator() async {
   );
   locator.registerLazySingleton<RegisterInstructorService>(
     () => RegisterInstructorService(),
+  );
+
+  // Admin dashboard
+  locator.registerLazySingleton<AdminDashboardService>(
+    () => AdminDashboardService(),
   );
 
   // Login
