@@ -4,36 +4,40 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final List<Widget>? actions;
   final Color backgroundColor;
+  final bool showBackButton;
 
   const CustomAppBar({
     super.key,
     required this.title,
     this.actions,
+    this.showBackButton = true,
     this.backgroundColor = Colors.blue, // Cor padrão caso nenhuma seja enviada
   });
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      automaticallyImplyLeading: true,
+      automaticallyImplyLeading: showBackButton,
       backgroundColor: Colors.white,
       elevation: 0,
       title: Row(
         children: [
-          SizedBox(
-            width: 40,
-            height: 40,
-            child: IconButton(
-              padding: EdgeInsets.zero,
-              onPressed: () => Navigator.maybePop(context),
-              icon: const Icon(
-                Icons.arrow_back_ios_new_rounded,
-                color: Color.fromARGB(255, 136, 207, 193),
-                size: 18,
+          if (showBackButton) ...[
+            SizedBox(
+              width: 40,
+              height: 40,
+              child: IconButton(
+                padding: EdgeInsets.zero,
+                onPressed: () => Navigator.maybePop(context),
+                icon: const Icon(
+                  Icons.arrow_back_ios_new_rounded,
+                  color: Color.fromARGB(255, 136, 207, 193),
+                  size: 18,
+                ),
               ),
             ),
-          ),
-          const SizedBox(width: 10),
+            const SizedBox(width: 10),
+          ],
           const CircleAvatar(
             radius: 20,
             backgroundColor: Color(0xFFD6D6D6),

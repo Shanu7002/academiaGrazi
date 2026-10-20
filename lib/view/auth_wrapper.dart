@@ -1,6 +1,6 @@
 import 'package:academiagrazi/models/users/user_model.dart';
 import 'package:academiagrazi/service/users/register_user.dart';
-import 'package:academiagrazi/view/admin/register_instructor_view.dart';
+import 'package:academiagrazi/view/admin/admin_home_view.dart';
 import 'package:academiagrazi/view/tab_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -47,7 +47,7 @@ class AuthWrapper extends StatelessWidget {
               } else if (type == UserType.instructor) {
                 return const MainShell();
               } else {
-                return const RegisterInstructorView();
+                return const MainShell(home: AdminHomeView());
               }
             },
           );
