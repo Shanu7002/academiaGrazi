@@ -1,7 +1,9 @@
+import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:academiagrazi/view/login_view.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 // ================================================================
@@ -9,8 +11,6 @@ import 'package:google_fonts/google_fonts.dart';
 // ================================================================
 
 const String _logoAsset = 'assets/welcometela/grazi_braz.png';
-
-const String _flowerAsset = 'assets/welcometela/flor.png';
 
 const String _runningAsset = 'assets/welcometela/corrida.png';
 
@@ -24,6 +24,85 @@ const String _sheetAsset = 'assets/welcometela/ficha.png';
 
 const String _gradientAsset = 'assets/welcometela/faixa_gradiente.png';
 
+const List<String> _imageAssets = [
+  _logoAsset,
+  _runningAsset,
+  _progressAsset,
+  _trainingAsset,
+  _foodAsset,
+  _sheetAsset,
+  _gradientAsset,
+];
+
+/*
+  Flor extraída de assets/ICONE.svg:
+
+  - flor_contorno.svg: só o contorno (primeiro quadro)
+  - petala_N.svg: o preenchimento de cada pétala (último quadro)
+
+  Todos usam o mesmo viewBox, então ficam sobrepostos certinho.
+*/
+
+const String _flowerOutlineAsset = 'assets/welcometela/flor_contorno.svg';
+
+// Pétalas no sentido horário, começando pela de cima.
+const List<String> _petalAssets = [
+  'assets/welcometela/petala_0.svg',
+  'assets/welcometela/petala_1.svg',
+  'assets/welcometela/petala_2.svg',
+  'assets/welcometela/petala_3.svg',
+  'assets/welcometela/petala_4.svg',
+  'assets/welcometela/petala_5.svg',
+  'assets/welcometela/petala_6.svg',
+  'assets/welcometela/petala_7.svg',
+];
+
+const List<String> _svgAssets = [_flowerOutlineAsset, ..._petalAssets];
+
+// ================================================================
+// LINHA DO TEMPO DA ANIMAÇÃO
+// ================================================================
+
+/*
+  Toda a abertura roda em um único controller (0.0 → 1.0):
+
+  0.00 - 0.30  entrada: logo, contorno da flor, frase, ícones e faixa
+  0.24 - 0.36  a flor "respira" uma vez
+  0.36 - 0.80  as pétalas são pintadas em sequência
+  0.80 - 0.90  a flor completa dá um pulso
+  0.86 - 1.00  o conteúdo some e vamos para o login
+*/
+
+abstract final class _Timeline {
+  static const Duration duration = Duration(milliseconds: 4400);
+
+  static const double budStart = 0.04;
+  static const double budEnd = 0.22;
+
+  static const double breathStart = 0.24;
+
+  static const double fillStart = 0.36;
+  static const double fillEnd = 0.80;
+
+  static const double popEnd = 0.90;
+
+  static const double exitStart = 0.86;
+  static const double exitEnd = 0.97;
+}
+
+// Converte o valor global em progresso de 0 a 1 dentro do intervalo.
+double _interval(
+  double value,
+  double begin,
+  double end, [
+  Curve curve = Curves.linear,
+]) {
+  if (value <= begin) return curve.transform(0);
+  if (value >= end) return curve.transform(1);
+
+  return curve.transform((value - begin) / (end - begin));
+}
+
 // ================================================================
 // TELA INICIAL
 // ================================================================
@@ -36,105 +115,111 @@ class WelcomeView extends StatefulWidget {
 }
 
 class _WelcomeViewState extends State<WelcomeView>
-    with TickerProviderStateMixin {
-  // Animação de abertura das pétalas.
-  late final AnimationController _openController;
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
 
-  // Animação da flor pulsando antes do clique.
-  late final AnimationController _pulseController;
+  bool _started = false;
 
-  // Opacidade do conteúdo da tela.
-  late final Animation<double> _contentOpacity;
+  bool _navigated = false;
 
-  // Escala do pulso.
-  late final Animation<double> _pulseScale;
-
-  // Opacidade do pulso.
-  late final Animation<double> _pulseOpacity;
-
-  bool _opening = false;
+  // Garante o início da animação se o carregamento demorar.
+  Timer? _startFallback;
 
   @override
   void initState() {
     super.initState();
 
-    // ============================================================
-    // ABERTURA DAS PÉTALAS
-    // ============================================================
-
-    _openController = AnimationController(
+    _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1900),
+      duration: _Timeline.duration,
     );
 
-    // O restante da tela desaparece somente
-    // perto do final da abertura da flor.
-    _contentOpacity = Tween<double>(begin: 1.0, end: 0.0).animate(
-      CurvedAnimation(
-        parent: _openController,
-        curve: const Interval(0.82, 1.0, curve: Curves.easeOut),
-      ),
-    );
+    // Ao terminar a animação, vai sozinho para o login.
+    _controller.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        _goToLogin();
+      }
+    });
+  }
 
-    // ============================================================
-    // PULSO DA FLOR
-    // ============================================================
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
 
-    _pulseController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1100),
-    );
-
-    // Cresce e diminui levemente.
-    _pulseScale = Tween<double>(begin: 0.95, end: 1.09).animate(
-      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
-    );
-
-    // Pequena variação de opacidade.
-    _pulseOpacity = Tween<double>(begin: 0.82, end: 1.0).animate(
-      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
-    );
-
-    // Pulso infinito enquanto o usuário
-    // ainda não tocou na tela.
-    _pulseController.repeat(reverse: true);
+    if (!_started) {
+      _started = true;
+      _precacheAndStart();
+    }
   }
 
   // ==============================================================
-  // CLIQUE NA TELA
+  // INÍCIO AUTOMÁTICO
   // ==============================================================
 
-  Future<void> _openLogin() async {
-    if (_opening) return;
+  Future<void> _precacheAndStart() async {
+    // Carrega as imagens antes de animar, assim nada
+    // "pisca" ou aparece atrasado no primeiro frame.
+    final List<Future<void>> loading = [
+      for (final String asset in _imageAssets)
+        precacheImage(AssetImage(asset), context),
+      for (final String asset in _svgAssets) _precacheSvg(asset),
+    ];
 
-    setState(() {
-      _opening = true;
-    });
+    // Se algo demorar demais, a animação começa mesmo assim.
+    _startFallback = Timer(const Duration(milliseconds: 800), _startAnimation);
 
-    // Para o pulso.
-    _pulseController.stop();
+    await Future.wait(loading);
 
-    // Abre as pétalas.
-    await _openController.forward(from: 0);
+    _startAnimation();
+  }
 
-    // Pequena pausa mostrando
-    // a flor completamente aberta.
-    await Future.delayed(const Duration(milliseconds: 120));
+  void _startAnimation() {
+    _startFallback?.cancel();
 
-    if (!mounted) return;
+    if (!mounted || _controller.isAnimating || _controller.value > 0) return;
 
-    // ============================================================
-    // TRANSIÇÃO PARA LOGIN
-    // ============================================================
+    _controller.forward();
+  }
+
+  Future<void> _precacheSvg(String asset) async {
+    final SvgAssetLoader loader = SvgAssetLoader(asset);
+
+    await svg.cache.putIfAbsent(
+      loader.cacheKey(null),
+      () => loader.loadBytes(null),
+    );
+  }
+
+  // ==============================================================
+  // TOQUE NA TELA: PULA DIRETO PARA A PINTURA DAS PÉTALAS
+  // ==============================================================
+
+  void _skipToFilling() {
+    if (_controller.value < _Timeline.fillStart) {
+      _controller.forward(from: _Timeline.fillStart);
+    }
+  }
+
+  // ==============================================================
+  // TRANSIÇÃO PARA LOGIN
+  // ==============================================================
+
+  void _goToLogin() {
+    if (_navigated || !mounted) return;
+
+    _navigated = true;
 
     Navigator.of(context).pushReplacement(
       PageRouteBuilder(
-        transitionDuration: const Duration(milliseconds: 450),
+        transitionDuration: const Duration(milliseconds: 550),
         pageBuilder: (context, animation, secondaryAnimation) {
-          return LoginView();
+          return const LoginView();
         },
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          return FadeTransition(opacity: animation, child: child);
+          return FadeTransition(
+            opacity: CurvedAnimation(parent: animation, curve: Curves.easeOut),
+            child: child,
+          );
         },
       ),
     );
@@ -142,8 +227,8 @@ class _WelcomeViewState extends State<WelcomeView>
 
   @override
   void dispose() {
-    _openController.dispose();
-    _pulseController.dispose();
+    _startFallback?.cancel();
+    _controller.dispose();
 
     super.dispose();
   }
@@ -160,8 +245,8 @@ class _WelcomeViewState extends State<WelcomeView>
       body: GestureDetector(
         behavior: HitTestBehavior.opaque,
 
-        // Pode clicar em qualquer lugar da tela.
-        onTap: _openLogin,
+        // Tocar em qualquer lugar adianta a animação.
+        onTap: _skipToFilling,
 
         child: Stack(
           fit: StackFit.expand,
@@ -188,8 +273,11 @@ class _WelcomeViewState extends State<WelcomeView>
                             // ======================================
                             // LOGO GRAZI BRAZ
                             // ======================================
-                            FadeTransition(
-                              opacity: _contentOpacity,
+                            _Reveal(
+                              animation: _controller,
+                              begin: 0.0,
+                              end: 0.14,
+                              slide: const Offset(0, -16),
 
                               child: Image.asset(
                                 _logoAsset,
@@ -206,14 +294,11 @@ class _WelcomeViewState extends State<WelcomeView>
                             Padding(
                               padding: const EdgeInsets.only(top: 28),
 
-                              child: AnimatedFlower(
-                                controller: _openController,
-
-                                pulseScale: _pulseScale,
-
-                                pulseOpacity: _pulseOpacity,
-
-                                size: compact ? 240 : 280,
+                              child: RepaintBoundary(
+                                child: AnimatedFlower(
+                                  animation: _controller,
+                                  size: compact ? 240 : 280,
+                                ),
                               ),
                             ),
 
@@ -222,8 +307,11 @@ class _WelcomeViewState extends State<WelcomeView>
                             // ======================================
                             // FRASE
                             // ======================================
-                            FadeTransition(
-                              opacity: _contentOpacity,
+                            _Reveal(
+                              animation: _controller,
+                              begin: 0.10,
+                              end: 0.24,
+                              slide: const Offset(0, 14),
 
                               child: Text(
                                 'Olá, vamos começar seu treino?',
@@ -245,27 +333,23 @@ class _WelcomeViewState extends State<WelcomeView>
                             SizedBox(height: compact ? 45 : 60),
 
                             // ======================================
-                            // ÍCONES
+                            // ÍCONES (entram um após o outro)
                             // ======================================
-                            FadeTransition(
-                              opacity: _contentOpacity,
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
 
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                              children: [
+                                for (int i = 0; i < _iconAssets.length; i++)
+                                  _Reveal(
+                                    animation: _controller,
+                                    begin: 0.14 + (i * 0.025),
+                                    end: 0.24 + (i * 0.025),
+                                    slide: const Offset(0, 18),
+                                    curve: Curves.easeOutBack,
 
-                                children: [
-                                  _buildIcon(_runningAsset),
-
-                                  _buildIcon(_progressAsset),
-
-                                  _buildIcon(_trainingAsset),
-
-                                  _buildIcon(_foodAsset),
-
-                                  _buildIcon(_sheetAsset),
-                                ],
-                              ),
+                                    child: _buildIcon(_iconAssets[i]),
+                                  ),
+                              ],
                             ),
 
                             SizedBox(height: compact ? 65 : 90),
@@ -287,8 +371,11 @@ class _WelcomeViewState extends State<WelcomeView>
               bottom: 0,
               height: 32,
 
-              child: FadeTransition(
-                opacity: _contentOpacity,
+              child: _Reveal(
+                animation: _controller,
+                begin: 0.16,
+                end: 0.30,
+                slide: const Offset(0, 32),
 
                 child: Image.asset(_gradientAsset, fit: BoxFit.cover),
               ),
@@ -298,6 +385,14 @@ class _WelcomeViewState extends State<WelcomeView>
       ),
     );
   }
+
+  static const List<String> _iconAssets = [
+    _runningAsset,
+    _progressAsset,
+    _trainingAsset,
+    _foodAsset,
+    _sheetAsset,
+  ];
 
   // ==============================================================
   // ÍCONE
@@ -314,63 +409,91 @@ class _WelcomeViewState extends State<WelcomeView>
 }
 
 // ==================================================================
+// ENTRADA / SAÍDA DOS ELEMENTOS DA TELA
+// ==================================================================
+
+class _Reveal extends StatelessWidget {
+  final Animation<double> animation;
+
+  // Intervalo de entrada dentro da linha do tempo.
+  final double begin;
+  final double end;
+
+  // Deslocamento inicial (em pixels) antes de entrar.
+  final Offset slide;
+
+  final Curve curve;
+
+  final Widget child;
+
+  const _Reveal({
+    required this.animation,
+    required this.begin,
+    required this.end,
+    required this.child,
+    this.slide = Offset.zero,
+    this.curve = Curves.easeOutCubic,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: animation,
+      child: child,
+
+      builder: (context, child) {
+        final double value = animation.value;
+
+        final double enter = _interval(value, begin, end, curve);
+
+        final double exit = _interval(
+          value,
+          _Timeline.exitStart,
+          _Timeline.exitEnd,
+          Curves.easeIn,
+        );
+
+        final double opacity = (_interval(value, begin, end) * (1 - exit))
+            .clamp(0.0, 1.0);
+
+        return Opacity(
+          opacity: opacity,
+
+          child: Transform.translate(offset: slide * (1 - enter), child: child),
+        );
+      },
+    );
+  }
+}
+
+// ==================================================================
 // FLOR ANIMADA
 // ==================================================================
 
 class AnimatedFlower extends StatelessWidget {
-  final AnimationController controller;
-
-  final Animation<double> pulseScale;
-
-  final Animation<double> pulseOpacity;
+  final Animation<double> animation;
 
   final double size;
 
   const AnimatedFlower({
     super.key,
-    required this.controller,
-    required this.pulseScale,
-    required this.pulseOpacity,
+    required this.animation,
     required this.size,
   });
 
   @override
   Widget build(BuildContext context) {
-    /*
-           ORDEM DAS PÉTALAS
+    // Os SVGs não mudam durante a animação; só são
+    // criados uma vez e reaproveitados a cada frame.
+    final Widget outline = SvgPicture.asset(
+      _flowerOutlineAsset,
+      width: size,
+      height: size,
+    );
 
-                   0
-             7           1
-
-          6                   2
-
-             5           3
-                   4
-
-
-      0 = cima
-
-      Depois segue no sentido horário.
-
-      A última é a superior esquerda.
-    */
-
-    final List<double> petalAngles = [
-      -math.pi / 2,
-
-      -math.pi / 4,
-
-      0,
-
-      math.pi / 4,
-
-      math.pi / 2,
-
-      3 * math.pi / 4,
-
-      math.pi,
-
-      -3 * math.pi / 4,
+    final List<Widget> petals = [
+      for (final String asset in _petalAssets)
+        SvgPicture.asset(asset, width: size, height: size),
     ];
 
     return SizedBox(
@@ -378,60 +501,147 @@ class AnimatedFlower extends StatelessWidget {
       height: size,
 
       child: AnimatedBuilder(
-        animation: controller,
+        animation: animation,
 
         builder: (context, child) {
-          final double animationValue = controller.value;
+          final double value = animation.value;
+
+          // ============================================
+          // ENTRADA DO CONTORNO (gira e cresce)
+          // ============================================
+          final double budIn = _interval(
+            value,
+            _Timeline.budStart,
+            _Timeline.budEnd,
+          );
+
+          final double budScale = Curves.easeOutBack.transform(budIn);
+
+          final double budTurn =
+              (1 - Curves.easeOutCubic.transform(budIn)) * -0.9;
+
+          final double budOpacity = _interval(
+            value,
+            _Timeline.budStart,
+            _Timeline.budStart + 0.08,
+            Curves.easeOut,
+          );
+
+          // ============================================
+          // RESPIRAÇÃO ANTES DE PINTAR
+          // ============================================
+          final double breath = _interval(
+            value,
+            _Timeline.breathStart,
+            _Timeline.fillStart,
+          );
+
+          final double breathWave = _bump(breath);
+
+          // ============================================
+          // PINTURA DAS PÉTALAS
+          // ============================================
+          final double filling = _interval(
+            value,
+            _Timeline.fillStart,
+            _Timeline.fillEnd,
+          );
+
+          // ============================================
+          // PULSO DA FLOR COMPLETA
+          // ============================================
+          final double pop = _bump(
+            _interval(value, _Timeline.fillEnd, _Timeline.popEnd),
+          );
+
+          // ============================================
+          // SAÍDA (leve zoom enquanto a tela troca)
+          // ============================================
+          final double exit = _interval(
+            value,
+            _Timeline.exitStart,
+            1.0,
+            Curves.easeInOut,
+          );
+
+          final double groupScale =
+              budScale *
+              (1 + (0.06 * breathWave) + (0.07 * pop)) *
+              (1 + (0.06 * exit));
+
+          // Brilho suave atrás da flor.
+          final double glow =
+              (0.12 * breathWave) +
+              (0.16 * math.sin(filling * math.pi)) +
+              (0.22 * pop);
 
           return Stack(
             alignment: Alignment.center,
+            clipBehavior: Clip.none,
 
             children: [
-              // ==============================================
-              // FLOR INICIAL PULSANDO
-              // ==============================================
+              _buildGlow(opacity: glow * budOpacity, radius: size * 0.5),
 
               Opacity(
-                opacity: _closedFlowerOpacity(animationValue),
+                opacity: budOpacity,
 
-                child: FadeTransition(
-                  opacity: pulseOpacity,
+                child: Transform.rotate(
+                  angle: budTurn,
 
-                  child: ScaleTransition(
-                    scale: pulseScale,
+                  child: Transform.scale(
+                    scale: groupScale,
 
-                    child: Transform.scale(
-                      // Tamanho inicial da flor.
-                      scale: 0.46,
+                    child: Stack(
+                      alignment: Alignment.center,
 
-                      child: Image.asset(
-                        _flowerAsset,
+                      children: [
+                        outline,
 
-                        width: size,
-
-                        height: size,
-
-                        fit: BoxFit.contain,
-                      ),
+                        for (int i = 0; i < petals.length; i++)
+                          _buildPetal(
+                            index: i,
+                            filling: filling,
+                            petal: petals[i],
+                          ),
+                      ],
                     ),
                   ),
                 ),
               ),
-
-              // ==============================================
-              // PÉTALAS ANIMADAS
-              // ==============================================
-              for (int i = 0; i < petalAngles.length; i++)
-                _buildPetal(
-                  index: i,
-
-                  angle: petalAngles[i],
-
-                  value: animationValue,
-                ),
             ],
           );
         },
+      ),
+    );
+  }
+
+  // Sobe e desce suavemente: 0 → 1 → 0.
+  static double _bump(double t) {
+    return math.pow(math.sin(t * math.pi), 2).toDouble();
+  }
+
+  // =================================================================
+  // BRILHO
+  // =================================================================
+
+  Widget _buildGlow({required double opacity, required double radius}) {
+    if (opacity <= 0) return const SizedBox.shrink();
+
+    return IgnorePointer(
+      child: Container(
+        width: radius * 2.4,
+        height: radius * 2.4,
+
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+
+          gradient: RadialGradient(
+            colors: [
+              Colors.white.withValues(alpha: opacity.clamp(0.0, 1.0)),
+              Colors.white.withValues(alpha: 0),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -442,189 +652,58 @@ class AnimatedFlower extends StatelessWidget {
 
   Widget _buildPetal({
     required int index,
-    required double angle,
-    required double value,
+    required double filling,
+    required Widget petal,
   }) {
     /*
-      Uma pétala começa depois
-      da pétala anterior.
+      Cada pétala começa um pouco depois da anterior,
+      no sentido horário.
 
-      Isso cria o efeito sequencial.
+      A tinta "escorre" do centro da flor até a ponta
+      da pétala, com um recorte circular que cresce.
     */
 
-    final double start = 0.04 + (index * 0.085);
+    final double start = index * 0.09;
 
-    final double end = start + 0.27;
-
-    final double rawProgress = _interval(value, start, end);
-
-    /*
-      easeOutBack faz a pétala passar
-      levemente do ponto final e voltar.
-
-      Isso deixa a abertura mais natural.
-    */
-
-    final double progress = Curves.easeOutBack.transform(rawProgress);
-
-    // ================================================
-    // ESCALA
-    // ================================================
-
-    final double scale = 0.12 + (0.88 * progress);
-
-    // ================================================
-    // ROTAÇÃO
-    // ================================================
-
-    final double rotation = (1 - progress) * 0.48;
-
-    // ================================================
-    // MOVIMENTO PARA FORA
-    // ================================================
-
-    final double inwardDistance = 15 * (1 - progress);
-
-    final Offset offset = Offset(
-      -math.cos(angle) * inwardDistance,
-
-      -math.sin(angle) * inwardDistance,
+    final double progress = _interval(
+      filling,
+      start,
+      start + 0.37,
+      Curves.easeOutCubic,
     );
 
-    // ================================================
-    // OPACIDADE
-    // ================================================
+    if (progress <= 0) return const SizedBox.shrink();
 
-    final double opacity = rawProgress.clamp(0.0, 1.0);
+    return Opacity(
+      opacity: (progress * 1.6).clamp(0.0, 1.0),
 
-    return Positioned.fill(
-      child: Center(
-        child: Opacity(
-          opacity: opacity,
-
-          child: Transform.translate(
-            offset: offset,
-
-            child: Transform.rotate(
-              angle: rotation,
-
-              alignment: Alignment.center,
-
-              child: Transform.scale(
-                scale: scale,
-
-                alignment: Alignment.center,
-
-                child: ClipPath(
-                  clipper: PetalClipper(angle: angle),
-
-                  child: Image.asset(
-                    _flowerAsset,
-
-                    width: size,
-
-                    height: size,
-
-                    fit: BoxFit.contain,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
+      child: ClipOval(clipper: _GrowingCircleClipper(progress), child: petal),
     );
-  }
-
-  // =================================================================
-  // INTERVALO DE ANIMAÇÃO
-  // =================================================================
-
-  double _interval(double value, double start, double end) {
-    if (value <= start) {
-      return 0;
-    }
-
-    if (value >= end) {
-      return 1;
-    }
-
-    return (value - start) / (end - start);
-  }
-
-  // =================================================================
-  // FADE DA FLOR ORIGINAL
-  // =================================================================
-
-  double _closedFlowerOpacity(double value) {
-    // Antes de clicar:
-    // flor totalmente visível.
-    if (value <= 0.02) {
-      return 1;
-    }
-
-    // Quando as pétalas começam:
-    // flor original desaparece.
-    if (value >= 0.12) {
-      return 0;
-    }
-
-    return 1 - ((value - 0.02) / 0.10);
   }
 }
 
 // ==================================================================
-// RECORTE DAS PÉTALAS
+// RECORTE CIRCULAR QUE CRESCE A PARTIR DO CENTRO
 // ==================================================================
 
-class PetalClipper extends CustomClipper<Path> {
-  final double angle;
+class _GrowingCircleClipper extends CustomClipper<Rect> {
+  final double progress;
 
-  PetalClipper({required this.angle});
+  _GrowingCircleClipper(this.progress);
 
   @override
-  Path getClip(Size size) {
-    final Offset center = Offset(size.width / 2, size.height / 2);
+  Rect getClip(Size size) {
+    // Raio suficiente para cobrir a ponta das pétalas.
+    final double maxRadius = size.shortestSide * 0.52;
 
-    final double radius = math.sqrt(
-      (size.width * size.width) + (size.height * size.height),
+    return Rect.fromCircle(
+      center: size.center(Offset.zero),
+      radius: maxRadius * progress,
     );
-
-    /*
-      Flor com 8 pétalas.
-
-      360° / 8 = 45°.
-    */
-
-    const double petalSector = math.pi / 4;
-
-    /*
-      Pequena sobreposição
-      para não cortar o contorno
-      branco das pétalas.
-    */
-
-    const double overlap = 0.06;
-
-    final double startAngle = angle - (petalSector / 2) - (overlap / 2);
-
-    final double sweepAngle = petalSector + overlap;
-
-    final Rect rect = Rect.fromCircle(center: center, radius: radius);
-
-    final Path path = Path();
-
-    path.moveTo(center.dx, center.dy);
-
-    path.arcTo(rect, startAngle, sweepAngle, false);
-
-    path.close();
-
-    return path;
   }
 
   @override
-  bool shouldReclip(covariant PetalClipper oldClipper) {
-    return oldClipper.angle != angle;
+  bool shouldReclip(covariant _GrowingCircleClipper oldClipper) {
+    return oldClipper.progress != progress;
   }
 }
