@@ -53,7 +53,7 @@ void main() {
           mockRegisterInstructorService.registerInstructor(any),
         ).thenAnswer((_) async => 'success');
 
-        final success = await controller.registerInstructor(
+        final result = await controller.registerInstructor(
           currentUser: mockAdminUser,
           email: 'marina@example.com',
           name: 'Marina',
@@ -61,7 +61,7 @@ void main() {
           passwordCheck: 'password123',
         );
 
-        expect(success, isTrue);
+        expect(result, InstructorRegistrationResult.success);
 
         final savedInstructor =
             verify(
@@ -74,17 +74,112 @@ void main() {
         expect(savedInstructor.email, 'marina@example.com');
         expect(savedInstructor.type, UserType.instructor);
         expect(savedInstructor.responsable, 'admin_123');
+        verify(mockAuth.signOut()).called(1);
+        verifyNever(mockUser.delete());
       },
     );
+
+    test(
+      'removes the Auth account if the Firestore profile cannot be saved',
+      () async {
+        final mockAdminUser = UserModel(
+          id: 'admin_123',
+          name: 'Admin',
+          email: 'admin@nseioqnaoseioqla.com',
+          type: UserType.admin,
+        );
+
+        when(mockUser.uid).thenReturn('new-instructor-789');
+        when(mockCredential.user).thenReturn(mockUser);
+        when(
+          mockAuth.createUserWithEmailAndPassword(
+            email: anyNamed('email'),
+            password: anyNamed('password'),
+          ),
+        ).thenAnswer((_) async => mockCredential);
+        when(mockRegisterInstructorService.registerInstructor(any)).thenThrow(
+          FirebaseException(
+            plugin: 'cloud_firestore',
+            code: 'permission-denied',
+          ),
+        );
+
+        final result = await controller.registerInstructor(
+          currentUser: mockAdminUser,
+          email: 'marina@example.com',
+          name: 'Marina',
+          password: 'password123',
+          passwordCheck: 'password123',
+        );
+
+        expect(result, InstructorRegistrationResult.permissionDenied);
+        verify(mockUser.delete()).called(1);
+        verify(mockAuth.signOut()).called(1);
+      },
+    );
+
+    test('does not create an Auth account when email is taken', () async {
+      final mockAdminUser = UserModel(
+        id: 'admin_123',
+        name: 'Admin',
+        email: 'admin@nseioqnaoseioqla.com',
+        type: UserType.admin,
+      );
+
+      when(
+        mockAuth.createUserWithEmailAndPassword(
+          email: anyNamed('email'),
+          password: anyNamed('password'),
+        ),
+      ).thenThrow(FirebaseAuthException(code: 'email-already-in-use'));
+
+      final result = await controller.registerInstructor(
+        currentUser: mockAdminUser,
+        email: 'marina@example.com',
+        name: 'Marina',
+        password: 'password123',
+        passwordCheck: 'password123',
+      );
+
+      expect(result, InstructorRegistrationResult.emailInUse);
+      verifyNever(mockRegisterInstructorService.registerInstructor(any));
+      verifyNever(mockUser.delete());
+    });
+
+    test('rejects users that are not admin', () async {
+      final instructor = UserModel(
+        id: 'instructor_1',
+        name: 'Prof',
+        email: 'prof@example.com',
+        type: UserType.instructor,
+      );
+
+      final result = await controller.registerInstructor(
+        currentUser: instructor,
+        email: 'marina@example.com',
+        name: 'Marina',
+        password: 'password123',
+        passwordCheck: 'password123',
+      );
+
+      expect(result, InstructorRegistrationResult.notAllowed);
+      verifyNever(
+        mockAuth.createUserWithEmailAndPassword(
+          email: anyNamed('email'),
+          password: anyNamed('password'),
+        ),
+      );
+    });
 
     test('aborts registration if passwords do not match', () async {
       final mockAdminUser = UserModel(
         id: 'admin_123',
         name: 'Admin',
         email: 'admin@nseioqnaoseioqla.com',
+        type: UserType.admin,
       );
 
-      final success = await controller.registerInstructor(
+      final result = await controller.registerInstructor(
         currentUser: mockAdminUser,
         email: 'marina@example.com',
         name: 'Marina',
@@ -92,7 +187,7 @@ void main() {
         passwordCheck: 'wrong_password',
       );
 
-      expect(success, isFalse);
+      expect(result, InstructorRegistrationResult.passwordMismatch);
       verifyNever(
         mockAuth.createUserWithEmailAndPassword(
           email: anyNamed('email'),
