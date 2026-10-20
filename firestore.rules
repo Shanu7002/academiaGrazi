@@ -2,6 +2,13 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
+    function isAdmin() {
+      return request.auth != null
+        && get(
+          /databases/$(database)/documents/users/$(request.auth.uid)
+        ).data.type == 'admin';
+    }
+
     match /users/{userId} {
       // O usuário pode acessar o próprio documento.
       allow read, write: if request.auth != null
@@ -13,11 +20,10 @@ service cloud.firestore {
           /databases/$(database)/documents/users/$(request.auth.uid)
         ).data.responsable == userId;
 
-      // O admin pode ler todos os usuários (dashboard da Home do admin).
-      allow read: if request.auth != null
-        && get(
-          /databases/$(database)/documents/users/$(request.auth.uid)
-        ).data.type == 'admin';
+      // O admin cria o perfil dos professores que cadastra.
+      allow create: if isAdmin()
+        && request.resource.data.type == 'instructor'
+        && request.resource.data.responsable == request.auth.uid;
     }
 
     match /instructorCodes/{code} {
@@ -31,6 +37,22 @@ service cloud.firestore {
         && request.auth.uid == request.resource.data.instructorId
         && get(
           /databases/$(database)/documents/users/$(request.auth.uid)
+        ).data.type == 'instructor'
+        && request.resource.data.active == true
+        && request.resource.data.instructorName is string
+        && request.resource.data.instructorName.size() > 0
+        && request.resource.data.keys().hasOnly([
+          'instructorId',
+          'instructorName',
+          'active',
+          'createdAt'
+        ]);
+
+      // O admin reserva o código do professor no mesmo cadastro. Como o
+      // perfil do professor é criado na mesma transação, usa getAfter.
+      allow create: if isAdmin()
+        && getAfter(
+          /databases/$(database)/documents/users/$(request.resource.data.instructorId)
         ).data.type == 'instructor'
         && request.resource.data.active == true
         && request.resource.data.instructorName is string
