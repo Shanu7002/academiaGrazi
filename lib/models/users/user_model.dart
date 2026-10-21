@@ -13,6 +13,7 @@ class UserModel {
   final RegistrationProfile? registrationProfile;
   final bool onboardingCompleted;
   final DateTime? termsAcceptedAt;
+  final String? photoUrl;
 
   UserModel({
     required this.id,
@@ -25,6 +26,7 @@ class UserModel {
     this.registrationProfile,
     this.onboardingCompleted = false,
     this.termsAcceptedAt,
+    this.photoUrl,
   });
 
   Map<String, dynamic> toJson() => {
@@ -42,6 +44,7 @@ class UserModel {
     'onboardingCompleted': onboardingCompleted,
     if (termsAcceptedAt != null)
       'termsAcceptedAt': termsAcceptedAt!.toIso8601String(),
+    if (photoUrl != null) 'photoUrl': photoUrl,
   };
 
   factory UserModel.fromJson(Map<String, dynamic> json, String documentId) {
@@ -63,12 +66,14 @@ class UserModel {
               : null,
       onboardingCompleted: json['onboardingCompleted'] as bool? ?? false,
       termsAcceptedAt: _parseDateTime(json['termsAcceptedAt']),
+      photoUrl: json['photoUrl'] as String?,
     );
   }
 
   UserModel copyWith({
     String? registrationCode,
     DateTime? registrationCodeExpiresAt,
+    String? photoUrl,
   }) {
     return UserModel(
       id: id,
@@ -82,6 +87,7 @@ class UserModel {
       registrationProfile: registrationProfile,
       onboardingCompleted: onboardingCompleted,
       termsAcceptedAt: termsAcceptedAt,
+      photoUrl: photoUrl ?? this.photoUrl,
     );
   }
 

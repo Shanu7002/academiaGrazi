@@ -1,4 +1,5 @@
 import 'package:academiagrazi/locator.dart';
+import 'package:academiagrazi/service/users/profile_photo.dart';
 import 'package:academiagrazi/view/preferences_service.dart';
 import 'package:flutter/material.dart';
 import 'package:academiagrazi/controller/users/update_data.dart';
@@ -44,6 +45,9 @@ void main() {
     locator.registerSingleton<RegisterUserService>(mockUserService);
     locator.registerSingleton<FirebaseAuth>(mockAuth);
     locator.registerSingleton<PreferencesService>(mockPreferencesService);
+    locator.registerSingleton<ProfilePhotoService>(
+      ProfilePhotoService(cloudName: '', uploadPreset: ''),
+    );
 
     when(mockFirebaseUser.uid).thenReturn('uid_test');
     when(mockAuth.currentUser).thenReturn(mockFirebaseUser);

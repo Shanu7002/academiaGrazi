@@ -1,8 +1,4 @@
-enum TreinoStatusUi {
-  recomendado,
-  concluido,
-  programado,
-}
+enum TreinoStatusUi { recomendado, concluido, programado }
 
 class ExercicioTreinoUi {
   final String id;

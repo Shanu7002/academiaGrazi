@@ -1,6 +1,7 @@
 import 'package:academiagrazi/theme/app_colors.dart';
 import 'package:academiagrazi/view/components/app_bar.dart';
 import 'package:academiagrazi/view/components/app_bottom_navigation.dart';
+import 'package:academiagrazi/view/user/aluno_profile_view.dart';
 import 'package:academiagrazi/view/user/teacher/mocks/montagem_treino_mock_data.dart';
 import 'package:academiagrazi/view/user/teacher/professor_dashboard_view.dart';
 import 'package:academiagrazi/view/user/teacher/professor_montagem_treino_view.dart';
@@ -61,11 +62,8 @@ class _ProfessorAreaViewState extends State<ProfessorAreaView> {
                   icone: Icons.insights_outlined,
                 ),
 
-                // Aba 3 - Desenvolvimento futuro.
-                const _AbaProfessorPendente(
-                  titulo: 'Perfil',
-                  icone: Icons.person_outline,
-                ),
+                // Aba 3 - Perfil compartilhado com aluno e admin.
+                const AlunoProfileView(),
               ],
             ),
 

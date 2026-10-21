@@ -1,4 +1,5 @@
 import 'package:academiagrazi/locator.dart';
+import 'package:academiagrazi/service/users/profile_photo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
@@ -41,9 +42,67 @@ void main() {
     locator.registerSingleton<UpdateDataController>(mockUpdateDataController);
     locator.registerSingleton<FirebaseAuth>(mockAuth);
     locator.registerSingleton<PreferencesService>(mockPreferencesService);
+    locator.registerSingleton<ProfilePhotoService>(
+      ProfilePhotoService(cloudName: '', uploadPreset: ''),
+    );
 
     when(mockPreferencesService.dailyReminder).thenReturn(false);
     when(mockPreferencesService.professorNotices).thenReturn(true);
+  });
+
+  Future<void> pumpProfileWith(WidgetTester tester, UserModel user) async {
+    when(mockFirebaseUser.uid).thenReturn(user.id);
+    when(mockAuth.currentUser).thenReturn(mockFirebaseUser);
+    when(mockUserService.getUserById(user.id)).thenAnswer((_) async => user);
+    when(mockUserService.getResponsableData(any)).thenAnswer(
+      (_) async => UserModel(id: 'resp', name: 'Resp', email: 'r@test.com'),
+    );
+
+    await tester.pumpWidget(const MaterialApp(home: AlunoProfileView()));
+    await tester.pumpAndSettle();
+  }
+
+  testWidgets('Avatar mostra o ícone padrão quando não há foto', (
+    WidgetTester tester,
+  ) async {
+    await pumpProfileWith(
+      tester,
+      UserModel(id: 'uid_123', name: 'Test', email: 'test@example.com'),
+    );
+
+    final avatar = find.byKey(const Key('profile_avatar'));
+    expect(avatar, findsOneWidget);
+    expect(
+      find.descendant(of: avatar, matching: find.byIcon(Icons.person)),
+      findsOneWidget,
+    );
+    expect(find.byKey(const Key('profile_edit_photo')), findsOneWidget);
+  });
+
+  testWidgets('Avatar carrega a miniatura do Cloudinary quando há foto', (
+    WidgetTester tester,
+  ) async {
+    await pumpProfileWith(
+      tester,
+      UserModel(
+        id: 'uid_123',
+        name: 'Test',
+        email: 'test@example.com',
+        photoUrl: 'https://res.cloudinary.com/demo/image/upload/a.jpg',
+      ),
+    );
+
+    final image = tester.widget<Image>(
+      find.descendant(
+        of: find.byKey(const Key('profile_avatar')),
+        matching: find.byType(Image),
+      ),
+    );
+    expect(
+      (image.image as NetworkImage).url,
+      'https://res.cloudinary.com/demo/image/upload/'
+      'c_fill,g_face,w_160,h_160,q_auto,f_auto/a.jpg',
+    );
   });
 
   testWidgets('AlunoProfileView renders user data properly', (
