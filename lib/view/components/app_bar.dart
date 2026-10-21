@@ -23,10 +23,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Exibe a seta somente quando existe
-    // uma página anterior para retornar.
-    final bool podeVoltar = ModalRoute.of(context)?.canPop ?? false;
-
     return AppBar(
       // A seta de voltar é desenhada no título; sem isso o Flutter
       // adiciona uma segunda seta quando a tela pode voltar.
