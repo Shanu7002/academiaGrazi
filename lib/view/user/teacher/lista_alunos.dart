@@ -387,7 +387,7 @@ class CardAluno extends StatelessWidget {
                   child: ElevatedButton(
                     onPressed: onMensagem,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.orange,
+                      backgroundColor: const Color.fromARGB(255, 255, 121, 67),
                       foregroundColor: Colors.white,
                       elevation: 0,
                       minimumSize: const Size(0, 46),
@@ -403,10 +403,6 @@ class CardAluno extends StatelessWidget {
                           'assets/mensagem.svg',
                           width: 18,
                           height: 18,
-                          colorFilter: const ColorFilter.mode(
-                            Colors.white,
-                            BlendMode.srcIn,
-                          ),
                         ),
                         const SizedBox(width: 6),
                         Flexible(
