@@ -10,13 +10,14 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final List<Widget>? actions;
   final Color backgroundColor;
   final VoidCallback? onNotificationPressed;
+  final bool showBackButton;
 
   const CustomAppBar({
     super.key,
     required this.title,
     this.actions,
-    this.backgroundColor = AppColors.surface,
-    this.onNotificationPressed,
+    this.showBackButton = true,
+    this.backgroundColor = Colors.blue, // Cor padrão caso nenhuma seja enviada
   });
 
   @override
@@ -26,31 +27,29 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     final bool podeVoltar = ModalRoute.of(context)?.canPop ?? false;
 
     return AppBar(
-      automaticallyImplyLeading: false,
-      backgroundColor: backgroundColor,
-      surfaceTintColor: Colors.transparent,
+      automaticallyImplyLeading: showBackButton,
+      backgroundColor: Colors.white,
       elevation: 0,
       titleSpacing: 16,
 
       title: Row(
         children: [
-          if (podeVoltar) ...[
-            IconButton(
-              key: const Key('appbar_voltar'),
-              tooltip: 'Voltar',
-              padding: EdgeInsets.zero,
-              onPressed: () {
-                Navigator.of(context).maybePop();
-              },
-              icon: const Icon(
-                Icons.arrow_back_ios_new_rounded,
-                color: AppColors.completedBorder,
-                size: 18,
+          if (showBackButton) ...[
+            SizedBox(
+              width: 40,
+              height: 40,
+              child: IconButton(
+                padding: EdgeInsets.zero,
+                onPressed: () => Navigator.maybePop(context),
+                icon: const Icon(
+                  Icons.arrow_back_ios_new_rounded,
+                  color: Color.fromARGB(255, 136, 207, 193),
+                  size: 18,
+                ),
               ),
             ),
-            const SizedBox(width: 6),
+            const SizedBox(width: 10),
           ],
-
           const CircleAvatar(
             radius: 20,
             backgroundColor: Color(0xFFD6D6D6),

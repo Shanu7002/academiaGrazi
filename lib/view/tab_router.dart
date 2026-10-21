@@ -11,7 +11,10 @@ import 'package:flutter/material.dart';
 /// Utiliza a mesma barra visual do professor,
 /// mas controla exclusivamente as telas do aluno.
 class MainShell extends StatefulWidget {
-  const MainShell({super.key});
+  /// Tela exibida na aba Início. O admin usa a AdminHomeView.
+  final Widget home;
+
+  const MainShell({super.key, this.home = const AlunoHomeView()});
 
   @override
   State<MainShell> createState() => _MainShellState();
@@ -68,7 +71,7 @@ class _MainShellState extends State<MainShell> {
                     onGenerateRoute: (settings) {
                       return MaterialPageRoute(
                         settings: settings,
-                        builder: (_) => const AlunoHomeView(),
+                        builder: (_) => widget.home,
                       );
                     },
                   ),
