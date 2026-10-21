@@ -17,7 +17,9 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      automaticallyImplyLeading: showBackButton,
+      // A seta de voltar é desenhada no título; sem isso o Flutter
+      // adiciona uma segunda seta quando a tela pode voltar.
+      automaticallyImplyLeading: false,
       backgroundColor: Colors.white,
       elevation: 0,
       title: Row(
