@@ -1,6 +1,6 @@
-import 'package:academiagrazi/theme/app_colors.dart';
 import 'package:academiagrazi/view/admin/admin_home_view.dart';
 import 'package:academiagrazi/view/admin/admin_team_view.dart';
+import 'package:academiagrazi/view/components/app_bottom_navigation.dart';
 import 'package:academiagrazi/view/user/aluno_home_view.dart';
 import 'package:academiagrazi/view/user/aluno_profile_view.dart';
 import 'package:academiagrazi/view/user/aluno_treinos_view.dart';
@@ -8,7 +8,7 @@ import 'package:academiagrazi/view/user/mocks/treinos_mock_data.dart';
 import 'package:academiagrazi/view/user/aluno_evolucao_view.dart';
 import 'package:flutter/material.dart';
 
-/// Navegação principal do aluno.
+/// Navegação principal do aluno (e do admin, com [isAdmin]).
 ///
 /// Utiliza a mesma barra visual do professor,
 /// mas controla exclusivamente as telas do aluno.
@@ -26,15 +26,15 @@ class MainShell extends StatefulWidget {
 class _MainShellState extends State<MainShell> {
   int _selectedIndex = 0;
 
-  // Navegadores independentes das abas Início e Treinos.
+  // Navegadores independentes das abas Início, Treinos e Equipe.
   final _homeNavigatorKey = GlobalKey<NavigatorState>();
   final _treinosNavigatorKey = GlobalKey<NavigatorState>();
   final _equipeNavigatorKey = GlobalKey<NavigatorState>();
 
-  /// Controla a seleção das abas do aluno.
+  /// Controla a seleção das abas.
   ///
   /// Mantém o comportamento existente:
-  /// tocar em Início ou Treinos retorna à primeira
+  /// tocar em Início, Treinos ou Equipe retorna à primeira
   /// página do navegador correspondente.
   void _selecionarAba(int index) {
     if (index == 0) {
@@ -43,6 +43,10 @@ class _MainShellState extends State<MainShell> {
 
     if (index == 1) {
       _treinosNavigatorKey.currentState?.popUntil((route) => route.isFirst);
+    }
+
+    if (index == 2) {
+      _equipeNavigatorKey.currentState?.popUntil((route) => route.isFirst);
     }
 
     if (index != _selectedIndex) {
@@ -105,9 +109,7 @@ class _MainShellState extends State<MainShell> {
                   ),
                 ),
 
-                // =====================================================
-                // EVOLUÇÃO (aluno) / EQUIPE (admin)
-                // =====================================================
+                // ABA 2 - EVOLUÇÃO (aluno) / EQUIPE (admin)
                 if (widget.isAdmin)
                   NavigatorPopHandler<Object?>(
                     enabled: _selectedIndex == 2,
@@ -132,46 +134,13 @@ class _MainShellState extends State<MainShell> {
               ],
             ),
 
-                if (index == 2) {
-                  _equipeNavigatorKey.currentState?.popUntil(
-                    (route) => route.isFirst,
-                  );
-                }
-
-                if (index != _selectedIndex) {
-                  setState(() {
-                    _selectedIndex = index;
-                  });
-                }
-              },
-              destinations: [
-                const NavigationDestination(
-                  icon: Icon(Icons.home_outlined),
-                  selectedIcon: Icon(Icons.home),
-                  label: 'Início',
-                ),
-                const NavigationDestination(
-                  icon: Icon(Icons.fitness_center),
-                  label: 'Treinos',
-                ),
-                if (widget.isAdmin)
-                  const NavigationDestination(
-                    icon: Icon(Icons.groups_outlined),
-                    selectedIcon: Icon(Icons.groups),
-                    label: 'Equipe',
-                  )
-                else
-                  const NavigationDestination(
-                    icon: Icon(Icons.insights_outlined),
-                    selectedIcon: Icon(Icons.insights),
-                    label: 'Evolução',
-                  ),
-                const NavigationDestination(
-                  icon: Icon(Icons.person_outline),
-                  selectedIcon: Icon(Icons.person),
-                  label: 'Perfil',
-                ),
-              ],
+            // Componente visual compartilhado
+            // com a área do professor.
+            bottomNavigationBar: AppBottomNavigation(
+              keyPrefix: widget.isAdmin ? 'admin' : 'aluno',
+              showTeamTab: widget.isAdmin,
+              selectedIndex: _selectedIndex,
+              onDestinationSelected: _selecionarAba,
             ),
           ),
         ),
