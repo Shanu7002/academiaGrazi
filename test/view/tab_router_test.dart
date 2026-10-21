@@ -1,4 +1,5 @@
 import 'package:academiagrazi/locator.dart';
+import 'package:academiagrazi/view/preferences_service.dart';
 import 'package:flutter/material.dart';
 import 'package:academiagrazi/controller/users/update_data.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -10,11 +11,18 @@ import 'package:academiagrazi/view/tab_router.dart';
 import 'package:academiagrazi/models/users/user_model.dart';
 import 'package:academiagrazi/service/users/register_user.dart';
 
-@GenerateMocks([RegisterUserService, UpdateDataController, FirebaseAuth, User])
+@GenerateMocks([
+  RegisterUserService,
+  UpdateDataController,
+  PreferencesService,
+  FirebaseAuth,
+  User,
+])
 import 'tab_router_test.mocks.dart';
 
 void main() {
   late MockUpdateDataController mockUpdateDataController;
+  late MockPreferencesService mockPreferencesService;
   late MockRegisterUserService mockUserService;
   late MockFirebaseAuth mockAuth;
   late MockUser mockFirebaseUser;
@@ -25,6 +33,7 @@ void main() {
     locator.allowReassignment = true;
 
     mockUserService = MockRegisterUserService();
+    mockPreferencesService = MockPreferencesService();
     mockAuth = MockFirebaseAuth();
     mockFirebaseUser = MockUser();
     mockUpdateDataController = MockUpdateDataController();
@@ -32,9 +41,12 @@ void main() {
     locator.registerSingleton<UpdateDataController>(mockUpdateDataController);
     locator.registerSingleton<RegisterUserService>(mockUserService);
     locator.registerSingleton<FirebaseAuth>(mockAuth);
+    locator.registerSingleton<PreferencesService>(mockPreferencesService);
 
     when(mockFirebaseUser.uid).thenReturn('uid_test');
     when(mockAuth.currentUser).thenReturn(mockFirebaseUser);
+    when(mockPreferencesService.dailyReminder).thenReturn(false);
+    when(mockPreferencesService.professorNotices).thenReturn(true);
 
     when(mockUserService.getUserById(any)).thenAnswer(
       (_) async => UserModel(

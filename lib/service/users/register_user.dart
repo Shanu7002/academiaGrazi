@@ -23,6 +23,11 @@ class RegisterUserService {
     return UserModel.fromJson(doc.data()!, doc.id);
   }
 
+  Future<UserType>? getUserRole(String uid) async {
+    UserModel? user = await getUserById(uid);
+    return user!.type;
+  }
+
   Future<UserModel?> getResponsableData(String uid) async {
     final doc = await _db.collection("users").doc(uid).get();
 
