@@ -10,6 +10,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:academiagrazi/view/tab_router.dart';
 import 'package:academiagrazi/models/users/user_model.dart';
 import 'package:academiagrazi/service/users/register_user.dart';
+import 'package:academiagrazi/service/admin/admin_dashboard.dart';
+import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 
 @GenerateMocks([
   RegisterUserService,
@@ -142,5 +144,26 @@ void main() {
       3,
     );
     expect(find.byType(NavigationBar), findsOneWidget);
+  });
+
+  testWidgets('admin vê Equipe no lugar de Evolução', (tester) async {
+    locator.registerSingleton<AdminDashboardService>(
+      AdminDashboardService(db: FakeFirebaseFirestore()),
+    );
+
+    await tester.pumpWidget(const MaterialApp(home: MainShell(isAdmin: true)));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Evolução'), findsNothing);
+    expect(find.text('Visão Geral'), findsOneWidget);
+
+    await tester.tap(find.text('Equipe').last);
+    await tester.pumpAndSettle();
+
+    expect(
+      tester.widget<NavigationBar>(find.byType(NavigationBar)).selectedIndex,
+      2,
+    );
+    expect(find.text('Carga da Equipe'), findsOneWidget);
   });
 }

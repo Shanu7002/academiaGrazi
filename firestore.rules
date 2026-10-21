@@ -20,6 +20,9 @@ service cloud.firestore {
           /databases/$(database)/documents/users/$(request.auth.uid)
         ).data.responsable == userId;
 
+      // O admin pode ler todos os usuários (home do admin e gestão da equipe).
+      allow read: if isAdmin();
+
       // O admin cria o perfil dos professores que cadastra.
       allow create: if isAdmin()
         && request.resource.data.type == 'instructor'

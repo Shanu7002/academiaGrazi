@@ -1,4 +1,6 @@
 import 'package:academiagrazi/theme/app_colors.dart';
+import 'package:academiagrazi/view/admin/admin_home_view.dart';
+import 'package:academiagrazi/view/admin/admin_team_view.dart';
 import 'package:academiagrazi/view/user/aluno_home_view.dart';
 import 'package:academiagrazi/view/user/aluno_profile_view.dart';
 import 'package:academiagrazi/view/user/aluno_treinos_view.dart';
@@ -7,10 +9,11 @@ import 'package:academiagrazi/view/user/aluno_evolucao_view.dart';
 import 'package:flutter/material.dart';
 
 class MainShell extends StatefulWidget {
-  /// Tela exibida na aba Início. O admin usa a AdminHomeView.
-  final Widget home;
+  /// No modo admin a aba Início mostra a AdminHomeView e a aba Evolução é
+  /// substituída pela Equipe.
+  final bool isAdmin;
 
-  const MainShell({super.key, this.home = const AlunoHomeView()});
+  const MainShell({super.key, this.isAdmin = false});
 
   @override
   State<MainShell> createState() => _MainShellState();
@@ -21,6 +24,7 @@ class _MainShellState extends State<MainShell> {
 
   final _homeNavigatorKey = GlobalKey<NavigatorState>();
   final _treinosNavigatorKey = GlobalKey<NavigatorState>();
+  final _equipeNavigatorKey = GlobalKey<NavigatorState>();
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +48,11 @@ class _MainShellState extends State<MainShell> {
                     onGenerateRoute: (settings) {
                       return MaterialPageRoute(
                         settings: settings,
-                        builder: (_) => widget.home,
+                        builder:
+                            (_) =>
+                                widget.isAdmin
+                                    ? const AdminHomeView()
+                                    : const AlunoHomeView(),
                       );
                     },
                   ),
@@ -69,9 +77,26 @@ class _MainShellState extends State<MainShell> {
                 ),
 
                 // =====================================================
-                // EVOLUÇÃO
+                // EVOLUÇÃO (aluno) / EQUIPE (admin)
                 // =====================================================
-                const AlunoEvolutionView(),
+                if (widget.isAdmin)
+                  NavigatorPopHandler<Object?>(
+                    enabled: _selectedIndex == 2,
+                    onPopWithResult: (_) {
+                      _equipeNavigatorKey.currentState?.pop();
+                    },
+                    child: Navigator(
+                      key: _equipeNavigatorKey,
+                      onGenerateRoute: (settings) {
+                        return MaterialPageRoute(
+                          settings: settings,
+                          builder: (_) => const AdminTeamView(),
+                        );
+                      },
+                    ),
+                  )
+                else
+                  const AlunoEvolutionView(),
 
                 // =====================================================
                 // PERFIL
@@ -96,28 +121,41 @@ class _MainShellState extends State<MainShell> {
                   );
                 }
 
+                if (index == 2) {
+                  _equipeNavigatorKey.currentState?.popUntil(
+                    (route) => route.isFirst,
+                  );
+                }
+
                 if (index != _selectedIndex) {
                   setState(() {
                     _selectedIndex = index;
                   });
                 }
               },
-              destinations: const [
-                NavigationDestination(
+              destinations: [
+                const NavigationDestination(
                   icon: Icon(Icons.home_outlined),
                   selectedIcon: Icon(Icons.home),
                   label: 'Início',
                 ),
-                NavigationDestination(
+                const NavigationDestination(
                   icon: Icon(Icons.fitness_center),
                   label: 'Treinos',
                 ),
-                NavigationDestination(
-                  icon: Icon(Icons.insights_outlined),
-                  selectedIcon: Icon(Icons.insights),
-                  label: 'Evolução',
-                ),
-                NavigationDestination(
+                if (widget.isAdmin)
+                  const NavigationDestination(
+                    icon: Icon(Icons.groups_outlined),
+                    selectedIcon: Icon(Icons.groups),
+                    label: 'Equipe',
+                  )
+                else
+                  const NavigationDestination(
+                    icon: Icon(Icons.insights_outlined),
+                    selectedIcon: Icon(Icons.insights),
+                    label: 'Evolução',
+                  ),
+                const NavigationDestination(
                   icon: Icon(Icons.person_outline),
                   selectedIcon: Icon(Icons.person),
                   label: 'Perfil',
