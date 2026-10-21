@@ -18,6 +18,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.actions,
     this.showBackButton = true,
     this.backgroundColor = Colors.blue, // Cor padrão caso nenhuma seja enviada
+    this.onNotificationPressed,
   });
 
   @override
@@ -43,7 +44,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 onPressed: () => Navigator.maybePop(context),
                 icon: const Icon(
                   Icons.arrow_back_ios_new_rounded,
-                  color: Color.fromARGB(255, 136, 207, 193),
+                  color: AppColors.completedBorder,
                   size: 18,
                 ),
               ),
