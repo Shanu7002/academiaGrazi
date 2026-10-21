@@ -1,6 +1,5 @@
 import 'package:academiagrazi/models/users/user_model.dart';
 import 'package:academiagrazi/service/users/register_user.dart';
-import 'package:academiagrazi/view/admin/admin_home_view.dart';
 import 'package:academiagrazi/view/tab_router.dart';
 import 'package:academiagrazi/view/user/teacher/professor_area_view.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -50,7 +49,7 @@ class AuthWrapper extends StatelessWidget {
                 // A navegacao inferior fica no ProfessorAreaView.
                 return const ProfessorAreaView();
               } else {
-                return const MainShell(home: AdminHomeView());
+                return const MainShell(isAdmin: true);
               }
             },
           );

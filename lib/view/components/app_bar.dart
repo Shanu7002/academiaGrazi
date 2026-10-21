@@ -28,7 +28,9 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     final bool podeVoltar = ModalRoute.of(context)?.canPop ?? false;
 
     return AppBar(
-      automaticallyImplyLeading: showBackButton,
+      // A seta de voltar é desenhada no título; sem isso o Flutter
+      // adiciona uma segunda seta quando a tela pode voltar.
+      automaticallyImplyLeading: false,
       backgroundColor: Colors.white,
       elevation: 0,
       titleSpacing: 16,

@@ -9,6 +9,7 @@ class UserModel {
   final UserType type;
   String? responsable;
   final String? registrationCode;
+  final DateTime? registrationCodeExpiresAt;
   final RegistrationProfile? registrationProfile;
   final bool onboardingCompleted;
   final DateTime? termsAcceptedAt;
@@ -20,6 +21,7 @@ class UserModel {
     this.type = UserType.user,
     this.responsable,
     this.registrationCode,
+    this.registrationCodeExpiresAt,
     this.registrationProfile,
     this.onboardingCompleted = false,
     this.termsAcceptedAt,
@@ -32,6 +34,9 @@ class UserModel {
     'createdAt': DateTime.now().toIso8601String(),
     'responsable': responsable,
     if (registrationCode != null) 'registrationCode': registrationCode,
+    if (registrationCodeExpiresAt != null)
+      'registrationCodeExpiresAt':
+          registrationCodeExpiresAt!.toUtc().toIso8601String(),
     if (registrationProfile != null)
       'registrationProfile': registrationProfile!.toJson(),
     'onboardingCompleted': onboardingCompleted,
@@ -47,6 +52,9 @@ class UserModel {
       type: _parseUserType(json['type'] as String?),
       responsable: json['responsable'] as String? ?? '',
       registrationCode: json['registrationCode'] as String?,
+      registrationCodeExpiresAt: _parseDateTime(
+        json['registrationCodeExpiresAt'],
+      ),
       registrationProfile:
           json['registrationProfile'] is Map
               ? RegistrationProfile.fromJson(
@@ -58,7 +66,10 @@ class UserModel {
     );
   }
 
-  UserModel copyWith({String? registrationCode}) {
+  UserModel copyWith({
+    String? registrationCode,
+    DateTime? registrationCodeExpiresAt,
+  }) {
     return UserModel(
       id: id,
       name: name,
@@ -66,6 +77,8 @@ class UserModel {
       type: type,
       responsable: responsable,
       registrationCode: registrationCode ?? this.registrationCode,
+      registrationCodeExpiresAt:
+          registrationCodeExpiresAt ?? this.registrationCodeExpiresAt,
       registrationProfile: registrationProfile,
       onboardingCompleted: onboardingCompleted,
       termsAcceptedAt: termsAcceptedAt,
