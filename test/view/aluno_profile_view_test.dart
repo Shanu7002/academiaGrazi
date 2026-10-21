@@ -141,4 +141,57 @@ void main() {
       ).called(1);
     },
   );
+
+  Future<void> pumpProfileFor(WidgetTester tester, UserModel user) async {
+    tester.view.physicalSize = const Size(430, 4000);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+
+    when(mockFirebaseUser.uid).thenReturn(user.id);
+    when(mockAuth.currentUser).thenReturn(mockFirebaseUser);
+    when(mockUserService.getUserById(user.id)).thenAnswer((_) async => user);
+
+    await tester.pumpWidget(MaterialApp(home: AlunoProfileView()));
+    await tester.pumpAndSettle();
+  }
+
+  testWidgets('admin não vê professor, ficha clínica, emergência nem plano', (
+    WidgetTester tester,
+  ) async {
+    await pumpProfileFor(
+      tester,
+      UserModel(
+        id: 'admin_1',
+        name: 'Grazi',
+        email: 'admin@grazi.com',
+        type: UserType.admin,
+      ),
+    );
+
+    expect(find.text('Grazi'), findsOneWidget);
+    expect(find.text('ACOMPANHAMENTO PROFISSIONAL'), findsNothing);
+    expect(find.text('SAÚDE E FICHA CLÍNICA'), findsNothing);
+    expect(find.text('CONTATO DE EMERGÊNCIA'), findsNothing);
+    expect(find.text('PLANO E MENSALIDADE'), findsNothing);
+    expect(find.text('Plano Presencial + App'), findsNothing);
+    expect(find.text('Seus dados e preferências'), findsOneWidget);
+    expect(find.text('PREFERÊNCIAS & AJUSTES'), findsOneWidget);
+    expect(find.text('Sair'), findsOneWidget);
+  });
+
+  testWidgets('aluno continua vendo as seções de acompanhamento', (
+    WidgetTester tester,
+  ) async {
+    await pumpProfileFor(
+      tester,
+      UserModel(id: 'aluno_1', name: 'Aluno', email: 'aluno@grazi.com'),
+    );
+
+    expect(find.text('ACOMPANHAMENTO PROFISSIONAL'), findsOneWidget);
+    expect(find.text('SAÚDE E FICHA CLÍNICA'), findsOneWidget);
+    expect(find.text('CONTATO DE EMERGÊNCIA'), findsOneWidget);
+    expect(find.text('PLANO E MENSALIDADE'), findsOneWidget);
+    expect(find.text('Plano Presencial + App'), findsOneWidget);
+    expect(find.text('Seus dados, saúde e preferências'), findsOneWidget);
+  });
 }
