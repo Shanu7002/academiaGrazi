@@ -23,6 +23,12 @@ service cloud.firestore {
       // O admin pode ler todos os usuários (home do admin e gestão da equipe).
       allow read: if isAdmin();
 
+      // O admin renova o código de convite dos professores.
+      allow update: if isAdmin()
+        && resource.data.type == 'instructor'
+        && request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['registrationCode', 'registrationCodeExpiresAt']);
+
       // O admin cria o perfil dos professores que cadastra.
       allow create: if isAdmin()
         && request.resource.data.type == 'instructor'
@@ -30,57 +36,62 @@ service cloud.firestore {
     }
 
     match /instructorCodes/{code} {
-      // O onboarding consulta somente um código conhecido; listagens continuam
-      // bloqueadas e nenhum perfil de usuário fica público.
+      // O cadastro do aluno consulta somente um código conhecido; listagens
+      // continuam bloqueadas e nenhum perfil de usuário fica público.
       allow get: if true;
       allow list: if false;
 
-      // O instrutor autenticado pode reservar o próprio código.
-      allow create: if request.auth != null
-        && request.auth.uid == request.resource.data.instructorId
-        && get(
-          /databases/$(database)/documents/users/$(request.auth.uid)
-        ).data.type == 'instructor'
-        && request.resource.data.active == true
-        && request.resource.data.instructorName is string
-        && request.resource.data.instructorName.size() > 0
-        && request.resource.data.keys().hasOnly([
-          'instructorId',
-          'instructorName',
-          'active',
-          'createdAt'
-        ]);
+      // Formato de um código emitido: 4 dígitos, válido por 15 minutos.
+      function isValidCode(data) {
+        return code.matches('^[0-9]{4}$')
+          && data.active == true
+          && data.instructorName is string
+          && data.instructorName.size() > 0
+          && data.expiresAtMillis is int
+          && data.keys().hasOnly([
+            'instructorId',
+            'instructorName',
+            'active',
+            'createdAt',
+            'expiresAtMillis'
+          ]);
+      }
 
-      // O admin reserva o código do professor no mesmo cadastro. Como o
-      // perfil do professor é criado na mesma transação, usa getAfter.
-      allow create: if isAdmin()
-        && getAfter(
-          /databases/$(database)/documents/users/$(request.resource.data.instructorId)
-        ).data.type == 'instructor'
-        && request.resource.data.active == true
-        && request.resource.data.instructorName is string
-        && request.resource.data.instructorName.size() > 0
-        && request.resource.data.keys().hasOnly([
-          'instructorId',
-          'instructorName',
-          'active',
-          'createdAt'
-        ]);
+      // Quem pode emitir o código: o próprio professor, ou o admin (no
+      // cadastro o perfil é criado na mesma transação, por isso getAfter).
+      function canIssueFor(instructorId) {
+        return request.auth != null
+          && getAfter(
+            /databases/$(database)/documents/users/$(instructorId)
+          ).data.type == 'instructor'
+          && (request.auth.uid == instructorId || isAdmin());
+      }
 
-      // Permite desativar ou atualizar o nome, sem trocar o proprietário.
-      allow update: if request.auth != null
-        && request.auth.uid == resource.data.instructorId
-        && request.resource.data.instructorId == resource.data.instructorId
-        && request.resource.data.createdAt == resource.data.createdAt
-        && request.resource.data.instructorName is string
-        && request.resource.data.instructorName.size() > 0
-        && request.resource.data.active is bool
-        && request.resource.data.keys().hasOnly([
-          'instructorId',
-          'instructorName',
-          'active',
-          'createdAt'
-        ]);
+      // Um código só pode ser reaproveitado se for do mesmo professor,
+      // estiver desativado ou já tiver vencido.
+      function isFree() {
+        return resource == null
+          || resource.data.instructorId == request.resource.data.instructorId
+          || resource.data.active != true
+          || !('expiresAtMillis' in resource.data)
+          || resource.data.expiresAtMillis < request.time.toMillis();
+      }
+
+      allow create: if canIssueFor(request.resource.data.instructorId)
+        && isValidCode(request.resource.data);
+
+      allow update: if (
+          canIssueFor(request.resource.data.instructorId)
+          && isFree()
+          && isValidCode(request.resource.data)
+        ) || (
+          // Desativação do código anterior na renovação.
+          request.auth != null
+          && (request.auth.uid == resource.data.instructorId || isAdmin())
+          && request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(['active'])
+          && request.resource.data.active == false
+        );
 
       allow delete: if false;
     }

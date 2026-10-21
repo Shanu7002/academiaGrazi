@@ -7,6 +7,7 @@ import 'package:academiagrazi/locator.dart';
 import 'package:academiagrazi/models/users/user_model.dart';
 import 'package:academiagrazi/service/users/register_user.dart';
 import 'package:academiagrazi/view/components/app_bar.dart';
+import 'package:academiagrazi/view/components/invite_code_card.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -184,6 +185,18 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
                   ),
                   const SizedBox(height: 24),
                   _ProfileSummary(user: user),
+                  if (user.type == UserType.instructor) ...[
+                    const SizedBox(height: 20),
+                    _SectionCard(
+                      child: InviteCodeCard(
+                        instructorId: user.id,
+                        title: 'Seu código de convite',
+                        description:
+                            'Compartilhe com seus alunos para eles se '
+                            'cadastrarem vinculados a você.',
+                      ),
+                    ),
+                  ],
                   const SizedBox(height: 20),
 
                   _SectionCard(

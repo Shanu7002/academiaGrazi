@@ -89,4 +89,45 @@ void main() {
       expect(await service.getTeamWorkload(), isEmpty);
     });
   });
+
+  group('getInstructorDetails', () {
+    test('traz o professor e só os alunos vinculados, por nome', () async {
+      await db.collection('users').doc('p1').set({
+        'name': 'Marcos',
+        'email': 'marcos@grazi.com',
+        'type': 'instructor',
+        'registrationCode': 'ABCD2345',
+      });
+      await db.collection('users').doc('a1').set({
+        'name': 'Zeca',
+        'email': 'zeca@grazi.com',
+        'type': 'user',
+        'responsable': 'p1',
+        'createdAt': DateTime(2026, 10, 10).toIso8601String(),
+      });
+      await db.collection('users').doc('a2').set({
+        'name': 'ana',
+        'email': 'ana@grazi.com',
+        'type': 'user',
+        'responsable': 'p1',
+        'createdAt': DateTime(2026, 1, 1).toIso8601String(),
+      });
+      await db.collection('users').doc('a3').set({
+        'name': 'Outro',
+        'type': 'user',
+        'responsable': 'p2',
+      });
+
+      final details = await service.getInstructorDetails('p1');
+
+      expect(details!.instructor.name, 'Marcos');
+      expect(details.instructor.registrationCode, 'ABCD2345');
+      expect(details.students.map((s) => s.user.name), ['ana', 'Zeca']);
+      expect(details.newStudents(now: now), 1);
+    });
+
+    test('retorna null quando o professor não existe', () async {
+      expect(await service.getInstructorDetails('nao-existe'), isNull);
+    });
+  });
 }

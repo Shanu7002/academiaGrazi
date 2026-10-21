@@ -30,6 +30,28 @@ class InstructorWorkload {
   });
 }
 
+class InstructorStudent {
+  final UserModel user;
+  final DateTime? joinedAt;
+
+  const InstructorStudent({required this.user, this.joinedAt});
+}
+
+class InstructorDetails {
+  final UserModel instructor;
+  final List<InstructorStudent> students;
+
+  const InstructorDetails({required this.instructor, required this.students});
+
+  /// Alunos que entraram nos últimos 30 dias.
+  int newStudents({DateTime? now}) {
+    final limit = (now ?? DateTime.now()).subtract(const Duration(days: 30));
+    return students
+        .where((s) => s.joinedAt != null && s.joinedAt!.isAfter(limit))
+        .length;
+  }
+}
+
 class AdminDashboardService {
   final FirebaseFirestore _db;
 
@@ -96,5 +118,40 @@ class AdminDashboardService {
 
     team.sort((a, b) => b.activeStudents.compareTo(a.activeStudents));
     return team;
+  }
+
+  /// Perfil do professor e seus alunos (ordenados pelo nome).
+  /// Retorna null se o professor não existir.
+  Future<InstructorDetails?> getInstructorDetails(String instructorId) async {
+    final users = _db.collection("users");
+    final results = await Future.wait([
+      users.doc(instructorId).get(),
+      users.where("responsable", isEqualTo: instructorId).get(),
+    ]);
+
+    final instructorDoc = results[0] as DocumentSnapshot<Map<String, dynamic>>;
+    final data = instructorDoc.data();
+    if (!instructorDoc.exists || data == null) return null;
+
+    final studentDocs = (results[1] as QuerySnapshot<Map<String, dynamic>>).docs
+        .where((doc) => doc.data()["type"] == UserType.user.name);
+
+    final students =
+        studentDocs.map((doc) {
+          final createdAt = doc.data()["createdAt"];
+          return InstructorStudent(
+            user: UserModel.fromJson(doc.data(), doc.id),
+            joinedAt: createdAt is String ? DateTime.tryParse(createdAt) : null,
+          );
+        }).toList();
+
+    students.sort(
+      (a, b) => a.user.name.toLowerCase().compareTo(b.user.name.toLowerCase()),
+    );
+
+    return InstructorDetails(
+      instructor: UserModel.fromJson(data, instructorDoc.id),
+      students: students,
+    );
   }
 }

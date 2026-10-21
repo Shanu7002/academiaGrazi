@@ -1,6 +1,7 @@
 import 'package:academiagrazi/locator.dart';
 import 'package:academiagrazi/service/admin/admin_dashboard.dart';
 import 'package:academiagrazi/theme/app_colors.dart';
+import 'package:academiagrazi/view/admin/instructor_details_view.dart';
 import 'package:academiagrazi/view/admin/mocks/admin_team_mock_data.dart';
 import 'package:academiagrazi/view/admin/register_instructor_view.dart';
 import 'package:academiagrazi/view/components/app_bar.dart';
@@ -36,6 +37,15 @@ class _AdminTeamViewState extends State<AdminTeamView> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('$feature estará disponível em breve.')),
     );
+  }
+
+  Future<void> _openDetails(InstructorWorkload instructor) async {
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => InstructorDetailsView(instructorId: instructor.id),
+      ),
+    );
+    if (mounted) _reload();
   }
 
   Future<void> _openRegister() async {
@@ -148,8 +158,7 @@ class _AdminTeamViewState extends State<AdminTeamView> {
                           for (final instructor in team) ...[
                             _InstructorCard(
                               instructor: instructor,
-                              onDetails:
-                                  () => _showSoon('Detalhes do professor'),
+                              onDetails: () => _openDetails(instructor),
                             ),
                             const SizedBox(height: 16),
                           ],
