@@ -1,9 +1,15 @@
+import 'package:academiagrazi/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 
+/// Cabeçalho compartilhado entre aluno e professor.
+///
+/// Centraliza a identidade visual e permite que cada tela
+/// configure seu título, suas ações e sua cor de fundo.
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final List<Widget>? actions;
   final Color backgroundColor;
+  final VoidCallback? onNotificationPressed;
   final bool showBackButton;
 
   const CustomAppBar({
@@ -12,16 +18,23 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.actions,
     this.showBackButton = true,
     this.backgroundColor = Colors.blue, // Cor padrão caso nenhuma seja enviada
+    this.onNotificationPressed,
   });
 
   @override
   Widget build(BuildContext context) {
+    // Exibe a seta somente quando existe
+    // uma página anterior para retornar.
+    final bool podeVoltar = ModalRoute.of(context)?.canPop ?? false;
+
     return AppBar(
       // A seta de voltar é desenhada no título; sem isso o Flutter
       // adiciona uma segunda seta quando a tela pode voltar.
       automaticallyImplyLeading: false,
       backgroundColor: Colors.white,
       elevation: 0,
+      titleSpacing: 16,
+
       title: Row(
         children: [
           if (showBackButton) ...[
@@ -33,7 +46,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 onPressed: () => Navigator.maybePop(context),
                 icon: const Icon(
                   Icons.arrow_back_ios_new_rounded,
-                  color: Color.fromARGB(255, 136, 207, 193),
+                  color: AppColors.completedBorder,
                   size: 18,
                 ),
               ),
@@ -45,34 +58,46 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             backgroundColor: Color(0xFFD6D6D6),
             child: Icon(Icons.person, color: Color(0xFF8A8A8A)),
           ),
+
           const SizedBox(width: 12),
-          const Text(
-            'GRAZI BRAZ',
-            style: TextStyle(
-              color: Color(0xFF005A4F),
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
+
+          Expanded(
+            child: Text(
+              title.toUpperCase(),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                color: AppColors.primary,
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
         ],
       ),
-      actions: [
-        Padding(
-          padding: const EdgeInsets.only(right: 16.0),
-          child: IconButton(
-            icon: const Icon(
-              Icons.notifications_none_rounded,
-              color: Colors.black87,
-              size: 24,
+
+      // Se a tela informar ações próprias, utiliza essas.
+      // Caso contrário, mantém o ícone de notificação.
+      actions:
+          actions ??
+          [
+            Padding(
+              padding: const EdgeInsets.only(right: 12),
+              child: IconButton(
+                key: const Key('appbar_notificacoes'),
+                tooltip: 'Notificações',
+                icon: const Icon(
+                  Icons.notifications_none_rounded,
+                  color: AppColors.textPrimary,
+                  size: 24,
+                ),
+                onPressed: onNotificationPressed,
+              ),
             ),
-            onPressed: () {},
-          ),
-        ),
-      ],
+          ],
     );
   }
 
-  // Define a altura padrão da AppBar (geralmente kToolbarHeight, que é 56.0)
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }
