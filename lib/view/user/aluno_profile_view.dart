@@ -5,10 +5,14 @@ import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:academiagrazi/controller/users/update_data.dart';
 import 'package:academiagrazi/locator.dart';
 import 'package:academiagrazi/models/users/user_model.dart';
+import 'package:academiagrazi/service/users/profile_photo.dart';
 import 'package:academiagrazi/service/users/register_user.dart';
 import 'package:academiagrazi/view/components/app_bar.dart';
+import 'package:academiagrazi/view/components/invite_code_card.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 class AlunoProfileView extends StatefulWidget {
   const AlunoProfileView({super.key});
@@ -22,9 +26,12 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
   final RegisterUserService _userService = locator<RegisterUserService>();
   final UpdateDataController _updateDataController =
       locator<UpdateDataController>();
+  final ProfilePhotoService _profilePhotoService =
+      locator<ProfilePhotoService>();
   UserModel? _currentUser;
   UserModel? _currentResponsable;
   bool _isLoading = true;
+  bool _uploadingPhoto = false;
 
   bool _editingHealth = false;
   bool _savingHealth = false;
@@ -114,6 +121,82 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
     }
   }
 
+  Future<void> _changePhoto() async {
+    final user = _currentUser;
+    if (user == null || _uploadingPhoto) return;
+
+    // Na web não há câmera via image_picker; vai direto para a galeria.
+    final source =
+        kIsWeb
+            ? ImageSource.gallery
+            : await showModalBottomSheet<ImageSource>(
+              context: context,
+              builder:
+                  (sheetContext) => SafeArea(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        ListTile(
+                          leading: const Icon(Icons.photo_library_outlined),
+                          title: const Text('Escolher da galeria'),
+                          onTap:
+                              () => Navigator.pop(
+                                sheetContext,
+                                ImageSource.gallery,
+                              ),
+                        ),
+                        ListTile(
+                          leading: const Icon(Icons.photo_camera_outlined),
+                          title: const Text('Tirar foto'),
+                          onTap:
+                              () => Navigator.pop(
+                                sheetContext,
+                                ImageSource.camera,
+                              ),
+                        ),
+                      ],
+                    ),
+                  ),
+            );
+    if (source == null) return;
+
+    final picked = await ImagePicker().pickImage(
+      source: source,
+      maxWidth: 1024,
+      maxHeight: 1024,
+      imageQuality: 85,
+    );
+    if (picked == null || !mounted) return;
+
+    setState(() => _uploadingPhoto = true);
+    try {
+      final url = await _profilePhotoService.upload(
+        bytes: await picked.readAsBytes(),
+        fileName: picked.name,
+        userId: user.id,
+      );
+      await _updateDataController.updatePhotoUrl(
+        userId: user.id,
+        photoUrl: url,
+      );
+
+      if (!mounted) return;
+      setState(() => _currentUser = user.copyWith(photoUrl: url));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Foto de perfil atualizada!')),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Não foi possível atualizar a foto. Tente novamente.'),
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _uploadingPhoto = false);
+    }
+  }
+
   Future<void> logout() async {
     try {
       print('Executing sign out...');
@@ -176,663 +259,699 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Seus dados, saúde e preferências',
+                    user.type == UserType.admin
+                        ? 'Seus dados e preferências'
+                        : 'Seus dados, saúde e preferências',
                     style: GoogleFonts.inter(
                       fontSize: 14,
                       color: AppColors.slateText,
                     ),
                   ),
                   const SizedBox(height: 24),
-                  _ProfileSummary(user: user),
-                  const SizedBox(height: 20),
-
-                  _SectionCard(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const _SectionHeader(
-                          icon: Icons.badge_outlined,
-                          title: 'ACOMPANHAMENTO PROFISSIONAL',
-                        ),
-                        const SizedBox(height: 16),
-                        _ProfessionalInfoCard(
-                          avatar: const CircleAvatar(
-                            radius: 22,
-                            backgroundColor: AppColors.avatarBackground,
-                            child: Icon(Icons.person, color: AppColors.primary),
-                          ),
-                          label: 'PROFESSOR RESPONSÁVEL',
-                          title:
-                              responsable?.name ?? 'Professor não encontrado',
-                          subtitle: 'Especialista',
-                          subtitleColor: AppColors.primaryText,
-                        ),
-                        const SizedBox(height: 12),
-                        _ProfessionalInfoCard(
-                          avatar: CircleAvatar(
-                            radius: 22,
-                            backgroundColor: AppColors.primary,
-                            child: Text(
-                              'A',
-                              style: GoogleFonts.barlowCondensed(
-                                color: Colors.white,
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                          label: 'BLOCO / TURNO',
-                          title: 'Bloco A',
-                          subtitle: '06:00 - 09:00',
-                        ),
-                      ],
-                    ),
+                  _ProfileSummary(
+                    user: user,
+                    isUploadingPhoto: _uploadingPhoto,
+                    onChangePhoto: _changePhoto,
                   ),
-                  const SizedBox(height: 20),
+                  if (user.type == UserType.instructor) ...[
+                    const SizedBox(height: 20),
+                    _SectionCard(
+                      child: InviteCodeCard(
+                        instructorId: user.id,
+                        title: 'Seu código de convite',
+                        description:
+                            'Compartilhe com seus alunos para eles se '
+                            'cadastrarem vinculados a você.',
+                      ),
+                    ),
+                  ],
+                  // O admin não tem professor, ficha clínica, contato de
+                  // emergência nem plano; essas seções são só de alunos e
+                  // professores.
+                  if (user.type != UserType.admin) ...[
+                    const SizedBox(height: 20),
 
-                  _SectionCard(
-                    child: StatefulBuilder(
-                      builder: (context, refreshHealthCard) {
-                        final health = user.registrationProfile?.health;
-
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const _SectionHeader(
-                              icon: Icons.health_and_safety_outlined,
-                              title: 'SAÚDE E FICHA CLÍNICA',
+                    _SectionCard(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const _SectionHeader(
+                            icon: Icons.badge_outlined,
+                            title: 'ACOMPANHAMENTO PROFISSIONAL',
+                          ),
+                          const SizedBox(height: 16),
+                          _ProfessionalInfoCard(
+                            avatar: const CircleAvatar(
+                              radius: 22,
+                              backgroundColor: AppColors.avatarBackground,
+                              child: Icon(
+                                Icons.person,
+                                color: AppColors.primary,
+                              ),
                             ),
-                            const SizedBox(height: 12),
-                            const _PrivacyBanner(),
-                            const SizedBox(height: 12),
-                            if (_editingHealth) ...[
-                              Text(
-                                'Condições crônicas',
-                                style: _ProfileText.fieldTitle,
-                              ),
-                              const SizedBox(height: 8),
-                              Wrap(
-                                spacing: 8,
-                                runSpacing: 8,
-                                children:
-                                    conditionOptions.map((option) {
-                                      final isSelected = _selectedConditions
-                                          .contains(option);
-                                      return FilterChip(
-                                        label: Text(option),
-                                        labelStyle: _ProfileText.chip(
-                                          isSelected,
-                                        ),
-                                        selected: isSelected,
-                                        selectedColor:
-                                            AppColors.primaryChipSurface,
-                                        checkmarkColor: AppColors.primary,
-                                        backgroundColor: AppColors.surfaceSoft,
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 4,
-                                          vertical: 6,
-                                        ),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            20,
-                                          ),
-                                          side: BorderSide(
-                                            color:
-                                                isSelected
-                                                    ? AppColors.primary
-                                                    : AppColors.border,
-                                          ),
-                                        ),
-                                        onSelected: (selected) {
-                                          refreshHealthCard(() {
-                                            if (option == 'Nenhuma dor') {
-                                              _selectedConditions.clear();
-                                              if (selected) {
-                                                _selectedConditions.add(option);
-                                              }
-                                            } else {
-                                              _selectedConditions.remove(
-                                                'Nenhuma dor',
-                                              );
-                                              if (selected) {
-                                                _selectedConditions.add(option);
-                                              } else {
-                                                _selectedConditions.remove(
-                                                  option,
-                                                );
-                                              }
-                                            }
-                                          });
-                                        },
-                                      );
-                                    }).toList(),
-                              ),
-                              const SizedBox(height: 16),
-                              Text(
-                                'Restrições no treino',
-                                style: _ProfileText.fieldTitle,
-                              ),
-                              const SizedBox(height: 8),
-                              Wrap(
-                                spacing: 8,
-                                runSpacing: 8,
-                                children:
-                                    restrictionOptions.map((option) {
-                                      final isSelected = _selectedRestrictions
-                                          .contains(option);
-                                      return FilterChip(
-                                        label: Text(option),
-                                        labelStyle: _ProfileText.chip(
-                                          isSelected,
-                                        ),
-                                        selected: isSelected,
-                                        selectedColor:
-                                            AppColors.primaryChipSurface,
-                                        checkmarkColor: AppColors.primary,
-                                        backgroundColor: AppColors.surfaceSoft,
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 4,
-                                          vertical: 6,
-                                        ),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            20,
-                                          ),
-                                          side: BorderSide(
-                                            color:
-                                                isSelected
-                                                    ? AppColors.primary
-                                                    : AppColors.border,
-                                          ),
-                                        ),
-                                        onSelected: (selected) {
-                                          refreshHealthCard(() {
-                                            if (option == 'Não possuo') {
-                                              _selectedRestrictions.clear();
-                                              if (selected) {
-                                                _selectedRestrictions.add(
-                                                  option,
-                                                );
-                                              }
-                                            } else {
-                                              _selectedRestrictions.remove(
-                                                'Não possuo',
-                                              );
-                                              if (selected) {
-                                                _selectedRestrictions.add(
-                                                  option,
-                                                );
-                                              } else {
-                                                _selectedRestrictions.remove(
-                                                  option,
-                                                );
-                                              }
-                                            }
-                                          });
-                                        },
-                                      );
-                                    }).toList(),
-                              ),
-                              const SizedBox(height: 16),
-                              TextField(
-                                controller: _healthNotesController,
-                                maxLines: 3,
-                                style: _ProfileText.input,
-                                decoration: _profileInputDecoration(
-                                  label: 'Observações adicionais (opcional)',
-                                  hint: 'Detalhe dores, cirurgias, etc.',
+                            label: 'PROFESSOR RESPONSÁVEL',
+                            title:
+                                responsable?.name ?? 'Professor não encontrado',
+                            subtitle: 'Especialista',
+                            subtitleColor: AppColors.primaryText,
+                          ),
+                          const SizedBox(height: 12),
+                          _ProfessionalInfoCard(
+                            avatar: CircleAvatar(
+                              radius: 22,
+                              backgroundColor: AppColors.primary,
+                              child: Text(
+                                'A',
+                                style: GoogleFonts.barlowCondensed(
+                                  color: Colors.white,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
-                            ] else ...[
-                              _InfoCardList(
-                                label: 'Condições Crônicas',
-                                value: health?.conditions,
+                            ),
+                            label: 'BLOCO / TURNO',
+                            title: 'Bloco A',
+                            subtitle: '06:00 - 09:00',
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+
+                    _SectionCard(
+                      child: StatefulBuilder(
+                        builder: (context, refreshHealthCard) {
+                          final health = user.registrationProfile?.health;
+
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const _SectionHeader(
+                                icon: Icons.health_and_safety_outlined,
+                                title: 'SAÚDE E FICHA CLÍNICA',
                               ),
-                              const SizedBox(height: 10),
-                              _InfoCardList(
-                                label: 'Restrições no Treino',
-                                value: health?.restrictions,
-                              ),
-                              const SizedBox(height: 10),
-                              _InfoCardString(
-                                label: 'Observações',
-                                value: health?.notes,
-                              ),
-                            ],
-                            const SizedBox(height: 14),
-                            if (_editingHealth) ...[
+                              const SizedBox(height: 12),
+                              const _PrivacyBanner(),
+                              const SizedBox(height: 12),
+                              if (_editingHealth) ...[
+                                Text(
+                                  'Condições crônicas',
+                                  style: _ProfileText.fieldTitle,
+                                ),
+                                const SizedBox(height: 8),
+                                Wrap(
+                                  spacing: 8,
+                                  runSpacing: 8,
+                                  children:
+                                      conditionOptions.map((option) {
+                                        final isSelected = _selectedConditions
+                                            .contains(option);
+                                        return FilterChip(
+                                          label: Text(option),
+                                          labelStyle: _ProfileText.chip(
+                                            isSelected,
+                                          ),
+                                          selected: isSelected,
+                                          selectedColor:
+                                              AppColors.primaryChipSurface,
+                                          checkmarkColor: AppColors.primary,
+                                          backgroundColor:
+                                              AppColors.surfaceSoft,
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 4,
+                                            vertical: 6,
+                                          ),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              20,
+                                            ),
+                                            side: BorderSide(
+                                              color:
+                                                  isSelected
+                                                      ? AppColors.primary
+                                                      : AppColors.border,
+                                            ),
+                                          ),
+                                          onSelected: (selected) {
+                                            refreshHealthCard(() {
+                                              if (option == 'Nenhuma dor') {
+                                                _selectedConditions.clear();
+                                                if (selected) {
+                                                  _selectedConditions.add(
+                                                    option,
+                                                  );
+                                                }
+                                              } else {
+                                                _selectedConditions.remove(
+                                                  'Nenhuma dor',
+                                                );
+                                                if (selected) {
+                                                  _selectedConditions.add(
+                                                    option,
+                                                  );
+                                                } else {
+                                                  _selectedConditions.remove(
+                                                    option,
+                                                  );
+                                                }
+                                              }
+                                            });
+                                          },
+                                        );
+                                      }).toList(),
+                                ),
+                                const SizedBox(height: 16),
+                                Text(
+                                  'Restrições no treino',
+                                  style: _ProfileText.fieldTitle,
+                                ),
+                                const SizedBox(height: 8),
+                                Wrap(
+                                  spacing: 8,
+                                  runSpacing: 8,
+                                  children:
+                                      restrictionOptions.map((option) {
+                                        final isSelected = _selectedRestrictions
+                                            .contains(option);
+                                        return FilterChip(
+                                          label: Text(option),
+                                          labelStyle: _ProfileText.chip(
+                                            isSelected,
+                                          ),
+                                          selected: isSelected,
+                                          selectedColor:
+                                              AppColors.primaryChipSurface,
+                                          checkmarkColor: AppColors.primary,
+                                          backgroundColor:
+                                              AppColors.surfaceSoft,
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 4,
+                                            vertical: 6,
+                                          ),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              20,
+                                            ),
+                                            side: BorderSide(
+                                              color:
+                                                  isSelected
+                                                      ? AppColors.primary
+                                                      : AppColors.border,
+                                            ),
+                                          ),
+                                          onSelected: (selected) {
+                                            refreshHealthCard(() {
+                                              if (option == 'Não possuo') {
+                                                _selectedRestrictions.clear();
+                                                if (selected) {
+                                                  _selectedRestrictions.add(
+                                                    option,
+                                                  );
+                                                }
+                                              } else {
+                                                _selectedRestrictions.remove(
+                                                  'Não possuo',
+                                                );
+                                                if (selected) {
+                                                  _selectedRestrictions.add(
+                                                    option,
+                                                  );
+                                                } else {
+                                                  _selectedRestrictions.remove(
+                                                    option,
+                                                  );
+                                                }
+                                              }
+                                            });
+                                          },
+                                        );
+                                      }).toList(),
+                                ),
+                                const SizedBox(height: 16),
+                                TextField(
+                                  controller: _healthNotesController,
+                                  maxLines: 3,
+                                  style: _ProfileText.input,
+                                  decoration: _profileInputDecoration(
+                                    label: 'Observações adicionais (opcional)',
+                                    hint: 'Detalhe dores, cirurgias, etc.',
+                                  ),
+                                ),
+                              ] else ...[
+                                _InfoCardList(
+                                  label: 'Condições Crônicas',
+                                  value: health?.conditions,
+                                ),
+                                const SizedBox(height: 10),
+                                _InfoCardList(
+                                  label: 'Restrições no Treino',
+                                  value: health?.restrictions,
+                                ),
+                                const SizedBox(height: 10),
+                                _InfoCardString(
+                                  label: 'Observações',
+                                  value: health?.notes,
+                                ),
+                              ],
+                              const SizedBox(height: 14),
+                              if (_editingHealth) ...[
+                                SizedBox(
+                                  width: double.infinity,
+                                  child: OutlinedButton(
+                                    onPressed:
+                                        _savingHealth
+                                            ? null
+                                            : () {
+                                              refreshHealthCard(() {
+                                                _editingHealth = false;
+                                              });
+                                            },
+                                    style: _ProfileButtonStyles.secondary(),
+                                    child: const Text('CANCELAR'),
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                              ],
                               SizedBox(
                                 width: double.infinity,
                                 child: OutlinedButton(
                                   onPressed:
                                       _savingHealth
                                           ? null
-                                          : () {
-                                            refreshHealthCard(() {
-                                              _editingHealth = false;
-                                            });
-                                          },
-                                  style: _ProfileButtonStyles.secondary(),
-                                  child: const Text('CANCELAR'),
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                            ],
-                            SizedBox(
-                              width: double.infinity,
-                              child: OutlinedButton(
-                                onPressed:
-                                    _savingHealth
-                                        ? null
-                                        : () async {
-                                          if (!_editingHealth) {
-                                            final List<String> safeConditions =
-                                                [];
-                                            if (health?.conditions != null) {
-                                              for (var item
-                                                  in health!.conditions) {
+                                          : () async {
+                                            if (!_editingHealth) {
+                                              final List<String>
+                                              safeConditions = [];
+                                              if (health?.conditions != null) {
+                                                for (var item
+                                                    in health!.conditions) {
+                                                  safeConditions.add(
+                                                    item.toString(),
+                                                  );
+                                                }
+                                              }
+                                              if (safeConditions.isEmpty) {
                                                 safeConditions.add(
-                                                  item.toString(),
+                                                  'Nenhuma dor',
                                                 );
                                               }
-                                            }
-                                            if (safeConditions.isEmpty) {
-                                              safeConditions.add('Nenhuma dor');
-                                            }
 
-                                            final List<String>
-                                            safeRestrictions = [];
-                                            if (health?.restrictions != null) {
-                                              for (var item
-                                                  in health!.restrictions) {
+                                              final List<String>
+                                              safeRestrictions = [];
+                                              if (health?.restrictions !=
+                                                  null) {
+                                                for (var item
+                                                    in health!.restrictions) {
+                                                  safeRestrictions.add(
+                                                    item.toString(),
+                                                  );
+                                                }
+                                              }
+                                              if (safeRestrictions.isEmpty) {
                                                 safeRestrictions.add(
-                                                  item.toString(),
+                                                  'Não possuo',
                                                 );
                                               }
-                                            }
-                                            if (safeRestrictions.isEmpty) {
-                                              safeRestrictions.add(
-                                                'Não possuo',
-                                              );
-                                            }
 
-                                            _selectedConditions =
-                                                safeConditions;
-                                            _selectedRestrictions =
-                                                safeRestrictions;
-                                            _healthNotesController.text =
-                                                health?.notes ?? '';
+                                              _selectedConditions =
+                                                  safeConditions;
+                                              _selectedRestrictions =
+                                                  safeRestrictions;
+                                              _healthNotesController.text =
+                                                  health?.notes ?? '';
+
+                                              refreshHealthCard(() {
+                                                _editingHealth = true;
+                                              });
+                                              return;
+                                            }
 
                                             refreshHealthCard(() {
-                                              _editingHealth = true;
+                                              _savingHealth = true;
                                             });
-                                            return;
-                                          }
 
-                                          refreshHealthCard(() {
-                                            _savingHealth = true;
-                                          });
+                                            try {
+                                              final newNotes =
+                                                  _healthNotesController.text
+                                                      .trim();
 
-                                          try {
-                                            final newNotes =
-                                                _healthNotesController.text
-                                                    .trim();
+                                              await _updateDataController
+                                                  .updateHealthProfile(
+                                                    userId: user.id,
+                                                    conditions:
+                                                        _selectedConditions,
+                                                    restrictions:
+                                                        _selectedRestrictions,
+                                                    notes: newNotes,
+                                                  );
 
-                                            await _updateDataController
-                                                .updateHealthProfile(
-                                                  userId: user.id,
-                                                  conditions:
-                                                      _selectedConditions,
-                                                  restrictions:
-                                                      _selectedRestrictions,
-                                                  notes: newNotes,
+                                              if (health != null) {
+                                                health.conditions.clear();
+                                                health.conditions.addAll(
+                                                  _selectedConditions,
                                                 );
 
-                                            if (health != null) {
-                                              health.conditions.clear();
-                                              health.conditions.addAll(
-                                                _selectedConditions,
-                                              );
+                                                health.restrictions.clear();
+                                                health.restrictions.addAll(
+                                                  _selectedRestrictions,
+                                                );
 
-                                              health.restrictions.clear();
-                                              health.restrictions.addAll(
-                                                _selectedRestrictions,
-                                              );
+                                                health.notes = newNotes;
+                                              }
 
-                                              health.notes = newNotes;
-                                            }
+                                              refreshHealthCard(() {
+                                                _editingHealth = false;
+                                              });
 
-                                            refreshHealthCard(() {
-                                              _editingHealth = false;
-                                            });
-
-                                            if (mounted) {
-                                              ScaffoldMessenger.of(
-                                                context,
-                                              ).showSnackBar(
-                                                const SnackBar(
-                                                  content: Text(
-                                                    'Ficha de saúde salva com sucesso!',
+                                              if (mounted) {
+                                                ScaffoldMessenger.of(
+                                                  context,
+                                                ).showSnackBar(
+                                                  const SnackBar(
+                                                    content: Text(
+                                                      'Ficha de saúde salva com sucesso!',
+                                                    ),
+                                                    backgroundColor:
+                                                        AppColors.success,
                                                   ),
-                                                  backgroundColor:
-                                                      AppColors.success,
-                                                ),
-                                              );
-                                            }
-                                          } catch (e) {
-                                            if (mounted) {
-                                              ScaffoldMessenger.of(
-                                                context,
-                                              ).showSnackBar(
-                                                const SnackBar(
-                                                  content: Text(
-                                                    'Falha ao salvar. Tente novamente.',
+                                                );
+                                              }
+                                            } catch (e) {
+                                              if (mounted) {
+                                                ScaffoldMessenger.of(
+                                                  context,
+                                                ).showSnackBar(
+                                                  const SnackBar(
+                                                    content: Text(
+                                                      'Falha ao salvar. Tente novamente.',
+                                                    ),
+                                                    backgroundColor: Colors.red,
                                                   ),
-                                                  backgroundColor: Colors.red,
-                                                ),
-                                              );
+                                                );
+                                              }
+                                            } finally {
+                                              refreshHealthCard(() {
+                                                _savingHealth = false;
+                                              });
                                             }
-                                          } finally {
-                                            refreshHealthCard(() {
-                                              _savingHealth = false;
-                                            });
-                                          }
-                                        },
-                                style: _ProfileButtonStyles.primary(
-                                  filled: _editingHealth,
-                                ),
-                                child:
-                                    _savingHealth
-                                        ? const SizedBox(
-                                          height: 20,
-                                          width: 20,
-                                          child: CircularProgressIndicator(
-                                            strokeWidth: 2,
-                                            color: Colors.white,
+                                          },
+                                  style: _ProfileButtonStyles.primary(
+                                    filled: _editingHealth,
+                                  ),
+                                  child:
+                                      _savingHealth
+                                          ? const SizedBox(
+                                            height: 20,
+                                            width: 20,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2,
+                                              color: Colors.white,
+                                            ),
+                                          )
+                                          : Text(
+                                            _editingHealth
+                                                ? 'SALVAR ALTERAÇÕES'
+                                                : 'ATUALIZAR FICHA DE SAÚDE',
                                           ),
-                                        )
-                                        : Text(
-                                          _editingHealth
-                                              ? 'SALVAR ALTERAÇÕES'
-                                              : 'ATUALIZAR FICHA DE SAÚDE',
-                                        ),
+                                ),
                               ),
-                            ),
-                          ],
-                        );
-                      },
+                            ],
+                          );
+                        },
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 20),
+                    const SizedBox(height: 20),
 
-                  _SectionCard(
-                    child: StatefulBuilder(
-                      builder: (context, refreshEmergencyCard) {
-                        final emergency = profile?.emergencyContact;
+                    _SectionCard(
+                      child: StatefulBuilder(
+                        builder: (context, refreshEmergencyCard) {
+                          final emergency = profile?.emergencyContact;
 
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const _SectionHeader(
-                              icon: Icons.contact_phone_outlined,
-                              title: 'CONTATO DE EMERGÊNCIA',
-                            ),
-                            const SizedBox(height: 16),
-
-                            if (_editingEmergency) ...[
-                              TextField(
-                                controller: _emergencyNameController,
-                                style: _ProfileText.input,
-                                decoration: _profileInputDecoration(
-                                  label: 'Nome do contato',
-                                  icon: Icons.person_outline,
-                                ),
-                              ),
-                              const SizedBox(height: 12),
-                              TextField(
-                                controller: _emergencyPhoneController,
-                                keyboardType: TextInputType.phone,
-                                inputFormatters: [_phoneMaskFormatter],
-                                style: _ProfileText.input,
-                                decoration: _profileInputDecoration(
-                                  label: 'Telefone',
-                                  hint: '(11) 99999-9999',
-                                  icon: Icons.phone_outlined,
-                                ),
-                              ),
-                              const SizedBox(height: 12),
-                              DropdownButtonFormField<String>(
-                                value:
-                                    relationshipOptions.contains(
-                                          _selectedRelationship,
-                                        )
-                                        ? _selectedRelationship
-                                        : null,
-                                style: _ProfileText.input,
-                                decoration: _profileInputDecoration(
-                                  label: 'Grau de Parentesco',
-                                  icon: Icons.people_outline,
-                                ),
-                                items:
-                                    relationshipOptions.map((entry) {
-                                      return DropdownMenuItem<String>(
-                                        value: entry,
-                                        child: Text(entry),
-                                      );
-                                    }).toList(),
-                                onChanged: (value) {
-                                  refreshEmergencyCard(() {
-                                    _selectedRelationship = value;
-                                  });
-                                },
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const _SectionHeader(
+                                icon: Icons.contact_phone_outlined,
+                                title: 'CONTATO DE EMERGÊNCIA',
                               ),
                               const SizedBox(height: 16),
+
+                              if (_editingEmergency) ...[
+                                TextField(
+                                  controller: _emergencyNameController,
+                                  style: _ProfileText.input,
+                                  decoration: _profileInputDecoration(
+                                    label: 'Nome do contato',
+                                    icon: Icons.person_outline,
+                                  ),
+                                ),
+                                const SizedBox(height: 12),
+                                TextField(
+                                  controller: _emergencyPhoneController,
+                                  keyboardType: TextInputType.phone,
+                                  inputFormatters: [_phoneMaskFormatter],
+                                  style: _ProfileText.input,
+                                  decoration: _profileInputDecoration(
+                                    label: 'Telefone',
+                                    hint: '(11) 99999-9999',
+                                    icon: Icons.phone_outlined,
+                                  ),
+                                ),
+                                const SizedBox(height: 12),
+                                DropdownButtonFormField<String>(
+                                  value:
+                                      relationshipOptions.contains(
+                                            _selectedRelationship,
+                                          )
+                                          ? _selectedRelationship
+                                          : null,
+                                  style: _ProfileText.input,
+                                  decoration: _profileInputDecoration(
+                                    label: 'Grau de Parentesco',
+                                    icon: Icons.people_outline,
+                                  ),
+                                  items:
+                                      relationshipOptions.map((entry) {
+                                        return DropdownMenuItem<String>(
+                                          value: entry,
+                                          child: Text(entry),
+                                        );
+                                      }).toList(),
+                                  onChanged: (value) {
+                                    refreshEmergencyCard(() {
+                                      _selectedRelationship = value;
+                                    });
+                                  },
+                                ),
+                                const SizedBox(height: 16),
+                                SizedBox(
+                                  width: double.infinity,
+                                  child: OutlinedButton(
+                                    onPressed:
+                                        _savingEmergency
+                                            ? null
+                                            : () {
+                                              refreshEmergencyCard(() {
+                                                _editingEmergency = false;
+                                              });
+                                            },
+                                    style: _ProfileButtonStyles.secondary(),
+                                    child: const Text('CANCELAR'),
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                              ] else ...[
+                                _InfoCardList(
+                                  label: 'Contato Salvo',
+                                  value:
+                                      emergency != null
+                                          ? [
+                                            emergency.name,
+                                            formatPhone(emergency.phone),
+                                            emergency.relationship,
+                                          ]
+                                          : ['Não informado'],
+                                ),
+                                const SizedBox(height: 14),
+                              ],
+
                               SizedBox(
                                 width: double.infinity,
                                 child: OutlinedButton(
                                   onPressed:
                                       _savingEmergency
                                           ? null
-                                          : () {
+                                          : () async {
+                                            if (!_editingEmergency) {
+                                              _emergencyNameController.text =
+                                                  emergency?.name ?? '';
+                                              _emergencyPhoneController.text =
+                                                  _phoneMaskFormatter.maskText(
+                                                    emergency?.phone ?? '',
+                                                  );
+
+                                              if (emergency?.relationship !=
+                                                      null &&
+                                                  relationshipOptions.contains(
+                                                    emergency!.relationship,
+                                                  )) {
+                                                _selectedRelationship =
+                                                    emergency.relationship;
+                                              } else {
+                                                _selectedRelationship = 'Outro';
+                                              }
+
+                                              refreshEmergencyCard(() {
+                                                _editingEmergency = true;
+                                              });
+                                              return;
+                                            }
+
                                             refreshEmergencyCard(() {
-                                              _editingEmergency = false;
+                                              _savingEmergency = true;
                                             });
+
+                                            try {
+                                              final newName =
+                                                  _emergencyNameController.text
+                                                      .trim();
+                                              final newPhone =
+                                                  _emergencyPhoneController.text
+                                                      .trim()
+                                                      .replaceAll(
+                                                        RegExp(r'\D'),
+                                                        '',
+                                                      );
+                                              final newRelationship =
+                                                  _selectedRelationship ??
+                                                  'Outro';
+
+                                              await _updateDataController
+                                                  .updateEmergencyContact(
+                                                    userId: user.id,
+                                                    name: newName,
+                                                    phone: newPhone,
+                                                    relationship:
+                                                        newRelationship,
+                                                  );
+
+                                              if (emergency != null) {
+                                                emergency.name = newName;
+                                                emergency.phone = newPhone;
+                                                emergency.relationship =
+                                                    newRelationship;
+                                              }
+
+                                              refreshEmergencyCard(() {
+                                                _editingEmergency = false;
+                                              });
+
+                                              if (mounted) {
+                                                ScaffoldMessenger.of(
+                                                  context,
+                                                ).showSnackBar(
+                                                  const SnackBar(
+                                                    content: Text(
+                                                      'Contato salvo com sucesso!',
+                                                    ),
+                                                    backgroundColor:
+                                                        AppColors.success,
+                                                  ),
+                                                );
+                                              }
+                                            } catch (e) {
+                                              if (mounted) {
+                                                ScaffoldMessenger.of(
+                                                  context,
+                                                ).showSnackBar(
+                                                  const SnackBar(
+                                                    content: Text(
+                                                      'Falha ao salvar contato. Tente novamente.',
+                                                    ),
+                                                    backgroundColor: Colors.red,
+                                                  ),
+                                                );
+                                              }
+                                            } finally {
+                                              refreshEmergencyCard(() {
+                                                _savingEmergency = false;
+                                              });
+                                            }
                                           },
-                                  style: _ProfileButtonStyles.secondary(),
-                                  child: const Text('CANCELAR'),
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                            ] else ...[
-                              _InfoCardList(
-                                label: 'Contato Salvo',
-                                value:
-                                    emergency != null
-                                        ? [
-                                          emergency.name,
-                                          formatPhone(emergency.phone),
-                                          emergency.relationship,
-                                        ]
-                                        : ['Não informado'],
-                              ),
-                              const SizedBox(height: 14),
-                            ],
-
-                            SizedBox(
-                              width: double.infinity,
-                              child: OutlinedButton(
-                                onPressed:
-                                    _savingEmergency
-                                        ? null
-                                        : () async {
-                                          if (!_editingEmergency) {
-                                            _emergencyNameController.text =
-                                                emergency?.name ?? '';
-                                            _emergencyPhoneController.text =
-                                                _phoneMaskFormatter.maskText(
-                                                  emergency?.phone ?? '',
-                                                );
-
-                                            if (emergency?.relationship !=
-                                                    null &&
-                                                relationshipOptions.contains(
-                                                  emergency!.relationship,
-                                                )) {
-                                              _selectedRelationship =
-                                                  emergency.relationship;
-                                            } else {
-                                              _selectedRelationship = 'Outro';
-                                            }
-
-                                            refreshEmergencyCard(() {
-                                              _editingEmergency = true;
-                                            });
-                                            return;
-                                          }
-
-                                          refreshEmergencyCard(() {
-                                            _savingEmergency = true;
-                                          });
-
-                                          try {
-                                            final newName =
-                                                _emergencyNameController.text
-                                                    .trim();
-                                            final newPhone =
-                                                _emergencyPhoneController.text
-                                                    .trim()
-                                                    .replaceAll(
-                                                      RegExp(r'\D'),
-                                                      '',
-                                                    );
-                                            final newRelationship =
-                                                _selectedRelationship ??
-                                                'Outro';
-
-                                            await _updateDataController
-                                                .updateEmergencyContact(
-                                                  userId: user.id,
-                                                  name: newName,
-                                                  phone: newPhone,
-                                                  relationship: newRelationship,
-                                                );
-
-                                            if (emergency != null) {
-                                              emergency.name = newName;
-                                              emergency.phone = newPhone;
-                                              emergency.relationship =
-                                                  newRelationship;
-                                            }
-
-                                            refreshEmergencyCard(() {
-                                              _editingEmergency = false;
-                                            });
-
-                                            if (mounted) {
-                                              ScaffoldMessenger.of(
-                                                context,
-                                              ).showSnackBar(
-                                                const SnackBar(
-                                                  content: Text(
-                                                    'Contato salvo com sucesso!',
-                                                  ),
-                                                  backgroundColor:
-                                                      AppColors.success,
-                                                ),
-                                              );
-                                            }
-                                          } catch (e) {
-                                            if (mounted) {
-                                              ScaffoldMessenger.of(
-                                                context,
-                                              ).showSnackBar(
-                                                const SnackBar(
-                                                  content: Text(
-                                                    'Falha ao salvar contato. Tente novamente.',
-                                                  ),
-                                                  backgroundColor: Colors.red,
-                                                ),
-                                              );
-                                            }
-                                          } finally {
-                                            refreshEmergencyCard(() {
-                                              _savingEmergency = false;
-                                            });
-                                          }
-                                        },
-                                style: _ProfileButtonStyles.primary(
-                                  filled: _editingEmergency,
-                                ),
-                                child:
-                                    _savingEmergency
-                                        ? const SizedBox(
-                                          height: 20,
-                                          width: 20,
-                                          child: CircularProgressIndicator(
-                                            strokeWidth: 2,
-                                            color: Colors.white,
+                                  style: _ProfileButtonStyles.primary(
+                                    filled: _editingEmergency,
+                                  ),
+                                  child:
+                                      _savingEmergency
+                                          ? const SizedBox(
+                                            height: 20,
+                                            width: 20,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2,
+                                              color: Colors.white,
+                                            ),
+                                          )
+                                          : Text(
+                                            _editingEmergency
+                                                ? 'SALVAR CONTATO'
+                                                : 'ATUALIZAR CONTATO',
                                           ),
-                                        )
-                                        : Text(
-                                          _editingEmergency
-                                              ? 'SALVAR CONTATO'
-                                              : 'ATUALIZAR CONTATO',
-                                        ),
+                                ),
                               ),
-                            ),
-                          ],
-                        );
-                      },
+                            ],
+                          );
+                        },
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 20),
+                    const SizedBox(height: 20),
 
-                  _SectionCard(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const _SectionHeader(
-                          icon: Icons.credit_card,
-                          title: 'PLANO E MENSALIDADE',
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          'Plano Conexão Semestral',
-                          style: GoogleFonts.inter(
-                            color: AppColors.textPrimary,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
+                    _SectionCard(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const _SectionHeader(
+                            icon: Icons.credit_card,
+                            title: 'PLANO E MENSALIDADE',
                           ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          'Renovação em 10/11/2023',
-                          style: GoogleFonts.inter(
-                            color: AppColors.textSecondary,
-                            fontSize: 13,
+                          const SizedBox(height: 16),
+                          Text(
+                            'Plano Conexão Semestral',
+                            style: GoogleFonts.inter(
+                              color: AppColors.textPrimary,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 16),
-                        const Row(
-                          children: [
-                            Expanded(
-                              child: _InfoCardString(
-                                label: 'Modalidades',
-                                value: 'Musculação + Pilates',
-                              ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Renovação em 10/11/2023',
+                            style: GoogleFonts.inter(
+                              color: AppColors.textSecondary,
+                              fontSize: 13,
                             ),
-                            SizedBox(width: 12),
-                            Expanded(
-                              child: _InfoCardString(
-                                label: 'Matrícula',
-                                value: '#GB-2023-0482',
+                          ),
+                          const SizedBox(height: 16),
+                          const Row(
+                            children: [
+                              Expanded(
+                                child: _InfoCardString(
+                                  label: 'Modalidades',
+                                  value: 'Musculação + Pilates',
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                      ],
+                              SizedBox(width: 12),
+                              Expanded(
+                                child: _InfoCardString(
+                                  label: 'Matrícula',
+                                  value: '#GB-2023-0482',
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
+                  ],
                   const SizedBox(height: 20),
 
                   _SectionCard(
@@ -901,9 +1020,15 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
 }
 
 class _ProfileSummary extends StatelessWidget {
-  const _ProfileSummary({required this.user});
+  const _ProfileSummary({
+    required this.user,
+    required this.isUploadingPhoto,
+    required this.onChangePhoto,
+  });
 
   final UserModel user;
+  final bool isUploadingPhoto;
+  final VoidCallback onChangePhoto;
 
   @override
   Widget build(BuildContext context) {
@@ -911,9 +1036,18 @@ class _ProfileSummary extends StatelessWidget {
       child: Row(
         children: [
           Stack(
-            children: const [
-              _ProfileAvatar(),
-              Positioned(right: 0, bottom: 0, child: _VerifiedBadge()),
+            children: [
+              _ProfileAvatar(
+                photoUrl: user.photoUrl,
+                isUploading: isUploadingPhoto,
+                onTap: onChangePhoto,
+              ),
+              const Positioned(right: 0, top: 0, child: _VerifiedBadge()),
+              Positioned(
+                right: 0,
+                bottom: 0,
+                child: _EditPhotoButton(onTap: onChangePhoto),
+              ),
             ],
           ),
           const SizedBox(width: 16),
@@ -939,39 +1073,41 @@ class _ProfileSummary extends StatelessWidget {
                     fontSize: 14,
                   ),
                 ),
-                const SizedBox(height: 10),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: AppColors.avatarBackground,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(
-                        Icons.fitness_center,
-                        color: AppColors.primary,
-                        size: 16,
-                      ),
-                      const SizedBox(width: 6),
-                      Flexible(
-                        child: Text(
-                          'Plano Presencial + App',
-                          overflow: TextOverflow.ellipsis,
-                          style: GoogleFonts.inter(
-                            color: AppColors.primary,
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
+                if (user.type != UserType.admin) ...[
+                  const SizedBox(height: 10),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.avatarBackground,
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          Icons.fitness_center,
+                          color: AppColors.primary,
+                          size: 16,
+                        ),
+                        const SizedBox(width: 6),
+                        Flexible(
+                          child: Text(
+                            'Plano Presencial + App',
+                            overflow: TextOverflow.ellipsis,
+                            style: GoogleFonts.inter(
+                              color: AppColors.primary,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
+                ],
               ],
             ),
           ),
@@ -982,19 +1118,96 @@ class _ProfileSummary extends StatelessWidget {
 }
 
 class _ProfileAvatar extends StatelessWidget {
-  const _ProfileAvatar();
+  const _ProfileAvatar({
+    required this.photoUrl,
+    required this.isUploading,
+    required this.onTap,
+  });
+
+  final String? photoUrl;
+  final bool isUploading;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 80,
-      height: 80,
-      decoration: BoxDecoration(
-        color: AppColors.avatarBackground,
-        shape: BoxShape.circle,
-        border: Border.all(color: AppColors.chartBar, width: 2),
+    const placeholder = Icon(Icons.person, size: 40, color: AppColors.primary);
+    final url = photoUrl;
+
+    // A borda fica num anel externo, com uma folga branca, e a foto é
+    // recortada por dentro; assim a imagem nunca cobre a borda.
+    return GestureDetector(
+      key: const Key('profile_avatar'),
+      onTap: isUploading ? null : onTap,
+      child: Container(
+        width: 80,
+        height: 80,
+        padding: const EdgeInsets.all(3),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          shape: BoxShape.circle,
+          border: Border.all(color: AppColors.chartBar, width: 2),
+        ),
+        child: ClipOval(
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              const ColoredBox(color: AppColors.avatarBackground),
+              if (url == null || url.isEmpty)
+                placeholder
+              else
+                Image.network(
+                  ProfilePhotoService.thumbnailUrl(url),
+                  fit: BoxFit.cover,
+                  alignment: Alignment.topCenter,
+                  frameBuilder:
+                      (_, child, frame, wasSynchronouslyLoaded) =>
+                          wasSynchronouslyLoaded || frame != null
+                              ? child
+                              : placeholder,
+                  errorBuilder: (_, __, ___) => placeholder,
+                ),
+              if (isUploading)
+                const ColoredBox(
+                  color: Colors.black38,
+                  child: Center(
+                    child: SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2.5,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
       ),
-      child: const Icon(Icons.person, size: 40, color: AppColors.primary),
+    );
+  }
+}
+
+class _EditPhotoButton extends StatelessWidget {
+  const _EditPhotoButton({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      key: const Key('profile_edit_photo'),
+      onTap: onTap,
+      child: Container(
+        width: 26,
+        height: 26,
+        decoration: BoxDecoration(
+          color: AppColors.primary,
+          shape: BoxShape.circle,
+          border: Border.all(color: Colors.white, width: 2),
+        ),
+        child: const Icon(Icons.photo_camera, color: Colors.white, size: 14),
+      ),
     );
   }
 }

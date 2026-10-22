@@ -115,5 +115,31 @@ void main() {
         expect(data['email'], 'grazi@example.com');
       },
     );
+
+    test(
+      'updatePhotoUrl deve salvar a URL sem apagar os demais dados',
+      () async {
+        await fakeFirestore.collection('users').doc(userId).set({
+          'name': 'Grazi',
+          'registrationProfile': {'primaryGoal': 'conditioning'},
+        });
+
+        await updateDataController.updatePhotoUrl(
+          userId: userId,
+          photoUrl: 'https://res.cloudinary.com/demo/image/upload/a.jpg',
+        );
+
+        final snapshot =
+            await fakeFirestore.collection('users').doc(userId).get();
+        final data = snapshot.data()!;
+
+        expect(
+          data['photoUrl'],
+          'https://res.cloudinary.com/demo/image/upload/a.jpg',
+        );
+        expect(data['name'], 'Grazi');
+        expect(data['registrationProfile']['primaryGoal'], 'conditioning');
+      },
+    );
   });
 }

@@ -1,5 +1,6 @@
 import 'package:academiagrazi/controller/users/update_data.dart';
 import 'package:academiagrazi/locator.dart';
+import 'package:academiagrazi/service/users/profile_photo.dart';
 import 'package:academiagrazi/view/auth_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -60,6 +61,9 @@ void main() {
       mockRegisterInstructorController,
     );
     locator.registerSingleton<PreferencesService>(mockPreferencesService);
+    locator.registerSingleton<ProfilePhotoService>(
+      ProfilePhotoService(cloudName: '', uploadPreset: ''),
+    );
 
     when(mockPreferencesService.dailyReminder).thenReturn(false);
     when(mockPreferencesService.professorNotices).thenReturn(true);

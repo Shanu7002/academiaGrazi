@@ -2,6 +2,7 @@ import 'package:academiagrazi/controller/users/register_user.dart';
 import 'package:academiagrazi/locator.dart';
 import 'package:academiagrazi/models/users/registration_profile.dart';
 import 'package:academiagrazi/view/tab_router.dart';
+import 'package:academiagrazi/service/users/register_instructor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -105,9 +106,12 @@ class _SelfRegisterViewState extends State<SelfRegisterView> {
   }
 
   Future<void> _validateCodeAndContinue() async {
-    final code = _codeController.text.trim().toUpperCase();
-    if (code.length != 8) {
-      _showMessage('Informe o código de 8 caracteres do seu instrutor.');
+    final code = _codeController.text.trim();
+    if (code.length != RegisterInstructorService.codeLength) {
+      _showMessage(
+        'Informe o código de ${RegisterInstructorService.codeLength} '
+        'dígitos do seu instrutor.',
+      );
       return;
     }
 
@@ -116,7 +120,10 @@ class _SelfRegisterViewState extends State<SelfRegisterView> {
       final info = await _userController.validateInstructorCode(code);
       if (!mounted) return;
       if (info == null) {
-        _showMessage('Código inválido ou inativo.');
+        _showMessage(
+          'Código inválido ou expirado. Peça o código atual ao seu '
+          'instrutor (ele muda a cada 15 minutos).',
+        );
         return;
       }
       _draft.instructorCode = info.code;
@@ -420,25 +427,21 @@ class _SelfRegisterViewState extends State<SelfRegisterView> {
           icon: Icons.link,
           title: 'Conexão segura',
           message:
-              'O código vincula seu perfil ao instrutor certo e pode ser usado por todos os alunos dele.',
+              'O código vincula seu perfil ao instrutor certo. Ele tem 4 dígitos e muda a cada 15 minutos.',
         ),
         const SizedBox(height: 24),
         _field(
           key: const Key('registrationInstructorCode'),
           controller: _codeController,
           label: 'CÓDIGO DO INSTRUTOR',
-          hint: 'Ex: GR4Z1ABC',
+          hint: 'Ex: 4821',
           icon: Icons.key,
-          textCapitalization: TextCapitalization.characters,
+          keyboardType: TextInputType.number,
           inputFormatters: [
-            LengthLimitingTextInputFormatter(8),
-            FilteringTextInputFormatter.allow(RegExp('[a-zA-Z0-9]')),
-            TextInputFormatter.withFunction(
-              (oldValue, newValue) => newValue.copyWith(
-                text: newValue.text.toUpperCase(),
-                selection: newValue.selection,
-              ),
+            LengthLimitingTextInputFormatter(
+              RegisterInstructorService.codeLength,
             ),
+            FilteringTextInputFormatter.digitsOnly,
           ],
         ),
         if (_draft.instructorName != null)
