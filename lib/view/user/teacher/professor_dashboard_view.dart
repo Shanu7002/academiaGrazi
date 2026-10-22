@@ -320,86 +320,81 @@ class _PriorityCard extends StatelessWidget {
           ),
         ],
       ),
-      child: IntrinsicHeight(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: Stack(
           children: [
-            // Faixa lateral colorida
-            Container(
-              width: 5,
-              decoration: BoxDecoration(
-                color: accentColor,
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(16),
-                  bottomLeft: Radius.circular(16),
-                ),
-              ),
+            Positioned(
+              left: 0,
+              top: 0,
+              bottom: 0,
+              child: Container(width: 5, color: accentColor),
             ),
-
-            // Conteúdo do card
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(20),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Ícone
-                    Container(
-                      width: 44,
-                      height: 44,
-                      decoration: BoxDecoration(
-                        color: iconBackgroundColor,
-                        shape: BoxShape.circle,
-                      ),
-                      alignment: Alignment.center,
-                      child: SvgPicture.asset(
-                        asset,
-                        width: 24,
-                        height: 24,
-                        fit: BoxFit.contain,
-                      ),
+            Padding(
+              padding: const EdgeInsets.only(
+                left: 24,
+                top: 20,
+                right: 20,
+                bottom: 20,
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Ícone
+                  Container(
+                    width: 44,
+                    height: 44,
+                    decoration: BoxDecoration(
+                      color: iconBackgroundColor,
+                      shape: BoxShape.circle,
                     ),
+                    alignment: Alignment.center,
+                    child: SvgPicture.asset(
+                      asset,
+                      width: 24,
+                      height: 24,
+                      fit: BoxFit.contain,
+                    ),
+                  ),
 
-                    const SizedBox(width: 12),
+                  const SizedBox(width: 12),
 
-                    // Nome e descrição
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            name,
-                            style: GoogleFonts.inter(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              color: const Color(0xFF001E2D),
-                            ),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          name,
+                          style: GoogleFonts.inter(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: const Color(0xFF001E2D),
                           ),
-                          const SizedBox(height: 4),
-                          Text(
-                            description,
-                            style: GoogleFonts.inter(
-                              fontSize: 16,
-                              color: const Color(0xFF3F4946),
-                            ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          description,
+                          style: GoogleFonts.inter(
+                            fontSize: 16,
+                            color: const Color(0xFF3F4946),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
+                  ),
 
-                    const SizedBox(width: 8),
+                  const SizedBox(width: 8),
 
-                    // Ação
-                    Text(
-                      action,
-                      style: GoogleFonts.inter(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: accentColor,
-                      ),
+                  Text(
+                    action,
+                    style: GoogleFonts.inter(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: accentColor,
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ],
