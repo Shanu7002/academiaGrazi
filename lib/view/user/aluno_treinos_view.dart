@@ -21,9 +21,7 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-    appBar: const CustomAppBar(
-    title: 'GRAZI BRAZ',
-    ),
+      appBar: const CustomAppBar(title: 'GRAZI BRAZ'),
       backgroundColor: AppColors.trainingListBackground,
       body: SafeArea(
         bottom: false,

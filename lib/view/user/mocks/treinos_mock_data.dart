@@ -141,8 +141,7 @@ abstract final class TreinosMockData {
     id: 'treino-a',
     letra: 'A',
     nome: 'TREINO A — PERNAS + GLÚTEOS',
-    descricao:
-        'Foco em força de cadeia posterior e estabilidade pélvica',
+    descricao: 'Foco em força de cadeia posterior e estabilidade pélvica',
     duracaoMinutos: 42,
     quantidadeExercicios: 8,
     nivel: 'Intermediário',
@@ -169,8 +168,7 @@ abstract final class TreinosMockData {
     id: 'treino-b',
     letra: 'B',
     nome: 'TREINO B — COSTAS, BÍCEPS + ABDÔMEN',
-    descricao:
-        'Tração, retração escapular e resistência profunda do tronco',
+    descricao: 'Tração, retração escapular e resistência profunda do tronco',
     duracaoMinutos: 40,
     quantidadeExercicios: 4,
     nivel: 'Intermediário',
@@ -181,20 +179,14 @@ abstract final class TreinosMockData {
         'Prancha ativa isométrica.',
     status: TreinoStatusUi.concluido,
     statusTexto: 'Concluído ontem • 40 min',
-    exercicios: [
-      puxada,
-      remada,
-      roscaDireta,
-      prancha,
-    ],
+    exercicios: [puxada, remada, roscaDireta, prancha],
   );
 
   static const TreinoUi treinoC = TreinoUi(
     id: 'treino-c',
     letra: 'C',
     nome: 'TREINO C — PEITO, OMBROS, TRÍCEPS + MOBILIDADE',
-    descricao:
-        'Empurrar, estabilidade glenoumeral e flexibilidade articular',
+    descricao: 'Empurrar, estabilidade glenoumeral e flexibilidade articular',
     duracaoMinutos: 38,
     quantidadeExercicios: 4,
     nivel: 'Intermediário',
@@ -205,20 +197,15 @@ abstract final class TreinosMockData {
         'Tríceps corda polia, Rotação torácica.',
     status: TreinoStatusUi.programado,
     statusTexto: 'Programado para Quinta-feira',
-    exercicios: [
-      supino,
-      elevacaoLateral,
-      tricepsCorda,
-      rotacaoToracica,
-    ],
+    exercicios: [supino, elevacaoLateral, tricepsCorda, rotacaoToracica],
   );
 
   // ============================================================
   // DETALHE DOS EXERCÍCIOS
   // ============================================================
 
-  static const AlunoExercicioDetalheUiData agachamentoDetalhe =
-      AlunoExercicioDetalheUiData(
+  static const AlunoExercicioDetalheUiData
+  agachamentoDetalhe = AlunoExercicioDetalheUiData(
     exercicio: agachamento,
     descanso: '75s',
     tempoVideo: '01:45',
@@ -231,123 +218,123 @@ abstract final class TreinosMockData {
 
   static const AlunoExercicioDetalheUiData elevacaoPelvicaDetalhe =
       AlunoExercicioDetalheUiData(
-    exercicio: elevacaoPelvica,
-    descanso: '—',
-    tempoVideo: '00:00',
-    orientacoes: _orientacaoGenerica,
-  );
+        exercicio: elevacaoPelvica,
+        descanso: '—',
+        tempoVideo: '00:00',
+        orientacoes: _orientacaoGenerica,
+      );
 
   static const AlunoExercicioDetalheUiData afundoDetalhe =
       AlunoExercicioDetalheUiData(
-    exercicio: afundo,
-    descanso: '—',
-    tempoVideo: '00:00',
-    orientacoes: _orientacaoGenerica,
-  );
+        exercicio: afundo,
+        descanso: '—',
+        tempoVideo: '00:00',
+        orientacoes: _orientacaoGenerica,
+      );
 
   static const AlunoExercicioDetalheUiData extensoraDetalhe =
       AlunoExercicioDetalheUiData(
-    exercicio: extensora,
-    descanso: '—',
-    tempoVideo: '00:00',
-    orientacoes: _orientacaoGenerica,
-  );
+        exercicio: extensora,
+        descanso: '—',
+        tempoVideo: '00:00',
+        orientacoes: _orientacaoGenerica,
+      );
 
   static const AlunoExercicioDetalheUiData stiffDetalhe =
       AlunoExercicioDetalheUiData(
-    exercicio: stiff,
-    descanso: '—',
-    tempoVideo: '00:00',
-    orientacoes: _orientacaoGenerica,
-  );
+        exercicio: stiff,
+        descanso: '—',
+        tempoVideo: '00:00',
+        orientacoes: _orientacaoGenerica,
+      );
 
   static const AlunoExercicioDetalheUiData flexoraDetalhe =
       AlunoExercicioDetalheUiData(
-    exercicio: flexora,
-    descanso: '—',
-    tempoVideo: '00:00',
-    orientacoes: _orientacaoGenerica,
-  );
+        exercicio: flexora,
+        descanso: '—',
+        tempoVideo: '00:00',
+        orientacoes: _orientacaoGenerica,
+      );
 
   static const AlunoExercicioDetalheUiData panturrilhaDetalhe =
       AlunoExercicioDetalheUiData(
-    exercicio: panturrilha,
-    descanso: '—',
-    tempoVideo: '00:00',
-    orientacoes: _orientacaoGenerica,
-  );
+        exercicio: panturrilha,
+        descanso: '—',
+        tempoVideo: '00:00',
+        orientacoes: _orientacaoGenerica,
+      );
 
   static const AlunoExercicioDetalheUiData abdutoraDetalhe =
       AlunoExercicioDetalheUiData(
-    exercicio: abdutora,
-    descanso: '—',
-    tempoVideo: '00:00',
-    orientacoes: _orientacaoGenerica,
-  );
+        exercicio: abdutora,
+        descanso: '—',
+        tempoVideo: '00:00',
+        orientacoes: _orientacaoGenerica,
+      );
 
   static const AlunoExercicioDetalheUiData puxadaDetalhe =
       AlunoExercicioDetalheUiData(
-    exercicio: puxada,
-    descanso: '—',
-    tempoVideo: '00:00',
-    orientacoes: _orientacaoGenerica,
-  );
+        exercicio: puxada,
+        descanso: '—',
+        tempoVideo: '00:00',
+        orientacoes: _orientacaoGenerica,
+      );
 
   static const AlunoExercicioDetalheUiData remadaDetalhe =
       AlunoExercicioDetalheUiData(
-    exercicio: remada,
-    descanso: '—',
-    tempoVideo: '00:00',
-    orientacoes: _orientacaoGenerica,
-  );
+        exercicio: remada,
+        descanso: '—',
+        tempoVideo: '00:00',
+        orientacoes: _orientacaoGenerica,
+      );
 
   static const AlunoExercicioDetalheUiData roscaDiretaDetalhe =
       AlunoExercicioDetalheUiData(
-    exercicio: roscaDireta,
-    descanso: '—',
-    tempoVideo: '00:00',
-    orientacoes: _orientacaoGenerica,
-  );
+        exercicio: roscaDireta,
+        descanso: '—',
+        tempoVideo: '00:00',
+        orientacoes: _orientacaoGenerica,
+      );
 
   static const AlunoExercicioDetalheUiData pranchaDetalhe =
       AlunoExercicioDetalheUiData(
-    exercicio: prancha,
-    descanso: '—',
-    tempoVideo: '00:00',
-    orientacoes: _orientacaoGenerica,
-  );
+        exercicio: prancha,
+        descanso: '—',
+        tempoVideo: '00:00',
+        orientacoes: _orientacaoGenerica,
+      );
 
   static const AlunoExercicioDetalheUiData supinoDetalhe =
       AlunoExercicioDetalheUiData(
-    exercicio: supino,
-    descanso: '—',
-    tempoVideo: '00:00',
-    orientacoes: _orientacaoGenerica,
-  );
+        exercicio: supino,
+        descanso: '—',
+        tempoVideo: '00:00',
+        orientacoes: _orientacaoGenerica,
+      );
 
   static const AlunoExercicioDetalheUiData elevacaoLateralDetalhe =
       AlunoExercicioDetalheUiData(
-    exercicio: elevacaoLateral,
-    descanso: '—',
-    tempoVideo: '00:00',
-    orientacoes: _orientacaoGenerica,
-  );
+        exercicio: elevacaoLateral,
+        descanso: '—',
+        tempoVideo: '00:00',
+        orientacoes: _orientacaoGenerica,
+      );
 
   static const AlunoExercicioDetalheUiData tricepsCordaDetalhe =
       AlunoExercicioDetalheUiData(
-    exercicio: tricepsCorda,
-    descanso: '—',
-    tempoVideo: '00:00',
-    orientacoes: _orientacaoGenerica,
-  );
+        exercicio: tricepsCorda,
+        descanso: '—',
+        tempoVideo: '00:00',
+        orientacoes: _orientacaoGenerica,
+      );
 
   static const AlunoExercicioDetalheUiData rotacaoToracicaDetalhe =
       AlunoExercicioDetalheUiData(
-    exercicio: rotacaoToracica,
-    descanso: '—',
-    tempoVideo: '00:00',
-    orientacoes: _orientacaoGenerica,
-  );
+        exercicio: rotacaoToracica,
+        descanso: '—',
+        tempoVideo: '00:00',
+        orientacoes: _orientacaoGenerica,
+      );
 
   // ============================================================
   // DADOS DA VIEW "TREINO DO DIA"
@@ -358,10 +345,7 @@ abstract final class TreinosMockData {
     professorNome: 'Prof. Marcos',
     aquecimentoNome: 'Mobilidade de quadril',
     aquecimentoResumo: '1 série • 60 seg',
-    exerciciosConcluidosIniciais: {
-      'agachamento',
-      'elevacao-pelvica',
-    },
+    exerciciosConcluidosIniciais: {'agachamento', 'elevacao-pelvica'},
     exercicioDetalhePorId: {
       'agachamento': agachamentoDetalhe,
       'elevacao-pelvica': elevacaoPelvicaDetalhe,
@@ -418,11 +402,7 @@ abstract final class TreinosMockData {
     duracaoLegenda: 'tempo médio',
     validade: '25/08',
     validadeLegenda: 'revisão geral',
-    treinos: [
-      treinoA,
-      treinoB,
-      treinoC,
-    ],
+    treinos: [treinoA, treinoB, treinoC],
     complementares: [
       TreinoComplementarUi(
         id: 'mobilidade',
@@ -433,8 +413,7 @@ abstract final class TreinosMockData {
       TreinoComplementarUi(
         id: 'core',
         nome: 'Core Sem Carga',
-        descricao:
-            'Para manter o ritmo ativo em viagens ou finais de semana',
+        descricao: 'Para manter o ritmo ativo em viagens ou finais de semana',
         duracaoMinutos: 20,
       ),
     ],

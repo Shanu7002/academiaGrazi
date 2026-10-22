@@ -5,11 +5,14 @@ import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:academiagrazi/controller/users/update_data.dart';
 import 'package:academiagrazi/locator.dart';
 import 'package:academiagrazi/models/users/user_model.dart';
+import 'package:academiagrazi/service/users/profile_photo.dart';
 import 'package:academiagrazi/service/users/register_user.dart';
 import 'package:academiagrazi/view/components/app_bar.dart';
 import 'package:academiagrazi/view/components/invite_code_card.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 class AlunoProfileView extends StatefulWidget {
   const AlunoProfileView({super.key});
@@ -23,9 +26,12 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
   final RegisterUserService _userService = locator<RegisterUserService>();
   final UpdateDataController _updateDataController =
       locator<UpdateDataController>();
+  final ProfilePhotoService _profilePhotoService =
+      locator<ProfilePhotoService>();
   UserModel? _currentUser;
   UserModel? _currentResponsable;
   bool _isLoading = true;
+  bool _uploadingPhoto = false;
 
   bool _editingHealth = false;
   bool _savingHealth = false;
@@ -115,6 +121,82 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
     }
   }
 
+  Future<void> _changePhoto() async {
+    final user = _currentUser;
+    if (user == null || _uploadingPhoto) return;
+
+    // Na web não há câmera via image_picker; vai direto para a galeria.
+    final source =
+        kIsWeb
+            ? ImageSource.gallery
+            : await showModalBottomSheet<ImageSource>(
+              context: context,
+              builder:
+                  (sheetContext) => SafeArea(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        ListTile(
+                          leading: const Icon(Icons.photo_library_outlined),
+                          title: const Text('Escolher da galeria'),
+                          onTap:
+                              () => Navigator.pop(
+                                sheetContext,
+                                ImageSource.gallery,
+                              ),
+                        ),
+                        ListTile(
+                          leading: const Icon(Icons.photo_camera_outlined),
+                          title: const Text('Tirar foto'),
+                          onTap:
+                              () => Navigator.pop(
+                                sheetContext,
+                                ImageSource.camera,
+                              ),
+                        ),
+                      ],
+                    ),
+                  ),
+            );
+    if (source == null) return;
+
+    final picked = await ImagePicker().pickImage(
+      source: source,
+      maxWidth: 1024,
+      maxHeight: 1024,
+      imageQuality: 85,
+    );
+    if (picked == null || !mounted) return;
+
+    setState(() => _uploadingPhoto = true);
+    try {
+      final url = await _profilePhotoService.upload(
+        bytes: await picked.readAsBytes(),
+        fileName: picked.name,
+        userId: user.id,
+      );
+      await _updateDataController.updatePhotoUrl(
+        userId: user.id,
+        photoUrl: url,
+      );
+
+      if (!mounted) return;
+      setState(() => _currentUser = user.copyWith(photoUrl: url));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Foto de perfil atualizada!')),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Não foi possível atualizar a foto. Tente novamente.'),
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _uploadingPhoto = false);
+    }
+  }
+
   Future<void> logout() async {
     try {
       print('Executing sign out...');
@@ -186,7 +268,11 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
                     ),
                   ),
                   const SizedBox(height: 24),
-                  _ProfileSummary(user: user),
+                  _ProfileSummary(
+                    user: user,
+                    isUploadingPhoto: _uploadingPhoto,
+                    onChangePhoto: _changePhoto,
+                  ),
                   if (user.type == UserType.instructor) ...[
                     const SizedBox(height: 20),
                     _SectionCard(
@@ -934,9 +1020,15 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
 }
 
 class _ProfileSummary extends StatelessWidget {
-  const _ProfileSummary({required this.user});
+  const _ProfileSummary({
+    required this.user,
+    required this.isUploadingPhoto,
+    required this.onChangePhoto,
+  });
 
   final UserModel user;
+  final bool isUploadingPhoto;
+  final VoidCallback onChangePhoto;
 
   @override
   Widget build(BuildContext context) {
@@ -944,9 +1036,18 @@ class _ProfileSummary extends StatelessWidget {
       child: Row(
         children: [
           Stack(
-            children: const [
-              _ProfileAvatar(),
-              Positioned(right: 0, bottom: 0, child: _VerifiedBadge()),
+            children: [
+              _ProfileAvatar(
+                photoUrl: user.photoUrl,
+                isUploading: isUploadingPhoto,
+                onTap: onChangePhoto,
+              ),
+              const Positioned(right: 0, top: 0, child: _VerifiedBadge()),
+              Positioned(
+                right: 0,
+                bottom: 0,
+                child: _EditPhotoButton(onTap: onChangePhoto),
+              ),
             ],
           ),
           const SizedBox(width: 16),
@@ -1017,19 +1118,96 @@ class _ProfileSummary extends StatelessWidget {
 }
 
 class _ProfileAvatar extends StatelessWidget {
-  const _ProfileAvatar();
+  const _ProfileAvatar({
+    required this.photoUrl,
+    required this.isUploading,
+    required this.onTap,
+  });
+
+  final String? photoUrl;
+  final bool isUploading;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 80,
-      height: 80,
-      decoration: BoxDecoration(
-        color: AppColors.avatarBackground,
-        shape: BoxShape.circle,
-        border: Border.all(color: AppColors.chartBar, width: 2),
+    const placeholder = Icon(Icons.person, size: 40, color: AppColors.primary);
+    final url = photoUrl;
+
+    // A borda fica num anel externo, com uma folga branca, e a foto é
+    // recortada por dentro; assim a imagem nunca cobre a borda.
+    return GestureDetector(
+      key: const Key('profile_avatar'),
+      onTap: isUploading ? null : onTap,
+      child: Container(
+        width: 80,
+        height: 80,
+        padding: const EdgeInsets.all(3),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          shape: BoxShape.circle,
+          border: Border.all(color: AppColors.chartBar, width: 2),
+        ),
+        child: ClipOval(
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              const ColoredBox(color: AppColors.avatarBackground),
+              if (url == null || url.isEmpty)
+                placeholder
+              else
+                Image.network(
+                  ProfilePhotoService.thumbnailUrl(url),
+                  fit: BoxFit.cover,
+                  alignment: Alignment.topCenter,
+                  frameBuilder:
+                      (_, child, frame, wasSynchronouslyLoaded) =>
+                          wasSynchronouslyLoaded || frame != null
+                              ? child
+                              : placeholder,
+                  errorBuilder: (_, __, ___) => placeholder,
+                ),
+              if (isUploading)
+                const ColoredBox(
+                  color: Colors.black38,
+                  child: Center(
+                    child: SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2.5,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
       ),
-      child: const Icon(Icons.person, size: 40, color: AppColors.primary),
+    );
+  }
+}
+
+class _EditPhotoButton extends StatelessWidget {
+  const _EditPhotoButton({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      key: const Key('profile_edit_photo'),
+      onTap: onTap,
+      child: Container(
+        width: 26,
+        height: 26,
+        decoration: BoxDecoration(
+          color: AppColors.primary,
+          shape: BoxShape.circle,
+          border: Border.all(color: Colors.white, width: 2),
+        ),
+        child: const Icon(Icons.photo_camera, color: Colors.white, size: 14),
+      ),
     );
   }
 }

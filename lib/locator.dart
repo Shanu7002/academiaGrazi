@@ -7,6 +7,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:academiagrazi/service/users/register_user.dart';
 import 'package:academiagrazi/service/users/login.dart';
+import 'package:academiagrazi/service/users/profile_photo.dart';
 import 'package:academiagrazi/controller/users/login.dart';
 import 'package:academiagrazi/controller/users/register_user.dart';
 import 'package:academiagrazi/controller/users/register_instructor.dart';
@@ -31,6 +32,11 @@ Future<void> setupLocator() async {
   );
   locator.registerLazySingleton<RegisterUserService>(
     () => RegisterUserService(),
+  );
+
+  // Profile photo
+  locator.registerLazySingleton<ProfilePhotoService>(
+    () => ProfilePhotoService(),
   );
 
   // Update data
