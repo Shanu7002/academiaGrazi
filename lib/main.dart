@@ -2,6 +2,7 @@ import 'package:academiagrazi/firebase_options.dart';
 import 'package:academiagrazi/locator.dart';
 import 'package:academiagrazi/theme/app_theme.dart';
 import 'package:academiagrazi/view/auth_wrapper.dart';
+import 'package:academiagrazi/view/welcome_view.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
@@ -24,7 +25,7 @@ class MyApp extends StatelessWidget {
       title: 'Academia Grazi',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
-      home: const ListaAlunosView(),
+      home: const WelcomeView(),
     );
   }
 }
