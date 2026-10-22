@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
       title: 'Academia Grazi',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
-      home: const AuthWrapper(),
+      home: const ListaAlunosView(),
     );
   }
 }
