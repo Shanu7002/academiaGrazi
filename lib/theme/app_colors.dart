@@ -81,4 +81,6 @@ abstract final class AppColors {
   static const Color shadowSoft = Color(0x140F172A);
   static const Color shadowBlack20 = Color(0x33000000);
   static const Color white90 = Color(0xE6FFFFFF);
+
+  static const Color navy = Color(0xFF001E2D);
 }

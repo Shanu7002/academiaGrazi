@@ -1,13 +1,5 @@
-import 'dart:ui';
-
-import 'package:academiagrazi/firebase_options.dart';
-import 'package:academiagrazi/locator.dart';
-import 'package:academiagrazi/theme/app_theme.dart';
+import 'package:academiagrazi/theme/app_colors.dart';
 import 'package:academiagrazi/view/components/app_bar.dart';
-import 'package:academiagrazi/view/welcome_view.dart';
-import 'package:academiagrazi/view/teacher/professor_dashboard_view.dart';
-import 'package:academiagrazi/view/auth_wrapper.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -20,13 +12,6 @@ class ListaAlunosView extends StatefulWidget {
 }
 
 class _ListaAlunosViewState extends State<ListaAlunosView> {
-  static const Color navy = Color(0xFF001E2D);
-  static const Color green = Color(0xFF005A4F);
-  static const Color textColor = Color(0xFF3F4946);
-  static const Color red = Color(0xFFBA1A1A);
-  static const Color orange = Color(0xFFA73A03);
-  static const Color white = Colors.white;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,14 +26,17 @@ class _ListaAlunosViewState extends State<ListaAlunosView> {
                 'Olá, Marcos',
                 style: GoogleFonts.barlowCondensed(
                   fontWeight: FontWeight.bold,
-                  color: navy,
+                  color: AppColors.navy,
                   fontSize: 32,
                 ),
               ),
               const SizedBox(height: 10),
               Text(
                 'Bloco atual: Bloco A (Manhã)',
-                style: GoogleFonts.inter(color: textColor, fontSize: 16),
+                style: GoogleFonts.inter(
+                  color: AppColors.textBody,
+                  fontSize: 16,
+                ),
               ),
               const SizedBox(height: 20),
 
@@ -58,7 +46,7 @@ class _ListaAlunosViewState extends State<ListaAlunosView> {
                   hintStyle: const TextStyle(color: Colors.grey),
                   prefixIcon: const Icon(Icons.search, color: Colors.grey),
                   filled: true,
-                  fillColor: Colors.white,
+                  fillColor: AppColors.white90,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: const BorderSide(color: Colors.grey),
@@ -86,7 +74,7 @@ class _ListaAlunosViewState extends State<ListaAlunosView> {
                     ElevatedButton(
                       onPressed: () {},
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: white,
+                        backgroundColor: AppColors.white90,
                         minimumSize: const Size(100, 40),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16.0),
@@ -96,7 +84,7 @@ class _ListaAlunosViewState extends State<ListaAlunosView> {
                         'Todos',
                         style: GoogleFonts.inter(
                           fontWeight: FontWeight.bold,
-                          color: navy,
+                          color: AppColors.navy,
                         ),
                       ),
                     ),
@@ -106,7 +94,7 @@ class _ListaAlunosViewState extends State<ListaAlunosView> {
                     ElevatedButton(
                       onPressed: () {},
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: white,
+                        backgroundColor: AppColors.white90,
                         minimumSize: const Size(100, 40),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16.0),
@@ -116,7 +104,7 @@ class _ListaAlunosViewState extends State<ListaAlunosView> {
                         'Bloco A',
                         style: GoogleFonts.inter(
                           fontWeight: FontWeight.bold,
-                          color: navy,
+                          color: AppColors.navy,
                         ),
                       ),
                     ),
@@ -126,7 +114,7 @@ class _ListaAlunosViewState extends State<ListaAlunosView> {
                     ElevatedButton(
                       onPressed: () {},
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: white,
+                        backgroundColor: AppColors.white90,
                         minimumSize: const Size(100, 40),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16.0),
@@ -136,7 +124,7 @@ class _ListaAlunosViewState extends State<ListaAlunosView> {
                         'Inativos',
                         style: GoogleFonts.inter(
                           fontWeight: FontWeight.bold,
-                          color: navy,
+                          color: AppColors.navy,
                         ),
                       ),
                     ),
@@ -146,7 +134,7 @@ class _ListaAlunosViewState extends State<ListaAlunosView> {
                     ElevatedButton(
                       onPressed: () {},
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: white,
+                        backgroundColor: AppColors.white90,
                         minimumSize: const Size(100, 40),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16.0),
@@ -156,7 +144,7 @@ class _ListaAlunosViewState extends State<ListaAlunosView> {
                         'Avaliação Pendente',
                         style: GoogleFonts.inter(
                           fontWeight: FontWeight.bold,
-                          color: navy,
+                          color: AppColors.navy,
                         ),
                       ),
                     ),
@@ -215,9 +203,7 @@ class CardAluno extends StatelessWidget {
     required this.onMensagem,
   });
 
-  static const Color navy = Color(0xFF001E2D);
   static const Color green = Color(0xFF005A4F);
-  static const Color textColor = Color(0xFF3F4946);
   static const Color red = Color(0xFFBA1A1A);
 
   @override
@@ -229,7 +215,7 @@ class CardAluno extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white90,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -263,7 +249,7 @@ class CardAluno extends StatelessWidget {
                     Text(
                       nome,
                       style: GoogleFonts.barlowCondensed(
-                        color: navy,
+                        color: AppColors.navy,
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
                       ),
@@ -271,7 +257,10 @@ class CardAluno extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       proximoTreino,
-                      style: GoogleFonts.inter(color: textColor, fontSize: 13),
+                      style: GoogleFonts.inter(
+                        color: AppColors.textBody,
+                        fontSize: 13,
+                      ),
                     ),
                   ],
                 ),
@@ -346,7 +335,7 @@ class CardAluno extends StatelessWidget {
                     onPressed: onEditarPerfil,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: green,
-                      foregroundColor: Colors.white,
+                      foregroundColor: AppColors.white90,
                       elevation: 0,
                       minimumSize: const Size(0, 46),
                       padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -362,7 +351,7 @@ class CardAluno extends StatelessWidget {
                           width: 18,
                           height: 18,
                           colorFilter: const ColorFilter.mode(
-                            Colors.white,
+                            AppColors.white90,
                             BlendMode.srcIn,
                           ),
                         ),
@@ -388,7 +377,7 @@ class CardAluno extends StatelessWidget {
                     onPressed: onMensagem,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromARGB(255, 255, 121, 67),
-                      foregroundColor: Colors.white,
+                      foregroundColor: AppColors.white90,
                       elevation: 0,
                       minimumSize: const Size(0, 46),
                       padding: const EdgeInsets.symmetric(horizontal: 8),
