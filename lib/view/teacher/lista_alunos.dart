@@ -5,7 +5,7 @@ import 'package:academiagrazi/locator.dart';
 import 'package:academiagrazi/theme/app_theme.dart';
 import 'package:academiagrazi/view/components/app_bar.dart';
 import 'package:academiagrazi/view/welcome_view.dart';
-import 'package:academiagrazi/view/user/teacher/professor_dashboard_view.dart';
+import 'package:academiagrazi/view/teacher/professor_dashboard_view.dart';
 import 'package:academiagrazi/view/auth_wrapper.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';

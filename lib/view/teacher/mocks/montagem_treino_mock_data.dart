@@ -1,5 +1,5 @@
-import 'package:academiagrazi/view/user/teacher/ui_data/montagem_treino_ui_data.dart';
-import 'package:academiagrazi/view/user/teacher/ui_models/montagem_treino_ui_models.dart';
+import 'package:academiagrazi/view/teacher/ui_data/montagem_treino_ui_data.dart';
+import 'package:academiagrazi/view/teacher/ui_models/montagem_treino_ui_models.dart';
 
 /// Dados TEMPORARIOS para demonstrar o frontend ate a integracao com Firestore.
 abstract final class MontagemTreinoProfessorMockData {

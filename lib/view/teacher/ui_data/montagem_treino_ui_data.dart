@@ -1,4 +1,4 @@
-import 'package:academiagrazi/view/user/teacher/ui_models/montagem_treino_ui_models.dart';
+import 'package:academiagrazi/view/teacher/ui_models/montagem_treino_ui_models.dart';
 
 /// Contrato de dados de entrada, independente do Firebase e da tela.
 class MontagemTreinoProfessorUiData {
