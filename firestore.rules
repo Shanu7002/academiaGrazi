@@ -20,6 +20,9 @@ service cloud.firestore {
           /databases/$(database)/documents/users/$(request.auth.uid)
         ).data.responsable == userId;
 
+      allow read: if request.auth != null 
+        && resource.data.responsable == request.auth.uid;
+
       // O admin pode ler todos os usuários (home do admin e gestão da equipe).
       allow read: if isAdmin();
 

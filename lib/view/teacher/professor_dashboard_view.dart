@@ -1,4 +1,7 @@
+import 'package:academiagrazi/controller/teachers/teacher_user_searcher.dart';
+import 'package:academiagrazi/locator.dart';
 import 'package:academiagrazi/view/components/app_bar.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -11,11 +14,51 @@ class ProfessorDashboardView extends StatefulWidget {
 }
 
 class _ProfessorDashboardViewState extends State<ProfessorDashboardView> {
+  final FirebaseAuth _authInstance = locator<FirebaseAuth>();
+  bool _isLoading = true;
+  String _userQuantity = '0'; // Variável de estado para a quantidade
+
   static const Color navy = Color(0xFF001E2D);
   static const Color green = Color(0xFF005A4F);
   static const Color textColor = Color(0xFF3F4946);
   static const Color red = Color(0xFFBA1A1A);
   static const Color orange = Color(0xFFA73A03);
+
+  @override
+  void initState() {
+    super.initState();
+    _loadDashboardData();
+  }
+
+  Future<void> _loadDashboardData() async {
+    try {
+      final teacherUID = _authInstance.currentUser!.uid;
+      final searcher = locator<TeacherUserSearcher>();
+
+      // AWAIT aguarda a resposta do Firebase
+      final count = await searcher.userQuantity(teacherUID);
+
+      if (mounted) {
+        setState(() {
+          _userQuantity = count.toString();
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      debugPrint('Erro ao buscar dados do Firebase: $e');
+      if (mounted) {
+        setState(() {
+          _userQuantity = '-';
+          _isLoading = false;
+        });
+        _mostrarAviso('Erro de conexão ao carregar os dados.');
+      }
+    }
+  }
+
+  void _mostrarAviso(String texto) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(texto)));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +98,7 @@ class _ProfessorDashboardViewState extends State<ProfessorDashboardView> {
                     child: _DashboardMetricCard(
                       asset: 'assets/tresAlunos.svg',
                       title: 'Alunos',
-                      value: '42',
+                      value: _userQuantity,
                       description: 'Ativos',
                     ),
                   ),
@@ -255,14 +298,21 @@ class _DashboardMetricCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.baseline,
               textBaseline: TextBaseline.alphabetic,
               children: [
-                Text(
-                  value,
-                  style: GoogleFonts.anton(
-                    fontSize: 48,
-                    color:
-                        fullWidth
-                            ? const Color(0xFFBA1A1A)
-                            : const Color(0xFF001E2D),
+                // Proteção de layout: Reduz o tamanho da fonte caso o texto seja muito longo
+                Flexible(
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      value,
+                      style: GoogleFonts.anton(
+                        fontSize: 48,
+                        color:
+                            fullWidth
+                                ? const Color(0xFFBA1A1A)
+                                : const Color(0xFF001E2D),
+                      ),
+                    ),
                   ),
                 ),
                 const SizedBox(width: 10),
