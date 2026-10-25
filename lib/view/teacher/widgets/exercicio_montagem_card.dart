@@ -1,5 +1,5 @@
 import 'package:academiagrazi/theme/app_colors.dart';
-import 'package:academiagrazi/view/user/teacher/ui_models/montagem_treino_ui_models.dart';
+import 'package:academiagrazi/view/teacher/ui_models/montagem_treino_ui_models.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';

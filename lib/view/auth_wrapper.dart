@@ -1,7 +1,7 @@
 import 'package:academiagrazi/models/users/user_model.dart';
 import 'package:academiagrazi/service/users/register_user.dart';
 import 'package:academiagrazi/view/tab_router.dart';
-import 'package:academiagrazi/view/user/teacher/professor_area_view.dart';
+import 'package:academiagrazi/view/teacher/professor_area_view.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:academiagrazi/locator.dart';
