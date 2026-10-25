@@ -3,20 +3,17 @@ import 'package:academiagrazi/view/components/app_bar.dart';
 import 'package:academiagrazi/view/teacher/ui_data/montagem_treino_ui_data.dart';
 import 'package:academiagrazi/view/teacher/ui_models/montagem_treino_ui_models.dart';
 import 'package:academiagrazi/view/teacher/widgets/exercicio_montagem_card.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-/// Primeira versao do frontend de montagem de treinos.
-/// Exibicao/edicao local com mocks: ainda nao grava nada no Firebase.
+import 'package:academiagrazi/locator.dart';
+import 'package:academiagrazi/controller/teachers/teacher_user_searcher.dart';
+
 class ProfessorMontagemTreinoView extends StatefulWidget {
-  final MontagemTreinoProfessorUiData data;
   final VoidCallback? onVoltarInicio;
 
-  const ProfessorMontagemTreinoView({
-    super.key,
-    required this.data,
-    this.onVoltarInicio,
-  });
+  const ProfessorMontagemTreinoView({super.key, this.onVoltarInicio});
 
   @override
   State<ProfessorMontagemTreinoView> createState() =>
@@ -25,6 +22,10 @@ class ProfessorMontagemTreinoView extends StatefulWidget {
 
 class _ProfessorMontagemTreinoViewState
     extends State<ProfessorMontagemTreinoView> {
+  final FirebaseAuth _authInstance = locator<FirebaseAuth>();
+  bool _isLoading = true;
+  MontagemTreinoProfessorUiData? _data;
+
   late final List<ExercicioCatalogoProfessorUi> _catalogo;
   late List<ExercicioMontadoProfessorUi> _exercicios;
   late String _alunoId;
@@ -36,15 +37,83 @@ class _ProfessorMontagemTreinoViewState
   @override
   void initState() {
     super.initState();
-    _catalogo = List.of(widget.data.catalogo);
-    _exercicios = List.of(widget.data.exerciciosIniciais);
-    _alunoId = widget.data.alunoSelecionadoId;
-    _nomeTreino = widget.data.nomeTreino;
+    _fetchData();
   }
 
-  AlunoResumoProfessorUi get _alunoAtual => widget.data.alunos.firstWhere(
+  Future<void> _fetchData() async {
+    try {
+      final teacherUID = _authInstance.currentUser!.uid;
+      final searcher = locator<TeacherUserSearcher>();
+
+      final usersFirestore = await searcher.streamLinkedUsers(teacherUID).first;
+
+      if (usersFirestore.isEmpty && mounted) {
+        _mostrarAviso('Nenhum aluno vinculado encontrado.');
+      }
+
+      final alunosReais =
+          usersFirestore.map((u) {
+            return AlunoResumoProfessorUi(id: u.id, nome: u.name);
+          }).toList();
+
+      final fetchedData = MontagemTreinoProfessorUiData(
+        nomeTreino: 'Nova Série',
+        alunoSelecionadoId: alunosReais.isNotEmpty ? alunosReais.first.id : '',
+        alunos: alunosReais,
+        catalogo: [
+          ExercicioCatalogoProfessorUi(
+            id: 'c1',
+            nome: 'Supino Reto',
+            grupoMuscular: 'Peito',
+          ),
+          ExercicioCatalogoProfessorUi(
+            id: 'c2',
+            nome: 'Agachamento Livre',
+            grupoMuscular: 'Pernas',
+          ),
+          ExercicioCatalogoProfessorUi(
+            id: 'c3',
+            nome: 'Puxada Frontal',
+            grupoMuscular: 'Costas',
+          ),
+          ExercicioCatalogoProfessorUi(
+            id: 'c4',
+            nome: 'Rosca Direta',
+            grupoMuscular: 'Bíceps',
+          ),
+        ],
+        exerciciosIniciais: [],
+        dicaExecucao: 'Mantenha a postura e foque na contração.',
+        duracaoEstimadaMinutos: 45,
+        volume: 'Médio',
+      );
+
+      if (!mounted) return;
+
+      setState(() {
+        _data = fetchedData;
+        _catalogo = List.of(fetchedData.catalogo);
+        _exercicios = List.of(fetchedData.exerciciosIniciais);
+        _alunoId = fetchedData.alunoSelecionadoId;
+        _nomeTreino = fetchedData.nomeTreino;
+        _isLoading = false;
+      });
+    } catch (e) {
+      debugPrint('Erro ao buscar dados do Firebase: $e');
+      if (mounted) {
+        setState(() => _isLoading = false);
+        _mostrarAviso('Erro de conexão ao carregar os dados.');
+      }
+    }
+  }
+
+  AlunoResumoProfessorUi get _alunoAtual => _data!.alunos.firstWhere(
     (a) => a.id == _alunoId,
-    orElse: () => widget.data.alunos.first,
+    orElse:
+        () =>
+            _data!.alunos.isNotEmpty
+                ? _data!.alunos.first
+                : AlunoResumoProfessorUi(id: '', nome: 'Sem Aluno'),
   );
 
   ExercicioCatalogoProfessorUi _encontrarExercicio(String id) =>
@@ -202,30 +271,60 @@ class _ProfessorMontagemTreinoViewState
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: const CustomAppBar(title: 'GRAZI BRAZ'),
-      body: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 430),
-          child: ListView(
-            padding: const EdgeInsets.fromLTRB(18, 20, 18, 24),
-            children: [
-              _cabecalho(),
-              const SizedBox(height: 14),
-              _acoesPrincipais(),
-              const SizedBox(height: 18),
-              const Divider(height: 1, color: AppColors.border),
-              const SizedBox(height: 22),
-              _buscaCatalogo(),
-              const SizedBox(height: 16),
-              _serieAtual(),
-              const SizedBox(height: 24),
-              _conferenciaExecucao(),
-              const SizedBox(height: 18),
-              _cardInteligenciaArtificial(),
-              const SizedBox(height: 18),
-              _indicadores(),
-            ],
+      body:
+          _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : _data == null || _data!.alunos.isEmpty
+              ? _estadoVazio()
+              : Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 430),
+                  child: ListView(
+                    padding: const EdgeInsets.fromLTRB(18, 20, 18, 24),
+                    children: [
+                      _cabecalho(),
+                      const SizedBox(height: 14),
+                      _acoesPrincipais(),
+                      const SizedBox(height: 18),
+                      const Divider(height: 1, color: AppColors.border),
+                      const SizedBox(height: 22),
+                      _buscaCatalogo(),
+                      const SizedBox(height: 16),
+                      _serieAtual(),
+                      const SizedBox(height: 24),
+                      _cardInteligenciaArtificial(),
+                      const SizedBox(height: 18),
+                      _indicadores(),
+                    ],
+                  ),
+                ),
+              ),
+    );
+  }
+
+  Widget _estadoVazio() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(Icons.person_off, size: 64, color: AppColors.textBody),
+          const SizedBox(height: 16),
+          const Text(
+            'Você não possui alunos vinculados.',
+            style: TextStyle(color: AppColors.textSecondary),
           ),
-        ),
+          const SizedBox(height: 24),
+          OutlinedButton(
+            onPressed: () {
+              if (widget.onVoltarInicio != null) {
+                widget.onVoltarInicio!();
+              } else {
+                Navigator.maybePop(context);
+              }
+            },
+            child: const Text('Voltar'),
+          ),
+        ],
       ),
     );
   }
@@ -265,7 +364,7 @@ class _ProfessorMontagemTreinoViewState
                 onSelected: (id) => setState(() => _alunoId = id),
                 itemBuilder:
                     (_) =>
-                        widget.data.alunos
+                        _data!.alunos
                             .map(
                               (aluno) => PopupMenuItem<String>(
                                 value: aluno.id,
@@ -364,7 +463,6 @@ class _ProfessorMontagemTreinoViewState
           exercicio.grupoMuscular.contains(_grupoFiltrado!);
       return porTexto && porGrupo;
     });
-    // Duas sugestoes por padrao; ao buscar, mostra todas as correspondencias.
     return (filtro.isEmpty ? base.take(2) : base).toList();
   }
 
@@ -525,89 +623,6 @@ class _ProfessorMontagemTreinoViewState
     );
   }
 
-  Widget _conferenciaExecucao() {
-    return _cartao(
-      Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              const Icon(Icons.play_circle_outline, color: AppColors.primary),
-              const SizedBox(width: 8),
-              Text(
-                'Conferência de Execução',
-                style: GoogleFonts.inter(
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.textPrimary,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 14),
-          InkWell(
-            key: const Key('video_exemplo'),
-            onTap:
-                () => _mostrarAviso(
-                  'O vídeo demonstrativo será integrado ao catálogo.',
-                ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(9),
-              child: AspectRatio(
-                aspectRatio: 16 / 9,
-                child: Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    const DecoratedBox(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            AppColors.videoGradientStart,
-                            AppColors.videoGradientMiddle,
-                            AppColors.videoGradientEnd,
-                          ],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                      ),
-                    ),
-                    const Center(
-                      child: CircleAvatar(
-                        backgroundColor: AppColors.primary,
-                        radius: 26,
-                        child: Icon(
-                          Icons.play_arrow,
-                          color: Colors.white,
-                          size: 29,
-                        ),
-                      ),
-                    ),
-                    const Positioned(
-                      right: 10,
-                      bottom: 10,
-                      child: Text(
-                        '0:45',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            'Dica do Instrutor: ${widget.data.dicaExecucao}',
-            style: GoogleFonts.inter(
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textBody,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _cardInteligenciaArtificial() {
     return _cartao(
       Opacity(
@@ -660,7 +675,7 @@ class _ProfessorMontagemTreinoViewState
         Expanded(
           child: _indicador(
             Icons.timer_outlined,
-            '${widget.data.duracaoEstimadaMinutos} min',
+            '${_data!.duracaoEstimadaMinutos} min',
             'Est. Duração',
           ),
         ),
@@ -668,7 +683,7 @@ class _ProfessorMontagemTreinoViewState
         Expanded(
           child: _indicador(
             Icons.local_fire_department_outlined,
-            widget.data.volume,
+            _data!.volume,
             'Volume',
           ),
         ),

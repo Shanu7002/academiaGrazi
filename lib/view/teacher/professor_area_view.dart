@@ -2,7 +2,6 @@ import 'package:academiagrazi/theme/app_colors.dart';
 import 'package:academiagrazi/view/components/app_bar.dart';
 import 'package:academiagrazi/view/components/app_bottom_navigation.dart';
 import 'package:academiagrazi/view/user/aluno_profile_view.dart';
-import 'package:academiagrazi/view/teacher/mocks/montagem_treino_mock_data.dart';
 import 'package:academiagrazi/view/teacher/professor_dashboard_view.dart';
 import 'package:academiagrazi/view/teacher/professor_montagem_treino_view.dart';
 import 'package:flutter/material.dart';
@@ -52,7 +51,6 @@ class _ProfessorAreaViewState extends State<ProfessorAreaView> {
 
                 // Aba 1 - Nossa montagem de treinos.
                 ProfessorMontagemTreinoView(
-                  data: MontagemTreinoProfessorMockData.inicial,
                   onVoltarInicio: () => _selecionarAba(0),
                 ),
 

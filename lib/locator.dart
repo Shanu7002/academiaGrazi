@@ -1,3 +1,4 @@
+import 'package:academiagrazi/controller/teachers/teacher_user_searcher.dart';
 import 'package:academiagrazi/controller/users/update_data.dart';
 import 'package:academiagrazi/service/admin/admin_dashboard.dart';
 import 'package:academiagrazi/service/users/register_instructor.dart';
@@ -37,6 +38,11 @@ Future<void> setupLocator() async {
   // Profile photo
   locator.registerLazySingleton<ProfilePhotoService>(
     () => ProfilePhotoService(),
+  );
+
+  // Teacher
+  locator.registerLazySingleton<TeacherUserSearcher>(
+    () => TeacherUserSearcher(),
   );
 
   // Update data
