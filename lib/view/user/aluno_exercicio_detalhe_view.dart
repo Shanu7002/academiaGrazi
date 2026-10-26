@@ -6,19 +6,14 @@ import 'package:google_fonts/google_fonts.dart';
 class AlunoExercicioDetalheView extends StatefulWidget {
   final AlunoExercicioDetalheUiData data;
 
-  const AlunoExercicioDetalheView({
-    super.key,
-    required this.data,
-  });
+  const AlunoExercicioDetalheView({super.key, required this.data});
 
   @override
   State<AlunoExercicioDetalheView> createState() =>
       _AlunoExercicioDetalheViewState();
 }
 
-class _AlunoExercicioDetalheViewState
-    extends State<AlunoExercicioDetalheView> {
-
+class _AlunoExercicioDetalheViewState extends State<AlunoExercicioDetalheView> {
   late final List<TextEditingController> _cargaControllers;
   final Set<int> _seriesConcluidas = <int>{};
 
@@ -118,15 +113,12 @@ class _AlunoExercicioDetalheViewState
       _seriesConcluidas.add(proxima);
     });
 
-    final terminou =
-        _seriesConcluidas.length == _quantidadeSeries;
+    final terminou = _seriesConcluidas.length == _quantidadeSeries;
 
     if (terminou) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Exercício concluído.'),
-        ),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Exercício concluído.')));
     }
   }
 
@@ -144,28 +136,18 @@ class _AlunoExercicioDetalheViewState
             Expanded(
               child: Center(
                 child: ConstrainedBox(
-                  constraints: const BoxConstraints(
-                    maxWidth: 430,
-                  ),
+                  constraints: const BoxConstraints(maxWidth: 430),
                   child: SingleChildScrollView(
                     physics: const BouncingScrollPhysics(),
-                    padding: const EdgeInsets.only(
-                      bottom: 28,
-                    ),
+                    padding: const EdgeInsets.only(bottom: 28),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         _buildVideo(),
                         Padding(
-                          padding: const EdgeInsets.fromLTRB(
-                            16,
-                            18,
-                            16,
-                            0,
-                          ),
+                          padding: const EdgeInsets.fromLTRB(16, 18, 16, 0),
                           child: Column(
-                            crossAxisAlignment:
-                                CrossAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               _buildTitulo(),
                               const SizedBox(height: 16),
@@ -190,28 +172,17 @@ class _AlunoExercicioDetalheViewState
         top: false,
         child: Container(
           width: double.infinity,
-          padding: const EdgeInsets.fromLTRB(
-            16,
-            10,
-            16,
-            12,
-          ),
+          padding: const EdgeInsets.fromLTRB(16, 10, 16, 12),
           decoration: const BoxDecoration(
             color: Colors.white,
-            border: Border(
-              top: BorderSide(
-                color: AppColors.border,
-              ),
-            ),
+            border: Border(top: BorderSide(color: AppColors.border)),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Flexible(
                 child: ConstrainedBox(
-                  constraints: const BoxConstraints(
-                    maxWidth: 398,
-                  ),
+                  constraints: const BoxConstraints(maxWidth: 398),
                   child: SizedBox(
                     width: double.infinity,
                     height: 50,
@@ -253,17 +224,11 @@ class _AlunoExercicioDetalheViewState
       width: double.infinity,
       decoration: const BoxDecoration(
         color: Colors.white,
-        border: Border(
-          bottom: BorderSide(
-            color: AppColors.border,
-          ),
-        ),
+        border: Border(bottom: BorderSide(color: AppColors.border)),
       ),
       child: Center(
         child: ConstrainedBox(
-          constraints: const BoxConstraints(
-            maxWidth: 430,
-          ),
+          constraints: const BoxConstraints(maxWidth: 430),
           child: Row(
             children: [
               SizedBox(
@@ -336,9 +301,7 @@ class _AlunoExercicioDetalheViewState
                   width: 68,
                   height: 68,
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(
-                      alpha: 0.92,
-                    ),
+                    color: Colors.white.withValues(alpha: 0.92),
                     shape: BoxShape.circle,
                     boxShadow: const [
                       BoxShadow(
@@ -411,18 +374,10 @@ class _AlunoExercicioDetalheViewState
     return Row(
       children: [
         Expanded(
-          child: _buildMetrica(
-            valor: '$_quantidadeSeries',
-            legenda: 'Séries',
-          ),
+          child: _buildMetrica(valor: '$_quantidadeSeries', legenda: 'Séries'),
         ),
         const SizedBox(width: 8),
-        Expanded(
-          child: _buildMetrica(
-            valor: _repeticoes,
-            legenda: 'Reps',
-          ),
-        ),
+        Expanded(child: _buildMetrica(valor: _repeticoes, legenda: 'Reps')),
         const SizedBox(width: 8),
         Expanded(
           child: _buildMetrica(
@@ -441,22 +396,14 @@ class _AlunoExercicioDetalheViewState
     bool destaque = false,
   }) {
     return Container(
-      constraints: const BoxConstraints(
-        minHeight: 70,
-      ),
-      padding: const EdgeInsets.symmetric(
-        horizontal: 10,
-        vertical: 10,
-      ),
+      constraints: const BoxConstraints(minHeight: 70),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
       decoration: BoxDecoration(
-        color: destaque
-            ? AppColors.accentSurface
-            : Colors.white,
+        color: destaque ? AppColors.accentSurface : Colors.white,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
-          color: destaque
-              ? AppColors.accentBorderTransparent
-              : AppColors.border,
+          color:
+              destaque ? AppColors.accentBorderTransparent : AppColors.border,
         ),
       ),
       child: Column(
@@ -467,9 +414,7 @@ class _AlunoExercicioDetalheViewState
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: GoogleFonts.barlowCondensed(
-              color: destaque
-                  ? AppColors.accent
-                  : AppColors.textPrimary,
+              color: destaque ? AppColors.accent : AppColors.textPrimary,
               fontSize: 23,
               fontWeight: FontWeight.w800,
             ),
@@ -509,9 +454,7 @@ class _AlunoExercicioDetalheViewState
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(14),
-            border: Border.all(
-              color: AppColors.border,
-            ),
+            border: Border.all(color: AppColors.border),
           ),
           child: Text(
             _orientacoes,
@@ -544,15 +487,12 @@ class _AlunoExercicioDetalheViewState
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: AppColors.border,
-            ),
+            border: Border.all(color: AppColors.border),
           ),
           child: Column(
             children: [
               _buildTabelaHeader(),
-              for (var i = 0; i < _quantidadeSeries; i++)
-                _buildSerieRow(i),
+              for (var i = 0; i < _quantidadeSeries; i++) _buildSerieRow(i),
             ],
           ),
         ),
@@ -562,25 +502,14 @@ class _AlunoExercicioDetalheViewState
 
   Widget _buildTabelaHeader() {
     return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 14,
-        vertical: 12,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: const BoxDecoration(
         color: AppColors.surfaceSoft,
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(16),
-        ),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
       child: Row(
         children: [
-          SizedBox(
-            width: 58,
-            child: Text(
-              'Série',
-              style: _tableHeaderStyle(),
-            ),
-          ),
+          SizedBox(width: 58, child: Text('Série', style: _tableHeaderStyle())),
           Expanded(
             child: Text(
               'Carga (kg)',
@@ -605,16 +534,11 @@ class _AlunoExercicioDetalheViewState
     final concluida = _seriesConcluidas.contains(indice);
 
     return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 14,
-        vertical: 10,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
         border: Border(
           top: BorderSide(
-            color: indice == 0
-                ? Colors.transparent
-                : AppColors.border,
+            color: indice == 0 ? Colors.transparent : AppColors.border,
           ),
         ),
       ),
@@ -638,8 +562,7 @@ class _AlunoExercicioDetalheViewState
                 height: 40,
                 child: TextField(
                   controller: _cargaControllers[indice],
-                  keyboardType:
-                      const TextInputType.numberWithOptions(
+                  keyboardType: const TextInputType.numberWithOptions(
                     decimal: true,
                   ),
                   textAlign: TextAlign.center,
@@ -649,8 +572,7 @@ class _AlunoExercicioDetalheViewState
                     fontWeight: FontWeight.w600,
                   ),
                   decoration: InputDecoration(
-                    contentPadding:
-                        const EdgeInsets.symmetric(
+                    contentPadding: const EdgeInsets.symmetric(
                       horizontal: 8,
                       vertical: 8,
                     ),
@@ -658,9 +580,7 @@ class _AlunoExercicioDetalheViewState
                     fillColor: AppColors.surfaceSoft,
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: const BorderSide(
-                        color: AppColors.border,
-                      ),
+                      borderSide: const BorderSide(color: AppColors.border),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
@@ -683,30 +603,20 @@ class _AlunoExercicioDetalheViewState
                   _alternarSerie(indice);
                 },
                 child: AnimatedContainer(
-                  duration: const Duration(
-                    milliseconds: 180,
-                  ),
+                  duration: const Duration(milliseconds: 180),
                   width: 34,
                   height: 34,
                   decoration: BoxDecoration(
-                    color: concluida
-                        ? AppColors.primary
-                        : Colors.white,
+                    color: concluida ? AppColors.primary : Colors.white,
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: concluida
-                          ? AppColors.primary
-                          : AppColors.inactive,
+                      color: concluida ? AppColors.primary : AppColors.inactive,
                       width: 2,
                     ),
                   ),
                   child: Icon(
-                    concluida
-                        ? Icons.check_rounded
-                        : Icons.circle_outlined,
-                    color: concluida
-                        ? Colors.white
-                        : AppColors.inactive,
+                    concluida ? Icons.check_rounded : Icons.circle_outlined,
+                    color: concluida ? Colors.white : AppColors.inactive,
                     size: 20,
                   ),
                 ),

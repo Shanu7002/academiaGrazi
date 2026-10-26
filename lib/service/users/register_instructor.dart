@@ -15,61 +15,74 @@ class InstructorCodeInfo {
   });
 }
 
+/// Código de convite atual de um professor e o fim da sua validade.
+class InstructorInviteCode {
+  final String code;
+  final DateTime expiresAt;
+
+  const InstructorInviteCode({required this.code, required this.expiresAt});
+}
+
+/// Gerencia os códigos de convite dos professores.
+///
+/// Cada professor tem sempre um código numérico de [codeLength] dígitos,
+/// válido por [codeLifetime]. Não existe backend para renovar os códigos
+/// sozinho: quando o código é pedido (perfil do professor ou detalhes no
+/// admin) e já venceu, um novo é gerado na hora. Códigos vencidos são
+/// recusados na validação e podem ser reaproveitados por outro professor.
 class RegisterInstructorService {
+  static const int codeLength = 4;
+  static const Duration codeLifetime = Duration(minutes: 15);
+  static const int _maxAttempts = 20;
+
   final FirebaseFirestore _db;
+  final DateTime Function() _clock;
 
   // coverage:ignore-start
-  RegisterInstructorService({FirebaseFirestore? db})
-    : _db = db ?? FirebaseFirestore.instance;
+  RegisterInstructorService({FirebaseFirestore? db, DateTime Function()? clock})
+    : _db = db ?? FirebaseFirestore.instance,
+      _clock = clock ?? DateTime.now;
   // coverage:ignore-end
 
+  CollectionReference<Map<String, dynamic>> get _codes =>
+      _db.collection('instructorCodes');
+
+  /// Cria o perfil do professor já com o primeiro código de convite.
   Future<String> registerInstructor(
     UserModel instructor, {
     String Function()? codeGenerator,
   }) async {
-    return _reserveInstructorCode(
-      instructor,
-      createUserDocument: true,
+    final invite = await _issueCode(
+      instructorId: instructor.id,
+      newInstructor: instructor,
       codeGenerator: codeGenerator,
     );
+    return invite.code;
   }
 
-  Future<String> ensureInstructorCode(
-    UserModel instructor, {
+  /// Código válido do professor, renovando-o se tiver vencido (ou se o
+  /// professor ainda não tiver um).
+  Future<InstructorInviteCode> getCurrentInviteCode(
+    String instructorId, {
     String Function()? codeGenerator,
-  }) async {
-    final existingCode = instructor.registrationCode?.trim();
-
-    if (existingCode != null && existingCode.isNotEmpty) {
-      return existingCode;
-    }
-
-    if (instructor.type != UserType.instructor) {
-      throw ArgumentError('Only instructors can have registration codes');
-    }
-
-    return _reserveInstructorCode(
-      instructor,
-      createUserDocument: false,
-      codeGenerator: codeGenerator,
-    );
+  }) {
+    return _issueCode(instructorId: instructorId, codeGenerator: codeGenerator);
   }
 
   Future<InstructorCodeInfo?> validateInstructorCode(String rawCode) async {
-    final code = rawCode.trim().toUpperCase();
+    final code = rawCode.trim();
 
     if (code.isEmpty) {
       return null;
     }
 
-    final codeSnapshot =
-        await _db.collection('instructorCodes').doc(code).get();
-
+    final codeSnapshot = await _codes.doc(code).get();
     final codeData = codeSnapshot.data();
 
     if (!codeSnapshot.exists ||
         codeData == null ||
-        codeData['active'] != true) {
+        codeData['active'] != true ||
+        !_isStillValid(codeData)) {
       return null;
     }
 
@@ -90,49 +103,122 @@ class RegisterInstructorService {
     );
   }
 
-  Future<String> _reserveInstructorCode(
-    UserModel instructor, {
-    required bool createUserDocument,
+  bool _isStillValid(Map<String, dynamic> codeData) {
+    final expiresAtMillis = codeData['expiresAtMillis'];
+    return expiresAtMillis is int &&
+        expiresAtMillis > _clock().millisecondsSinceEpoch;
+  }
+
+  /// Emite um código novo dentro de uma transação. Se [newInstructor] for
+  /// informado, o perfil do professor é criado junto; caso contrário, o
+  /// código atual é devolvido enquanto ainda for válido.
+  Future<InstructorInviteCode> _issueCode({
+    required String instructorId,
+    UserModel? newInstructor,
     String Function()? codeGenerator,
   }) async {
     final generator = codeGenerator ?? _generateCode;
 
-    for (var attempt = 0; attempt < 5; attempt++) {
-      final code = generator().trim().toUpperCase();
+    for (var attempt = 0; attempt < _maxAttempts; attempt++) {
+      final candidate = generator().trim();
 
       try {
-        await _db.runTransaction((transaction) async {
-          final codeReference = _db.collection('instructorCodes').doc(code);
+        return await _db.runTransaction((transaction) async {
+          final userReference = _db.collection('users').doc(instructorId);
+          final now = _clock();
 
-          final userReference = _db.collection('users').doc(instructor.id);
+          String instructorName;
+          String? previousCode;
 
-          final existingCode = await transaction.get(codeReference);
+          if (newInstructor == null) {
+            final userSnapshot = await transaction.get(userReference);
+            final userData = userSnapshot.data();
+            if (!userSnapshot.exists || userData == null) {
+              throw ArgumentError('Instructor not found');
+            }
+            final instructor = UserModel.fromJson(userData, userSnapshot.id);
+            if (instructor.type != UserType.instructor) {
+              throw ArgumentError('Only instructors can have invite codes');
+            }
 
-          if (existingCode.exists) {
+            final currentCode = instructor.registrationCode?.trim();
+            final currentExpiry = instructor.registrationCodeExpiresAt;
+            if (currentCode != null &&
+                currentCode.isNotEmpty &&
+                currentExpiry != null &&
+                currentExpiry.isAfter(now)) {
+              return InstructorInviteCode(
+                code: currentCode,
+                expiresAt: currentExpiry,
+              );
+            }
+
+            instructorName = instructor.name;
+            previousCode =
+                currentCode == null || currentCode.isEmpty ? null : currentCode;
+          } else {
+            instructorName = newInstructor.name;
+          }
+
+          final codeReference = _codes.doc(candidate);
+          final existing = await transaction.get(codeReference);
+          final existingData = existing.data();
+          final previousReference =
+              previousCode != null && previousCode != candidate
+                  ? _codes.doc(previousCode)
+                  : null;
+          final previousSnapshot =
+              previousReference == null
+                  ? null
+                  : await transaction.get(previousReference);
+
+          // Só reaproveita códigos vencidos, desativados ou do próprio
+          // professor.
+          if (existing.exists &&
+              existingData != null &&
+              existingData['instructorId'] != instructorId &&
+              existingData['active'] == true &&
+              _isStillValid(existingData)) {
             throw StateError('Instructor code collision');
           }
 
-          final instructorWithCode = instructor.copyWith(
-            registrationCode: code,
-          );
+          final expiresAt = now.add(codeLifetime).toUtc();
 
-          if (createUserDocument) {
-            transaction.set(userReference, instructorWithCode.toJson());
+          if (newInstructor != null) {
+            transaction.set(
+              userReference,
+              newInstructor
+                  .copyWith(
+                    registrationCode: candidate,
+                    registrationCodeExpiresAt: expiresAt,
+                  )
+                  .toJson(),
+            );
           } else {
-            transaction.update(userReference, {'registrationCode': code});
+            transaction.update(userReference, {
+              'registrationCode': candidate,
+              'registrationCodeExpiresAt': expiresAt.toIso8601String(),
+            });
           }
 
           transaction.set(codeReference, {
-            'instructorId': instructor.id,
-            'instructorName': instructor.name,
+            'instructorId': instructorId,
+            'instructorName': instructorName,
             'active': true,
-            'createdAt': DateTime.now().toIso8601String(),
+            'createdAt': now.toIso8601String(),
+            'expiresAtMillis': expiresAt.millisecondsSinceEpoch,
           });
-        });
 
-        return code;
+          if (previousSnapshot != null &&
+              previousSnapshot.exists &&
+              previousSnapshot.data()?['instructorId'] == instructorId) {
+            transaction.update(previousReference!, {'active': false});
+          }
+
+          return InstructorInviteCode(code: candidate, expiresAt: expiresAt);
+        });
       } on StateError {
-        if (attempt == 4) {
+        if (attempt == _maxAttempts - 1) {
           rethrow;
         }
       }
@@ -142,12 +228,7 @@ class RegisterInstructorService {
   }
 
   String _generateCode() {
-    const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
     final random = Random.secure();
-
-    return List.generate(
-      8,
-      (_) => alphabet[random.nextInt(alphabet.length)],
-    ).join();
+    return List.generate(codeLength, (_) => random.nextInt(10)).join();
   }
 }

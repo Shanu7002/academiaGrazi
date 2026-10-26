@@ -145,4 +145,37 @@ void main() {
     expect(parsed.registrationProfile?.health.conditions, ['Joelho']);
     expect(parsed.registrationProfile?.emergencyContact.phone, '11999999999');
   });
+
+  group('photoUrl |', () {
+    test('serializa e lê a photoUrl', () {
+      final user = UserModel(
+        id: '1',
+        name: 'Grazi',
+        email: 'grazi@example.com',
+        photoUrl: 'https://res.cloudinary.com/demo/image/upload/a.jpg',
+      );
+
+      final json = user.toJson();
+      expect(
+        json['photoUrl'],
+        'https://res.cloudinary.com/demo/image/upload/a.jpg',
+      );
+      expect(UserModel.fromJson(json, '1').photoUrl, json['photoUrl']);
+    });
+
+    test('omite a photoUrl quando não há foto', () {
+      final user = UserModel(id: '1', name: 'Grazi', email: 'g@example.com');
+
+      expect(user.toJson().containsKey('photoUrl'), isFalse);
+      expect(UserModel.fromJson({}, '1').photoUrl, isNull);
+    });
+
+    test('copyWith troca a photoUrl e mantém o restante', () {
+      final user = UserModel(id: '1', name: 'Grazi', email: 'g@example.com');
+      final updated = user.copyWith(photoUrl: 'https://x/y.jpg');
+
+      expect(updated.photoUrl, 'https://x/y.jpg');
+      expect(updated.name, 'Grazi');
+    });
+  });
 }

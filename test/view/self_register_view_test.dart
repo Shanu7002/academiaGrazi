@@ -38,9 +38,9 @@ void main() {
     locator.registerSingleton<RegisterInstructorService>(mockInstructorService);
     locator.registerSingleton<FirebaseAuth>(mockAuth);
 
-    when(mockUserController.validateInstructorCode('ABCD2345')).thenAnswer(
+    when(mockUserController.validateInstructorCode('4821')).thenAnswer(
       (_) async => InstructorCodeInfo(
-        code: 'ABCD2345',
+        code: '4821',
         instructorId: '123',
         instructorName: 'Marina',
       ),
@@ -89,7 +89,7 @@ void main() {
   Future<void> completeInstructorStep(WidgetTester tester) async {
     await tester.enterText(
       find.byKey(const Key('registrationInstructorCode')),
-      'ABCD2345',
+      '4821',
     );
 
     await tester.ensureVisible(
@@ -139,7 +139,7 @@ void main() {
 
     await tester.enterText(
       find.byKey(const Key('registrationInstructorCode')),
-      'ABCD2345',
+      '4821',
     );
     await tester.tap(find.byKey(const Key('registrationContinueButton')));
     await tester.pumpAndSettle();
@@ -154,7 +154,7 @@ void main() {
     final codeField = tester.widget<TextField>(
       find.byKey(const Key('registrationInstructorCode')),
     );
-    expect(codeField.controller?.text, 'ABCD2345');
+    expect(codeField.controller?.text, '4821');
   });
 
   testWidgets('keeps None mutually exclusive in health selections', (

@@ -52,9 +52,22 @@ abstract final class AppColors {
   static const Color accentSurfaceTransparent = Color(0x1AFF7943);
   static const Color accentBorderTransparent = Color(0x33FF7943);
 
+  static const Color accentText = Color(0xFF661F00);
+  static const Color accentAlertSurface = Color(0xFFFFF3ED);
+  static const Color accentAlertBorder = Color(0xFFFFDBCF);
+
   // Informação
   static const Color info = Color(0xFF1D4ED8);
   static const Color infoSurface = Color(0xFFEFF6FF);
+  static const Color infoSoftSurface = Color(0xFFDDF1FF);
+
+  // Erro / alerta
+  static const Color danger = Color(0xFF93000A);
+  static const Color dangerSurface = Color(0xFFFFDAD6);
+
+  // Gráficos
+  static const Color chartBar = Color(0xFF2CA99F);
+  static const Color chartBarInactive = Color(0xFFE9EEEC);
 
   // Thumbnails / vídeo
   static const Color thumbnailStart = Color(0xFFE1EEEC);
@@ -68,4 +81,6 @@ abstract final class AppColors {
   static const Color shadowSoft = Color(0x140F172A);
   static const Color shadowBlack20 = Color(0x33000000);
   static const Color white90 = Color(0xE6FFFFFF);
+
+  static const Color navy = Color(0xFF001E2D);
 }

@@ -8,17 +8,13 @@ import 'package:google_fonts/google_fonts.dart';
 class AlunoTreinoDiaView extends StatefulWidget {
   final AlunoTreinoDiaUiData data;
 
-  const AlunoTreinoDiaView({
-    super.key,
-    required this.data,
-  });
+  const AlunoTreinoDiaView({super.key, required this.data});
 
   @override
   State<AlunoTreinoDiaView> createState() => _AlunoTreinoDiaViewState();
 }
 
 class _AlunoTreinoDiaViewState extends State<AlunoTreinoDiaView> {
-
   final Set<String> _concluidos = <String>{};
   bool _aquecimentoConcluido = false;
 
@@ -26,9 +22,7 @@ class _AlunoTreinoDiaViewState extends State<AlunoTreinoDiaView> {
   void initState() {
     super.initState();
 
-    _concluidos.addAll(
-      widget.data.exerciciosConcluidosIniciais,
-    );
+    _concluidos.addAll(widget.data.exerciciosConcluidosIniciais);
   }
 
   int get _totalExercicios => widget.data.treino.exercicios.length;
@@ -71,15 +65,15 @@ class _AlunoTreinoDiaViewState extends State<AlunoTreinoDiaView> {
     });
   }
 
-  void _abrirExercicio(
-    ExercicioTreinoUi exercicio,
-  ) {
+  void _abrirExercicio(ExercicioTreinoUi exercicio) {
     final detalhe = widget.data.detalheDoExercicio(exercicio.id);
 
     if (detalhe == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Detalhes deste exercício ainda não estão disponíveis.'),
+          content: Text(
+            'Detalhes deste exercício ainda não estão disponíveis.',
+          ),
         ),
       );
       return;
@@ -87,9 +81,7 @@ class _AlunoTreinoDiaViewState extends State<AlunoTreinoDiaView> {
 
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) => AlunoExercicioDetalheView(
-          data: detalhe,
-        ),
+        builder: (_) => AlunoExercicioDetalheView(data: detalhe),
       ),
     );
   }
@@ -107,9 +99,7 @@ class _AlunoTreinoDiaViewState extends State<AlunoTreinoDiaView> {
     if (primeiroPendente == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text(
-            'Todos os exercícios deste treino foram concluídos.',
-          ),
+          content: Text('Todos os exercícios deste treino foram concluídos.'),
         ),
       );
       return;
@@ -130,17 +120,10 @@ class _AlunoTreinoDiaViewState extends State<AlunoTreinoDiaView> {
             Expanded(
               child: Center(
                 child: ConstrainedBox(
-                  constraints: const BoxConstraints(
-                    maxWidth: 430,
-                  ),
+                  constraints: const BoxConstraints(maxWidth: 430),
                   child: SingleChildScrollView(
                     physics: const BouncingScrollPhysics(),
-                    padding: const EdgeInsets.fromLTRB(
-                      16,
-                      16,
-                      16,
-                      28,
-                    ),
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 28),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -154,9 +137,7 @@ class _AlunoTreinoDiaViewState extends State<AlunoTreinoDiaView> {
                         const SizedBox(height: 10),
                         ...widget.data.treino.exercicios.map(
                           (exercicio) => Padding(
-                            padding: const EdgeInsets.only(
-                              bottom: 12,
-                            ),
+                            padding: const EdgeInsets.only(bottom: 12),
                             child: _buildExercicioCard(exercicio),
                           ),
                         ),
@@ -173,28 +154,17 @@ class _AlunoTreinoDiaViewState extends State<AlunoTreinoDiaView> {
         top: false,
         child: Container(
           width: double.infinity,
-          padding: const EdgeInsets.fromLTRB(
-            16,
-            10,
-            16,
-            12,
-          ),
+          padding: const EdgeInsets.fromLTRB(16, 10, 16, 12),
           decoration: const BoxDecoration(
             color: Colors.white,
-            border: Border(
-              top: BorderSide(
-                color: AppColors.border,
-              ),
-            ),
+            border: Border(top: BorderSide(color: AppColors.border)),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Flexible(
                 child: ConstrainedBox(
-                  constraints: const BoxConstraints(
-                    maxWidth: 398,
-                  ),
+                  constraints: const BoxConstraints(maxWidth: 398),
                   child: SizedBox(
                     width: double.infinity,
                     height: 50,
@@ -234,25 +204,14 @@ class _AlunoTreinoDiaViewState extends State<AlunoTreinoDiaView> {
   Widget _buildHeader() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(
-        10,
-        8,
-        10,
-        10,
-      ),
+      padding: const EdgeInsets.fromLTRB(10, 8, 10, 10),
       decoration: const BoxDecoration(
         color: Colors.white,
-        border: Border(
-          bottom: BorderSide(
-            color: AppColors.border,
-          ),
-        ),
+        border: Border(bottom: BorderSide(color: AppColors.border)),
       ),
       child: Center(
         child: ConstrainedBox(
-          constraints: const BoxConstraints(
-            maxWidth: 430,
-          ),
+          constraints: const BoxConstraints(maxWidth: 430),
           child: Column(
             children: [
               SizedBox(
@@ -301,12 +260,7 @@ class _AlunoTreinoDiaViewState extends State<AlunoTreinoDiaView> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.fromLTRB(
-                  48,
-                  0,
-                  48,
-                  2,
-                ),
+                padding: const EdgeInsets.fromLTRB(48, 0, 48, 2),
                 child: Column(
                   children: [
                     Text(
@@ -347,9 +301,7 @@ class _AlunoTreinoDiaViewState extends State<AlunoTreinoDiaView> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(
-          color: AppColors.border,
-        ),
+        border: Border.all(color: AppColors.border),
         boxShadow: const [
           BoxShadow(
             color: AppColors.shadowCard,
@@ -450,16 +402,15 @@ class _AlunoTreinoDiaViewState extends State<AlunoTreinoDiaView> {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: _aquecimentoConcluido
-                  ? AppColors.completedBorder
-                  : AppColors.border,
+              color:
+                  _aquecimentoConcluido
+                      ? AppColors.completedBorder
+                      : AppColors.border,
             ),
           ),
           child: Row(
             children: [
-              _buildThumb(
-                icon: Icons.self_improvement_rounded,
-              ),
+              _buildThumb(icon: Icons.self_improvement_rounded),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
@@ -492,8 +443,7 @@ class _AlunoTreinoDiaViewState extends State<AlunoTreinoDiaView> {
                 concluido: _aquecimentoConcluido,
                 onTap: () {
                   setState(() {
-                    _aquecimentoConcluido =
-                        !_aquecimentoConcluido;
+                    _aquecimentoConcluido = !_aquecimentoConcluido;
                   });
                 },
               ),
@@ -504,9 +454,7 @@ class _AlunoTreinoDiaViewState extends State<AlunoTreinoDiaView> {
     );
   }
 
-  Widget _buildExercicioCard(
-    ExercicioTreinoUi exercicio,
-  ) {
+  Widget _buildExercicioCard(ExercicioTreinoUi exercicio) {
     final concluido = _concluidos.contains(exercicio.id);
 
     return Material(
@@ -524,17 +472,13 @@ class _AlunoTreinoDiaViewState extends State<AlunoTreinoDiaView> {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: concluido
-                  ? AppColors.completedBorder
-                  : AppColors.border,
+              color: concluido ? AppColors.completedBorder : AppColors.border,
             ),
           ),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              _buildThumb(
-                icon: Icons.fitness_center_rounded,
-              ),
+              _buildThumb(icon: Icons.fitness_center_rounded),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
@@ -560,14 +504,10 @@ class _AlunoTreinoDiaViewState extends State<AlunoTreinoDiaView> {
                           _seriesText(exercicio.series),
                           destaque: true,
                         ),
-                        _buildBadge(
-                          _repeticoesText(exercicio.series),
-                        ),
+                        _buildBadge(_repeticoesText(exercicio.series)),
                         if (exercicio.carga.trim().isNotEmpty &&
                             exercicio.carga.trim() != '-')
-                          _buildBadge(
-                            exercicio.carga,
-                          ),
+                          _buildBadge(exercicio.carga),
                       ],
                     ),
                   ],
@@ -587,9 +527,7 @@ class _AlunoTreinoDiaViewState extends State<AlunoTreinoDiaView> {
     );
   }
 
-  Widget _buildThumb({
-    required IconData icon,
-  }) {
+  Widget _buildThumb({required IconData icon}) {
     return Container(
       width: 82,
       height: 76,
@@ -598,20 +536,13 @@ class _AlunoTreinoDiaViewState extends State<AlunoTreinoDiaView> {
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            AppColors.thumbnailStart,
-            AppColors.slateSurface,
-          ],
+          colors: [AppColors.thumbnailStart, AppColors.slateSurface],
         ),
       ),
       child: Stack(
         alignment: Alignment.center,
         children: [
-          Icon(
-            icon,
-            color: AppColors.primary,
-            size: 31,
-          ),
+          Icon(icon, color: AppColors.primary, size: 31),
           Positioned(
             right: 7,
             bottom: 7,
@@ -649,43 +580,27 @@ class _AlunoTreinoDiaViewState extends State<AlunoTreinoDiaView> {
           color: concluido ? AppColors.primary : Colors.white,
           shape: BoxShape.circle,
           border: Border.all(
-            color: concluido
-                ? AppColors.primary
-                : AppColors.inactive,
+            color: concluido ? AppColors.primary : AppColors.inactive,
             width: 2,
           ),
         ),
         child: Icon(
-          concluido
-              ? Icons.check_rounded
-              : Icons.circle_outlined,
-          color: concluido
-              ? Colors.white
-              : AppColors.inactive,
+          concluido ? Icons.check_rounded : Icons.circle_outlined,
+          color: concluido ? Colors.white : AppColors.inactive,
           size: 20,
         ),
       ),
     );
   }
 
-  Widget _buildBadge(
-    String texto, {
-    bool destaque = false,
-  }) {
+  Widget _buildBadge(String texto, {bool destaque = false}) {
     return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 8,
-        vertical: 5,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
       decoration: BoxDecoration(
-        color: destaque
-            ? AppColors.primaryChipSurface
-            : AppColors.surfaceSoft,
+        color: destaque ? AppColors.primaryChipSurface : AppColors.surfaceSoft,
         borderRadius: BorderRadius.circular(999),
         border: Border.all(
-          color: destaque
-              ? AppColors.primaryChipBorder
-              : AppColors.border,
+          color: destaque ? AppColors.primaryChipBorder : AppColors.border,
         ),
       ),
       child: Text(

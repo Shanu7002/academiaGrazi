@@ -49,4 +49,17 @@ class UpdateDataController {
       throw Exception('Erro ao atualizar contato de emergência: $e');
     }
   }
+
+  Future<void> updatePhotoUrl({
+    required String userId,
+    required String photoUrl,
+  }) async {
+    try {
+      await _db.collection('users').doc(userId).set({
+        'photoUrl': photoUrl,
+      }, SetOptions(merge: true));
+    } catch (e) {
+      throw Exception('Erro ao atualizar a foto de perfil: $e');
+    }
+  }
 }
