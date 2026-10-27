@@ -1,10 +1,11 @@
 import 'package:academiagrazi/theme/app_colors.dart';
 import 'package:academiagrazi/view/teacher/ui_models/montagem_treino_ui_models.dart';
+import 'package:academiagrazi/view/teacher/widgets/imagem_exercicio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-/// Card editavel e independente do restante da pagina.
+/// Card independente com imagem, edição de séries e reordenação.
 class ExercicioMontagemCard extends StatelessWidget {
   final int index;
   final ExercicioCatalogoProfessorUi exercicio;
@@ -140,18 +141,7 @@ class ExercicioMontagemCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                Container(
-                  width: 64,
-                  height: 64,
-                  decoration: BoxDecoration(
-                    color: AppColors.avatarBackground,
-                    borderRadius: BorderRadius.circular(9),
-                  ),
-                  child: const Icon(
-                    Icons.fitness_center,
-                    color: AppColors.primary,
-                  ),
-                ),
+                ImagemExercicio(exercicio: exercicio),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
@@ -172,6 +162,16 @@ class ExercicioMontagemCard extends StatelessWidget {
                           fontSize: 12,
                         ),
                       ),
+                      if (exercicio.orientacoes.isNotEmpty)
+                        Text(
+                          exercicio.orientacoes,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            color: AppColors.textSecondary,
+                            fontSize: 11,
+                          ),
+                        ),
                     ],
                   ),
                 ),
