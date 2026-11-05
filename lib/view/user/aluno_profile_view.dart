@@ -9,6 +9,7 @@ import 'package:academiagrazi/service/users/profile_photo.dart';
 import 'package:academiagrazi/service/users/register_user.dart';
 import 'package:academiagrazi/view/components/app_bar.dart';
 import 'package:academiagrazi/view/components/invite_code_card.dart';
+import 'package:academiagrazi/view/components/user_avatar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -301,8 +302,11 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
                           ),
                           const SizedBox(height: 16),
                           _ProfessionalInfoCard(
-                            avatar: _ResponsableAvatar(
+                            avatar: UserAvatar(
+                              key: const Key('responsable_avatar'),
                               photoUrl: responsable?.photoUrl,
+                              backgroundColor: AppColors.avatarBackground,
+                              iconColor: AppColors.primary,
                             ),
                             label: 'PROFESSOR RESPONSÁVEL',
                             title:
@@ -1177,48 +1181,6 @@ class _ProfileAvatar extends StatelessWidget {
                 ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-}
-
-/// Avatar do professor responsável no card de acompanhamento. Mostra a foto
-/// salva no perfil do professor ou, sem foto (ou se falhar), o ícone padrão.
-class _ResponsableAvatar extends StatelessWidget {
-  const _ResponsableAvatar({required this.photoUrl});
-
-  final String? photoUrl;
-
-  @override
-  Widget build(BuildContext context) {
-    const placeholder = Icon(Icons.person, color: AppColors.primary);
-    final url = photoUrl;
-
-    return SizedBox(
-      key: const Key('responsable_avatar'),
-      width: 44,
-      height: 44,
-      child: ClipOval(
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            const ColoredBox(color: AppColors.avatarBackground),
-            if (url == null || url.isEmpty)
-              placeholder
-            else
-              Image.network(
-                ProfilePhotoService.thumbnailUrl(url, size: 96),
-                fit: BoxFit.cover,
-                alignment: Alignment.topCenter,
-                frameBuilder:
-                    (_, child, frame, wasSynchronouslyLoaded) =>
-                        wasSynchronouslyLoaded || frame != null
-                            ? child
-                            : placeholder,
-                errorBuilder: (_, __, ___) => placeholder,
-              ),
-          ],
         ),
       ),
     );
