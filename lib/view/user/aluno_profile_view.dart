@@ -301,13 +301,8 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
                           ),
                           const SizedBox(height: 16),
                           _ProfessionalInfoCard(
-                            avatar: const CircleAvatar(
-                              radius: 22,
-                              backgroundColor: AppColors.avatarBackground,
-                              child: Icon(
-                                Icons.person,
-                                color: AppColors.primary,
-                              ),
+                            avatar: _ResponsableAvatar(
+                              photoUrl: responsable?.photoUrl,
                             ),
                             label: 'PROFESSOR RESPONSÁVEL',
                             title:
@@ -1182,6 +1177,48 @@ class _ProfileAvatar extends StatelessWidget {
                 ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Avatar do professor responsável no card de acompanhamento. Mostra a foto
+/// salva no perfil do professor ou, sem foto (ou se falhar), o ícone padrão.
+class _ResponsableAvatar extends StatelessWidget {
+  const _ResponsableAvatar({required this.photoUrl});
+
+  final String? photoUrl;
+
+  @override
+  Widget build(BuildContext context) {
+    const placeholder = Icon(Icons.person, color: AppColors.primary);
+    final url = photoUrl;
+
+    return SizedBox(
+      key: const Key('responsable_avatar'),
+      width: 44,
+      height: 44,
+      child: ClipOval(
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            const ColoredBox(color: AppColors.avatarBackground),
+            if (url == null || url.isEmpty)
+              placeholder
+            else
+              Image.network(
+                ProfilePhotoService.thumbnailUrl(url, size: 96),
+                fit: BoxFit.cover,
+                alignment: Alignment.topCenter,
+                frameBuilder:
+                    (_, child, frame, wasSynchronouslyLoaded) =>
+                        wasSynchronouslyLoaded || frame != null
+                            ? child
+                            : placeholder,
+                errorBuilder: (_, __, ___) => placeholder,
+              ),
+          ],
         ),
       ),
     );
