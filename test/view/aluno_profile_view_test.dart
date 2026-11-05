@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:academiagrazi/locator.dart';
 import 'package:academiagrazi/service/users/profile_photo.dart';
 import 'package:flutter/material.dart';
@@ -105,6 +107,86 @@ void main() {
     );
   });
 
+  testWidgets('Card do professor mostra a foto salva do professor', (
+    WidgetTester tester,
+  ) async {
+    when(mockUserService.getResponsableData('resp_456')).thenAnswer(
+      (_) async => UserModel(
+        id: 'resp_456',
+        name: 'Prof. Marcos',
+        email: 'marcos@example.com',
+        type: UserType.instructor,
+        photoUrl: 'https://res.cloudinary.com/demo/image/upload/prof.jpg',
+      ),
+    );
+    final aluno = UserModel(
+      id: 'uid_123',
+      name: 'Test',
+      email: 'test@example.com',
+      responsable: 'resp_456',
+    );
+    when(mockFirebaseUser.uid).thenReturn(aluno.id);
+    when(mockAuth.currentUser).thenReturn(mockFirebaseUser);
+    when(mockUserService.getUserById(aluno.id)).thenAnswer((_) async => aluno);
+
+    await tester.pumpWidget(const MaterialApp(home: AlunoProfileView()));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Prof. Marcos'), findsOneWidget);
+    final image = tester.widget<Image>(
+      find.descendant(
+        of: find.byKey(const Key('responsable_avatar')),
+        matching: find.byType(Image),
+      ),
+    );
+    expect(
+      (image.image as NetworkImage).url,
+      'https://res.cloudinary.com/demo/image/upload/'
+      'c_fill,g_face,w_88,h_88,q_auto,f_auto/prof.jpg',
+    );
+  });
+
+  testWidgets('Cabeçalho mostra a foto do usuário logado e atualiza ao vivo', (
+    WidgetTester tester,
+  ) async {
+    final controller = StreamController<UserModel?>();
+    addTearDown(controller.close);
+    when(
+      mockUserService.watchUserById('uid_123'),
+    ).thenAnswer((_) => controller.stream);
+
+    await pumpProfileWith(
+      tester,
+      UserModel(id: 'uid_123', name: 'Test', email: 'test@example.com'),
+    );
+
+    final appBarAvatar = find.byKey(const Key('appbar_user_avatar'));
+    expect(appBarAvatar, findsOneWidget);
+    expect(
+      find.descendant(of: appBarAvatar, matching: find.byType(Image)),
+      findsNothing,
+    );
+
+    controller.add(
+      UserModel(
+        id: 'uid_123',
+        name: 'Test',
+        email: 'test@example.com',
+        photoUrl: 'https://res.cloudinary.com/demo/image/upload/eu.jpg',
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final image = tester.widget<Image>(
+      find.descendant(of: appBarAvatar, matching: find.byType(Image)),
+    );
+    expect(
+      (image.image as NetworkImage).url,
+      'https://res.cloudinary.com/demo/image/upload/'
+      'c_fill,g_face,w_80,h_80,q_auto,f_auto/eu.jpg',
+    );
+  });
+
   testWidgets('AlunoProfileView renders user data properly', (
     WidgetTester tester,
   ) async {
@@ -140,7 +222,8 @@ void main() {
     expect(find.text('Test'), findsOneWidget);
     expect(find.text('test@example.com'), findsOneWidget);
 
-    verify(mockAuth.currentUser).called(1);
+    // O cabeçalho também lê o usuário logado para mostrar a foto.
+    verify(mockAuth.currentUser).called(greaterThanOrEqualTo(1));
     verify(mockUserService.getUserById('uid_123')).called(1);
   });
 
