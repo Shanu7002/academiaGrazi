@@ -1,3 +1,4 @@
+import 'package:academiagrazi/view/components/app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -14,56 +15,7 @@ class _AlunoEvolutionViewState extends State<AlunoEvolutionView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: true,
-        backgroundColor: Colors.white,
-        elevation: 0,
-        title: Row(
-          children: [
-            SizedBox(
-              width: 40,
-              height: 40,
-              child: IconButton(
-                padding: EdgeInsets.zero,
-                onPressed: () => Navigator.maybePop(context),
-                icon: const Icon(
-                  Icons.arrow_back_ios_new_rounded,
-                  color: Color.fromARGB(255, 136, 207, 193),
-                  size: 18,
-                ),
-              ),
-            ),
-            const SizedBox(width: 10),
-            const CircleAvatar(
-              radius: 20,
-              backgroundColor: Color(0xFFD6D6D6),
-              child: Icon(Icons.person, color: Color(0xFF8A8A8A)),
-            ),
-            const SizedBox(width: 12),
-            const Text(
-              'GRAZI BRAZ',
-              style: TextStyle(
-                color: Color(0xFF005A4F),
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16.0),
-            child: IconButton(
-              icon: const Icon(
-                Icons.notifications_none_rounded,
-                color: Colors.black87,
-                size: 24,
-              ),
-              onPressed: () {},
-            ),
-          ),
-        ],
-      ),
+      appBar: const CustomAppBar(title: 'GRAZI BRAZ'),
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
