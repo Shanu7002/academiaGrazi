@@ -197,3 +197,9 @@ app.*.symbols
 *.freezed.dart
 # Widget Preview related
 .widget_preview/
+
+# Dependencias npm e configuracoes locais de teste do Firebase
+**/node_modules/
+.firebase/
+/firebase.security.local.json
+/patches/
