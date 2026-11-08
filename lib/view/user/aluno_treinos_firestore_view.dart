@@ -1,20 +1,31 @@
 import 'package:academiagrazi/locator.dart';
 import 'package:academiagrazi/service/training/student_training_view_data_service.dart';
+import 'package:academiagrazi/service/training/training_plan_service.dart';
+import 'package:academiagrazi/service/training/training_session_service.dart';
 import 'package:academiagrazi/theme/app_colors.dart';
 import 'package:academiagrazi/view/components/app_bar.dart';
+import 'package:academiagrazi/view/user/aluno_historico_sessoes_view.dart';
+import 'package:academiagrazi/view/user/aluno_sessao_treino_view.dart';
 import 'package:academiagrazi/view/user/aluno_treinos_view.dart';
 import 'package:academiagrazi/view/user/ui_data/aluno_treinos_ui_data.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
-/// Ponto de entrada da aba Treinos do aluno usando a prescricao real.
-/// Sem ficha publicada, mostra um estado vazio em vez dos mocks.
+/// Entrada da aba de treinos com ficha publicada e sessao de execucao real.
 class AlunoTreinosFirestoreView extends StatefulWidget {
   final String? studentId;
   final StudentTrainingViewDataService? service;
+  final TrainingPlanService? planService;
+  final TrainingSessionService? sessionService;
 
-  const AlunoTreinosFirestoreView({super.key, this.studentId, this.service});
+  const AlunoTreinosFirestoreView({
+    super.key,
+    this.studentId,
+    this.service,
+    this.planService,
+    this.sessionService,
+  });
 
   @override
   State<AlunoTreinosFirestoreView> createState() =>
@@ -24,30 +35,125 @@ class AlunoTreinosFirestoreView extends StatefulWidget {
 class _AlunoTreinosFirestoreViewState extends State<AlunoTreinosFirestoreView> {
   late final String? _studentId;
   Stream<AlunoTreinosUiData?>? _trainingStream;
+  TrainingPlanService? _planServiceInstance;
+  TrainingSessionService? _sessionServiceInstance;
+  bool _opening = false;
+
+  TrainingPlanService get _plans =>
+      _planServiceInstance ??= widget.planService ?? TrainingPlanService();
+
+  TrainingSessionService get _sessions =>
+      _sessionServiceInstance ??=
+          widget.sessionService ?? TrainingSessionService(planService: _plans);
 
   @override
   void initState() {
     super.initState();
     _studentId = widget.studentId ?? locator<FirebaseAuth>().currentUser?.uid;
-    if (_studentId != null &&
-        _studentId.isNotEmpty &&
+    final id = _studentId;
+    if (id != null &&
+        id.isNotEmpty &&
         (widget.service != null || Firebase.apps.isNotEmpty)) {
       _trainingStream = (widget.service ?? StudentTrainingViewDataService())
-          .watchActiveUiData(_studentId);
+          .watchActiveUiData(id);
     }
+  }
+
+  void _avisar(String message) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  Future<void> _iniciarTreino(String routineId) async {
+    final studentId = _studentId;
+    if (_opening || studentId == null || studentId.isEmpty) return;
+    setState(() => _opening = true);
+    try {
+      final plan = await _plans.getActivePlan(studentId);
+      if (plan == null || !plan.routines.any((item) => item.id == routineId)) {
+        throw StateError('A ficha publicada não está mais disponível.');
+      }
+      final pending = await _sessions.getInProgress(studentId);
+      if (!mounted) return;
+
+      var planId = plan.id;
+      var selectedRoutine = routineId;
+      String? existingSessionId;
+
+      if (pending != null &&
+          (pending.planId != plan.id || pending.routineId != routineId)) {
+        final retomar = await showDialog<bool>(
+          context: context,
+          builder:
+              (dialogContext) => AlertDialog(
+                title: const Text('Você já tem um treino em andamento'),
+                content: Text(
+                  'O treino "${pending.routineName}" ainda não foi finalizado. '
+                  'Deseja continuar de onde parou?',
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.of(dialogContext).pop(false),
+                    child: const Text('Agora não'),
+                  ),
+                  FilledButton(
+                    onPressed: () => Navigator.of(dialogContext).pop(true),
+                    child: const Text('Continuar treino'),
+                  ),
+                ],
+              ),
+        );
+        if (!mounted || retomar != true) return;
+        planId = pending.planId;
+        selectedRoutine = pending.routineId;
+        existingSessionId = pending.id;
+      }
+
+      if (!mounted) return;
+      await Navigator.of(context).push<bool>(
+        MaterialPageRoute(
+          builder:
+              (_) => AlunoSessaoTreinoView(
+                studentId: studentId,
+                planId: planId,
+                routineId: selectedRoutine,
+                existingSessionId: existingSessionId,
+                service: _sessions,
+              ),
+        ),
+      );
+    } catch (_) {
+      _avisar('Não foi possível abrir o treino. Tente novamente.');
+    } finally {
+      if (mounted) setState(() => _opening = false);
+    }
+  }
+
+  void _abrirHistorico() {
+    final id = _studentId;
+    if (id == null || id.isEmpty) return;
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder:
+            (_) => AlunoHistoricoSessoesView(studentId: id, service: _sessions),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     if (_trainingStream == null) {
-      final withoutSession = _studentId == null || _studentId.isEmpty;
+      final id = _studentId;
+      final withoutSession = id == null || id.isEmpty;
       return _estado(
         icon: withoutSession ? Icons.lock_outline : Icons.cloud_off_outlined,
-        title: withoutSession ? 'Entre na sua conta' : 'Servico indisponivel',
+        title: withoutSession ? 'Entre na sua conta' : 'Serviço indisponível',
         message:
             withoutSession
-                ? 'Faca login para consultar sua ficha de treinos.'
-                : 'O Firebase ainda nao foi inicializado.',
+                ? 'Faça login para consultar sua ficha de treinos.'
+                : 'O Firebase ainda não foi inicializado.',
       );
     }
 
@@ -57,9 +163,9 @@ class _AlunoTreinosFirestoreViewState extends State<AlunoTreinosFirestoreView> {
         if (snapshot.hasError) {
           return _estado(
             icon: Icons.cloud_off_outlined,
-            title: 'Nao foi possivel carregar os treinos',
+            title: 'Não foi possível carregar os treinos',
             message:
-                'Verifique a conexao e as permissoes da sua ficha no Firebase.',
+                'Verifique a conexão e as permissões da sua ficha no Firebase.',
           );
         }
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -75,11 +181,14 @@ class _AlunoTreinosFirestoreViewState extends State<AlunoTreinosFirestoreView> {
           return _estado(
             icon: Icons.assignment_outlined,
             title: 'Nenhuma ficha publicada',
-            message: 'Seu professor ainda nao atribuiu uma ficha para voce.',
+            message: 'Seu professor ainda não atribuiu uma ficha para você.',
           );
         }
-        // Reutiliza integralmente a tela existente de Treinos A/B/C.
-        return AlunoTreinosView(data: training);
+        return AlunoTreinosView(
+          data: training,
+          onIniciarTreino: _iniciarTreino,
+          onHistorico: _abrirHistorico,
+        );
       },
     );
   }

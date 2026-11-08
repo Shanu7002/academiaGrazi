@@ -5,7 +5,7 @@ import 'package:academiagrazi/view/teacher/services/seletor_imagem_exercicio.dar
 import 'package:academiagrazi/view/teacher/ui_models/montagem_treino_ui_models.dart';
 import 'package:flutter/material.dart';
 
-/// Formulário temporário de cadastro de exercício com imagem da galeria.
+/// Formulário de cadastro reutilizável com foto opcional da galeria.
 class CadastrarExercicioDialog extends StatefulWidget {
   final String exercicioId;
   final SeletorImagemExercicio seletorImagem;
@@ -66,13 +66,7 @@ class _CadastrarExercicioDialogState extends State<CadastrarExercicioDialog> {
   void _confirmar() {
     final camposValidos = _formKey.currentState!.validate();
 
-    if (_imagem == null) {
-      setState(() {
-        _erroImagem = 'Selecione uma imagem da galeria.';
-      });
-    }
-
-    if (!camposValidos || _imagem == null) return;
+    if (!camposValidos) return;
 
     Navigator.of(context).pop(
       ExercicioCatalogoProfessorUi(
@@ -154,7 +148,7 @@ class _CadastrarExercicioDialogState extends State<CadastrarExercicioDialog> {
                   onPressed: _selecionando ? null : _selecionarImagem,
                   icon: const Icon(Icons.photo_library_outlined),
                   label: Text(
-                    _selecionando ? 'Abrindo galeria...' : 'Escolher imagem',
+                    _selecionando ? 'Abrindo galeria...' : 'Escolher foto da galeria (opcional)',
                   ),
                 ),
                 if (_erroImagem != null)
@@ -166,8 +160,7 @@ class _CadastrarExercicioDialogState extends State<CadastrarExercicioDialog> {
                   ),
                 const SizedBox(height: 6),
                 const Text(
-                  'A imagem ficará apenas nesta sessão. '
-                  'Ainda não é salva no Firebase.',
+                  'Foto opcional. Ao salvar, ela será enviada e vinculada ao exercício na biblioteca.',
                   style: TextStyle(
                     fontSize: 12,
                     color: AppColors.textSecondary,

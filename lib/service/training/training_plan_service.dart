@@ -9,6 +9,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class TrainingPlanService {
   final FirebaseFirestore _db;
 
+  /// Permite compartilhar a conexao de testes com servicos relacionados.
+  FirebaseFirestore get firestore => _db;
+
   // coverage:ignore-start
   TrainingPlanService({FirebaseFirestore? db})
     : _db = db ?? FirebaseFirestore.instance;
@@ -147,6 +150,56 @@ class TrainingPlanService {
         'instructorId': instructorId,
         'updatedAt': FieldValue.serverTimestamp(),
       });
+    });
+  }
+
+  /// Exclui a ficha da experiencia atual do aluno, sem apagar as sessoes
+  /// realizadas nem os documentos historicos de fichas publicadas.
+  ///
+  /// O ponteiro ativo e todos os rascunhos do professor sao excluidos na
+  /// mesma transacao, evitando manter uma montagem antiga na interface.
+  Future<void> removeStudentSheet({
+    required String studentId,
+    required String instructorId,
+  }) async {
+    if (studentId.trim().isEmpty || instructorId.trim().isEmpty) {
+      throw ArgumentError('Aluno e professor obrigatorios.');
+    }
+    final studentRef = _studentRef(studentId);
+    final currentRef = _current(studentId);
+    // A consulta e feita antes da transacao. Cada documento e relido
+    // dentro dela para garantir que nao se alterou nesse intervalo.
+    final drafts = await _plans(studentId)
+        .where('status', isEqualTo: TrainingPlanStatus.draft.name)
+        .limit(50)
+        .get();
+    if (drafts.docs.length >= 50) {
+      throw StateError('Muitas fichas em montagem. Contate o suporte.');
+    }
+
+    await _db.runTransaction((transaction) async {
+      final student = await transaction.get(studentRef);
+      final current = await transaction.get(currentRef);
+      final savedDrafts = <DocumentSnapshot<Map<String, dynamic>>>[];
+      for (final draft in drafts.docs) {
+        savedDrafts.add(await transaction.get(draft.reference));
+      }
+      _verifyLinkedStudent(student.data(), instructorId);
+      if (current.exists) {
+        if (current.data()?['instructorId'] != instructorId) {
+          throw StateError('A ficha ativa pertence a outro professor.');
+        }
+        transaction.delete(currentRef);
+      }
+      for (final draft in savedDrafts) {
+        if (!draft.exists) continue;
+        final data = draft.data();
+        if (data?['status'] == TrainingPlanStatus.draft.name &&
+            data?['studentId'] == studentId &&
+            data?['instructorId'] == instructorId) {
+          transaction.delete(draft.reference);
+        }
+      }
     });
   }
 

@@ -91,7 +91,7 @@ service cloud.firestore {
       allow delete: if false;
     }
 
-    // Lógica existente de códigos de convite - preservada.
+    // Logica existente de codigos de convite - preservada.
     match /instructorCodes/{code} {
       allow get: if true;
       allow list: if false;
@@ -232,8 +232,12 @@ service cloud.firestore {
           )
         );
 
-      // Apos publicar, a ficha se torna imutavel.
-      allow delete: if false;
+      // Uma ficha publicada continua imutavel para preservar o historico.
+      // Apenas montagens nunca publicadas podem ser excluidas pelo professor.
+      allow delete: if linkedInstructor(studentId)
+        && resource.data.status == 'draft'
+        && resource.data.studentId == studentId
+        && resource.data.instructorId == request.auth.uid;
     }
 
     match /users/{studentId}/trainingState/{stateId} {
@@ -258,10 +262,152 @@ service cloud.firestore {
         && getAfter(planPath(studentId, request.resource.data.activePlanId)).data.instructorId == request.auth.uid
         && getAfter(planPath(studentId, request.resource.data.activePlanId)).data.publishedAt == request.time;
 
+      // Excluir ficha completa: desfaz apenas a atribuicao ativa.
+      // Fichas publicadas e sessoes passadas continuam no historico.
+      allow delete: if stateId == 'current'
+        && linkedInstructor(studentId)
+        && resource.data.instructorId == request.auth.uid;
+    }
+
+    // Etapa 6: execucao da ficha publicada pelo proprio aluno.
+    // Professor vinculado e administrador podem acompanhar, mas nao escrever.
+    match /users/{studentId}/trainingSessions/{sessionId} {
+      allow get, list: if canReadStudentData(studentId);
+
+      allow create: if ownUser(studentId)
+        && request.resource.data.keys().hasOnly([
+          'schemaVersion', 'id', 'studentId', 'instructorId',
+          'planId', 'planVersion', 'routineId', 'routineName',
+          'status', 'startedAt', 'warmupDone', 'exercises',
+          'createdAt', 'updatedAt'
+        ])
+        && request.resource.data.keys().hasAll([
+          'schemaVersion', 'id', 'studentId', 'instructorId',
+          'planId', 'planVersion', 'routineId', 'routineName',
+          'status', 'startedAt', 'warmupDone', 'exercises',
+          'createdAt', 'updatedAt'
+        ])
+        && request.resource.data.schemaVersion == 1
+        && request.resource.data.id == sessionId
+        && request.resource.data.studentId == studentId
+        && request.resource.data.instructorId is string
+        && request.resource.data.planId is string
+        && request.resource.data.planVersion is int
+        && request.resource.data.planVersion >= 1
+        && request.resource.data.routineId is string
+        && request.resource.data.routineId.size() > 0
+        && request.resource.data.routineName is string
+        && request.resource.data.status == 'inProgress'
+        && request.resource.data.startedAt is string
+        && request.resource.data.warmupDone == false
+        && request.resource.data.exercises is list
+        && request.resource.data.exercises.size() > 0
+        && request.resource.data.exercises.size() <= 60
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.updatedAt == request.time
+        && exists(currentPlanPath(studentId))
+        && get(currentPlanPath(studentId)).data.activePlanId
+             == request.resource.data.planId
+        && exists(planPath(studentId, request.resource.data.planId))
+        && get(planPath(studentId, request.resource.data.planId)).data.status
+             == 'published'
+        && get(planPath(studentId, request.resource.data.planId)).data.studentId
+             == studentId
+        && get(planPath(studentId, request.resource.data.planId)).data.instructorId
+             == request.resource.data.instructorId
+        && get(userPath(studentId)).data.responsable
+             == request.resource.data.instructorId
+        && get(planPath(studentId, request.resource.data.planId)).data.version
+             == request.resource.data.planVersion;
+
+      // Apenas a sessao em andamento pode registrar progresso ou finalizar.
+      // Nao permite alterar IDs, vinculo, inicio ou dados de criacao.
+      allow update: if ownUser(studentId)
+        && resource.data.status == 'inProgress'
+        && request.resource.data.status in ['inProgress', 'finished']
+        && request.resource.data.diff(resource.data).affectedKeys()
+             .hasOnly(['exercises', 'warmupDone', 'status',
+                       'finishedAt', 'updatedAt'])
+        && request.resource.data.updatedAt == request.time
+        && request.resource.data.warmupDone is bool
+        && request.resource.data.exercises is list
+        && request.resource.data.exercises.size()
+             == resource.data.exercises.size()
+        && (
+          (request.resource.data.status == 'inProgress'
+            && !('finishedAt' in request.resource.data))
+          ||
+          (request.resource.data.status == 'finished'
+            && request.resource.data.finishedAt is string
+            && request.resource.data.finishedAt.size() > 0)
+        );
+
       allow delete: if false;
     }
 
-    // Nenhuma permissao ainda para trainingSessions e exerciseCatalog.
-    // Criar regras especificas quando os respectivos servicos existirem.
+    // Catalogo global de movimentos: leitura autenticada, cadastro manual
+    // restrito a professores. A importacao inicial e feita pelo Admin SDK.
+    match /exerciseCatalog/{exerciseId} {
+      allow get, list: if signedIn();
+
+      allow create: if signedIn()
+        && get(userPath(request.auth.uid)).data.type == 'instructor'
+        && request.resource.data.keys().hasOnly([
+          'name', 'nameNormalized', 'muscleGroup', 'instructions',
+          'imageUrl', 'source', 'createdBy', 'createdAt', 'updatedAt'
+        ])
+        && request.resource.data.keys().hasAll([
+          'name', 'nameNormalized', 'muscleGroup', 'instructions',
+          'imageUrl', 'source', 'createdBy', 'createdAt', 'updatedAt'
+        ])
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0
+        && request.resource.data.name.size() <= 150
+        && request.resource.data.nameNormalized is string
+        && request.resource.data.muscleGroup is string
+        && request.resource.data.instructions is string
+        && request.resource.data.imageUrl is string
+        && request.resource.data.source == 'manual'
+        && request.resource.data.createdBy == request.auth.uid
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.updatedAt == request.time;
+
+      allow update: if signedIn()
+        && resource.data.source == 'manual'
+        && resource.data.createdBy == request.auth.uid
+        && get(userPath(request.auth.uid)).data.type == 'instructor'
+        && request.resource.data.diff(resource.data).affectedKeys()
+             .hasOnly(['name', 'nameNormalized', 'muscleGroup',
+               'instructions', 'imageUrl', 'updatedAt'])
+        && request.resource.data.updatedAt == request.time;
+
+      allow delete: if false;
+    }
+
+    // Biblioteca de treinos reutilizaveis, privada de cada professor.
+    match /users/{teacherId}/routineTemplates/{templateId} {
+      allow get, list: if ownUser(teacherId)
+        && get(userPath(teacherId)).data.type == 'instructor';
+
+      allow create, update: if ownUser(teacherId)
+        && get(userPath(teacherId)).data.type == 'instructor'
+        && request.resource.data.keys().hasOnly([
+          'teacherId', 'studentId', 'name', 'nameNormalized',
+          'routine', 'updatedAt'
+        ])
+        && request.resource.data.keys().hasAll([
+          'teacherId', 'studentId', 'name', 'nameNormalized',
+          'routine', 'updatedAt'
+        ])
+        && request.resource.data.teacherId == teacherId
+        && request.resource.data.studentId is string
+        && request.resource.data.name is string
+        && request.resource.data.nameNormalized is string
+        && request.resource.data.routine is map
+        && request.resource.data.updatedAt == request.time;
+
+      allow delete: if false;
+    }
+
   }
 }

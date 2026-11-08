@@ -1,0 +1,17 @@
+{
+    "name":  "grazi-firestore-rules-v4",
+    "version":  "1.0.0",
+    "private":  true,
+    "description":  "62 testes de seguranca usando apenas o emulador Firebase",
+    "scripts":  {
+                    "test":  "cd ../.. \u0026\u0026 firebase emulators:exec --only firestore --project demo-grazi-local --config firebase.rules-test.json \"node tools/firestore_rules_v4/teste_regras.cjs\""
+                },
+    "devDependencies":  {
+                            "@firebase/rules-unit-testing":  "6.0.0",
+                            "firebase":  "^13.0.0",
+                            "firebase-tools":  "15.35.0"
+                        },
+    "engines":  {
+                    "node":  "\u003e=20"
+                }
+}

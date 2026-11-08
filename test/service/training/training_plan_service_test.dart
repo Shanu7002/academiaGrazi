@@ -108,6 +108,35 @@ void main() {
     expect(doc.data()?['version'], 2);
   });
 
+  test('excluir ficha atual retira acesso sem apagar ficha historica', () async {
+    final id = await service.createDraft(sampleDraft('prof-1'));
+    await service.publishDraft(
+      studentId: 'aluno-1', instructorId: 'prof-1', planId: id,
+    );
+    final abandoned = await service.createDraft(sampleDraft('prof-1'));
+    expect(await service.getActivePlan('aluno-1'), isNotNull);
+    await service.removeStudentSheet(studentId: 'aluno-1', instructorId: 'prof-1');
+    expect(await service.getActivePlan('aluno-1'), isNull);
+    final publishedHistory = await firestore.collection('users').doc('aluno-1')
+        .collection('trainingPlans').doc(id).get();
+    expect(publishedHistory.exists, isTrue);
+    final abandonedDoc = await firestore.collection('users').doc('aluno-1')
+        .collection('trainingPlans').doc(abandoned).get();
+    expect(abandonedDoc.exists, isFalse);
+  });
+
+  test('outro professor nao pode excluir a ficha vinculada', () async {
+    final id = await service.createDraft(sampleDraft('prof-1'));
+    await service.publishDraft(
+      studentId: 'aluno-1', instructorId: 'prof-1', planId: id,
+    );
+    await expectLater(
+      service.removeStudentSheet(studentId: 'aluno-1', instructorId: 'prof-2'),
+      throwsStateError,
+    );
+    expect(await service.getActivePlan('aluno-1'), isNotNull);
+  });
+
   test('nao publica ficha com calendario invalido', () async {
     final draft = TrainingPlan(
       id: '',

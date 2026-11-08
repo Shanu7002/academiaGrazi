@@ -203,3 +203,8 @@ app.*.symbols
 .firebase/
 /firebase.security.local.json
 /patches/
+
+# RepDB: licencia permite uso dentro do app, nao redistribuicao dos dados.
+/tools/catalogo/migracoes/*.csv
+# O importador deve ser versionado apesar da regra global *.js.
+!/tools/catalogo/importar_exercicios.js

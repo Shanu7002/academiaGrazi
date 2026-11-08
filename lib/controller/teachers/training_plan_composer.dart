@@ -57,6 +57,7 @@ class TrainingPlanComposer {
     required String name,
     String focus = '',
     int estimatedMinutes = 45,
+    String? imageUrl,
   }) {
     final normalized = letter.trim().toUpperCase();
     if (!RegExp(r'^[A-Z]$').hasMatch(normalized) ||
@@ -74,6 +75,7 @@ class TrainingPlanComposer {
       letter: normalized,
       name: name.trim(),
       focus: focus.trim(),
+      imageUrl: imageUrl,
       estimatedMinutes: estimatedMinutes,
       exercises: const [],
     );
@@ -85,6 +87,7 @@ class TrainingPlanComposer {
     String? name,
     String? focus,
     int? estimatedMinutes,
+    String? imageUrl,
   }) {
     final current = routine(routineId);
     final newName = name?.trim() ?? current.name;
@@ -97,6 +100,7 @@ class TrainingPlanComposer {
       letter: current.letter,
       name: newName,
       focus: focus?.trim() ?? current.focus,
+      imageUrl: imageUrl ?? current.imageUrl,
       estimatedMinutes: newMinutes,
       exercises: List<TrainingExercise>.of(current.exercises),
     );
@@ -198,6 +202,7 @@ class TrainingPlanComposer {
       letter: current.letter,
       name: current.name,
       focus: current.focus,
+      imageUrl: current.imageUrl,
       estimatedMinutes: current.estimatedMinutes,
       exercises: List<TrainingExercise>.of(exercises),
     );
@@ -209,6 +214,7 @@ class TrainingPlanComposer {
         letter: routine.letter,
         name: routine.name,
         focus: routine.focus,
+        imageUrl: routine.imageUrl,
         estimatedMinutes: routine.estimatedMinutes,
         exercises: List<TrainingExercise>.of(routine.exercises),
       );
