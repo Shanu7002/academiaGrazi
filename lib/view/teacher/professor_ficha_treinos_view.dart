@@ -14,6 +14,7 @@ import 'package:academiagrazi/service/training/training_session_service.dart';
 import 'package:academiagrazi/theme/app_colors.dart';
 import 'package:academiagrazi/view/components/app_bar.dart';
 import 'package:academiagrazi/view/teacher/professor_historico_aluno_view.dart';
+import 'package:academiagrazi/view/teacher/professor_resumo_treinos_aluno.dart';
 import 'package:academiagrazi/view/teacher/services/seletor_imagem_exercicio.dart';
 import 'package:academiagrazi/view/teacher/ui_models/montagem_treino_ui_models.dart';
 import 'package:academiagrazi/view/teacher/widgets/cadastrar_exercicio_dialog.dart';
@@ -74,6 +75,7 @@ class _ProfessorFichaTreinosViewState extends State<ProfessorFichaTreinosView> {
   late final ExerciseCatalogService _catalogService;
   late final TrainingRoutineTemplateService _templateService;
   late final TrainingMediaService _mediaService;
+  late final TrainingSessionService _sessionService;
   String? _instructorId;
   String? _studentId;
   String? _selectedRoutineId;
@@ -123,6 +125,8 @@ class _ProfessorFichaTreinosViewState extends State<ProfessorFichaTreinosView> {
     _templateService = widget.templateService ??
         TrainingRoutineTemplateService(db: _service.firestore);
     _mediaService = widget.mediaService ?? TrainingMediaService();
+    _sessionService = widget.sessionService ?? TrainingSessionService(
+      db: _service.firestore, planService: _service);
     _loadStudents();
   }
 
@@ -834,11 +838,10 @@ class _ProfessorFichaTreinosViewState extends State<ProfessorFichaTreinosView> {
     if (letter == null || _composer == null) return;
     final name = TextEditingController(text: routine?.name ?? 'Treino $letter');
     final focus = TextEditingController(text: routine?.focus ?? '');
+    final warmup = TextEditingController(text: routine?.warmupInstructions ?? '');
     final minutes = TextEditingController(text: '${routine?.estimatedMinutes ?? 45}');
-    Uint8List? selectedBytes;
     String? errorText;
-    final result = await showDialog<({String name, String focus, int minutes,
-      Uint8List? bytes})>(
+    final result = await showDialog<({String name, String focus, String warmupInstructions, int minutes})>(
       context: context,
       builder: (dialogContext) => StatefulBuilder(
         builder: (dialogContext, updateDialog) => AlertDialog(
@@ -851,30 +854,22 @@ class _ProfessorFichaTreinosViewState extends State<ProfessorFichaTreinosView> {
                   decoration: const InputDecoration(labelText: 'Foco (opcional)')),
               TextField(controller: minutes, keyboardType: TextInputType.number,
                   decoration: const InputDecoration(labelText: 'Duracao prevista (min)')),
-              const SizedBox(height: 14),
+              const SizedBox(height: 16),
               const Align(alignment: Alignment.centerLeft,
-                  child: Text('Foto do treino', style: TextStyle(fontWeight: FontWeight.w600))),
-              const SizedBox(height: 7),
-              if (selectedBytes != null)
-                ClipRRect(borderRadius: BorderRadius.circular(10),
-                    child: Image.memory(selectedBytes!, height: 110, fit: BoxFit.cover))
-              else if (routine?.imageUrl != null && routine!.imageUrl!.isNotEmpty)
-                _exerciseImage(routine.imageUrl, size: 100),
-              OutlinedButton.icon(
-                onPressed: () async {
-                  try {
-                    final bytes = await SeletorImagemExercicioPadrao().selecionarDaGaleria();
-                    if (bytes != null && dialogContext.mounted) {
-                      updateDialog(() => selectedBytes = bytes);
-                    }
-                  } catch (error) {
-                    if (dialogContext.mounted) {
-                      updateDialog(() => errorText = 'Foto invalida: $error');
-                    }
-                  }
-                },
-                icon: const Icon(Icons.photo_library_outlined),
-                label: const Text('Escolher foto da galeria'),
+                child: Text('Aquecimento (opcional)',
+                  style: TextStyle(fontWeight: FontWeight.w700, color: AppColors.primary))),
+              const SizedBox(height: 6),
+              TextField(
+                key: const Key('professor-aquecimento-treino'),
+                controller: warmup,
+                maxLines: 3,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'Como aquecer antes deste treino?',
+                  hintText: 'Ex.: 5 min de caminhada leve e mobilidade de quadril.',
+                  helperText: 'Só aparece para o aluno após publicar a ficha.',
+                  helperMaxLines: 2,
+                ),
               ),
               if (errorText != null)
                 Text(errorText!, style: const TextStyle(color: AppColors.danger)),
@@ -893,8 +888,8 @@ class _ProfessorFichaTreinosViewState extends State<ProfessorFichaTreinosView> {
                 Navigator.pop(dialogContext, (
                   name: name.text.trim(),
                   focus: focus.text.trim(),
+                  warmupInstructions: warmup.text.trim(),
                   minutes: duration,
-                  bytes: selectedBytes,
                 ));
               },
               child: Text(routine == null ? 'Criar treino' : 'Salvar treino'),
@@ -903,26 +898,18 @@ class _ProfessorFichaTreinosViewState extends State<ProfessorFichaTreinosView> {
         ),
       ),
     );
-    name.dispose(); focus.dispose(); minutes.dispose();
+    name.dispose(); focus.dispose(); warmup.dispose(); minutes.dispose();
     if (result == null || !mounted || _composer == null) return;
-    var resolvedUrl = routine?.imageUrl;
-    if (result.bytes != null) {
-      try {
-        _notice('Enviando foto do treino...');
-        resolvedUrl = await _uploadPhoto(result.bytes!, 'treino');
-      } catch (error) {
-        _notice('Falha ao enviar foto do treino: $error');
-        return;
-      }
-    }
+    // Foto de capa de rotina descontinuada na v11.
+    // O campo legado permanece no modelo para compatibilidade de fichas antigas.
     if (!mounted || _composer == null) return;
     if (routine == null) {
       final id = _composer!.addRoutine(
         letter: letter,
         name: result.name,
         focus: result.focus,
+        warmupInstructions: result.warmupInstructions,
         estimatedMinutes: result.minutes,
-        imageUrl: resolvedUrl,
       );
       setState(() => _selectedRoutineId = id);
       // O treino novo fica disponivel como modelo reutilizavel desde a criacao.
@@ -932,8 +919,8 @@ class _ProfessorFichaTreinosViewState extends State<ProfessorFichaTreinosView> {
         routineId: routine.id,
         name: result.name,
         focus: result.focus,
+        warmupInstructions: result.warmupInstructions,
         estimatedMinutes: result.minutes,
-        imageUrl: resolvedUrl,
       );
       setState(() {});
     }
@@ -1042,7 +1029,7 @@ class _ProfessorFichaTreinosViewState extends State<ProfessorFichaTreinosView> {
       builder: (_) => ProfessorHistoricoAlunoView(
         studentId: student.id,
         studentName: student.name,
-        service: widget.sessionService,
+        service: _sessionService,
       ),
     ));
   }
@@ -1273,11 +1260,11 @@ class _ProfessorFichaTreinosViewState extends State<ProfessorFichaTreinosView> {
             ),
           ],
           const SizedBox(height: 16),
-          OutlinedButton.icon(
-            key: const Key('professor_acompanhar_treinos'),
-            onPressed: _openHistory,
-            icon: const Icon(Icons.insights_outlined),
-            label: const Text('Acompanhar treinos finalizados'),
+          ProfessorResumoTreinosAluno(
+            key: ValueKey('professor_status_${student.id}'),
+            studentId: student.id,
+            service: _sessionService,
+            onHistorico: _openHistory,
           ),
         ],
       ],
@@ -1357,13 +1344,6 @@ class _ProfessorFichaTreinosViewState extends State<ProfessorFichaTreinosView> {
         if (selected != null) ...[
           const SizedBox(height: 12),
           _panel(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            if (selected.imageUrl != null && selected.imageUrl!.isNotEmpty) ...[
-              ClipRRect(borderRadius: BorderRadius.circular(12),
-                  child: Image.network(selected.imageUrl!, height: 148, width: double.infinity,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => const SizedBox.shrink())),
-              const SizedBox(height: 12),
-            ],
             Text(selected.name, style: _titleStyle(22)),
             if (selected.focus.isNotEmpty)
               Text(selected.focus, style: const TextStyle(color: AppColors.textSecondary)),
@@ -1543,7 +1523,7 @@ class _ProfessorFichaTreinosViewState extends State<ProfessorFichaTreinosView> {
                 }
               }),
           const SizedBox(height: 9),
-          const Text('Toque na letra para abrir ou criar um treino. Ao criar, voce pode escolher uma foto.',
+          const Text('Toque na letra para abrir, criar ou configurar o aquecimento de um treino.',
               style: TextStyle(color: AppColors.textSecondary, fontSize: 12)),
         ])),
         if (routine != null) ...[
@@ -1551,13 +1531,6 @@ class _ProfessorFichaTreinosViewState extends State<ProfessorFichaTreinosView> {
           _panel(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Row(children: [
               Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                if (routine.imageUrl != null && routine.imageUrl!.isNotEmpty) ...[
-                  ClipRRect(borderRadius: BorderRadius.circular(10),
-                    child: Image.network(routine.imageUrl!, width: double.infinity,
-                      height: 112, fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => const SizedBox.shrink())),
-                  const SizedBox(height: 8),
-                ],
                 Text(routine.name, style: _titleStyle(23)),
                 if (routine.focus.isNotEmpty)
                   Text(routine.focus, style: const TextStyle(
@@ -1565,10 +1538,18 @@ class _ProfessorFichaTreinosViewState extends State<ProfessorFichaTreinosView> {
                 Text('${routine.estimatedMinutes} min estimados',
                     style: const TextStyle(fontSize: 12,
                         color: AppColors.textSecondary)),
+                if (routine.warmupInstructions.trim().isNotEmpty) ...[
+                  const SizedBox(height: 9),
+                  const Text('Aquecimento prescrito',
+                    style: TextStyle(fontWeight: FontWeight.w700, color: AppColors.primary)),
+                  const SizedBox(height: 3),
+                  Text(routine.warmupInstructions,
+                    style: const TextStyle(color: AppColors.textBody, fontSize: 13)),
+                ],
               ])),
               IconButton(
                 key: const Key('editar-dados-treino'),
-                tooltip: 'Editar nome e objetivo',
+                tooltip: 'Editar treino e aquecimento',
                 onPressed: _saving ? null : () => _editRoutine(routine),
                 icon: const Icon(Icons.edit_outlined, color: AppColors.primary),
               ),

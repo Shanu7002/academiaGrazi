@@ -115,6 +115,9 @@ void main() {
   testWidgets('botao da montagem abre historico do aluno selecionado', (
     tester,
   ) async {
+    // Viewport maior para exercitar a navegacao sem toque fora da tela.
+    await tester.binding.setSurfaceSize(const Size(800, 1200));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
     await seedFinishedSession();
     await tester.pumpWidget(
       MaterialApp(
