@@ -6,6 +6,8 @@ class TrainingRoutine {
   final String letter;
   final String name;
   final String focus;
+  /// Aquecimento prescrito pelo professor (opcional, em portugues).
+  final String warmupInstructions;
   final String? imageUrl;
   final int estimatedMinutes;
   final List<TrainingExercise> exercises;
@@ -15,6 +17,7 @@ class TrainingRoutine {
     required this.letter,
     required this.name,
     required this.focus,
+    this.warmupInstructions = '',
     this.imageUrl,
     required this.estimatedMinutes,
     required this.exercises,
@@ -25,6 +28,7 @@ class TrainingRoutine {
     'letter': letter,
     'name': name,
     'focus': focus,
+    'warmupInstructions': warmupInstructions,
     'imageUrl': imageUrl,
     'estimatedMinutes': estimatedMinutes,
     'exercises': exercises.map((exercise) => exercise.toMap()).toList(),
@@ -35,6 +39,7 @@ class TrainingRoutine {
     letter: map['letter'] as String,
     name: map['name'] as String,
     focus: map['focus'] as String? ?? '',
+    warmupInstructions: map['warmupInstructions'] as String? ?? '',
     imageUrl: map['imageUrl'] as String?,
     estimatedMinutes: (map['estimatedMinutes'] as num?)?.toInt() ?? 0,
     exercises:

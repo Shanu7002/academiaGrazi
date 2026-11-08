@@ -1,4 +1,6 @@
 import 'package:academiagrazi/models/training/training_exercise.dart';
+import 'package:academiagrazi/service/training/exercise_catalog_service.dart';
+import 'package:academiagrazi/service/training/student_exercise_presentation.dart';
 import 'package:academiagrazi/models/training/training_plan.dart';
 import 'package:academiagrazi/view/user/ui_data/aluno_exercicio_detalhe_ui_data.dart';
 import 'package:academiagrazi/view/user/ui_data/aluno_treino_dia_ui_data.dart';
@@ -15,6 +17,7 @@ class TrainingPlanUiMapper {
     required String studentName,
     required String instructorName,
     DateTime? now,
+    Map<String, ExerciseCatalogEntry> catalog = const {},
   }) {
     if (plan.status != TrainingPlanStatus.published) {
       throw StateError('A tela do aluno so pode receber ficha publicada.');
@@ -26,7 +29,7 @@ class TrainingPlanUiMapper {
 
     for (final routine in plan.routines) {
       final items = routine.exercises
-          .map(_toExerciseUi)
+          .map((exercise) => _toExerciseUi(exercise, catalog[exercise.catalogExerciseId]))
           .toList(growable: false);
       final isToday = routine.id == routineToday;
       final data = TreinoUi(
@@ -34,11 +37,15 @@ class TrainingPlanUiMapper {
         letra: routine.letter,
         nome: routine.name,
         descricao: routine.focus,
+        warmupInstructions: routine.warmupInstructions,
         duracaoMinutos: routine.estimatedMinutes,
         quantidadeExercicios: routine.exercises.length,
         nivel: 'Personalizado',
         estrategia: 'Orientacao do professor',
-        principaisExercicios: routine.exercises.map((e) => e.name).join(', '),
+        principaisExercicios: items.map((e) => e.nome).join(', '),
+        // A rotina nao tem mais foto de capa; manter apenas imagens dos exercicios.
+        // imageUrl legado permanece no Firestore, sem alterar fichas publicadas.
+        imageUrl: null,
         seriesResumo: _seriesResumo(routine.exercises),
         status:
             isToday ? TreinoStatusUi.recomendado : TreinoStatusUi.programado,
@@ -54,7 +61,7 @@ class TrainingPlanUiMapper {
         itemDetails[exercise.id] = AlunoExercicioDetalheUiData(
           exercicio: items[index],
           descanso: '${exercise.restSeconds}s',
-          orientacoes: exercise.instructions,
+          orientacoes: items[index].instructions,
           // O player da tela antiga continua demonstrativo neste momento.
           tempoVideo: '--',
         );
@@ -62,8 +69,8 @@ class TrainingPlanUiMapper {
       routineDetails[routine.id] = AlunoTreinoDiaUiData(
         treino: data,
         professorNome: instructorName,
-        aquecimentoNome: 'Aquecimento',
-        aquecimentoResumo: 'Conforme orientacao do professor',
+        aquecimentoNome: routine.warmupInstructions.isEmpty ? '' : 'Aquecimento',
+        aquecimentoResumo: routine.warmupInstructions,
         exercicioDetalhePorId: itemDetails,
       );
     }
@@ -91,6 +98,8 @@ class TrainingPlanUiMapper {
 
     return AlunoTreinosUiData(
       alunoNome: studentName,
+      planId: plan.id,
+      programacaoSemanal: Map<int, String?>.unmodifiable(plan.weeklySchedule),
       semana: '${_dayMonth(monday)} a ${_dayMonth(sunday)}',
       professorNome: instructorName,
       ultimaAtualizacao: 'Versao ${plan.version}',
@@ -107,16 +116,29 @@ class TrainingPlanUiMapper {
     );
   }
 
-  static ExercicioTreinoUi _toExerciseUi(TrainingExercise exercise) =>
-      ExercicioTreinoUi(
-        id: exercise.id,
-        nome: exercise.name,
-        series: '${exercise.sets}x${exercise.repetitions}',
-        carga:
-            exercise.targetLoadKg == null
-                ? 'A definir'
-                : '${_formatLoad(exercise.targetLoadKg!)} kg',
-      );
+  static ExercicioTreinoUi _toExerciseUi(
+    TrainingExercise exercise,
+    ExerciseCatalogEntry? catalog,
+  ) {
+    final guidance = StudentExercisePresentation.guidance(exercise.instructions, catalog);
+    return ExercicioTreinoUi(
+    id: exercise.id,
+    catalogExerciseId: exercise.catalogExerciseId,
+    nome: StudentExercisePresentation.name(exercise.name, catalog),
+    muscleGroup: StudentExercisePresentation.muscleGroup(exercise.muscleGroup),
+    instructions: guidance.text ?? '',
+    instructionsAutoTranslated: guidance.automaticTranslation,
+    imageUrl: StudentExercisePresentation.image(exercise.imageUrl, catalog),
+    sets: exercise.sets,
+    repetitions: exercise.repetitions,
+    restSeconds: exercise.restSeconds,
+    technique: exercise.technique,
+    series: '${exercise.sets}x${exercise.repetitions}',
+    carga: exercise.targetLoadKg == null
+        ? 'A definir'
+        : '${_formatLoad(exercise.targetLoadKg!)} kg',
+    );
+  }
 
   static String _seriesResumo(List<TrainingExercise> exercises) {
     if (exercises.isEmpty) return 'Sem exercicios';

@@ -1,4 +1,6 @@
 import 'package:academiagrazi/locator.dart';
+import 'package:academiagrazi/models/training/training_session.dart';
+import 'package:academiagrazi/service/training/exercise_catalog_service.dart';
 import 'package:academiagrazi/service/training/student_training_view_data_service.dart';
 import 'package:academiagrazi/service/training/training_plan_service.dart';
 import 'package:academiagrazi/service/training/training_session_service.dart';
@@ -6,7 +8,7 @@ import 'package:academiagrazi/theme/app_colors.dart';
 import 'package:academiagrazi/view/components/app_bar.dart';
 import 'package:academiagrazi/view/user/aluno_historico_sessoes_view.dart';
 import 'package:academiagrazi/view/user/aluno_sessao_treino_view.dart';
-import 'package:academiagrazi/view/user/aluno_treinos_view.dart';
+import 'package:academiagrazi/view/user/aluno_painel_semanal_view.dart';
 import 'package:academiagrazi/view/user/ui_data/aluno_treinos_ui_data.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -35,6 +37,8 @@ class AlunoTreinosFirestoreView extends StatefulWidget {
 class _AlunoTreinosFirestoreViewState extends State<AlunoTreinosFirestoreView> {
   late final String? _studentId;
   Stream<AlunoTreinosUiData?>? _trainingStream;
+  Stream<List<TrainingSession>>? _historyStream;
+  Future<TrainingSession?>? _pendingFuture;
   TrainingPlanService? _planServiceInstance;
   TrainingSessionService? _sessionServiceInstance;
   bool _opening = false;
@@ -54,9 +58,20 @@ class _AlunoTreinosFirestoreViewState extends State<AlunoTreinosFirestoreView> {
     if (id != null &&
         id.isNotEmpty &&
         (widget.service != null || Firebase.apps.isNotEmpty)) {
-      _trainingStream = (widget.service ?? StudentTrainingViewDataService())
-          .watchActiveUiData(id);
+      _trainingStream = (widget.service ?? StudentTrainingViewDataService(
+        catalogService: ExerciseCatalogService(),
+      )).watchActiveUiData(id);
+      if (widget.sessionService != null || Firebase.apps.isNotEmpty) {
+        _historyStream = _sessions.watchHistory(id);
+        _pendingFuture = _sessions.getInProgress(id);
+      }
     }
+  }
+
+  void _refreshPending() {
+    final id = _studentId;
+    if (id == null || _historyStream == null || !mounted) return;
+    setState(() => _pendingFuture = _sessions.getInProgress(id));
   }
 
   void _avisar(String message) {
@@ -71,19 +86,21 @@ class _AlunoTreinosFirestoreViewState extends State<AlunoTreinosFirestoreView> {
     if (_opening || studentId == null || studentId.isEmpty) return;
     setState(() => _opening = true);
     try {
+      final pending = await _sessions.getInProgress(studentId);
       final plan = await _plans.getActivePlan(studentId);
-      if (plan == null || !plan.routines.any((item) => item.id == routineId)) {
+      if (pending?.routineId != routineId &&
+          (plan == null || !plan.routines.any((item) => item.id == routineId))) {
         throw StateError('A ficha publicada não está mais disponível.');
       }
-      final pending = await _sessions.getInProgress(studentId);
       if (!mounted) return;
 
-      var planId = plan.id;
+      var planId = pending?.routineId == routineId ? pending!.planId : plan!.id;
       var selectedRoutine = routineId;
-      String? existingSessionId;
+      String? existingSessionId = pending?.routineId == routineId ? pending!.id : null;
 
       if (pending != null &&
-          (pending.planId != plan.id || pending.routineId != routineId)) {
+          (plan == null || pending.planId != plan.id || pending.routineId != routineId) &&
+          pending.routineId != routineId) {
         final retomar = await showDialog<bool>(
           context: context,
           builder:
@@ -127,7 +144,10 @@ class _AlunoTreinosFirestoreViewState extends State<AlunoTreinosFirestoreView> {
     } catch (_) {
       _avisar('Não foi possível abrir o treino. Tente novamente.');
     } finally {
-      if (mounted) setState(() => _opening = false);
+      if (mounted) {
+        setState(() => _opening = false);
+        _refreshPending();
+      }
     }
   }
 
@@ -184,14 +204,39 @@ class _AlunoTreinosFirestoreViewState extends State<AlunoTreinosFirestoreView> {
             message: 'Seu professor ainda não atribuiu uma ficha para você.',
           );
         }
-        return AlunoTreinosView(
-          data: training,
-          onIniciarTreino: _iniciarTreino,
-          onHistorico: _abrirHistorico,
+        final history = _historyStream;
+        if (history == null) {
+          return _painel(training, const [], null);
+        }
+        return StreamBuilder<List<TrainingSession>>(
+          stream: history,
+          builder: (context, finishedSnapshot) {
+            // Uma falha temporaria no historico nao impede a leitura da ficha.
+            final finished = finishedSnapshot.data ?? const <TrainingSession>[];
+            return FutureBuilder<TrainingSession?>(
+              future: _pendingFuture,
+              builder: (context, pendingSnapshot) => _painel(
+                training, finished, pendingSnapshot.data,
+              ),
+            );
+          },
         );
       },
     );
   }
+
+  Widget _painel(
+    AlunoTreinosUiData data,
+    List<TrainingSession> finished,
+    TrainingSession? pending,
+  ) => AlunoPainelSemanalView(
+    data: data,
+    historico: finished,
+    emAndamento: pending,
+    onIniciarTreino: _iniciarTreino,
+    onHistorico: _abrirHistorico,
+    abrindoTreino: _opening,
+  );
 
   Widget _estado({
     required IconData icon,

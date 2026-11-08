@@ -7,11 +7,14 @@ class ExerciseCatalogEntry {
   final String name;
   final String muscleGroup;
   final String instructions;
+  /// Rascunho automatico em PT-BR para exibicao identificada no DEV.
+  final String instructionsPtBrDraft;
   final String? imageUrl;
   final String? imageUrlPeak;
   final String source;
   final String language;
   final String nameReviewStatus;
+  final String translationStatus;
 
   /// Os nomes editoriais da v6 sao PT-BR, mesmo sem traducao das orientacoes.
   bool get hasPortugueseName => language == 'pt-BR' ||
@@ -23,11 +26,13 @@ class ExerciseCatalogEntry {
     required this.name,
     required this.muscleGroup,
     this.instructions = '',
+    this.instructionsPtBrDraft = '',
     this.imageUrl,
     this.imageUrlPeak,
     this.source = 'manual',
     this.language = '',
     this.nameReviewStatus = '',
+    this.translationStatus = '',
   });
 
   factory ExerciseCatalogEntry.fromDoc(
@@ -39,11 +44,13 @@ class ExerciseCatalogEntry {
       name: (data['name'] as String?) ?? 'Exercicio sem nome',
       muscleGroup: (data['muscleGroup'] as String?) ?? 'Geral',
       instructions: (data['instructions'] as String?) ?? '',
+      instructionsPtBrDraft: (data['instructionsPtBrDraft'] as String?) ?? '',
       imageUrl: data['imageUrl'] as String?,
       imageUrlPeak: data['imageUrlPeak'] as String?,
       source: (data['source'] as String?) ?? 'manual',
       language: (data['language'] as String?) ?? '',
       nameReviewStatus: (data['nameReviewStatus'] as String?) ?? '',
+      translationStatus: (data['translationStatus'] as String?) ?? '',
     );
   }
 }

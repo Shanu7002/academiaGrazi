@@ -215,6 +215,21 @@ class TrainingPlanService {
     return parsed.status == TrainingPlanStatus.published ? parsed : null;
   }
 
+  /// Consulta uma versao publicada especifica para instrucoes do aquecimento.
+  /// A sessao permanece ligada ao plano original, mesmo apos nova publicacao.
+  Future<TrainingPlan?> getPublishedPlanById(String studentId, String planId) async {
+    if (studentId.trim().isEmpty || planId.trim().isEmpty ||
+        studentId.contains('/') || planId.contains('/')) {
+      throw ArgumentError('Identificadores invalidos.');
+    }
+    final doc = await _plans(studentId).doc(planId).get();
+    final data = doc.data();
+    if (data == null) return null;
+    final plan = TrainingPlan.fromMap(data, doc.id);
+    return plan.studentId == studentId && plan.status == TrainingPlanStatus.published
+        ? plan : null;
+  }
+
   /// Acompanhamento do ponteiro da ficha ativa: nova publicacao gera emissao.
   Stream<TrainingPlan?> watchActivePlan(String studentId) =>
       _current(studentId).snapshots().asyncMap((_) => getActivePlan(studentId));

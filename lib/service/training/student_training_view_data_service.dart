@@ -1,4 +1,5 @@
 import 'package:academiagrazi/models/training/training_plan.dart';
+import 'package:academiagrazi/service/training/exercise_catalog_service.dart';
 import 'package:academiagrazi/models/users/user_model.dart';
 import 'package:academiagrazi/service/training/training_plan_service.dart';
 import 'package:academiagrazi/service/users/register_user.dart';
@@ -12,12 +13,14 @@ class StudentTrainingViewDataService {
   final TrainingPlanService _plans;
   final RegisterUserService _users;
   final DateTime Function() _clock;
+  final ExerciseCatalogService? _catalog;
 
   StudentTrainingViewDataService({
     TrainingPlanService? planService,
     RegisterUserService? userService,
     DateTime Function()? clock,
-  }) : _plans = planService ?? TrainingPlanService(),
+    ExerciseCatalogService? catalogService,
+  }) : _catalog = catalogService, _plans = planService ?? TrainingPlanService(),
        _users = userService ?? RegisterUserService(),
        _clock = clock ?? DateTime.now;
 
@@ -61,12 +64,26 @@ class StudentTrainingViewDataService {
       throw StateError('Esta ficha nao pertence ao professor atual do aluno.');
     }
 
+    // Uma busca por lotes, sem N+1. Se a biblioteca estiver temporariamente
+    // indisponivel, a ficha publicada continua legivel pelo snapshot.
+    var catalog = <String, ExerciseCatalogEntry>{};
+    final service = _catalog;
+    if (service != null) {
+      final ids = plan.routines.expand((routine) => routine.exercises)
+          .map((exercise) => exercise.catalogExerciseId);
+      try {
+        catalog = await service.findByIds(ids);
+      } catch (_) {
+        // Nao bloqueia a ficha do aluno por falha secundaria da biblioteca.
+      }
+    }
     final instructor = await _users.getUserById(plan.instructorId);
     return TrainingPlanUiMapper.fromPlan(
       plan,
       studentName: student.name,
       instructorName: instructor?.name ?? 'Professor',
       now: _clock(),
+      catalog: catalog,
     );
   }
 }
