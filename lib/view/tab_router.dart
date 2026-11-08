@@ -4,6 +4,7 @@ import 'package:academiagrazi/view/components/app_bottom_navigation.dart';
 import 'package:academiagrazi/view/user/aluno_home_view.dart';
 import 'package:academiagrazi/view/user/aluno_profile_view.dart';
 import 'package:academiagrazi/view/user/aluno_treinos_view.dart';
+import 'package:academiagrazi/view/user/aluno_treinos_firestore_view.dart';
 import 'package:academiagrazi/view/user/mocks/treinos_mock_data.dart';
 import 'package:academiagrazi/view/user/aluno_evolucao_view.dart';
 import 'package:flutter/material.dart';
@@ -101,9 +102,12 @@ class _MainShellState extends State<MainShell> {
                       return MaterialPageRoute(
                         settings: settings,
                         builder:
-                            (_) => const AlunoTreinosView(
-                              data: TreinosMockData.alunoTreinos,
-                            ),
+                            (_) =>
+                                widget.isAdmin
+                                    ? const AlunoTreinosView(
+                                      data: TreinosMockData.alunoTreinos,
+                                    )
+                                    : const AlunoTreinosFirestoreView(),
                       );
                     },
                   ),

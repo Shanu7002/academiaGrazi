@@ -8,8 +8,15 @@ import 'package:google_fonts/google_fonts.dart';
 
 class AlunoTreinosView extends StatefulWidget {
   final AlunoTreinosUiData data;
+  final ValueChanged<String>? onIniciarTreino;
+  final VoidCallback? onHistorico;
 
-  const AlunoTreinosView({super.key, required this.data});
+  const AlunoTreinosView({
+    super.key,
+    required this.data,
+    this.onIniciarTreino,
+    this.onHistorico,
+  });
 
   @override
   State<AlunoTreinosView> createState() => _AlunoTreinosViewState();
@@ -75,6 +82,21 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
       };
 
       cards.add(card);
+      if (widget.onIniciarTreino != null &&
+          treino.status != TreinoStatusUi.recomendado) {
+        cards.add(const SizedBox(height: 8));
+        cards.add(
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton.icon(
+              key: Key('treino_iniciar_${treino.id}'),
+              onPressed: () => widget.onIniciarTreino!(treino.id),
+              icon: const Icon(Icons.play_arrow_rounded),
+              label: Text('INICIAR TREINO ${treino.letra}'),
+            ),
+          ),
+        );
+      }
 
       if (index < widget.data.treinos.length - 1) {
         cards.add(const SizedBox(height: 16));
@@ -633,7 +655,10 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
                       ),
                       child: ElevatedButton(
                         key: Key('treino_iniciar_${treino.id}'),
-                        onPressed: () => _abrirTreino(treino),
+                        onPressed:
+                            widget.onIniciarTreino == null
+                                ? () => _abrirTreino(treino)
+                                : () => widget.onIniciarTreino!(treino.id),
                         style: ElevatedButton.styleFrom(
                           elevation: 0,
                           backgroundColor: Colors.transparent,
@@ -949,7 +974,7 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
       width: double.infinity,
       height: 44,
       child: OutlinedButton(
-        onPressed: () {},
+        onPressed: widget.onHistorico,
         style: OutlinedButton.styleFrom(
           foregroundColor: AppColors.primary,
           backgroundColor: Colors.white,
@@ -959,7 +984,9 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
           ),
         ),
         child: Text(
-          'VER FICHAS E CICLOS ANTERIORES',
+          widget.onHistorico == null
+              ? 'VER FICHAS E CICLOS ANTERIORES'
+              : 'VER HISTÃ“RICO DE TREINOS',
           style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w700),
         ),
       ),
