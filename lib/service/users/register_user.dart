@@ -38,9 +38,9 @@ class RegisterUserService {
         );
   }
 
-  Future<UserType>? getUserRole(String uid) async {
+  Future<UserType?>? getUserRole(String uid) async {
     UserModel? user = await getUserById(uid);
-    return user!.type;
+    return user?.type;
   }
 
   Future<UserModel?> getResponsableData(String uid) async {
