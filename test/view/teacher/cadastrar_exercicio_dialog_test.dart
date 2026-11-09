@@ -19,7 +19,7 @@ class _SeletorImagemFake implements SeletorImagemExercicio {
 }
 
 void main() {
-  testWidgets('valida campos e imagem e cadastra exercício', (tester) async {
+  testWidgets('valida campos e permite foto opcional no exercício', (tester) async {
     ExercicioCatalogoProfessorUi? cadastro;
 
     await tester.pumpWidget(
@@ -48,12 +48,11 @@ void main() {
     await tester.tap(find.text('Cadastrar'));
     await tester.pumpAndSettle();
 
-    // Valida os campos vazios e a ausência de imagem.
+    // Valida os campos obrigatórios. Foto é opcional.
     await tester.tap(find.byKey(const Key('confirmar_exercicio_manual')));
     await tester.pumpAndSettle();
 
     expect(find.text('Informe o nome.'), findsOneWidget);
-    expect(find.text('Selecione uma imagem da galeria.'), findsOneWidget);
 
     await tester.enterText(
       find.byKey(const Key('nome_exercicio_manual')),

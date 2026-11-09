@@ -1,0 +1,12 @@
+{
+  "name": "academia-grazi-catalogo-dev",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "simular": "node importar_exercicios.js --project=academia-grazi-dev-ab105",
+    "importar:dev": "node importar_exercicios.js --project=academia-grazi-dev-ab105 --apply"
+  },
+  "dependencies": {
+    "firebase-admin": "^13.5.0"
+  }
+}

@@ -3,6 +3,7 @@ import 'package:academiagrazi/view/components/app_bar.dart';
 import 'package:academiagrazi/view/teacher/ui_data/montagem_treino_ui_data.dart';
 import 'package:academiagrazi/view/teacher/ui_models/montagem_treino_ui_models.dart';
 import 'package:academiagrazi/view/teacher/widgets/exercicio_montagem_card.dart';
+import 'package:academiagrazi/view/teacher/professor_ficha_treinos_view.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -252,6 +253,22 @@ class _ProfessorMontagemTreinoViewState
                     children: [
                       _cabecalho(),
                       const SizedBox(height: 14),
+                      SizedBox(
+                        width: double.infinity,
+                        child: OutlinedButton.icon(
+                          key: const Key('abrir-fichas-abc'),
+                          onPressed:
+                              () => Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder:
+                                      (_) => const ProfessorFichaTreinosView(),
+                                ),
+                              ),
+                          icon: const Icon(Icons.calendar_month_outlined),
+                          label: const Text('Montar ficha A/B/C para um aluno'),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
                       _acoesPrincipais(),
                       const SizedBox(height: 18),
                       const Divider(height: 1, color: AppColors.border),

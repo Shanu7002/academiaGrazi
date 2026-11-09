@@ -1,0 +1,707 @@
+﻿Summary,Issue Type,Priority,Labels,Labels,Labels,Description
+GB-001 · Bloquear alteração de campos sensíveis pelo próprio usuário nas regras do Firestore,Bug,Highest,E1,tamanho-M,,"*Épico:* E1 Fundação, segurança e dívida técnica (RNF01)
+*Requisito:* RNF01 | *Perfil:* Todos | *Tamanho:* M
+*Depende de:* —
+
+Em {{firestore.rules}}, {{match /users/{userId}}} tem {{allow read, write: if request.auth.uid == userId}}. Com isso, qualquer aluno ou professor consegue gravar {{type: 'admin'}} no próprio documento, trocar {{responsable}} ou {{registrationCode}}. Separe {{create}} e {{update}}. No {{create}}, o próprio usuário só pode criar com {{type == 'user'}}, e o professor só é criado pelo admin (regra já existe). No {{update}}, o próprio usuário só pode alterar {{photoUrl}}, {{registrationProfile.health}}, {{registrationProfile.emergencyContact}} e {{name}}. Bloqueie {{delete}}.
+
+*Critérios de aceite:*
+* Um aluno autenticado não consegue alterar {{type}}, {{responsable}}, {{registrationCode}}, {{registrationCodeExpiresAt}} nem {{createdAt}} do próprio documento (testado no Rules Playground ou no emulador).
+* Autocadastro, edição de saúde/contato e troca de foto continuam funcionando.
+* A renovação do código de convite pelo próprio professor continua funcionando ({{RegisterInstructorService._issueCode}}).
+
+*Arquivos:* {{firestore.rules}}
+
+Seguir AGENTS.md (camadas, schema, DoD). Detalhes em docs/BACKLOG.md."
+GB-002 · AuthWrapper: negar acesso quando o perfil não for reconhecido,Bug,Highest,E1,tamanho-P,,"*Épico:* E1 Fundação, segurança e dívida técnica (RNF01)
+*Requisito:* RF01, RNF01 | *Perfil:* Todos | *Tamanho:* P
+*Depende de:* —
+
+Em {{lib/view/auth_wrapper.dart}}, qualquer valor que não seja {{user}} nem {{instructor}} (inclusive {{null}}) abre {{MainShell(isAdmin: true)}}. Além disso, {{RegisterUserService.getUserRole}} faz {{user!}} e quebra quando o documento não existe. Abra o shell de admin só para {{UserType.admin}} explícito. Documento inexistente ou erro mostra uma tela em pt-BR (""Não foi possível carregar seu perfil"") com o botão ""Sair"". Corrija a assinatura {{Future<UserType>?}} para {{Future<UserType?>}}.
+
+*Critérios de aceite:*
+* Usuário autenticado sem documento em {{users}} não vê nenhuma área do app e consegue sair.
+* Teste de widget cobrindo admin, professor, aluno, documento inexistente e erro.
+
+*Arquivos:* {{lib/view/auth_wrapper.dart}}, {{lib/service/users/register_user.dart}}
+
+Seguir AGENTS.md (camadas, schema, DoD). Detalhes em docs/BACKLOG.md."
+GB-003 · UserModel: novos campos e correção do createdAt,Task,High,E1,tamanho-M,,"*Épico:* E1 Fundação, segurança e dívida técnica (RNF01)
+*Requisito:* RF03, RF04, RF05 | *Perfil:* Todos | *Tamanho:* M
+*Depende de:* GB-001
+
+{{UserModel.toJson()}} grava {{createdAt: DateTime.now()}} toda vez que é serializado, e {{fromJson}} não lê {{createdAt}}. Isso sobrescreve a data de cadastro em qualquer escrita futura com {{toJson}}. Faça {{createdAt}} virar um campo do modelo, gravado só na criação. {{fromJson}} converte {{responsable}} nulo em {{''}}; mantenha {{null}}. Adicione os campos opcionais previstos no {{AGENTS.md}}: {{unitId}} e {{modality}} (aluno); {{specialty}} e {{studentCapacity}} (professor). Atualize {{user_model_changelog.xml}} (versão 1.5) e corrija o histórico (a versão 1.1 está duplicada, e as versões 1.2/1.3 dizem ""8 caracteres"", mas o código tem 4 dígitos).
+
+*Critérios de aceite:*
+* {{createdAt}} não muda depois de uma edição de perfil.
+* Testes de {{toJson}}/{{fromJson}} para os campos novos e para documentos antigos sem esses campos.
+* Regras: só o admin altera {{specialty}}/{{studentCapacity}}; o professor responsável e o admin alteram {{unitId}}/{{modality}} do aluno.
+
+*Arquivos:* {{lib/models/users/user_model.dart}}, {{lib/models/users/user_model_changelog.xml}}, {{firestore.rules}}
+
+Seguir AGENTS.md (camadas, schema, DoD). Detalhes em docs/BACKLOG.md."
+GB-004 · Criar arquivo de regras de negócio e índices do Firestore,Task,High,E1,tamanho-P,,"*Épico:* E1 Fundação, segurança e dívida técnica (RNF01)
+*Requisito:* RNF01 | *Perfil:* — | *Tamanho:* P
+*Depende de:* —
+
+Crie {{lib/config/business_rules.dart}} com as constantes nomeadas das pendências P1–P6 ({{riskDaysWithoutTraining}}, {{inactiveDaysWithoutTraining}}, {{assessmentDueSoonDays}} etc.), para que telas e services não espalhem números mágicos. Crie {{firestore.indexes.json}} e registre-o em {{firebase.json}}; cada card que adicionar uma consulta composta acrescenta o índice ali.
+
+*Critérios de aceite:*
+* Constantes documentadas com o número da pendência (P1, P2…).
+* {{firebase deploy --only firestore}} publica regras e índices.
+
+*Arquivos:* {{lib/config/business_rules.dart}}, {{firestore.indexes.json}}, {{firebase.json}}
+
+Seguir AGENTS.md (camadas, schema, DoD). Detalhes em docs/BACKLOG.md."
+GB-005 · Limpeza de dívida técnica geral,Task,Medium,E1,tamanho-P,,"*Épico:* E1 Fundação, segurança e dívida técnica (RNF01)
+*Requisito:* RNF02 | *Perfil:* — | *Tamanho:* P
+*Depende de:* —
+
+Remova os {{print}} de {{aluno_profile_view.dart}} (logout); use {{debugPrint}}/{{log}}. Remova {{RegisterUserService.getResponsableData}}, duplicado de {{getUserById}}. Em {{CustomAppBar}}, o parâmetro {{backgroundColor}} (padrão {{Colors.blue}}) é ignorado: use-o ou remova-o. Troque {{withOpacity}} (deprecated) por {{withValues(alpha:)}}. Rode {{flutter analyze}} e zere os avisos.
+
+*Critérios de aceite:*
+* {{flutter analyze}} sem warnings.
+* Nenhum {{print(}} em {{lib/}}.
+
+*Arquivos:* {{lib/view/user/aluno_profile_view.dart}}, {{lib/service/users/register_user.dart}}, {{lib/view/components/app_bar.dart}}, views com {{withOpacity}}
+
+Seguir AGENTS.md (camadas, schema, DoD). Detalhes em docs/BACKLOG.md."
+GB-010 · Modelo e service de exercícios,Task,High,E2,tamanho-M,,"*Épico:* E2 Biblioteca de exercícios (RF07)
+*Requisito:* RF07 | *Perfil:* Admin, Professor | *Tamanho:* M
+*Depende de:* GB-004
+
+Crie {{lib/models/exercises/exercise_model.dart}} (+ {{exercise_model_changelog.xml}}) com o schema da coleção {{exercises}} do {{AGENTS.md}} (nome, grupo muscular, orientações, {{imageUrl}}, {{videoUrl}} reservado e nulo, {{active}}, {{createdBy}}, {{createdAt}}). Crie {{ExerciseService}} com {{streamActive()}}, {{search(texto, grupo)}}, {{create}}, {{update}} e {{deactivate}} (não apaga, marca {{active: false}}). Registre-o no {{locator}}. Regras: leitura por qualquer autenticado; criação por admin e professor; edição/desativação pelo admin ou pelo criador.
+
+*Critérios de aceite:*
+* Testes do service com {{fake_cloud_firestore}}.
+* Exercício desativado some da busca, mas continua aparecendo em treinos já atribuídos.
+
+*Arquivos:* {{lib/models/exercises/}}, {{lib/service/exercises/}}, {{lib/locator.dart}}, {{firestore.rules}}
+
+Seguir AGENTS.md (camadas, schema, DoD). Detalhes em docs/BACKLOG.md."
+GB-011 · Upload da imagem do exercício no Cloudinary,Task,High,E2,tamanho-P,,"*Épico:* E2 Biblioteca de exercícios (RF07)
+*Requisito:* RF07 | *Perfil:* Admin, Professor | *Tamanho:* P
+*Depende de:* GB-010
+
+Hoje a imagem escolhida em {{CadastrarExercicioDialog}} fica só em memória ({{imagemBytes}}). Generalize {{ProfilePhotoService}} em um {{CloudinaryUploadService}} (parâmetro de pasta/prefixo do {{public_id}}), ou crie um service irmão, e grave o {{secure_url}} em {{exercises.imageUrl}}. Remova o aviso ""A imagem ficará apenas nesta sessão"".
+
+*Critérios de aceite:*
+* A imagem cadastrada aparece depois de reiniciar o app.
+* Teste do upload com {{http.Client}} mockado (no padrão de {{profile_photo_test.dart}}).
+
+*Arquivos:* {{lib/service/users/profile_photo.dart}}, {{lib/view/teacher/widgets/cadastrar_exercicio_dialog.dart}}
+
+Seguir AGENTS.md (camadas, schema, DoD). Detalhes em docs/BACKLOG.md."
+GB-012 · Tela Biblioteca de exercícios (aba Treinos do admin),Story,High,E2,tamanho-M,remove-mock,"*Épico:* E2 Biblioteca de exercícios (RF07)
+*Requisito:* RF07 | *Perfil:* Admin | *Tamanho:* M
+*Depende de:* GB-010, GB-011
+*Remove mock:* {{AlunoTreinosView(data: TreinosMockData.alunoTreinos)}} na aba do admin ({{tab_router.dart}})
+
+Crie {{lib/view/admin/exercise_library_view.dart}} e use-a na aba 1 do {{MainShell}} quando {{isAdmin}}. A tela lista os exercícios com busca por nome, filtro por grupo muscular, criação, edição (nome, grupo, orientações, imagem) e desativação/reativação. Renomeie o rótulo da aba do admin para ""Exercícios"".
+
+*Critérios de aceite:*
+* O admin não vê mais nenhuma tela de aluno.
+* Estados de carregando, vazio e erro.
+* Teste de widget da busca e do filtro.
+
+*Arquivos:* {{lib/view/tab_router.dart}}, {{lib/view/components/app_bottom_navigation.dart}}, {{lib/view/admin/}}
+
+Seguir AGENTS.md (camadas, schema, DoD). Detalhes em docs/BACKLOG.md."
+GB-013 · Catálogo inicial de exercícios,Task,Medium,E2,tamanho-P,,"*Épico:* E2 Biblioteca de exercícios (RF07)
+*Requisito:* RF07 | *Perfil:* Admin | *Tamanho:* P
+*Depende de:* GB-012
+
+Cadastre pela própria biblioteca (ou por um script de seed documentado em {{docs/}}) os exercícios usados hoje nos mocks: agachamento, leg press, extensora, supino, puxada, remada, rosca, panturrilha etc. Assim a montagem não começa vazia.
+
+*Critérios de aceite:*
+* O ambiente {{academia-grazi-dev}} tem pelo menos 20 exercícios ativos com grupo muscular e orientações.
+
+Seguir AGENTS.md (camadas, schema, DoD). Detalhes em docs/BACKLOG.md."
+GB-014 · Consulta de detalhes do exercício (sem vídeo),Story,Medium,E2,tamanho-P,,"*Épico:* E2 Biblioteca de exercícios (RF07)
+*Requisito:* RF07 | *Perfil:* Professor, Aluno | *Tamanho:* P
+*Depende de:* GB-010
+
+Crie um componente compartilhado ({{lib/view/components/exercise_details_sheet.dart}}) com imagem, grupo muscular e orientações. Use-o ao tocar no exercício na montagem e no bloco de vídeo do {{AlunoExercicioDetalheView}}. Como os vídeos ficaram fora desta entrega, troque o player falso (botão play sem ação e ""tempoVideo"") pela imagem do exercício, com o selo ""Vídeo em breve"".
+
+*Critérios de aceite:*
+* Nenhum botão de play sem ação no app.
+* A decisão de não ter vídeo está citada no {{AGENTS.md}} (seção Escopo).
+
+*Arquivos:* {{lib/view/user/aluno_exercicio_detalhe_view.dart}}, {{lib/view/teacher/widgets/imagem_exercicio.dart}}
+
+Seguir AGENTS.md (camadas, schema, DoD). Detalhes em docs/BACKLOG.md."
+GB-020 · Modelo e service de treinos (fichas prescritas),Task,High,E3,tamanho-G,,"*Épico:* E3 Montagem e prescrição de treinos (RF08, RF09)
+*Requisito:* RF08, RF09 | *Perfil:* Professor, Aluno | *Tamanho:* G
+*Depende de:* GB-010
+
+Crie {{WorkoutModel}} (+ changelog) conforme a coleção {{workouts}} do {{AGENTS.md}}: aluno, professor, ciclo, letra, nome, foco, nível, modalidade ({{onSite}}/{{home}}), validade, aquecimento e a lista ordenada de exercícios ({{exerciseId}}, nome e imagem desnormalizados, séries, reps, descanso, técnica, carga sugerida, observação). Crie {{WorkoutService}} com {{streamActiveForStudent}}, {{listByInstructor}}, {{assign}}, {{update}} e {{archive}}. Regras: o professor grava apenas para alunos cujo {{responsable}} é ele; o aluno lê só os próprios; o admin lê todos.
+
+*Critérios de aceite:*
+* Testes do service com {{fake_cloud_firestore}}.
+* Índice composto ({{studentId}}, {{status}}) em {{firestore.indexes.json}}.
+
+*Arquivos:* {{lib/models/workouts/}}, {{lib/service/workouts/}}, {{firestore.rules}}
+
+Seguir AGENTS.md (camadas, schema, DoD). Detalhes em docs/BACKLOG.md."
+GB-021 · Montagem: usar o catálogo real e persistir o exercício manual,Story,High,E3,tamanho-M,remove-mock,"*Épico:* E3 Montagem e prescrição de treinos (RF08, RF09)
+*Requisito:* RF08 | *Perfil:* Professor | *Tamanho:* M
+*Depende de:* GB-010, GB-011
+*Remove mock:* catálogo fixo ({{c1}}…{{c4}}) em {{ProfessorMontagemTreinoView._fetchData}} e o arquivo {{lib/view/teacher/mocks/montagem_treino_mock_data.dart}}
+
+Troque o catálogo fixo pelo {{ExerciseService}}. Hoje a busca sem texto mostra só 2 sugestões ({{base.take(2)}}); mantenha isso ou crie ""ver todos"". ""Adicionar Exercício Manual"" passa a criar o exercício na coleção {{exercises}} (com {{createdBy}} = professor) antes de adicioná-lo à série.
+
+*Critérios de aceite:*
+* Um exercício criado na montagem aparece na biblioteca do admin.
+* Testes de widget atualizados ({{cadastrar_exercicio_dialog_test.dart}}).
+
+*Arquivos:* {{lib/view/teacher/professor_montagem_treino_view.dart}}
+
+Seguir AGENTS.md (camadas, schema, DoD). Detalhes em docs/BACKLOG.md."
+"GB-022 · Montagem: campos de prescrição (foco, nível, modalidade, validade, aquecimento)",Story,High,E3,tamanho-M,,"*Épico:* E3 Montagem e prescrição de treinos (RF08, RF09)
+*Requisito:* RF09 | *Perfil:* Professor | *Tamanho:* M
+*Depende de:* GB-020
+
+O RF09 exige foco, nível e professor responsável na ficha, e a tela do aluno mostra validade, aquecimento e estratégia. Adicione esses campos na montagem: foco (texto curto), nível (Iniciante/Intermediário/Avançado), modalidade da ficha (Presencial/Treinar em casa), validade (data), aquecimento (nome + resumo) e carga sugerida por exercício.
+
+*Critérios de aceite:*
+* Validação: não atribui sem nome, foco, nível e validade.
+* O resumo de conferência exibe todos os campos.
+
+Seguir AGENTS.md (camadas, schema, DoD). Detalhes em docs/BACKLOG.md."
+GB-023 · Montagem: atribuir treino ao aluno e editar a ficha existente,Story,High,E3,tamanho-M,,"*Épico:* E3 Montagem e prescrição de treinos (RF08, RF09)
+*Requisito:* RF08, RF09 | *Perfil:* Professor | *Tamanho:* M
+*Depende de:* GB-020, GB-022
+
+""Atribuir ao aluno"" hoje abre um diálogo que diz ""Nenhum treino será salvo"". Faça o botão gravar a ficha via {{WorkoutService.assign}} depois do resumo de conferência (RF08, ""consultar resumo antes de salvar""). Ao selecionar um aluno que já tem ficha com a mesma letra, carregue-a para edição em vez de começar vazia. Permita arquivar a ficha.
+
+*Critérios de aceite:*
+* O aluno vê a ficha na aba Treinos logo após a atribuição.
+* A edição mantém o {{id}} da ficha (não duplica).
+* Mensagens de sucesso e erro em pt-BR.
+
+Seguir AGENTS.md (camadas, schema, DoD). Detalhes em docs/BACKLOG.md."
+GB-024 · Montagem: salvar e carregar modelos de treino,Story,Medium,E3,tamanho-M,,"*Épico:* E3 Montagem e prescrição de treinos (RF08, RF09)
+*Requisito:* RF08 | *Perfil:* Professor | *Tamanho:* M
+*Depende de:* GB-020
+
+""Salvar como modelo"" hoje só mostra um SnackBar. Grave na coleção {{workoutTemplates}} (do professor) e crie a ação ""Carregar modelo"" na montagem, que preenche a série com os exercícios do modelo.
+
+*Critérios de aceite:*
+* O professor só vê os próprios modelos.
+* Aplicar um modelo não altera o modelo original.
+
+Seguir AGENTS.md (camadas, schema, DoD). Detalhes em docs/BACKLOG.md."
+GB-025 · Montagem: calcular duração estimada e volume,Task,Low,E3,tamanho-P,remove-mock,"*Épico:* E3 Montagem e prescrição de treinos (RF08, RF09)
+*Requisito:* RF08 | *Perfil:* Professor | *Tamanho:* P
+*Depende de:* GB-004
+*Remove mock:* {{duracaoEstimadaMinutos: 45}} e {{volume: 'Médio'}} fixos
+
+Calcule em uma função pura (em {{lib/service/workouts/workout_metrics.dart}}), seguindo a pendência P5, e atualize ao editar a série. Grave o valor na ficha ({{estimatedMinutes}}). Ele é usado na tela do aluno.
+
+*Critérios de aceite:*
+* Testes unitários da função.
+
+Seguir AGENTS.md (camadas, schema, DoD). Detalhes em docs/BACKLOG.md."
+GB-030 · Aba Treinos do aluno com fichas reais,Story,High,E4,tamanho-G,remove-mock,"*Épico:* E4 Execução do treino pelo aluno (RF09, RF10, RF11)
+*Requisito:* RF09 | *Perfil:* Aluno | *Tamanho:* G
+*Depende de:* GB-020, GB-023
+*Remove mock:* {{TreinosMockData.alunoTreinos}} em {{tab_router.dart}}
+
+Mantenha a {{AlunoTreinosView}} recebendo {{AlunoTreinosUiData}} (o contrato de UI está bom). Crie um mapper {{WorkoutModel → AlunoTreinosUiData}} em {{lib/view/user/mappers/}} e um widget carregador que escuta {{streamActiveForStudent}}. O seletor ""Ficha presencial / Treinar em casa"" filtra pela modalidade da ficha. Ciclo, validade, professor e ""última atualização"" vêm dos dados. Frequência e duração média ficam como ""—"" até GB-031.
+
+*Critérios de aceite:*
+* Estados de carregando, sem ficha (""Seu professor ainda não montou seu treino""), erro.
+* Testes do mapper.
+
+*Arquivos:* {{lib/view/tab_router.dart}}, {{lib/view/user/aluno_treinos_view.dart}}
+
+Seguir AGENTS.md (camadas, schema, DoD). Detalhes em docs/BACKLOG.md."
+GB-031 · Modelo e service de sessões de treino,Task,High,E4,tamanho-M,,"*Épico:* E4 Execução do treino pelo aluno (RF09, RF10, RF11)
+*Requisito:* RF10, RF11 | *Perfil:* Aluno | *Tamanho:* M
+*Depende de:* GB-020
+
+Crie {{WorkoutSessionModel}} (+ changelog) conforme a coleção {{workoutSessions}} do {{AGENTS.md}} (aluno, professor, ficha, unidade, início, fim, status, exercícios com séries {{{carga, concluída}}}). {{WorkoutSessionService}}: {{start}}, {{updateProgress}}, {{finish}}, {{lastSessionForStudent}}, {{sessionsBetween}}. *É a fonte de presença, inatividade, sequência e horários de pico*; grave {{startedAt}}/{{finishedAt}} em ISO-8601 UTC (convenção de datas do {{AGENTS.md}}). Regras: o aluno cria/edita as próprias sessões em andamento; sessão finalizada fica imutável; o professor responsável e o admin leem.
+
+*Critérios de aceite:*
+* Testes com {{fake_cloud_firestore}}.
+* Índices ({{studentId}}, {{finishedAt}}) e ({{instructorId}}, {{finishedAt}}).
+
+Seguir AGENTS.md (camadas, schema, DoD). Detalhes em docs/BACKLOG.md."
+"GB-032 · Execução: iniciar, acompanhar e finalizar o treino",Story,High,E4,tamanho-M,,"*Épico:* E4 Execução do treino pelo aluno (RF09, RF10, RF11)
+*Requisito:* RF10 | *Perfil:* Aluno | *Tamanho:* M
+*Depende de:* GB-030, GB-031
+
+Em {{AlunoTreinoDiaView}}, ""Iniciar treino"" cria a sessão. O aquecimento e os exercícios marcados como concluídos são gravados. ""Finalizar treino"" fecha a sessão com confirmação. Ao reabrir o app com uma sessão em andamento, ofereça ""Continuar treino"". O botão sem ação no cabeçalho ({{onPressed: () {}}}, linha ~251) recebe uma função ou sai.
+
+*Critérios de aceite:*
+* Fechar o app no meio do treino não perde o progresso.
+* A sessão finalizada aparece para o professor (GB-051).
+
+Seguir AGENTS.md (camadas, schema, DoD). Detalhes em docs/BACKLOG.md."
+GB-033 · Registro de carga por série,Story,High,E4,tamanho-M,,"*Épico:* E4 Execução do treino pelo aluno (RF09, RF10, RF11)
+*Requisito:* RF11 | *Perfil:* Aluno | *Tamanho:* M
+*Depende de:* GB-032
+
+Em {{AlunoExercicioDetalheView}}, a carga digitada por série e o status ""concluída"" passam a ser salvos na sessão. A carga inicial de cada série é a última registrada pelo aluno nesse exercício (ou a carga sugerida da ficha). Hoje a view interpreta {{series: ""4x10""}} e {{carga: ""40Kg""}} como texto; com o modelo real, use campos numéricos ({{sets}}, {{reps}}, {{suggestedLoadKg}}) e ajuste o {{ExercicioTreinoUi}}.
+
+*Critérios de aceite:*
+* Testes de widget atualizados ({{aluno_exercicio_detalhe_view_test.dart}}) sem depender de {{TreinosMockData}}.
+
+Seguir AGENTS.md (camadas, schema, DoD). Detalhes em docs/BACKLOG.md."
+GB-034 · Status das fichas e histórico de ciclos,Story,Medium,E4,tamanho-M,,"*Épico:* E4 Execução do treino pelo aluno (RF09, RF10, RF11)
+*Requisito:* RF09, RF10 | *Perfil:* Aluno | *Tamanho:* M
+*Depende de:* GB-031
+
+Calcule {{recomendado}} / {{concluído}} / {{programado}} de cada ficha a partir das sessões (ex.: recomendada = a ficha do ciclo feita há mais tempo). Implemente ""Refazer treino"" e ""Ver fichas e ciclos anteriores"" (hoje com {{onPressed: () {}}}), listando as fichas arquivadas. Preencha frequência e duração média com as sessões.
+
+*Critérios de aceite:*
+* Nenhum botão sem ação em {{aluno_treinos_view.dart}}.
+
+Seguir AGENTS.md (camadas, schema, DoD). Detalhes em docs/BACKLOG.md."
+GB-040 · Modelos e services de unidades e escala,Task,High,E5,tamanho-M,,"*Épico:* E5 Unidades (blocos) e escala (RF03)
+*Requisito:* RF03 | *Perfil:* Admin | *Tamanho:* M
+*Depende de:* GB-004
+
+Crie {{UnitModel}} (coleção {{units}}) e {{InstructorShiftModel}} (coleção {{instructorShifts}}: professor, unidade, dia da semana, início, fim), ambos com changelog, mais os services. Crie uma função pura {{currentAndNextShift(shifts, now)}} que devolve o turno atual e o próximo (inclusive virando a semana). Regras: o admin escreve; qualquer autenticado lê.
+
+*Critérios de aceite:*
+* Testes da função de turno atual/próximo (dentro do turno, entre turnos, domingo → segunda, sem escala).
+
+Seguir AGENTS.md (camadas, schema, DoD). Detalhes em docs/BACKLOG.md."
+"GB-041 · Tela de unidades (atalho ""Blocos"" do admin)",Story,Medium,E5,tamanho-M,,"*Épico:* E5 Unidades (blocos) e escala (RF03)
+*Requisito:* RF03 | *Perfil:* Admin | *Tamanho:* M
+*Depende de:* GB-040
+
+O atalho ""Blocos"" da home do admin hoje mostra ""estará disponível em breve"". Ligue-o a uma tela de unidades com listagem, criação, edição e desativação. Avalie com o time se o rótulo continua ""Blocos"" ou vira ""Unidades"" e mantenha o termo igual em todo o app.
+
+*Critérios de aceite:*
+* O atalho não mostra mais ""em breve"".
+
+Seguir AGENTS.md (camadas, schema, DoD). Detalhes em docs/BACKLOG.md."
+GB-042 · Escala do professor,Story,Medium,E5,tamanho-M,,"*Épico:* E5 Unidades (blocos) e escala (RF03)
+*Requisito:* RF03 | *Perfil:* Admin | *Tamanho:* M
+*Depende de:* GB-040
+
+Em {{InstructorDetailsView}}, adicione a seção ""Escala"", onde o admin inclui e remove turnos (unidade, dia e horário de início/fim). Valide sobreposição de turnos do mesmo professor.
+
+*Critérios de aceite:*
+* Turnos sobrepostos são recusados com mensagem clara.
+
+Seguir AGENTS.md (camadas, schema, DoD). Detalhes em docs/BACKLOG.md."
+GB-043 · Vínculo do aluno: unidade e modalidade,Story,Medium,E5,tamanho-P,,"*Épico:* E5 Unidades (blocos) e escala (RF03)
+*Requisito:* RF03, RF04 | *Perfil:* Professor, Admin | *Tamanho:* P
+*Depende de:* GB-003, GB-040
+
+No detalhe do aluno (professor, GB-051; admin, {{_StudentSheet}} em {{instructor_details_view.dart}}), permita definir a unidade e a modalidade (Presencial/Remoto) do aluno. Esses campos alimentam o card ""Remotos"" do admin e os filtros da lista de alunos.
+
+*Critérios de aceite:*
+* O aluno não consegue alterar a própria unidade nem a modalidade (regra GB-003).
+
+Seguir AGENTS.md (camadas, schema, DoD). Detalhes em docs/BACKLOG.md."
+GB-044 · Exibir unidade atual e próxima nas telas,Story,Medium,E5,tamanho-P,remove-mock,"*Épico:* E5 Unidades (blocos) e escala (RF03)
+*Requisito:* RF03, RF06 | *Perfil:* Professor, Aluno | *Tamanho:* P
+*Depende de:* GB-040, GB-042
+*Remove mock:* ""Bloco atual: Bloco A (Manhã)"" ({{professor_dashboard_view.dart}}, {{lista_alunos.dart}}), card ""Próximo Turno: Bloco B 11:00"", ""BLOCO / TURNO: Bloco A 06:00 - 09:00"" ({{aluno_profile_view.dart}})
+
+O dashboard e a lista do professor mostram o turno atual e o próximo da escala. O perfil do aluno mostra a unidade dele. Sem escala: ""Sem turno agora"".
+
+*Critérios de aceite:*
+* Nenhum ""Bloco A/B"" fixo em {{lib/}}.
+
+Seguir AGENTS.md (camadas, schema, DoD). Detalhes em docs/BACKLOG.md."
+GB-050 · Lista de alunos do professor com dados reais,Story,High,E6,tamanho-M,remove-mock,"*Épico:* E6 Gestão de alunos pelo professor (RF02)
+*Requisito:* RF02, RF06 | *Perfil:* Professor | *Tamanho:* M
+*Depende de:* GB-053
+*Remove mock:* cards fixos ""Pablo"" e ""Marcos"" e a foto {{assets/profMarcos.png}} em {{lista_alunos.dart}}
+
+{{ListaAlunosView}} hoje não é aberta por nenhuma tela. Abra-a pelo card ""Alunos"" do dashboard (e por um ""Ver todos""). Ela usa {{TeacherUserSearcher.streamLinkedUsers}}, com busca por nome e filtros Todos / por unidade / Inativos / Avaliação pendente (chips hoje com {{onPressed: () {}}}). Cada card mostra foto ({{UserAvatar}}), status Ativo/Inativo e ""Próximo treino…"" ou ""Inativo (X dias)"". *Remova o botão ""Mensagem""*; o aluno inativo fica com ""Ver perfil"" e ""Montar treino"". A saudação usa o nome real do professor.
+
+*Critérios de aceite:*
+* O filtro ativo fica destacado visualmente.
+* Teste de widget da busca e dos filtros.
+
+*Arquivos:* {{lib/view/teacher/lista_alunos.dart}}, {{lib/view/teacher/professor_dashboard_view.dart}}
+
+Seguir AGENTS.md (camadas, schema, DoD). Detalhes em docs/BACKLOG.md."
+"GB-051 · Detalhe do aluno para o professor (""Ver perfil"")",Story,High,E6,tamanho-M,,"*Épico:* E6 Gestão de alunos pelo professor (RF02)
+*Requisito:* RF02 | *Perfil:* Professor | *Tamanho:* M
+*Depende de:* GB-050
+
+Crie uma tela com dados do aluno, objetivo, medidas, saúde (condições, restrições, observações), contato de emergência, ficha atual, última sessão e próxima avaliação, com as ações ""Editar treino"" (GB-052), ""Agendar avaliação"" (GB-061) e o vínculo de unidade/modalidade (GB-043). Extraia o {{_StudentSheet}} de {{instructor_details_view.dart}} para um componente compartilhado em vez de duplicar.
+
+*Critérios de aceite:*
+* Admin e professor usam o mesmo componente de ficha do aluno.
+
+Seguir AGENTS.md (camadas, schema, DoD). Detalhes em docs/BACKLOG.md."
+"GB-052 · ""Editar treino"" abre a montagem com o aluno selecionado",Story,Medium,E6,tamanho-P,,"*Épico:* E6 Gestão de alunos pelo professor (RF02)
+*Requisito:* RF02, RF08 | *Perfil:* Professor | *Tamanho:* P
+*Depende de:* GB-023, GB-050
+
+{{ProfessorMontagemTreinoView}} hoje sempre começa no primeiro aluno. Aceite um {{alunoId}} inicial e permita trocar de aba no {{ProfessorAreaView}} já com o aluno escolhido (ex.: callback ou {{ValueNotifier}} no {{ProfessorAreaView}}). A lista de alunos da montagem também precisa se atualizar quando um aluno novo se vincula (hoje ela usa {{.first}} do stream, ou seja, só lê uma vez).
+
+*Critérios de aceite:*
+* Tocar em ""Editar treino"" na lista leva à montagem com o aluno certo.
+
+Seguir AGENTS.md (camadas, schema, DoD). Detalhes em docs/BACKLOG.md."
+"GB-053 · Cálculo de status do aluno (ativo, risco, inativo)",Task,High,E6,tamanho-P,,"*Épico:* E6 Gestão de alunos pelo professor (RF02)
+*Requisito:* RF02, RF04, RF06 | *Perfil:* — | *Tamanho:* P
+*Depende de:* GB-031, GB-004
+
+Crie {{lib/service/students/student_status.dart}} com funções puras: {{daysWithoutTraining(lastFinishedAt, now)}} e {{statusFor(...) → ativo | risco | inativo | novo}} (novo = cadastrado e ainda sem sessão), usando as constantes P1/P2. Todas as telas (dashboard, lista, admin) usam essa função.
+
+*Critérios de aceite:*
+* Testes unitários cobrindo cada limite.
+
+Seguir AGENTS.md (camadas, schema, DoD). Detalhes em docs/BACKLOG.md."
+GB-060 · Modelo e service de avaliações físicas,Task,High,E7,tamanho-M,,"*Épico:* E7 Avaliações físicas e evolução (RF12)
+*Requisito:* RF12 | *Perfil:* Professor, Aluno | *Tamanho:* M
+*Depende de:* GB-004
+
+Crie {{AssessmentModel}} (+ changelog) conforme a coleção {{assessments}} do {{AGENTS.md}}: aluno, professor, tipo (presencial/online), {{scheduledAt}}, {{performedAt}}, status ({{scheduled}}/{{done}}/{{cancelled}}), peso, % de gordura, massa magra e observações profissionais. Service: {{schedule}}, {{record}}, {{cancel}}, {{streamForStudent}}, {{pendingForInstructor}}. Regras: o professor responsável cria e edita; o aluno lê as próprias; o admin lê todas. *Dado de saúde:* nunca exiba para outro aluno.
+
+*Critérios de aceite:*
+* Testes com {{fake_cloud_firestore}}.
+
+Seguir AGENTS.md (camadas, schema, DoD). Detalhes em docs/BACKLOG.md."
+GB-061 · Professor: agendar avaliação,Story,High,E7,tamanho-P,,"*Épico:* E7 Avaliações físicas e evolução (RF12)
+*Requisito:* RF12 | *Perfil:* Professor | *Tamanho:* P
+*Depende de:* GB-060
+
+Pelo detalhe do aluno ou pela aba Evolução, o professor escolhe data, hora e tipo. O aluno recebe uma notificação (GB-112).
+
+*Critérios de aceite:*
+* Não permite agendar no passado.
+* O aluno vê ""Avaliação presencial marcada com o Prof. {nome}"" na Evolução.
+
+Seguir AGENTS.md (camadas, schema, DoD). Detalhes em docs/BACKLOG.md."
+GB-062 · Aba Evolução do professor: registrar avaliações,Story,High,E7,tamanho-M,remove-mock,"*Épico:* E7 Avaliações físicas e evolução (RF12)
+*Requisito:* RF12 | *Perfil:* Professor | *Tamanho:* M
+*Depende de:* GB-060
+*Remove mock:* {{_AbaProfessorPendente}} ""Tela em desenvolvimento"" ({{professor_area_view.dart}})
+
+A aba lista as avaliações pendentes e vencidas dos alunos do professor e permite buscar um aluno para ver o histórico. ""Registrar avaliação"" abre um formulário com peso, % de gordura, massa magra e observações profissionais, com validação de faixas plausíveis.
+
+*Critérios de aceite:*
+* Uma avaliação registrada aparece na hora na Evolução do aluno.
+
+Seguir AGENTS.md (camadas, schema, DoD). Detalhes em docs/BACKLOG.md."
+GB-063 · Evolução do aluno com dados reais,Story,High,E7,tamanho-M,remove-mock,"*Épico:* E7 Avaliações físicas e evolução (RF12)
+*Requisito:* RF12 | *Perfil:* Aluno | *Tamanho:* M
+*Depende de:* GB-060
+*Remove mock:* valores fixos de {{aluno_evolucao_view.dart}} (71,2 kg, 28,4%, 51,1 kg, datas de junho/março de 2026, ""Prof. Marcos"")
+
+Gráfico de peso com {{fl_chart}} (já é dependência do projeto) e filtros 3 meses / 6 meses / 1 ano funcionando. Cards de gordura e massa magra com a variação em relação à avaliação anterior. Última observação profissional. Histórico de avaliações (data e tipo). Próxima avaliação agendada. Estado vazio: ""Sua primeira avaliação ainda não foi registrada"".
+
+*Critérios de aceite:*
+* Nenhum {{onPressed: () {}}} na tela.
+* Teste de widget com 0, 1 e N avaliações.
+
+Seguir AGENTS.md (camadas, schema, DoD). Detalhes em docs/BACKLOG.md."
+"GB-064 · Regras de avaliação pendente, próxima do vencimento e vencida",Task,Medium,E7,tamanho-P,,"*Épico:* E7 Avaliações físicas e evolução (RF12)
+*Requisito:* RF05, RF06, RF12 | *Perfil:* — | *Tamanho:* P
+*Depende de:* GB-060
+
+Crie funções puras ({{isPending}}, {{isDueSoon}} (P4), {{isOverdue}}) usadas pelo dashboard do professor, pelo filtro ""Avaliação pendente"" e pela equipe no admin.
+
+*Critérios de aceite:*
+* Testes unitários.
+
+Seguir AGENTS.md (camadas, schema, DoD). Detalhes em docs/BACKLOG.md."
+"GB-070 · Dashboard do professor: saudação, unidade e acesso aos alunos",Story,High,E8,tamanho-P,remove-mock,"*Épico:* E8 Painel do professor (RF06)
+*Requisito:* RF06 | *Perfil:* Professor | *Tamanho:* P
+*Depende de:* GB-044
+*Remove mock:* ""Olá, Marcos"" fixo
+
+A saudação usa o nome do professor logado. O card ""Alunos ativos"" abre a lista (GB-050). A raiz da aba não mostra a seta de voltar ({{showBackButton: false}}).
+
+*Critérios de aceite:*
+* Teste de widget com nome vindo do service.
+
+Seguir AGENTS.md (camadas, schema, DoD). Detalhes em docs/BACKLOG.md."
+GB-071 · Dashboard do professor: presenças de hoje e risco de evasão,Story,High,E8,tamanho-P,remove-mock,"*Épico:* E8 Painel do professor (RF06)
+*Requisito:* RF06 | *Perfil:* Professor | *Tamanho:* P
+*Depende de:* GB-031, GB-053
+*Remove mock:* ""Presenças 15 hoje"" e ""3 Risco de evasão""
+
+Presenças = alunos do professor com sessão finalizada hoje. Risco de evasão = alunos com status {{risco}}. Tocar no card de risco abre a lista já filtrada.
+
+*Critérios de aceite:*
+* Contadores batem com os dados do Firestore em teste com {{fake_cloud_firestore}}.
+
+Seguir AGENTS.md (camadas, schema, DoD). Detalhes em docs/BACKLOG.md."
+GB-072 · Dashboard do professor: prioridades e alertas gerados,Story,High,E8,tamanho-M,remove-mock,"*Épico:* E8 Painel do professor (RF06)
+*Requisito:* RF06 | *Perfil:* Professor | *Tamanho:* M
+*Depende de:* GB-053, GB-064, GB-020
+*Remove mock:* cards fixos ""Ana Lima"", ""Bruno Alves"", ""Carla Souza"" e o badge ""3 Alertas""
+
+Gere a lista de prioridades: avaliação vence em X dias → ""Revisar"" (abre o aluno); X dias sem treinar → ""Ver perfil"" (""Contatar"" sai junto com a Mensagem); sem ficha ativa ou ficha vencida → ""Montar"" (abre a montagem com o aluno). O badge mostra o total. Ordene por gravidade.
+
+*Critérios de aceite:*
+* Cada ação navega para a tela correta.
+* Estado vazio: ""Nenhuma pendência hoje"".
+
+Seguir AGENTS.md (camadas, schema, DoD). Detalhes em docs/BACKLOG.md."
+GB-080 · Home do admin: cards de remotos e inativos reais,Story,High,E9,tamanho-P,remove-mock,"*Épico:* E9 Painel administrativo e gestão da equipe (RF04, RF05)
+*Requisito:* RF04 | *Perfil:* Admin | *Tamanho:* P
+*Depende de:* GB-043, GB-053
+*Remove mock:* {{AdminHomeMockData.remoteStudents}} e {{inactiveStudents}}
+
+Remotos = alunos com {{modality == 'remote'}}. Inativos (30d+) = status {{inativo}}. Revise também ""Alunos ativos"": hoje ele conta todos os alunos cadastrados ({{getStudentStats.total}}); com sessões, ativos = total − inativos.
+
+*Critérios de aceite:*
+* Testes do {{AdminDashboardService}} atualizados.
+
+Seguir AGENTS.md (camadas, schema, DoD). Detalhes em docs/BACKLOG.md."
+GB-081 · Home do admin: horários de maior movimento,Story,Medium,E9,tamanho-M,remove-mock,"*Épico:* E9 Painel administrativo e gestão da equipe (RF04, RF05)
+*Requisito:* RF04 | *Perfil:* Admin | *Tamanho:* M
+*Depende de:* GB-031
+*Remove mock:* {{AdminHomeMockData.hourlyMovement}}, {{peakLabel}}, {{hourLabels}}
+
+Agrupe por hora as sessões iniciadas nos últimos 30 dias (06h–22h) e destaque o pico. Filtro opcional por unidade.
+
+*Critérios de aceite:*
+* Teste unitário da agregação.
+* Estado vazio quando não há sessões.
+
+Seguir AGENTS.md (camadas, schema, DoD). Detalhes em docs/BACKLOG.md."
+GB-082 · Ocorrências operacionais,Story,Medium,E9,tamanho-M,,"*Épico:* E9 Painel administrativo e gestão da equipe (RF04, RF05)
+*Requisito:* RF04 | *Perfil:* Admin, Professor | *Tamanho:* M
+*Depende de:* GB-040
+
+Crie {{OccurrenceModel}} (coleção {{occurrences}}: título, descrição, unidade, severidade, autor, status aberta/resolvida) com service e regras. Professor e admin registram (ex.: ""Esteira 04 com ruído""); só o admin resolve. Defina com o time onde fica o botão ""Registrar ocorrência"" do professor (sugestão: Perfil ou dashboard).
+
+*Critérios de aceite:*
+* Uma ocorrência aberta aparece nos alertas do admin com o autor (""Último registro: Prof. X"").
+
+Seguir AGENTS.md (camadas, schema, DoD). Detalhes em docs/BACKLOG.md."
+GB-083 · Alertas operacionais do admin (ocorrências + automáticos),Story,Medium,E9,tamanho-M,remove-mock,"*Épico:* E9 Painel administrativo e gestão da equipe (RF04, RF05)
+*Requisito:* RF04 | *Perfil:* Admin | *Tamanho:* M
+*Depende de:* GB-082, GB-086, GB-053
+*Remove mock:* {{AdminHomeMockData.alerts}} (incluindo o alerta de lotação do Spinning, que sai de vez)
+
+Junte as ocorrências abertas com os alertas calculados: professor acima da capacidade, avaliações vencidas por professor, treinos vencidos e inativos acima do limiar P6. Depois disso, apague {{lib/view/admin/mocks/admin_home_mock_data.dart}}.
+
+*Critérios de aceite:*
+* Cada alerta automático leva à tela relacionada (equipe, detalhes do professor).
+
+Seguir AGENTS.md (camadas, schema, DoD). Detalhes em docs/BACKLOG.md."
+GB-084 · Atalhos da home do admin,Task,Medium,E9,tamanho-P,,"*Épico:* E9 Painel administrativo e gestão da equipe (RF04, RF05)
+*Requisito:* RF04 | *Perfil:* Admin | *Tamanho:* P
+*Depende de:* GB-041, GB-100
+
+""Blocos"" → tela de unidades (GB-041). ""Aulas"" → grade de aulas (GB-100). *Remova ""Finanças""* (pagamento fora do escopo). Remova {{_showSoon}} quando não sobrar uso.
+
+*Critérios de aceite:*
+* Nenhum SnackBar ""estará disponível em breve"" na home do admin.
+
+Seguir AGENTS.md (camadas, schema, DoD). Detalhes em docs/BACKLOG.md."
+GB-085 · Especialidade e capacidade por professor,Story,High,E9,tamanho-M,remove-mock,"*Épico:* E9 Painel administrativo e gestão da equipe (RF04, RF05)
+*Requisito:* RF05 | *Perfil:* Admin | *Tamanho:* M
+*Depende de:* GB-003
+*Remove mock:* {{AdminTeamMockData.studentCapacity}} e {{instructorRole}}; ""Especialista"" fixo no perfil do aluno
+
+Adicione os campos especialidade e capacidade de alunos no {{RegisterInstructorView}} e uma ação ""Editar professor"" em {{InstructorDetailsView}}. A carga (%) e o status ""Sobrecarga"" usam a capacidade do próprio professor (com padrão de 30 quando vazio). O perfil do aluno mostra a especialidade real do professor responsável.
+
+*Critérios de aceite:*
+* Testes de widget de cadastro e edição atualizados.
+
+Seguir AGENTS.md (camadas, schema, DoD). Detalhes em docs/BACKLOG.md."
+GB-086 · Equipe: avaliações pendentes e treinos vencidos por professor,Story,High,E9,tamanho-M,remove-mock,"*Épico:* E9 Painel administrativo e gestão da equipe (RF04, RF05)
+*Requisito:* RF05 | *Perfil:* Admin | *Tamanho:* M
+*Depende de:* GB-020, GB-064, GB-085
+*Remove mock:* {{AdminTeamMockData.pendingEvaluations}} ({{'--'}}) e, ao final, o arquivo {{admin_team_mock_data.dart}}
+
+No {{AdminDashboardService.getTeamWorkload}} e em {{getInstructorDetails}}, inclua avaliações pendentes/vencidas e fichas vencidas ({{validUntil < hoje}}) por professor. Mostre os números no card do professor, nos detalhes e no comparativo. ""Ver pendências"" abre os detalhes com essa seção em foco.
+
+*Critérios de aceite:*
+* Testes do service com {{fake_cloud_firestore}}.
+
+Seguir AGENTS.md (camadas, schema, DoD). Detalhes em docs/BACKLOG.md."
+GB-090 · Home do aluno: treino em destaque e professor responsável,Story,High,E10,tamanho-M,remove-mock,"*Épico:* E10 Home do aluno (RF13)
+*Requisito:* RF13 | *Perfil:* Aluno | *Tamanho:* M
+*Depende de:* GB-030, GB-034
+*Remove mock:* ""Treino do dia — Pernas + Glúteos / Nível intermediário…"" fixos
+
+Mostre a ficha recomendada (GB-034) com foco e nível. ""Iniciar treino"" (hoje {{onPressed: () {}}}) abre a execução ({{AlunoTreinoDiaView}}). Exiba o professor responsável (nome e foto). Sem ficha: ""Aguardando seu professor montar seu treino"".
+
+*Critérios de aceite:*
+* Teste de widget com e sem ficha.
+
+Seguir AGENTS.md (camadas, schema, DoD). Detalhes em docs/BACKLOG.md."
+GB-091 · Home do aluno: sequência e resumo de evolução,Story,Medium,E10,tamanho-P,remove-mock,"*Épico:* E10 Home do aluno (RF13)
+*Requisito:* RF13 | *Perfil:* Aluno | *Tamanho:* P
+*Depende de:* GB-031, GB-060
+*Remove mock:* ""12 dias — Você está on fire!"" e ""+15% esta semana""
+
+Sequência conforme a regra P3, calculada das sessões. O resumo de evolução mostra a variação de peso (ou de gordura) entre as duas últimas avaliações.
+
+*Critérios de aceite:*
+* Testes unitários do cálculo da sequência.
+
+Seguir AGENTS.md (camadas, schema, DoD). Detalhes em docs/BACKLOG.md."
+GB-092 · Home do aluno: próxima aula ou atividade,Story,Medium,E10,tamanho-P,remove-mock,"*Épico:* E10 Home do aluno (RF13)
+*Requisito:* RF13 | *Perfil:* Aluno | *Tamanho:* P
+*Depende de:* GB-100, GB-060
+*Remove mock:* ""Pilates — Próxima aula hoje às 18h""
+
+Mostre o próximo evento entre a próxima aula da grade da unidade do aluno e a próxima avaliação agendada (o que vier primeiro).
+
+*Critérios de aceite:*
+* Estado vazio quando não há aula nem avaliação.
+
+Seguir AGENTS.md (camadas, schema, DoD). Detalhes em docs/BACKLOG.md."
+"GB-093 · Home do aluno: atalhos Saúde, Treinar em casa, Aulas e Avaliação",Story,Medium,E10,tamanho-P,,"*Épico:* E10 Home do aluno (RF13)
+*Requisito:* RF13, RF14 | *Perfil:* Aluno | *Tamanho:* P
+*Depende de:* GB-030, GB-101, GB-063
+
+Os 4 botões hoje com {{onPressed: () {}}} passam a funcionar: Saúde → seção de saúde do Perfil; Treinar em casa → aba Treinos com ""Treinar em casa"" selecionado; Aulas → grade (GB-101); Avaliação → aba Evolução.
+
+*Critérios de aceite:*
+* Nenhum {{onPressed: () {}}} em {{aluno_home_view.dart}}.
+
+Seguir AGENTS.md (camadas, schema, DoD). Detalhes em docs/BACKLOG.md."
+GB-100 · Grade de aulas: modelo e cadastro pelo admin,Story,Medium,E11,tamanho-M,,"*Épico:* E11 Aulas e treino em casa
+*Requisito:* RF13 | *Perfil:* Admin | *Tamanho:* M
+*Depende de:* GB-040
+
+Use a coleção {{gym_classes}} (já prevista em {{firestore.rules}}, hoje sem escrita). Crie {{GymClassModel}} (+ changelog): modalidade, unidade, professor, dia da semana, horário, duração, capacidade *só informativa* e {{active}}. O admin cadastra e edita a grade. *Sem reserva e sem alerta de lotação.* Ajuste a regra para o admin poder escrever.
+
+*Critérios de aceite:*
+* Testes do service.
+
+Seguir AGENTS.md (camadas, schema, DoD). Detalhes em docs/BACKLOG.md."
+GB-101 · Grade de aulas para o aluno (somente leitura),Story,Low,E11,tamanho-P,,"*Épico:* E11 Aulas e treino em casa
+*Requisito:* RF13 | *Perfil:* Aluno | *Tamanho:* P
+*Depende de:* GB-100
+
+Uma tela com as aulas da semana da unidade do aluno, agrupadas por dia, sem botão de reserva.
+
+*Critérios de aceite:*
+* Mostra só aulas ativas da unidade do aluno.
+
+Seguir AGENTS.md (camadas, schema, DoD). Detalhes em docs/BACKLOG.md."
+GB-102 · Treinar em casa: treinos complementares reais,Story,Low,E11,tamanho-M,remove-mock,"*Épico:* E11 Aulas e treino em casa
+*Requisito:* RF09 | *Perfil:* Aluno, Professor | *Tamanho:* M
+*Depende de:* GB-030
+*Remove mock:* {{complementares}} de {{TreinosMockData}} (pilates, dança etc.)
+
+A seção ""Treinos complementares / vídeos guiados"" passa a listar fichas com modalidade {{home}} marcadas como complementares pelo professor. *Sem vídeo* (decisão desta entrega): o card mostra imagem, duração e descrição. Avalie trocar o título ""Vídeos guiados"" por ""Treinos guiados"".
+
+*Critérios de aceite:*
+* Seção oculta quando não há complementares.
+
+Seguir AGENTS.md (camadas, schema, DoD). Detalhes em docs/BACKLOG.md."
+GB-110 · Modelo e service de notificações,Task,Medium,E12,tamanho-P,,"*Épico:* E12 Navegação e notificações (RF14)
+*Requisito:* RF14 | *Perfil:* Todos | *Tamanho:* P
+*Depende de:* GB-004
+
+Crie {{AppNotificationModel}} (+ changelog) na coleção {{notifications}} (destinatário, tipo, título, corpo, {{relatedId}}, {{read}}, {{createdAt}}). Service: {{streamForUser}}, {{unreadCount}}, {{markAsRead}}, {{markAllAsRead}}, {{send}}. Regras: o destinatário lê e só altera {{read}}; professor/admin criam notificações apenas para usuários relacionados (alunos vinculados, ou qualquer um no caso do admin).
+
+*Critérios de aceite:*
+* Testes com {{fake_cloud_firestore}}.
+
+Seguir AGENTS.md (camadas, schema, DoD). Detalhes em docs/BACKLOG.md."
+GB-111 · Tela de notificações e badge no sino,Story,Medium,E12,tamanho-M,,"*Épico:* E12 Navegação e notificações (RF14)
+*Requisito:* RF14 | *Perfil:* Todos | *Tamanho:* M
+*Depende de:* GB-110
+
+O {{CustomAppBar}} abre a tela de notificações por padrão (hoje {{onNotificationPressed}} é nulo em todas as telas) e mostra um badge com as não lidas. Tocar numa notificação marca como lida e navega para o item relacionado (treino, avaliação).
+
+*Critérios de aceite:*
+* O badge some ao ler tudo.
+* Estado vazio.
+
+Seguir AGENTS.md (camadas, schema, DoD). Detalhes em docs/BACKLOG.md."
+GB-112 · Gatilhos de notificação,Story,Medium,E12,tamanho-P,,"*Épico:* E12 Navegação e notificações (RF14)
+*Requisito:* RF14 | *Perfil:* Professor, Aluno | *Tamanho:* P
+*Depende de:* GB-111, GB-023, GB-061
+
+Sem Cloud Functions, quem faz a ação cria a notificação no mesmo fluxo: treino atribuído/atualizado → aluno; avaliação agendada → aluno; avaliação registrada → aluno. Respeite a preferência ""Avisos do professor"" do aluno ({{PreferencesService.professorNotices}}). Como hoje ela é local, avalie movê-la para o documento do usuário.
+
+*Critérios de aceite:*
+* Com a preferência desligada, o aluno não recebe avisos do professor.
+
+Seguir AGENTS.md (camadas, schema, DoD). Detalhes em docs/BACKLOG.md."
+GB-113 · Revisão da navegação por perfil,Task,Medium,E12,tamanho-P,,"*Épico:* E12 Navegação e notificações (RF14)
+*Requisito:* RF14, RNF02 | *Perfil:* Todos | *Tamanho:* P
+*Depende de:* GB-012, GB-062
+
+Abas finais: *Aluno*: Início, Treinos, Evolução, Perfil. *Professor*: Início, Treinos (montagem), Evolução, Perfil, com a lista de alunos aberta pelo Início. *Admin*: Início, Exercícios, Equipe, Perfil. Telas raiz de aba usam {{showBackButton: false}} (hoje várias mostram uma seta que não volta para lugar nenhum). Tocar de novo na aba do professor volta à raiz, como já acontece no {{MainShell}}.
+
+*Critérios de aceite:*
+* {{tab_router_test.dart}} cobre as abas dos 3 perfis.
+
+Seguir AGENTS.md (camadas, schema, DoD). Detalhes em docs/BACKLOG.md."
+GB-120 · Remover Plano e Mensalidade,Task,High,E13,tamanho-P,remove-mock,"*Épico:* E13 Escopo, interface e qualidade (RNF02)
+*Requisito:* Restrição 8 | *Perfil:* Aluno, Professor | *Tamanho:* P
+*Depende de:* —
+*Remove mock:* ""Plano Conexão Semestral"", ""Renovação em 10/11/2023"", ""#GB-2023-0482"", ""Musculação + Pilates"" e ""Plano Presencial + App"" ({{aluno_profile_view.dart}})
+
+Remova o card ""Plano e Mensalidade"" e o selo de plano do resumo do perfil. Pagamentos estão fora do escopo.
+
+*Critérios de aceite:*
+* {{aluno_profile_view_test.dart}} atualizado.
+
+Seguir AGENTS.md (camadas, schema, DoD). Detalhes em docs/BACKLOG.md."
+"GB-121 · Remover ""Mensagem"" e ""Redistribuir alunos""",Task,High,E13,tamanho-P,,"*Épico:* E13 Escopo, interface e qualidade (RNF02)
+*Requisito:* Escopo | *Perfil:* Professor, Admin | *Tamanho:* P
+*Depende de:* —
+
+Remova o botão ""Mensagem"" do {{CardAluno}} ({{lista_alunos.dart}}) e o asset {{mensagem.svg}}, se ficar sem uso. Remova ""Redistribuir Alunos"" de {{admin_team_view.dart}} e {{instructor_details_view.dart}}, com as respectivas keys nos testes.
+
+*Critérios de aceite:*
+* Testes de admin passando sem as keys {{botao_redistribuir_*}}.
+
+Seguir AGENTS.md (camadas, schema, DoD). Detalhes em docs/BACKLOG.md."
+GB-122 · Tela de Privacidade e Termos,Story,Medium,E13,tamanho-P,,"*Épico:* E13 Escopo, interface e qualidade (RNF02)
+*Requisito:* RNF01 | *Perfil:* Todos | *Tamanho:* P
+*Depende de:* —
+
+""Privacidade & Termos"" no perfil não tem ação, e o autocadastro pede o aceite dos ""Termos de Uso e Política de Privacidade (LGPD)"" sem mostrar o texto. Crie a tela com o texto (fornecido pelo time) e ligue-a nos dois lugares.
+
+*Critérios de aceite:*
+* O link no autocadastro abre o texto sem perder o rascunho do cadastro.
+
+Seguir AGENTS.md (camadas, schema, DoD). Detalhes em docs/BACKLOG.md."
+GB-123 · Perfil: remover textos fixos restantes,Task,Medium,E13,tamanho-P,remove-mock,"*Épico:* E13 Escopo, interface e qualidade (RNF02)
+*Requisito:* RNF02 | *Perfil:* Aluno | *Tamanho:* P
+*Depende de:* GB-085
+*Remove mock:* ""Avisos do Prof. Marcos""
+
+""Avisos do Prof. {nome do responsável}"". Aplique a decisão P7 sobre o toggle ""Lembrete diário"".
+
+*Critérios de aceite:*
+* Nenhum nome de pessoa fixo em {{lib/}} ({{grep -rn ""Marcos"" lib}} vazio).
+
+Seguir AGENTS.md (camadas, schema, DoD). Detalhes em docs/BACKLOG.md."
+GB-124 · Padronização visual com o tema,Task,Medium,E13,tamanho-M,,"*Épico:* E13 Escopo, interface e qualidade (RNF02)
+*Requisito:* RNF02 | *Perfil:* Todos | *Tamanho:* M
+*Depende de:* —
+
+{{professor_dashboard_view.dart}} e {{lista_alunos.dart}} declaram cores locais ({{Color(0xFF001E2D)}}, {{0xFFBA1A1A}}…), e {{tab_router.dart}}/{{professor_area_view.dart}} usam {{Color(0xFFE5E5E5)}}. Mova tudo para {{AppColors}} (criando tokens se faltar) e alinhe tipografia (Barlow Condensed para títulos, Inter para texto) conforme o protótipo. Os estados de carregando, vazio e erro seguem um componente único ({{lib/view/components/}}).
+
+*Critérios de aceite:*
+* {{grep -rn ""Color(0x"" lib/view}} só encontra resultados dentro de {{lib/theme/}}.
+
+Seguir AGENTS.md (camadas, schema, DoD). Detalhes em docs/BACKLOG.md."
+GB-125 · Eliminar a pasta mocks de lib/,Task,High,E13,tamanho-P,,"*Épico:* E13 Escopo, interface e qualidade (RNF02)
+*Requisito:* RNF02 | *Perfil:* — | *Tamanho:* P
+*Depende de:* GB-030, GB-021, GB-083, GB-086
+
+Depois das integrações, mova para {{test/fixtures/}} os dados de exemplo ainda usados pelos testes ({{aluno_treino_dia_view_test.dart}}, {{aluno_exercicio_detalhe_view_test.dart}} e {{aluno_treinos_view_test.dart}} importam {{TreinosMockData}}) e apague {{lib/view/**/mocks/}}. Esse é o card de fechamento do ""tirar dados mockados"".
+
+*Critérios de aceite:*
+* {{grep -rni ""mock"" lib/}} não retorna dados falsos.
+* {{flutter test}} passando.
+
+Seguir AGENTS.md (camadas, schema, DoD). Detalhes em docs/BACKLOG.md."
+GB-126 · Testes das regras do Firestore no emulador,Task,Low,E13,tamanho-M,,"*Épico:* E13 Escopo, interface e qualidade (RNF02)
+*Requisito:* RNF01 | *Perfil:* — | *Tamanho:* M
+*Depende de:* GB-001
+
+Configure o Firebase Emulator e uma suíte {{@firebase/rules-unit-testing}} em {{firestore-tests/}} cobrindo os cenários de permissão de cada coleção (aluno x aluno, professor x aluno de outro professor, admin). Opcionalmente, rode no CI.
+
+*Critérios de aceite:*
+* {{npm test}} em {{firestore-tests/}} passa localmente.
+
+Seguir AGENTS.md (camadas, schema, DoD). Detalhes em docs/BACKLOG.md."
