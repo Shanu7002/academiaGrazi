@@ -12,6 +12,7 @@ import 'package:academiagrazi/view/tab_router.dart';
 import 'package:academiagrazi/models/users/user_model.dart';
 import 'package:academiagrazi/service/users/register_user.dart';
 import 'package:academiagrazi/service/admin/admin_dashboard.dart';
+import 'package:academiagrazi/service/evaluations/physical_evaluation_service.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 
 @GenerateMocks([
@@ -47,6 +48,9 @@ void main() {
     locator.registerSingleton<PreferencesService>(mockPreferencesService);
     locator.registerSingleton<ProfilePhotoService>(
       ProfilePhotoService(cloudName: '', uploadPreset: ''),
+    );
+    locator.registerSingleton<PhysicalEvaluationService>(
+      PhysicalEvaluationService(db: FakeFirebaseFirestore()),
     );
 
     when(mockFirebaseUser.uid).thenReturn('uid_test');

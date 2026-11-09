@@ -36,6 +36,59 @@ service cloud.firestore {
       allow create: if isAdmin()
         && request.resource.data.type == 'instructor'
         && request.resource.data.responsable == request.auth.uid;
+
+      // Avaliações físicas: o professor responsável registra e exclui;
+      // o aluno apenas consulta. Os resultados são calculados no app a
+      // partir das medidas, por isso só elas são aceitas.
+      match /evaluations/{evaluationId} {
+        function isStudentInstructor() {
+          return request.auth != null
+            && get(
+              /databases/$(database)/documents/users/$(userId)
+            ).data.responsable == request.auth.uid;
+        }
+
+        function isBetween(value, min, max) {
+          return value is number && value >= min && value <= max;
+        }
+
+        function isValidSkinfolds(folds) {
+          return folds is map
+            && folds.keys().hasOnly([
+              'chest', 'midaxillary', 'triceps', 'subscapular',
+              'abdominal', 'suprailiac', 'thigh'
+            ])
+            && isBetween(folds.chest, 1, 100)
+            && isBetween(folds.midaxillary, 1, 100)
+            && isBetween(folds.triceps, 1, 100)
+            && isBetween(folds.subscapular, 1, 100)
+            && isBetween(folds.abdominal, 1, 100)
+            && isBetween(folds.suprailiac, 1, 100)
+            && isBetween(folds.thigh, 1, 100);
+        }
+
+        function isValidEvaluation(data) {
+          return data.keys().hasOnly([
+              'date', 'instructorId', 'sex', 'age',
+              'weightKg', 'heightCm', 'skinfolds'
+            ])
+            && data.date is timestamp
+            && data.instructorId == request.auth.uid
+            && data.sex in ['male', 'female']
+            && data.age is int && isBetween(data.age, 10, 100)
+            && isBetween(data.weightKg, 20, 300)
+            && data.heightCm is int && isBetween(data.heightCm, 100, 250)
+            && isValidSkinfolds(data.skinfolds);
+        }
+
+        allow read: if request.auth != null
+          && (request.auth.uid == userId || isStudentInstructor());
+
+        allow create: if isStudentInstructor()
+          && isValidEvaluation(request.resource.data);
+
+        allow delete: if isStudentInstructor();
+      }
     }
 
     match /instructorCodes/{code} {
