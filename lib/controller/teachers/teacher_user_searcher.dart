@@ -1,18 +1,30 @@
+import 'package:academiagrazi/models/users/registration_profile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class UserSummary {
   final String id;
   final String name;
 
-  const UserSummary({required this.id, required this.name});
+  /// Medidas informadas pelo aluno no cadastro, quando existirem.
+  final BodyMeasurements? measurements;
+
+  const UserSummary({required this.id, required this.name, this.measurements});
 
   factory UserSummary.fromFirestore(
     QueryDocumentSnapshot<Map<String, dynamic>> doc,
   ) {
     final data = doc.data();
+    final profile = data['registrationProfile'];
+    final measurements = profile is Map ? profile['measurements'] : null;
     return UserSummary(
       id: doc.id,
       name: (data['name'] as String?) ?? 'Unknown User',
+      measurements:
+          measurements is Map
+              ? BodyMeasurements.fromJson(
+                Map<String, dynamic>.from(measurements),
+              )
+              : null,
     );
   }
 }
