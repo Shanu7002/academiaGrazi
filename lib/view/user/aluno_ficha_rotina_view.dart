@@ -126,17 +126,12 @@ class AlunoFichaRotinaView extends StatelessWidget {
             const SizedBox(height: 5),
             Text(exercise.instructions,
               style: const TextStyle(fontSize: 13, color: AppColors.textBody)),
-            if (exercise.instructionsAutoTranslated) ...[
-              const SizedBox(height: 6),
-              const Text('Tradução automática ainda não revisada. Confirme com seu professor.',
-                style: TextStyle(fontSize: 11, color: AppColors.textSecondary)),
-            ],
           ]
           else
             const Row(children: [
               Icon(Icons.info_outline, size: 17, color: AppColors.textSecondary),
               SizedBox(width: 7),
-              Expanded(child: Text('Orientações em revisão. Consulte o professor.',
+              Expanded(child: Text('Orientações de execução não cadastradas.',
                 style: TextStyle(fontSize: 12, color: AppColors.textSecondary))),
             ]),
         ]),

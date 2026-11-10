@@ -1,4 +1,5 @@
 import 'package:academiagrazi/models/training/training_session.dart';
+import 'package:academiagrazi/models/training/home_workout_plan.dart';
 import 'package:academiagrazi/service/training/student_weekly_progress.dart';
 import 'package:academiagrazi/theme/app_colors.dart';
 import 'package:academiagrazi/view/components/app_bar.dart';
@@ -18,6 +19,8 @@ class AlunoPainelSemanalView extends StatelessWidget {
   final ValueChanged<String> onIniciarTreino;
   final VoidCallback onHistorico;
   final bool abrindoTreino;
+  final HomeWorkoutPlan? homeWorkout;
+  final VoidCallback? onOpenHome;
   final DateTime? agora;
 
   const AlunoPainelSemanalView({
@@ -29,6 +32,8 @@ class AlunoPainelSemanalView extends StatelessWidget {
     required this.onHistorico,
     this.abrindoTreino = false,
     this.agora,
+    this.homeWorkout,
+    this.onOpenHome,
   });
 
   static const _dias = <String>[
@@ -278,15 +283,18 @@ class AlunoPainelSemanalView extends StatelessWidget {
                 else
                   ...historico.take(3).map((session) => _registro(context, session)),
                 const SizedBox(height: 16),
-                _panel(child: const Row(children: [
-                  Icon(Icons.home_outlined, color: AppColors.textSecondary),
-                  SizedBox(width: 12),
-                  Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Text('Treinar em casa', style: TextStyle(fontWeight: FontWeight.w700)),
-                    Text('Funcionalidade em desenvolvimento',
-                      style: TextStyle(fontSize: 12, color: AppColors.textSecondary)),
-                  ])),
-                ])),
+                if (homeWorkout != null && homeWorkout!.routines.isNotEmpty) ...[
+                  _panel(child: ListTile(
+                    key: const Key('aluno_abrir_treinos_casa'),
+                    contentPadding: EdgeInsets.zero,
+                    leading: const Icon(Icons.home_outlined, color: AppColors.primary),
+                    title: const Text('Treinar em casa',
+                      style: TextStyle(fontWeight: FontWeight.w800)),
+                    subtitle: Text('${homeWorkout!.routines.length} treino(s) prescritos pelo professor'),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: onOpenHome,
+                  )),
+                ],
               ],
             ),
           ),
