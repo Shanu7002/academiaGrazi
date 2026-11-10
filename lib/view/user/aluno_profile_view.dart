@@ -241,7 +241,7 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: const CustomAppBar(title: 'GRAZI BRAZ', showBackButton: false),
+      appBar: const CustomAppBar(title: 'GRAZI BRAZ'),
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(

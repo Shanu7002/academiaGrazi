@@ -23,7 +23,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     super.key,
     required this.title,
     this.actions,
-    this.showBackButton = true,
+    this.showBackButton = false,
     this.backgroundColor = Colors.blue, // Cor padrão caso nenhuma seja enviada
     this.onNotificationPressed,
   });
