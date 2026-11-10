@@ -62,12 +62,31 @@ service cloud.firestore {
       // Autocadastro: aluno nao pode criar perfil de admin/instrutor.
       // O codigo de convite continua sendo validado no fluxo existente;
       // esta regra verifica apenas que o instrutor indicado existe.
-      allow create: if ownUser(userId)
-        && request.resource.data.keys().hasAll(['name', 'type', 'responsable'])
-        && request.resource.data.type == 'user'
-        && request.resource.data.name is string
-        && request.resource.data.name.size() > 0
-        && isValidInstructor(request.resource.data.responsable);
+      // Cadastro do próprio usuário
+   allow create: if ownUser(userId)
+   && request.resource.data.keys().hasOnly([
+    'name',
+    'email',
+    'type',
+    'responsable',
+    'registrationProfile',
+    'onboardingCompleted',
+    'termsAcceptedAt',
+    'createdAt'
+    ])
+    && request.resource.data.keys().hasAll([
+    'name',
+    'email',
+    'type',
+    'responsable'
+    ])
+    && request.resource.data.type == 'user'
+    && request.resource.data.name is string
+    && request.resource.data.name.size() > 0
+    && request.resource.data.email is string
+    && request.resource.data.email.size() > 0
+    && request.resource.data.responsable is string
+    && isValidInstructor(request.resource.data.responsable);
 
       // Edicao do proprio perfil: permite apenas dados de perfil, sem
       // modificar papel, vinculo, codigo de convite, email ou timestamps.
