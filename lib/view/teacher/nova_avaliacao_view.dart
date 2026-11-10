@@ -1,6 +1,7 @@
 import 'package:academiagrazi/controller/teachers/teacher_user_searcher.dart';
 import 'package:academiagrazi/locator.dart';
 import 'package:academiagrazi/models/evaluations/physical_evaluation.dart';
+import 'package:academiagrazi/models/users/registration_profile.dart';
 import 'package:academiagrazi/service/evaluations/physical_evaluation_service.dart';
 import 'package:academiagrazi/theme/app_colors.dart';
 import 'package:academiagrazi/view/user/aluno_evolucao_view.dart';
@@ -75,7 +76,12 @@ class _NovaAvaliacaoViewState extends State<NovaAvaliacaoView> {
   @override
   void initState() {
     super.initState();
-    // Pré-preenche com as medidas informadas pelo aluno no cadastro.
+    // Pré-preenche com os dados informados pelo aluno no cadastro.
+    _sexo = switch (widget.aluno.gender) {
+      Gender.male => BiologicalSex.male,
+      Gender.female => BiologicalSex.female,
+      Gender.undisclosed || null => null,
+    };
     final cadastro = widget.aluno.measurements;
     String inicial(num? valor) =>
         valor == null || valor == 0 ? '' : valor.toString();

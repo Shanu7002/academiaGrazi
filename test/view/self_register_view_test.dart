@@ -100,6 +100,11 @@ void main() {
   }
 
   Future<void> completePersonalDataStep(WidgetTester tester) async {
+    final genderChip = find.byKey(const Key('gender-female'));
+    await tester.ensureVisible(genderChip);
+    await tester.tap(genderChip);
+    await tester.pump();
+
     await tester.ensureVisible(
       find.byKey(const Key('registrationContinueButton')),
     );
@@ -155,6 +160,38 @@ void main() {
       find.byKey(const Key('registrationInstructorCode')),
     );
     expect(codeField.controller?.text, '4821');
+  });
+
+  testWidgets('exige o gênero antes de sair da etapa de medidas', (
+    tester,
+  ) async {
+    await pumpView(tester);
+    await completeAccountStep(tester);
+    await completeInstructorStep(tester);
+    expect(find.text('ETAPA 3 DE 6'), findsOneWidget);
+
+    await tester.ensureVisible(
+      find.byKey(const Key('registrationContinueButton')),
+    );
+    await tester.tap(find.byKey(const Key('registrationContinueButton')));
+    await tester.pump();
+
+    expect(find.text('Selecione seu gênero.'), findsOneWidget);
+    expect(find.text('ETAPA 3 DE 6'), findsOneWidget);
+
+    final undisclosed = find.byKey(const Key('gender-undisclosed'));
+    await tester.ensureVisible(undisclosed);
+    await tester.tap(undisclosed);
+    await tester.pump();
+    expect(tester.widget<ChoiceChip>(undisclosed).selected, isTrue);
+
+    await tester.ensureVisible(
+      find.byKey(const Key('registrationContinueButton')),
+    );
+    await tester.tap(find.byKey(const Key('registrationContinueButton')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('ETAPA 4 DE 6'), findsOneWidget);
   });
 
   testWidgets('keeps None mutually exclusive in health selections', (

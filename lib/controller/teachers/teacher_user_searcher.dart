@@ -8,7 +8,15 @@ class UserSummary {
   /// Medidas informadas pelo aluno no cadastro, quando existirem.
   final BodyMeasurements? measurements;
 
-  const UserSummary({required this.id, required this.name, this.measurements});
+  /// Gênero informado pelo aluno no cadastro, quando existir.
+  final Gender? gender;
+
+  const UserSummary({
+    required this.id,
+    required this.name,
+    this.measurements,
+    this.gender,
+  });
 
   factory UserSummary.fromFirestore(
     QueryDocumentSnapshot<Map<String, dynamic>> doc,
@@ -16,6 +24,7 @@ class UserSummary {
     final data = doc.data();
     final profile = data['registrationProfile'];
     final measurements = profile is Map ? profile['measurements'] : null;
+    final gender = profile is Map ? profile['gender'] : null;
     return UserSummary(
       id: doc.id,
       name: (data['name'] as String?) ?? 'Unknown User',
@@ -25,6 +34,7 @@ class UserSummary {
                 Map<String, dynamic>.from(measurements),
               )
               : null,
+      gender: Gender.values.asNameMap()[gender],
     );
   }
 }

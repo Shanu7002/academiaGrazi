@@ -62,6 +62,10 @@ class _SelfRegisterViewState extends State<SelfRegisterView> {
       case 1:
         await _validateCodeAndContinue();
       case 2:
+        if (_draft.gender == null) {
+          _showMessage('Selecione seu gênero.');
+          return;
+        }
         _nextStep();
       case 3:
         if (_draft.primaryGoal == null) {
@@ -462,6 +466,8 @@ class _SelfRegisterViewState extends State<SelfRegisterView> {
           'SUAS MEDIDAS',
           'Para adaptarmos as cargas e treinos ao seu perfil.',
         ),
+        _genderCard(),
+        const SizedBox(height: 16),
         _CounterCard(
           title: 'IDADE',
           value: '${_draft.age}',
@@ -525,6 +531,42 @@ class _SelfRegisterViewState extends State<SelfRegisterView> {
           message: 'Utilizados apenas para personalizar seu acompanhamento.',
         ),
       ],
+    );
+  }
+
+  Widget _genderCard() {
+    const options = [
+      (Gender.male, 'Masculino'),
+      (Gender.female, 'Feminino'),
+      (Gender.undisclosed, 'Prefiro não informar'),
+    ];
+    return _SectionCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('GÊNERO', style: _labelStyle),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              for (final option in options)
+                ChoiceChip(
+                  key: Key('gender-${option.$1.name}'),
+                  label: Text(option.$2),
+                  selected: _draft.gender == option.$1,
+                  selectedColor: _primary,
+                  labelStyle: TextStyle(
+                    color: _draft.gender == option.$1 ? Colors.white : _text,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  checkmarkColor: Colors.white,
+                  onSelected: (_) => setState(() => _draft.gender = option.$1),
+                ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 

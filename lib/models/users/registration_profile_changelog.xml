@@ -30,4 +30,33 @@
             serializadas ou persistidas no Firebase.
         </actualModel>
     </model>
+    <model>
+        <version>1.1</version>
+        <owner>Bayer-07</owner>
+        <description>Adiciona o campo opcional gender, escolhido pelo aluno no autocadastro</description>
+        <actualModel>
+            registrationProfile = {
+                measurements: {
+                    age: int
+                    heightCm: int
+                    weightKg: double
+                }
+                gender?: 'male' | 'female' | 'undisclosed' --ausente nos perfis anteriores; obrigatorio no autocadastro
+                primaryGoal: PrimaryGoal enum serialized as string
+                health: {
+                    conditions: array[string]
+                    notes: string
+                    restrictions: array[string]
+                }
+                emergencyContact: {
+                    name: string
+                    relationship: string
+                    phone: string --somente digitos
+                }
+            }
+
+            RegistrationDraft guarda o genero escolhido na etapa de medidas;
+            male/female pre-preenchem o sexo da avaliacao fisica.
+        </actualModel>
+    </model>
 </changelog>

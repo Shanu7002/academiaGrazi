@@ -163,7 +163,7 @@ createdAt: string ISO
 responsable?: string            # aluno → uid do professor; professor → uid do admin que o cadastrou
 photoUrl?: string               # Cloudinary
 # aluno
-registrationProfile?: { measurements{age,heightCm,weightKg}, primaryGoal, health{conditions[],restrictions[],notes}, emergencyContact{name,relationship,phone} }
+registrationProfile?: { measurements{age,heightCm,weightKg}, gender?: 'male'|'female'|'undisclosed', primaryGoal, health{conditions[],restrictions[],notes}, emergencyContact{name,relationship,phone} }
 onboardingCompleted: bool
 termsAcceptedAt?: string ISO
 unitId?: string                 # 🆕 GB-003/GB-043
