@@ -1,4 +1,5 @@
 import 'package:academiagrazi/models/training/training_plan.dart';
+import 'package:academiagrazi/service/training/home_workout_service.dart';
 import 'package:academiagrazi/models/training/training_session.dart';
 import 'package:academiagrazi/service/training/training_plan_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -54,12 +55,23 @@ class TrainingSessionService {
       throw StateError('Finalize ou retome o treino em andamento.');
     }
 
-    final plan = await _plans.getActivePlan(studentId);
+    final TrainingPlan? plan;
+    if (planId == 'home') {
+      final home = await HomeWorkoutService(db: _db).getCurrent(studentId);
+      plan = home == null ? null : TrainingPlan(
+        id: 'home', studentId: home.studentId,
+        instructorId: home.instructorId, name: 'Treinar em casa',
+        version: home.version, status: TrainingPlanStatus.published,
+        routines: home.routines, weeklySchedule: const {},
+      );
+    } else {
+      plan = await _plans.getActivePlan(studentId);
+    }
     if (plan == null ||
         plan.status != TrainingPlanStatus.published ||
         plan.studentId != studentId ||
         plan.id != planId) {
-      throw StateError('A ficha informada nao esta ativa para este aluno.');
+      throw StateError('A prescricao informada nao esta ativa para este aluno.');
     }
     final routines = plan.routines.where((routine) => routine.id == routineId);
     if (routines.isEmpty) {

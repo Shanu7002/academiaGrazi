@@ -6,6 +6,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:academiagrazi/service/training/training_session_service.dart';
 import 'package:academiagrazi/service/training/training_plan_service.dart';
+import 'package:academiagrazi/service/training/home_workout_service.dart';
 import 'package:academiagrazi/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 
@@ -124,11 +125,19 @@ class _AlunoSessaoTreinoViewState extends State<AlunoSessaoTreinoView> {
   Future<void> _carregarAquecimento(TrainingSession session) async {
     if (Firebase.apps.isEmpty && widget.planService == null) return;
     try {
-      final plan = await (widget.planService ?? TrainingPlanService())
-          .getPublishedPlanById(widget.studentId, session.planId);
-      final matching = plan?.routines.where((r) => r.id == session.routineId);
-      final warmup = matching == null || matching.isEmpty
-          ? '' : matching.first.warmupInstructions.trim();
+      final String warmup;
+      if (session.planId == 'home') {
+        final home = await HomeWorkoutService().getCurrent(widget.studentId);
+        final matching = home?.routines.where((r) => r.id == session.routineId);
+        warmup = matching == null || matching.isEmpty
+            ? '' : matching.first.warmupInstructions.trim();
+      } else {
+        final plan = await (widget.planService ?? TrainingPlanService())
+            .getPublishedPlanById(widget.studentId, session.planId);
+        final matching = plan?.routines.where((r) => r.id == session.routineId);
+        warmup = matching == null || matching.isEmpty
+            ? '' : matching.first.warmupInstructions.trim();
+      }
       if (mounted && _session?.id == session.id) {
         setState(() => _warmupInstructions = warmup);
       }
@@ -360,9 +369,6 @@ class _AlunoSessaoTreinoViewState extends State<AlunoSessaoTreinoView> {
             for (var i = 0; i < session.exercises.length; i++)
               _exercicio(session.exercises[i], i + 1),
             const SizedBox(height: 6),
-            const Text('Suas séries são salvas no Firebase quando você '
-                'marca a conclusão ou salva a carga. Pode sair e retomar depois.',
-                style: TextStyle(fontSize: 12, color: AppColors.textSecondary)),
           ],
         )),
         Padding(
@@ -426,15 +432,9 @@ class _AlunoSessaoTreinoViewState extends State<AlunoSessaoTreinoView> {
             const SizedBox(height: 4),
             Text(instructions,
               style: const TextStyle(fontSize: 13, color: AppColors.textBody)),
-            if (guidance.automaticTranslation) ...[
-              const SizedBox(height: 6),
-              const Text('Tradução automática não revisada. Confirme com seu professor.',
-                style: TextStyle(color: AppColors.textSecondary, fontSize: 11)),
-            ],
             const SizedBox(height: 8),
           ] else ...[
-            const Text('Orientações em revisão. Consulte o professor '
-                'antes de executar este movimento.',
+            const Text('Orientações de execução não cadastradas.',
               style: TextStyle(fontSize: 12, color: AppColors.textSecondary)),
             const SizedBox(height: 8),
           ],

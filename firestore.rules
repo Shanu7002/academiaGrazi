@@ -50,6 +50,10 @@ service cloud.firestore {
       return /databases/$(database)/documents/users/$(studentId)/trainingState/current;
     }
 
+    function homeWorkoutPath(studentId) {
+      return /databases/$(database)/documents/users/$(studentId)/homeWorkouts/current;
+    }
+
     match /users/{userId} {
       // Permissoes de leitura existentes, preservadas.
       allow read: if ownUser(userId);
@@ -320,6 +324,44 @@ service cloud.firestore {
         && resource.data.instructorId == request.auth.uid;
     }
 
+    // Treinos em casa: prescricao opcional, independente da ficha presencial.
+    // Somente o professor vinculado publica/retira; aluno apenas le.
+    match /users/{studentId}/homeWorkouts/{homeId} {
+      allow get: if homeId == 'current' && canReadStudentData(studentId);
+      allow list: if false;
+
+      function validHome() {
+        return homeId == 'current'
+          && linkedInstructor(studentId)
+          && request.resource.data.keys().hasOnly([
+            'schemaVersion', 'studentId', 'instructorId', 'status',
+            'version', 'routines', 'updatedAt'
+          ])
+          && request.resource.data.keys().hasAll([
+            'schemaVersion', 'studentId', 'instructorId', 'status',
+            'version', 'routines', 'updatedAt'
+          ])
+          && request.resource.data.schemaVersion == 1
+          && request.resource.data.studentId == studentId
+          && request.resource.data.instructorId == request.auth.uid
+          && request.resource.data.status == 'published'
+          && request.resource.data.version is int
+          && request.resource.data.version >= 1
+          && request.resource.data.routines is list
+          && request.resource.data.routines.size() >= 1
+          && request.resource.data.routines.size() <= 8
+          && request.resource.data.updatedAt == request.time;
+      }
+
+      allow create: if validHome() && request.resource.data.version == 1;
+      allow update: if validHome()
+        && resource.data.instructorId == request.auth.uid
+        && request.resource.data.version == resource.data.version + 1;
+      allow delete: if homeId == 'current'
+        && linkedInstructor(studentId)
+        && resource.data.instructorId == request.auth.uid;
+    }
+
     // Etapa 6: execucao da ficha publicada pelo proprio aluno.
     // Professor vinculado e administrador podem acompanhar, mas nao escrever.
     match /users/{studentId}/trainingSessions/{sessionId} {
@@ -356,20 +398,36 @@ service cloud.firestore {
         && request.resource.data.exercises.size() <= 60
         && request.resource.data.createdAt == request.time
         && request.resource.data.updatedAt == request.time
-        && exists(currentPlanPath(studentId))
-        && get(currentPlanPath(studentId)).data.activePlanId
-             == request.resource.data.planId
-        && exists(planPath(studentId, request.resource.data.planId))
-        && get(planPath(studentId, request.resource.data.planId)).data.status
-             == 'published'
-        && get(planPath(studentId, request.resource.data.planId)).data.studentId
-             == studentId
-        && get(planPath(studentId, request.resource.data.planId)).data.instructorId
-             == request.resource.data.instructorId
         && get(userPath(studentId)).data.responsable
              == request.resource.data.instructorId
-        && get(planPath(studentId, request.resource.data.planId)).data.version
-             == request.resource.data.planVersion;
+        && (
+          (
+            request.resource.data.planId == 'home'
+            && exists(homeWorkoutPath(studentId))
+            && get(homeWorkoutPath(studentId)).data.status == 'published'
+            && get(homeWorkoutPath(studentId)).data.studentId == studentId
+            && get(homeWorkoutPath(studentId)).data.instructorId
+                 == request.resource.data.instructorId
+            && get(homeWorkoutPath(studentId)).data.version
+                 == request.resource.data.planVersion
+          )
+          ||
+          (
+            request.resource.data.planId != 'home'
+            && exists(currentPlanPath(studentId))
+            && get(currentPlanPath(studentId)).data.activePlanId
+                 == request.resource.data.planId
+            && exists(planPath(studentId, request.resource.data.planId))
+            && get(planPath(studentId, request.resource.data.planId)).data.status
+                 == 'published'
+            && get(planPath(studentId, request.resource.data.planId)).data.studentId
+                 == studentId
+            && get(planPath(studentId, request.resource.data.planId)).data.instructorId
+                 == request.resource.data.instructorId
+            && get(planPath(studentId, request.resource.data.planId)).data.version
+                 == request.resource.data.planVersion
+          )
+        );
 
       // Apenas a sessao em andamento pode registrar progresso ou finalizar.
       // Nao permite alterar IDs, vinculo, inicio ou dados de criacao.

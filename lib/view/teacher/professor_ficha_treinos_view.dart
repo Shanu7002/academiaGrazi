@@ -7,6 +7,9 @@ import 'package:academiagrazi/models/training/training_exercise.dart';
 import 'package:academiagrazi/models/training/training_plan.dart';
 import 'package:academiagrazi/models/training/training_routine.dart';
 import 'package:academiagrazi/service/training/exercise_catalog_service.dart';
+import 'package:academiagrazi/service/training/student_exercise_presentation.dart';
+import 'package:academiagrazi/service/training/home_workout_service.dart';
+import 'package:academiagrazi/view/teacher/professor_treino_em_casa_view.dart';
 import 'package:academiagrazi/service/training/training_media_service.dart';
 import 'package:academiagrazi/service/training/training_routine_template_service.dart';
 import 'package:academiagrazi/service/training/training_plan_service.dart';
@@ -496,7 +499,7 @@ class _ProfessorFichaTreinosViewState extends State<ProfessorFichaTreinosView> {
         catalogExerciseId: item.id,
         name: item.name,
         muscleGroup: item.muscleGroup,
-        instructions: item.instructions,
+        instructions: StudentExercisePresentation.guidance('', item).text ?? '',
         imageUrl: item.imageUrl,
         sets: 3,
         repetitions: 12,
@@ -643,7 +646,26 @@ class _ProfessorFichaTreinosViewState extends State<ProfessorFichaTreinosView> {
   }
 
   Future<void> _editExercise(TrainingExercise item, String routineId) async {
-    final instructions = TextEditingController(text: item.instructions);
+    // Nao apresentar o snapshot antigo em ingles como se fosse portugues.
+    // Consultamos somente este ID, uma unica vez por abertura do editor.
+    var ptInstructions = item.instructions.trim();
+    var translationPending = false;
+    if (ptInstructions.isEmpty || StudentExercisePresentation.looksEnglish(ptInstructions)) {
+      ptInstructions = '';
+      try {
+        if (item.catalogExerciseId.trim().isNotEmpty) {
+          final found = await _catalogService.findByIds([item.catalogExerciseId]);
+          final guidance = StudentExercisePresentation.guidance(
+            item.instructions, found[item.catalogExerciseId]);
+          ptInstructions = guidance.text ?? '';
+          translationPending = guidance.automaticTranslation;
+        }
+      } catch (_) {
+        // Sem catalogo, o professor ainda pode escrever a orientacao manual.
+      }
+    }
+    if (!mounted) return;
+    final instructions = TextEditingController(text: ptInstructions);
     final sets = TextEditingController(text: '${item.sets}');
     final reps = TextEditingController(text: '${item.repetitions}');
     final rest = TextEditingController(text: '${item.restSeconds}');
@@ -746,10 +768,15 @@ class _ProfessorFichaTreinosViewState extends State<ProfessorFichaTreinosView> {
                   maxLines: 4,
                   decoration: const InputDecoration(
                     labelText: 'Orientações em português',
-                    hintText: 'Explique como executar o movimento com segurança.',
+                    hintText: 'Descreva o movimento em português antes de publicar.',
                     border: OutlineInputBorder(),
                   ),
                 ),
+                if (translationPending) ...[
+                  const SizedBox(height: 6),
+                  const Text('Texto sugerido automaticamente. Revise antes de publicar.',
+                    style: TextStyle(color: AppColors.textSecondary, fontSize: 12)),
+                ],
                 if (errorText != null) ...[
                   const SizedBox(height: 10),
                   Text(errorText!, style: const TextStyle(color: AppColors.danger)),
@@ -1259,6 +1286,33 @@ class _ProfessorFichaTreinosViewState extends State<ProfessorFichaTreinosView> {
               label: const Text('Excluir ficha completa'),
             ),
           ],
+          const SizedBox(height: 14),
+          _panel(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text('Treinar em casa', style: _titleStyle(20)),
+            const SizedBox(height: 5),
+            const Text('Opcional: publique exercícios para este aluno fazer em casa. '
+                'Se não houver prescrição, nada aparecerá para ele.',
+              style: TextStyle(color: AppColors.textSecondary, fontSize: 12)),
+            const SizedBox(height: 12),
+            SizedBox(width: double.infinity, child: OutlinedButton.icon(
+              key: const Key('professor_gerenciar_treino_casa'),
+              onPressed: _saving ? null : () async {
+                final teacherId = _instructorId;
+                if (teacherId == null) return;
+                await Navigator.of(context).push(MaterialPageRoute<void>(
+                  builder: (_) => ProfessorTreinoEmCasaView(
+                    studentId: student.id,
+                    studentName: student.name,
+                    instructorId: teacherId,
+                    service: HomeWorkoutService(db: _service.firestore),
+                    catalogService: _catalogService,
+                  ),
+                ));
+              },
+              icon: const Icon(Icons.home_outlined),
+              label: const Text('Criar ou editar treinos em casa'),
+            )),
+          ])),
           const SizedBox(height: 16),
           ProfessorResumoTreinosAluno(
             key: ValueKey('professor_status_${student.id}'),

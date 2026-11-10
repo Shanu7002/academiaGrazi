@@ -1,5 +1,8 @@
 import 'package:academiagrazi/locator.dart';
 import 'package:academiagrazi/models/training/training_session.dart';
+import 'package:academiagrazi/models/training/home_workout_plan.dart';
+import 'package:academiagrazi/service/training/home_workout_service.dart';
+import 'package:academiagrazi/view/user/aluno_treino_em_casa_view.dart';
 import 'package:academiagrazi/service/training/exercise_catalog_service.dart';
 import 'package:academiagrazi/service/training/student_training_view_data_service.dart';
 import 'package:academiagrazi/service/training/training_plan_service.dart';
@@ -39,6 +42,9 @@ class _AlunoTreinosFirestoreViewState extends State<AlunoTreinosFirestoreView> {
   Stream<AlunoTreinosUiData?>? _trainingStream;
   Stream<List<TrainingSession>>? _historyStream;
   Future<TrainingSession?>? _pendingFuture;
+  Stream<HomeWorkoutPlan?>? _homeStream;
+  HomeWorkoutService? _homeServiceInstance;
+  HomeWorkoutService get _homes => _homeServiceInstance ??= HomeWorkoutService();
   TrainingPlanService? _planServiceInstance;
   TrainingSessionService? _sessionServiceInstance;
   bool _opening = false;
@@ -61,6 +67,9 @@ class _AlunoTreinosFirestoreViewState extends State<AlunoTreinosFirestoreView> {
       _trainingStream = (widget.service ?? StudentTrainingViewDataService(
         catalogService: ExerciseCatalogService(),
       )).watchActiveUiData(id);
+      if (Firebase.apps.isNotEmpty) {
+        _homeStream = _homes.watchCurrent(id);
+      }
       if (widget.sessionService != null || Firebase.apps.isNotEmpty) {
         _historyStream = _sessions.watchHistory(id);
         _pendingFuture = _sessions.getInProgress(id);
@@ -151,6 +160,58 @@ class _AlunoTreinosFirestoreViewState extends State<AlunoTreinosFirestoreView> {
     }
   }
 
+  Future<void> _iniciarHome(String routineId) async {
+    final studentId = _studentId;
+    if (_opening || studentId == null || studentId.isEmpty) return;
+    setState(() => _opening = true);
+    try {
+      final home = await _homes.getCurrent(studentId);
+      if (home == null || !home.routines.any((r) => r.id == routineId)) {
+        throw StateError('Treino em casa indisponível.');
+      }
+      final pending = await _sessions.getInProgress(studentId);
+      var planId = 'home';
+      var selectedRoutine = routineId;
+      String? sessionId;
+      if (pending != null) {
+        if (pending.planId == 'home' && pending.routineId == routineId) {
+          sessionId = pending.id;
+        } else {
+          if (!mounted) return;
+          final resume = await showDialog<bool>(context: context, builder: (ctx) => AlertDialog(
+            title: const Text('Já existe um treino em andamento'),
+            content: Text('Deseja retomar "${pending.routineName}" antes de iniciar outro?'),
+            actions: [
+              TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Agora não')),
+              FilledButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Retomar')),
+            ],
+          ));
+          if (resume != true || !mounted) return;
+          planId = pending.planId;
+          selectedRoutine = pending.routineId;
+          sessionId = pending.id;
+        }
+      }
+      if (!mounted) return;
+      await Navigator.of(context).push(MaterialPageRoute<void>(
+        builder: (_) => AlunoSessaoTreinoView(studentId: studentId,
+          planId: planId, routineId: selectedRoutine,
+          existingSessionId: sessionId, service: _sessions),
+      ));
+    } catch (_) {
+      _avisar('Não foi possível abrir o treino em casa. Confira a conexão.');
+    } finally {
+      if (mounted) { setState(() => _opening = false); _refreshPending(); }
+    }
+  }
+
+  void _abrirHome(HomeWorkoutPlan plan) {
+    Navigator.of(context).push(MaterialPageRoute<void>(
+      builder: (_) => AlunoTreinoEmCasaView(plan: plan,
+        onStart: _iniciarHome, onHistory: _abrirHistorico),
+    ));
+  }
+
   void _abrirHistorico() {
     final id = _studentId;
     if (id == null || id.isEmpty) return;
@@ -177,7 +238,14 @@ class _AlunoTreinosFirestoreViewState extends State<AlunoTreinosFirestoreView> {
       );
     }
 
-    return StreamBuilder<AlunoTreinosUiData?>(
+    if (_homeStream == null) return _buildTraining(null);
+    return StreamBuilder<HomeWorkoutPlan?>(
+      stream: _homeStream,
+      builder: (context, homeSnapshot) => _buildTraining(homeSnapshot.data),
+    );
+  }
+
+  Widget _buildTraining(HomeWorkoutPlan? homeWorkout) => StreamBuilder<AlunoTreinosUiData?>(
       stream: _trainingStream,
       builder: (context, snapshot) {
         if (snapshot.hasError) {
@@ -198,6 +266,10 @@ class _AlunoTreinosFirestoreViewState extends State<AlunoTreinosFirestoreView> {
         }
         final training = snapshot.data;
         if (training == null) {
+          if (homeWorkout != null && homeWorkout.routines.isNotEmpty) {
+            return AlunoTreinoEmCasaView(plan: homeWorkout,
+              onStart: _iniciarHome, onHistory: _abrirHistorico);
+          }
           return _estado(
             icon: Icons.assignment_outlined,
             title: 'Nenhuma ficha publicada',
@@ -206,7 +278,7 @@ class _AlunoTreinosFirestoreViewState extends State<AlunoTreinosFirestoreView> {
         }
         final history = _historyStream;
         if (history == null) {
-          return _painel(training, const [], null);
+          return _painel(training, const [], null, homeWorkout);
         }
         return StreamBuilder<List<TrainingSession>>(
           stream: history,
@@ -216,19 +288,19 @@ class _AlunoTreinosFirestoreViewState extends State<AlunoTreinosFirestoreView> {
             return FutureBuilder<TrainingSession?>(
               future: _pendingFuture,
               builder: (context, pendingSnapshot) => _painel(
-                training, finished, pendingSnapshot.data,
+                training, finished, pendingSnapshot.data, homeWorkout,
               ),
             );
           },
         );
       },
     );
-  }
 
   Widget _painel(
     AlunoTreinosUiData data,
     List<TrainingSession> finished,
     TrainingSession? pending,
+    HomeWorkoutPlan? homeWorkout,
   ) => AlunoPainelSemanalView(
     data: data,
     historico: finished,
@@ -236,6 +308,8 @@ class _AlunoTreinosFirestoreViewState extends State<AlunoTreinosFirestoreView> {
     onIniciarTreino: _iniciarTreino,
     onHistorico: _abrirHistorico,
     abrindoTreino: _opening,
+    homeWorkout: homeWorkout,
+    onOpenHome: homeWorkout == null ? null : () => _abrirHome(homeWorkout),
   );
 
   Widget _estado({

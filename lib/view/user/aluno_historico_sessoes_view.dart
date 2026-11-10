@@ -120,7 +120,8 @@ class _AlunoHistoricoSessoesViewState extends State<AlunoHistoricoSessoesView> {
           child: Icon(full ? Icons.check_circle : Icons.timelapse,
             color: full ? AppColors.success : AppColors.accentDark),
         ),
-        title: Text(session.routineName,
+        title: Text(session.planId == 'home'
+            ? '${session.routineName} · Em casa' : session.routineName,
           style: const TextStyle(fontWeight: FontWeight.w800)),
         subtitle: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text(_date(session.finishedAt ?? session.startedAt),
