@@ -119,4 +119,60 @@ void main() {
     expect(dados['sex'], 'male');
     expect((dados['skinfolds'] as Map)['abdominal'], 20);
   });
+
+  Future<void> abrirComGenero(WidgetTester tester, Gender gender) async {
+    tester.view.physicalSize = const Size(430, 3000);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: NovaAvaliacaoView(
+          aluno: UserSummary(
+            id: 'aluno-1',
+            name: 'Ana',
+            gender: gender,
+            measurements: const BodyMeasurements(
+              age: 30,
+              heightCm: 180,
+              weightKg: 80,
+            ),
+          ),
+        ),
+      ),
+    );
+    const dobras = {
+      'Peitoral': '10',
+      'Axilar média': '12',
+      'Tríceps': '14',
+      'Subescapular': '16',
+      'Abdominal': '20',
+      'Suprailíaca': '15',
+      'Coxa': '13',
+    };
+    for (final MapEntry(:key, :value) in dobras.entries) {
+      await tester.enterText(find.widgetWithText(TextFormField, key), value);
+    }
+    await tester.pump();
+  }
+
+  testWidgets('pré-seleciona o sexo pelo gênero informado no cadastro', (
+    tester,
+  ) async {
+    await abrirComGenero(tester, Gender.male);
+
+    // Sem tocar em "Masculino", o resultado já é calculado.
+    expect(find.text('14,6 %'), findsOneWidget);
+  });
+
+  testWidgets('"Prefiro não informar" deixa o sexo para o professor', (
+    tester,
+  ) async {
+    await abrirComGenero(tester, Gender.undisclosed);
+
+    expect(
+      find.text('Preencha o sexo e todas as medidas para calcular.'),
+      findsOneWidget,
+    );
+  });
 }
