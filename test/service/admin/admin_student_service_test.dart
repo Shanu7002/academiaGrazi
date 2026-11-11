@@ -100,6 +100,24 @@ void main() {
     expect(data['modality'], 'remote');
   });
 
+  test('define e tira o bloco do aluno', () async {
+    await addUser('a1', 'user');
+
+    await service.setUnit('a1', 'blocoA');
+    expect(
+      (await db.collection('users').doc('a1').get()).data()!['unitId'],
+      'blocoA',
+    );
+
+    await service.setUnit('a1', null);
+    expect(
+      (await db.collection('users').doc('a1').get()).data()!.containsKey(
+        'unitId',
+      ),
+      isFalse,
+    );
+  });
+
   test('recusa professor vazio', () {
     expect(() => service.changeInstructor('a1', ' '), throwsArgumentError);
   });

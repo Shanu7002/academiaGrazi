@@ -2,6 +2,7 @@ import 'package:academiagrazi/locator.dart';
 import 'package:academiagrazi/models/users/user_model.dart';
 import 'package:academiagrazi/service/admin/admin_dashboard.dart';
 import 'package:academiagrazi/service/admin/admin_student_service.dart';
+import 'package:academiagrazi/service/units/unit_service.dart';
 import 'package:academiagrazi/view/admin/admin_student_details_view.dart';
 import 'package:academiagrazi/view/admin/admin_students_view.dart';
 import 'package:academiagrazi/view/components/user_avatar.dart';
@@ -33,6 +34,7 @@ void main() {
     locator.registerSingleton<AdminDashboardService>(
       AdminDashboardService(db: db),
     );
+    locator.registerSingleton<UnitService>(UnitService(db: db));
     await db.collection('users').doc('p1').set({
       'name': 'Prof. Lucas',
       'type': 'instructor',

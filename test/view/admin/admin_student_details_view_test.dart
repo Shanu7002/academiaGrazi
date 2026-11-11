@@ -1,6 +1,7 @@
 import 'package:academiagrazi/locator.dart';
 import 'package:academiagrazi/service/admin/admin_dashboard.dart';
 import 'package:academiagrazi/service/admin/admin_student_service.dart';
+import 'package:academiagrazi/service/units/unit_service.dart';
 import 'package:academiagrazi/view/admin/admin_student_details_view.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -18,6 +19,7 @@ void main() {
     locator.registerSingleton<AdminDashboardService>(
       AdminDashboardService(db: db),
     );
+    locator.registerSingleton<UnitService>(UnitService(db: db));
     await db.collection('users').doc('p1').set({
       'name': 'Prof. Lucas',
       'type': 'instructor',
@@ -132,5 +134,53 @@ void main() {
     await abrir(tester, id: 'nao-existe');
 
     expect(find.text('Aluno não encontrado.'), findsOneWidget);
+  });
+
+  group('bloco', () {
+    testWidgets('define o bloco do aluno entre os blocos ativos', (
+      tester,
+    ) async {
+      final unidades = locator<UnitService>();
+      final norte = await unidades.createUnit(name: 'Bloco Norte');
+      final antigo = await unidades.createUnit(name: 'Bloco Antigo');
+      await unidades.setUnitActive(antigo, active: false);
+      await abrir(tester);
+
+      await tester.tap(find.byKey(const ValueKey('campo_bloco_aluno_')));
+      await tester.pumpAndSettle();
+      // Bloco desativado não é oferecido.
+      expect(find.text('Bloco Antigo (desativado)'), findsNothing);
+      await tester.tap(find.text('Bloco Norte').last);
+      await tester.pumpAndSettle();
+
+      expect((await aluno())['unitId'], norte);
+      expect(find.text('Bloco atualizado.'), findsOneWidget);
+    });
+
+    testWidgets('tira o bloco do aluno', (tester) async {
+      final norte = await locator<UnitService>().createUnit(
+        name: 'Bloco Norte',
+      );
+      await db.collection('users').doc('a1').update({'unitId': norte});
+      await abrir(tester);
+
+      await tester.tap(find.byKey(ValueKey('campo_bloco_aluno_$norte')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Sem bloco').last);
+      await tester.pumpAndSettle();
+
+      expect((await aluno()).containsKey('unitId'), isFalse);
+      expect(find.text('Bloco removido do aluno.'), findsOneWidget);
+    });
+
+    testWidgets('bloco atual desativado continua aparecendo', (tester) async {
+      final unidades = locator<UnitService>();
+      final antigo = await unidades.createUnit(name: 'Bloco Antigo');
+      await unidades.setUnitActive(antigo, active: false);
+      await db.collection('users').doc('a1').update({'unitId': antigo});
+      await abrir(tester);
+
+      expect(find.text('Bloco Antigo (desativado)'), findsOneWidget);
+    });
   });
 }
