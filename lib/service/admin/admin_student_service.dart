@@ -187,6 +187,13 @@ class AdminStudentService {
     }
   }
 
+  /// Define o bloco em que o aluno treina; `null` tira o bloco.
+  Future<void> setUnit(String studentId, String? unitId) {
+    return _users.doc(studentId).update({
+      'unitId': unitId ?? FieldValue.delete(),
+    });
+  }
+
   /// Define se o aluno treina presencialmente ou remotamente.
   Future<void> setModality(String studentId, StudentModality modality) {
     return _users.doc(studentId).update({'modality': modality.name});

@@ -4,7 +4,7 @@ const assert = require('node:assert/strict');
 const { initializeTestEnvironment, assertFails, assertSucceeds } = require('@firebase/rules-unit-testing');
 const {
   doc, collection, collectionGroup, query, where, getDoc, getDocs,
-  setDoc, updateDoc, deleteDoc, writeBatch, serverTimestamp
+  setDoc, updateDoc, deleteDoc, deleteField, writeBatch, serverTimestamp
 } = require('firebase/firestore');
 
 async function main() {
@@ -62,11 +62,13 @@ async function main() {
     // GB-003: createdAt imutavel; unidade/modalidade e especialidade/capacidade.
     await test('aluno nao altera o proprio createdAt',()=>assertFails(updateDoc(user(aluno1,'aluno1'),{createdAt:'2020-01-01T00:00:00.000Z'})));
     await test('aluno nao define a propria modalidade',()=>assertFails(updateDoc(user(aluno1,'aluno1'),{modality:'remote'})));
+    await test('aluno nao define o proprio bloco',()=>assertFails(updateDoc(user(aluno1,'aluno1'),{unitId:'unidade1'})));
     await test('professor responsavel define unidade e modalidade do aluno',()=>assertSucceeds(updateDoc(user(prof1,'aluno1'),{unitId:'unidade1',modality:'remote'})));
     await test('professor alheio nao define modalidade do aluno',()=>assertFails(updateDoc(user(prof2,'aluno1'),{modality:'onSite'})));
     await test('modalidade invalida e recusada',()=>assertFails(updateDoc(user(prof1,'aluno1'),{modality:'hibrido'})));
     await test('professor nao altera outros campos do aluno junto com a modalidade',()=>assertFails(updateDoc(user(prof1,'aluno1'),{modality:'onSite',name:'Outro'})));
     await test('admin define modalidade do aluno',()=>assertSucceeds(updateDoc(user(admin,'aluno1'),{modality:'onSite'})));
+    await test('admin tira o bloco do aluno',()=>assertSucceeds(updateDoc(user(admin,'aluno1'),{unitId:deleteField()})));
     await test('admin define especialidade e capacidade do professor',()=>assertSucceeds(updateDoc(user(admin,'prof1'),{specialty:'Musculacao',studentCapacity:30})));
     await test('professor nao define a propria capacidade',()=>assertFails(updateDoc(user(prof1,'prof1'),{studentCapacity:100})));
     await test('capacidade zero e recusada',()=>assertFails(updateDoc(user(admin,'prof1'),{studentCapacity:0})));

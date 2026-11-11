@@ -1,6 +1,7 @@
 import 'package:academiagrazi/locator.dart';
 import 'package:academiagrazi/service/admin/admin_dashboard.dart';
 import 'package:academiagrazi/theme/app_colors.dart';
+import 'package:academiagrazi/view/admin/admin_student_details_view.dart';
 import 'package:academiagrazi/view/admin/manual_redistribution_view.dart';
 import 'package:academiagrazi/view/admin/mocks/admin_team_mock_data.dart';
 import 'package:academiagrazi/view/admin/widgets/instructor_schedule_section.dart';
@@ -689,6 +690,22 @@ class _StudentSheet extends StatelessWidget {
               StudentRegistrationDetails(
                 user: user,
                 joinedAt: student.joinedAt,
+              ),
+              const SizedBox(height: 20),
+              OutlinedButton.icon(
+                key: const Key('botao_abrir_cadastro_aluno'),
+                onPressed: () {
+                  Navigator.of(context)
+                    ..pop()
+                    ..push(
+                      MaterialPageRoute(
+                        builder:
+                            (_) => AdminStudentDetailsView(studentId: user.id),
+                      ),
+                    );
+                },
+                icon: const Icon(Icons.edit_outlined),
+                label: const Text('Editar professor, bloco e modalidade'),
               ),
             ],
           ),

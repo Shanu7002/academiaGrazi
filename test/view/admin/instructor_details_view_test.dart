@@ -6,6 +6,7 @@ import 'package:academiagrazi/service/units/instructor_shift_service.dart';
 import 'package:academiagrazi/service/units/unit_service.dart';
 import 'package:academiagrazi/service/users/register_instructor.dart';
 import 'package:academiagrazi/service/admin/admin_student_service.dart';
+import 'package:academiagrazi/view/admin/admin_student_details_view.dart';
 import 'package:academiagrazi/view/admin/instructor_details_view.dart';
 import 'package:academiagrazi/view/admin/manual_redistribution_view.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
@@ -212,5 +213,33 @@ void main() {
       find.byType(ManualRedistributionView),
     );
     expect(tela.initialFromInstructorId, 'p1');
+  });
+
+  testWidgets('a ficha do aluno leva ao cadastro para editar o bloco', (
+    tester,
+  ) async {
+    locator.registerSingleton<AdminStudentService>(
+      AdminStudentService(db: FakeFirebaseFirestore()),
+    );
+    await pumpView(
+      tester,
+      () async => InstructorDetails(
+        instructor: instructor,
+        students: [InstructorStudent(user: _student('a1', 'Ana Souza'))],
+      ),
+    );
+
+    await tester.tap(find.text('Ana Souza'));
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(
+      find.byKey(const Key('botao_abrir_cadastro_aluno')),
+    );
+    await tester.tap(find.byKey(const Key('botao_abrir_cadastro_aluno')));
+    await tester.pumpAndSettle();
+
+    final tela = tester.widget<AdminStudentDetailsView>(
+      find.byType(AdminStudentDetailsView),
+    );
+    expect(tela.studentId, 'a1');
   });
 }

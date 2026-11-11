@@ -1,8 +1,10 @@
 import 'package:academiagrazi/locator.dart';
+import 'package:academiagrazi/models/units/unit_model.dart';
 import 'package:academiagrazi/models/users/user_model.dart';
 import 'package:academiagrazi/service/admin/admin_dashboard.dart';
 import 'package:academiagrazi/service/admin/admin_student_service.dart';
 import 'package:academiagrazi/service/students/student_status.dart';
+import 'package:academiagrazi/service/units/unit_service.dart';
 import 'package:academiagrazi/theme/app_colors.dart';
 import 'package:academiagrazi/view/admin/widgets/student_registration_details.dart';
 import 'package:academiagrazi/view/components/app_bar.dart';
@@ -29,6 +31,7 @@ class _AdminStudentDetailsViewState extends State<AdminStudentDetailsView> {
 
   late Stream<UserModel?> _student;
   late Stream<List<UserModel>> _instructors;
+  late Stream<List<UnitModel>> _units;
   Future<StudentActivity>? _activity;
   bool _saving = false;
 
@@ -41,6 +44,7 @@ class _AdminStudentDetailsViewState extends State<AdminStudentDetailsView> {
   void _subscribe() {
     _student = _service.streamStudent(widget.studentId);
     _instructors = _service.streamInstructors();
+    _units = locator<UnitService>().streamUnits(includeInactive: true);
     _activity = null;
   }
 
@@ -124,6 +128,14 @@ class _AdminStudentDetailsViewState extends State<AdminStudentDetailsView> {
     await _save(
       () => _service.setModality(student.id, modality),
       'Modalidade atualizada.',
+    );
+  }
+
+  Future<void> _changeUnit(UserModel student, String? unitId) async {
+    if (student.unitId == unitId) return;
+    await _save(
+      () => _service.setUnit(student.id, unitId),
+      unitId == null ? 'Bloco removido do aluno.' : 'Bloco atualizado.',
     );
   }
 
@@ -292,6 +304,13 @@ class _AdminStudentDetailsViewState extends State<AdminStudentDetailsView> {
                             _changeModality(student, selection.first);
                           },
                 ),
+              ),
+              const SizedBox(height: 16),
+              _UnitPicker(
+                units: _units,
+                selectedId: student.unitId,
+                enabled: !_saving,
+                onChanged: (unitId) => _changeUnit(student, unitId),
               ),
             ],
           ),
@@ -545,6 +564,80 @@ class _Message extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Bloco do aluno: só os blocos ativos são oferecidos; um bloco já
+/// desativado continua aparecendo enquanto for o atual.
+class _UnitPicker extends StatelessWidget {
+  final Stream<List<UnitModel>> units;
+  final String? selectedId;
+  final bool enabled;
+  final ValueChanged<String?> onChanged;
+
+  /// Valor do item "Sem bloco" (o id real nunca é vazio).
+  static const String _none = '';
+
+  const _UnitPicker({
+    required this.units,
+    required this.selectedId,
+    required this.enabled,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<List<UnitModel>>(
+      stream: units,
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          debugPrint('Erro ao carregar blocos: ${snapshot.error}');
+          return const AdminInfoRow(
+            icon: Icons.grid_view_rounded,
+            label: 'Bloco',
+            value: 'Não foi possível carregar os blocos.',
+          );
+        }
+        final all = snapshot.data;
+        if (all == null) {
+          return const AdminInfoRow(
+            icon: Icons.grid_view_rounded,
+            label: 'Bloco',
+            value: '...',
+          );
+        }
+        final options =
+            all.where((unit) => unit.active || unit.id == selectedId).toList();
+        final current =
+            selectedId != null && options.any((u) => u.id == selectedId)
+                ? selectedId!
+                : _none;
+        return DropdownButtonFormField<String>(
+          key: ValueKey('campo_bloco_aluno_$current'),
+          initialValue: current,
+          isExpanded: true,
+          decoration: const InputDecoration(
+            labelText: 'Bloco',
+            prefixIcon: Icon(Icons.grid_view_rounded, color: AppColors.primary),
+          ),
+          items: [
+            const DropdownMenuItem(value: _none, child: Text('Sem bloco')),
+            for (final unit in options)
+              DropdownMenuItem(
+                value: unit.id,
+                child: Text(
+                  unit.active ? unit.name : '${unit.name} (desativado)',
+                ),
+              ),
+          ],
+          onChanged:
+              enabled
+                  ? (value) =>
+                      onChanged(value == null || value == _none ? null : value)
+                  : null,
+        );
+      },
     );
   }
 }

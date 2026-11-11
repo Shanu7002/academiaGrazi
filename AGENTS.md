@@ -166,7 +166,7 @@ photoUrl?: string               # Cloudinary
 registrationProfile?: { measurements{age,heightCm,weightKg}, gender?: 'male'|'female'|'undisclosed', primaryGoal, health{conditions[],restrictions[],notes}, emergencyContact{name,relationship,phone} }
 onboardingCompleted: bool
 termsAcceptedAt?: string ISO
-unitId?: string                 # aluno; campo no modelo (GB-003), tela no GB-043
+unitId?: string                 # aluno; bloco definido pelo admin nos detalhes do aluno (GB-043) ou pelo professor responsável
 modality?: 'onSite' | 'remote'  # aluno; definido pelo professor responsável ou admin (GB-003)
 # professor
 registrationCode?: string       # 4 dígitos
