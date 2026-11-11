@@ -121,6 +121,33 @@ void main() {
     expect(await setup.service.getActivePlan('aluno-1'), isNull);
   });
 
+  testWidgets('tocar no exercicio da ficha abre os detalhes', (tester) async {
+    final setup = await createTestServices();
+    await loadEditor(tester, setup.db, setup.service);
+    await openNewDraft(tester);
+    await addSupino(tester);
+
+    await tester.ensureVisible(find.text('Supino Reto'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Supino Reto'));
+    await tester.pumpAndSettle();
+
+    final detalhes = find.byKey(const Key('detalhes_exercicio'));
+    expect(detalhes, findsOneWidget);
+    expect(
+      find.descendant(of: detalhes, matching: find.text('Supino Reto')),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(of: detalhes, matching: find.text('Orientações')),
+      findsOneWidget,
+    );
+
+    await tester.tap(find.byKey(const Key('botao_fechar_detalhes_exercicio')));
+    await tester.pumpAndSettle();
+    expect(detalhes, findsNothing);
+  });
+
   testWidgets('bloqueia publicacao sem programacao semanal', (tester) async {
     final setup = await createTestServices();
     await loadEditor(tester, setup.db, setup.service);
