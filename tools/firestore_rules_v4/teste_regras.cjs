@@ -121,6 +121,20 @@ async function main() {
     await test('professor nao apaga turno',()=>assertFails(deleteDoc(doc(prof1,'instructorShifts/t1'))));
     await test('admin apaga turno',()=>assertSucceeds(deleteDoc(doc(admin,'instructorShifts/t1'))));
 
+    // GB-100: grade de aulas. Qualquer autenticado le; so o admin grava.
+    const aula=(extra={})=>({name:'Spinning',unitId:'blocoA',weekday:1,startTime:'19:00',durationMinutes:60,active:true,createdAt:'2026-11-11T12:00:00.000Z',...extra});
+    await test('admin cria aula na grade',()=>assertSucceeds(setDoc(doc(admin,'gym_classes/spinning'),aula({instructorId:'prof1',capacity:30}))));
+    await test('aluno le a grade de aulas',()=>assertSucceeds(getDoc(doc(aluno1,'gym_classes/spinning'))));
+    await test('professor nao cria aula',()=>assertFails(setDoc(doc(prof1,'gym_classes/yoga'),aula())));
+    await test('aula em bloco inexistente e recusada',()=>assertFails(setDoc(doc(admin,'gym_classes/a2'),aula({unitId:'naoExiste'}))));
+    await test('aula com professor invalido e recusada',()=>assertFails(setDoc(doc(admin,'gym_classes/a3'),aula({instructorId:'aluno1'}))));
+    await test('aula com horario invalido e recusada',()=>assertFails(setDoc(doc(admin,'gym_classes/a4'),aula({startTime:'7:00'}))));
+    await test('aula com vagas zero e recusada',()=>assertFails(setDoc(doc(admin,'gym_classes/a5'),aula({capacity:0}))));
+    await test('aula com campo de reserva e recusada',()=>assertFails(setDoc(doc(admin,'gym_classes/a6'),aula({reservas:['aluno1']}))));
+    await test('admin retira aula da grade',()=>assertSucceeds(updateDoc(doc(admin,'gym_classes/spinning'),{active:false})));
+    await test('admin nao reescreve createdAt da aula',()=>assertFails(updateDoc(doc(admin,'gym_classes/spinning'),{createdAt:'2020-01-01T00:00:00.000Z'})));
+    await test('aula nao e apagada, nem pelo admin',()=>assertFails(deleteDoc(doc(admin,'gym_classes/spinning'))));
+
     await test('professor vinculado cria rascunho',()=>assertSucceeds(setDoc(plan(prof1),draft())));
     await test('professor alheio nao cria rascunho',()=>assertFails(setDoc(plan(prof2,'outra'),draft('outra'))));
     await test('aluno nao cria ficha por conta propria',()=>assertFails(setDoc(plan(aluno1,'aluno-criou'),draft('aluno-criou'))));
