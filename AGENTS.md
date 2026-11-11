@@ -246,7 +246,7 @@ Pendente = `scheduled` com data futura · vencida = `scheduled` com `scheduledAt
 
 **🆕 `occurrences/{id}`**: `{ title, description, unitId?, severity: 'warning'|'info', status: 'open'|'resolved', reportedBy, reportedByName, createdAt, resolvedAt?, resolvedBy? }`
 
-**🆕 `gym_classes/{id}`**: grade de aulas, somente leitura para o aluno. O nome da coleção já está nas regras. `{ name, unitId, instructorId?, weekday, startTime, durationMinutes, capacity (informativo), active }`
+**✅ `gym_classes/{id}`**: `GymClassModel` (`lib/models/units/gym_class_model.dart`), `GymClassService`; cadastro pelo admin em `GymClassesView`. Grade de aulas, somente leitura para o aluno, sem reserva e sem lotação. `{ name, unitId, instructorId?, weekday, startTime: 'HH:mm', durationMinutes, capacity? (informativo), active, createdAt }`. Nunca apagada: retire da grade com `active: false`.
 
 ---
 
