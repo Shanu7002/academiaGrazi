@@ -14,24 +14,6 @@ class AdminAlertMock {
 }
 
 abstract final class AdminHomeMockData {
-  // MOCK: movimentação por horário (06h às 22h). O maior valor é o pico.
-  static const List<int> hourlyMovement = [
-    4,
-    7,
-    10,
-    8,
-    5,
-    4,
-    9,
-    14,
-    20,
-    17,
-    10,
-    4,
-  ];
-  static const String peakLabel = 'Pico 18h';
-  static const List<String> hourLabels = ['06:00', '12:00', '18:00', '22:00'];
-
   // MOCK: alertas operacionais.
   static const List<AdminAlertMock> alerts = [
     AdminAlertMock(

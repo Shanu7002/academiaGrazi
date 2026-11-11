@@ -1,4 +1,5 @@
 import "package:academiagrazi/config/business_rules.dart";
+import "package:academiagrazi/service/admin/hourly_movement.dart";
 import "package:academiagrazi/service/students/student_status.dart";
 import "package:cloud_firestore/cloud_firestore.dart";
 import "../../models/users/user_model.dart";
@@ -120,6 +121,18 @@ class AdminDashboardService {
       newLast30Days: newStudents,
       remote: remote,
       inactive: inactive,
+    );
+  }
+
+  /// Treinos finalizados nos últimos 30 dias, agrupados pela hora em que
+  /// começaram (06h às 22h). Sessões abandonadas não contam como movimento.
+  Future<HourlyMovement> getHourlyMovement({DateTime? now}) async {
+    final since = (now ?? DateTime.now()).subtract(const Duration(days: 30));
+    final sessions = await _finishedSessionsSince(since);
+    return hourlyMovement(
+      sessions.docs
+          .map((doc) => _parseDate(doc.data()["startedAt"]))
+          .whereType<DateTime>(),
     );
   }
 

@@ -110,6 +110,52 @@ void main() {
     });
   });
 
+  group('getHourlyMovement', () {
+    Future<void> addSession(
+      DateTime startedAt, {
+      String status = 'finished',
+      String student = 'a1',
+    }) {
+      return db
+          .collection('users')
+          .doc(student)
+          .collection('trainingSessions')
+          .add({
+            'status': status,
+            'startedAt': startedAt.toUtc().toIso8601String(),
+            if (status == 'finished')
+              'finishedAt':
+                  startedAt
+                      .add(const Duration(hours: 1))
+                      .toUtc()
+                      .toIso8601String(),
+          });
+    }
+
+    test('conta os treinos finalizados dos últimos 30 dias por hora', () async {
+      await addSession(DateTime(2026, 10, 19, 18, 10));
+      await addSession(DateTime(2026, 10, 18, 18, 40), student: 'a2');
+      await addSession(DateTime(2026, 10, 1, 7));
+      // Em andamento não conta.
+      await addSession(DateTime(2026, 10, 19, 9), status: 'inProgress');
+      // Mais de 30 dias atrás não conta.
+      await addSession(DateTime(2026, 9, 1, 9));
+
+      final movimento = await service.getHourlyMovement(now: now);
+
+      expect(movimento.total, 3);
+      expect(movimento.peakHour, 18);
+      expect(movimento.counts[18 - 6], 2);
+      expect(movimento.counts[7 - 6], 1);
+    });
+
+    test('fica vazio quando não há treinos', () async {
+      final movimento = await service.getHourlyMovement(now: now);
+
+      expect(movimento.isEmpty, isTrue);
+    });
+  });
+
   test('growthPercent é null quando não há base anterior', () async {
     await addUser('a1', 'user', DateTime(2026, 10, 10).toIso8601String());
 
