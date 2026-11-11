@@ -337,4 +337,110 @@ void main() {
     expect(find.text('Plano Presencial + App'), findsOneWidget);
     expect(find.text('Seus dados, saúde e preferências'), findsOneWidget);
   });
+
+  group('falhas e contato de emergência |', () {
+    // Com a fonte de teste (Ahem), mais larga que a Inter, os rótulos do
+    // dropdown de parentesco transbordam; com a fonte real não.
+    void ignorarTransbordamentoDaFonteDeTeste() {
+      final anterior = FlutterError.onError;
+      FlutterError.onError = (details) {
+        if (details.exceptionAsString().contains('overflowed')) return;
+        anterior?.call(details);
+      };
+      addTearDown(() => FlutterError.onError = anterior);
+    }
+
+    final aluno = UserModel(
+      id: 'uid_123',
+      name: 'Test',
+      email: 'test@example.com',
+    );
+
+    testWidgets('mostra erro quando salvar a ficha de saúde falha', (
+      tester,
+    ) async {
+      when(
+        mockUpdateDataController.updateHealthProfile(
+          userId: anyNamed('userId'),
+          conditions: anyNamed('conditions'),
+          restrictions: anyNamed('restrictions'),
+          notes: anyNamed('notes'),
+        ),
+      ).thenThrow(Exception('offline'));
+      await pumpProfileFor(tester, aluno);
+
+      await tester.tap(find.text('ATUALIZAR FICHA DE SAÚDE'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('SALVAR ALTERAÇÕES'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Falha ao salvar. Tente novamente.'), findsOneWidget);
+    });
+
+    testWidgets('salva o contato de emergência e confirma', (tester) async {
+      ignorarTransbordamentoDaFonteDeTeste();
+      when(
+        mockUpdateDataController.updateEmergencyContact(
+          userId: anyNamed('userId'),
+          name: anyNamed('name'),
+          phone: anyNamed('phone'),
+          relationship: anyNamed('relationship'),
+        ),
+      ).thenAnswer((_) async {});
+      await pumpProfileFor(tester, aluno);
+      // A fonte de teste (Ahem) é mais larga que a real: o formulário de
+      // contato transborda em 430 px só no teste.
+      tester.view.physicalSize = const Size(900, 4000);
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('ATUALIZAR CONTATO'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('SALVAR CONTATO'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Contato salvo com sucesso!'), findsOneWidget);
+    });
+
+    testWidgets('mostra erro quando salvar o contato de emergência falha', (
+      tester,
+    ) async {
+      ignorarTransbordamentoDaFonteDeTeste();
+      when(
+        mockUpdateDataController.updateEmergencyContact(
+          userId: anyNamed('userId'),
+          name: anyNamed('name'),
+          phone: anyNamed('phone'),
+          relationship: anyNamed('relationship'),
+        ),
+      ).thenThrow(Exception('offline'));
+      await pumpProfileFor(tester, aluno);
+      // A fonte de teste (Ahem) é mais larga que a real: o formulário de
+      // contato transborda em 430 px só no teste.
+      tester.view.physicalSize = const Size(900, 4000);
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('ATUALIZAR CONTATO'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('SALVAR CONTATO'));
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text('Falha ao salvar contato. Tente novamente.'),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('sair da conta não quebra a tela quando o signOut falha', (
+      tester,
+    ) async {
+      when(mockAuth.signOut()).thenThrow(Exception('offline'));
+      await pumpProfileFor(tester, aluno);
+
+      await tester.tap(find.text('Sair'));
+      await tester.pumpAndSettle();
+
+      verify(mockAuth.signOut()).called(1);
+      expect(tester.takeException(), isNull);
+    });
+  });
 }
