@@ -1,6 +1,7 @@
 import 'package:academiagrazi/controller/teachers/teacher_user_searcher.dart';
 import 'package:academiagrazi/controller/users/update_data.dart';
 import 'package:academiagrazi/service/admin/admin_dashboard.dart';
+import 'package:academiagrazi/service/admin/admin_student_service.dart';
 import 'package:academiagrazi/service/evaluations/physical_evaluation_service.dart';
 import 'package:academiagrazi/service/units/gym_class_service.dart';
 import 'package:academiagrazi/service/units/instructor_shift_service.dart';
@@ -77,6 +78,9 @@ Future<void> setupLocator() async {
   // Admin dashboard
   locator.registerLazySingleton<AdminDashboardService>(
     () => AdminDashboardService(),
+  );
+  locator.registerLazySingleton<AdminStudentService>(
+    () => AdminStudentService(),
   );
 
   // Login

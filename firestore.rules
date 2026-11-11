@@ -124,6 +124,14 @@ service cloud.firestore {
         && (!('modality' in request.resource.data)
           || request.resource.data.modality in ['onSite', 'remote']);
 
+      // Admin troca o professor responsavel do aluno, sempre para um
+      // professor valido. Aluno e professor nunca alteram este vinculo.
+      allow update: if isAdmin()
+        && resource.data.type == 'user'
+        && request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['responsable'])
+        && isValidInstructor(request.resource.data.responsable);
+
       // GB-003: so o admin define especialidade e capacidade do professor.
       allow update: if isAdmin()
         && resource.data.type == 'instructor'
@@ -456,9 +464,9 @@ service cloud.firestore {
 
       // Excluir ficha completa: desfaz apenas a atribuicao ativa.
       // Fichas publicadas e sessoes passadas continuam no historico.
+      // Inclui a ficha publicada por um professor anterior.
       allow delete: if stateId == 'current'
-        && linkedInstructor(studentId)
-        && resource.data.instructorId == request.auth.uid;
+        && linkedInstructor(studentId);
     }
 
     // Treinos em casa: prescricao opcional, independente da ficha presencial.
@@ -491,12 +499,12 @@ service cloud.firestore {
       }
 
       allow create: if validHome() && request.resource.data.version == 1;
+      // O professor responsavel atual assume a prescricao, mesmo que ela
+      // tenha sido publicada pelo professor anterior.
       allow update: if validHome()
-        && resource.data.instructorId == request.auth.uid
         && request.resource.data.version == resource.data.version + 1;
       allow delete: if homeId == 'current'
-        && linkedInstructor(studentId)
-        && resource.data.instructorId == request.auth.uid;
+        && linkedInstructor(studentId);
     }
 
     // Etapa 6: execucao da ficha publicada pelo proprio aluno.
@@ -535,8 +543,9 @@ service cloud.firestore {
         && request.resource.data.exercises.size() <= 60
         && request.resource.data.createdAt == request.time
         && request.resource.data.updatedAt == request.time
-        && get(userPath(studentId)).data.responsable
-             == request.resource.data.instructorId
+        // O professor da sessao e o autor da ficha ativa (conferido abaixo),
+        // nao necessariamente o responsavel atual: apos uma troca de
+        // professor, o aluno segue treinando a ficha ate sair outra.
         && (
           (
             request.resource.data.planId == 'home'
