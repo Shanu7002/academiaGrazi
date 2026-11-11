@@ -246,6 +246,63 @@ service cloud.firestore {
       allow delete: if false;
     }
 
+    // GB-040: unidades. Qualquer autenticado le; so o admin grava.
+    // Exclusao logica (active = false): alunos e turnos apontam para elas.
+    match /units/{unitId} {
+      function validUnit(data) {
+        return data.keys().hasOnly(['name', 'address', 'active', 'createdAt'])
+          && data.keys().hasAll(['name', 'active', 'createdAt'])
+          && data.name is string
+          && data.name.size() > 0
+          && data.name.size() <= 80
+          && (!('address' in data) || data.address is string)
+          && data.active is bool
+          && data.createdAt is string;
+      }
+
+      allow read: if signedIn();
+      allow create: if isAdmin() && validUnit(request.resource.data);
+      allow update: if isAdmin()
+        && validUnit(request.resource.data)
+        && request.resource.data.createdAt == resource.data.createdAt;
+      allow delete: if false;
+    }
+
+    // GB-040: escala dos professores. Qualquer autenticado le; so o admin
+    // grava. Horarios 'HH:mm' locais, inicio antes do fim no mesmo dia.
+    match /instructorShifts/{shiftId} {
+      function isTime(value) {
+        return value is string && value.matches('^([01][0-9]|2[0-3]):[0-5][0-9]$');
+      }
+
+      function validShift(data) {
+        return data.keys().hasOnly([
+            'instructorId', 'unitId', 'weekday', 'startTime', 'endTime',
+            'createdAt'
+          ])
+          && data.keys().hasAll([
+            'instructorId', 'unitId', 'weekday', 'startTime', 'endTime',
+            'createdAt'
+          ])
+          && isValidInstructor(data.instructorId)
+          && data.unitId is string
+          && exists(/databases/$(database)/documents/units/$(data.unitId))
+          && data.weekday is int
+          && data.weekday >= 1 && data.weekday <= 7
+          && isTime(data.startTime)
+          && isTime(data.endTime)
+          && data.startTime < data.endTime
+          && data.createdAt is string;
+      }
+
+      allow read: if signedIn();
+      allow create: if isAdmin() && validShift(request.resource.data);
+      allow update: if isAdmin()
+        && validShift(request.resource.data)
+        && request.resource.data.createdAt == resource.data.createdAt;
+      allow delete: if isAdmin();
+    }
+
     // Mantido: aulas publicadas somente para leitura.
     match /gym_classes/{classId} {
       allow read: if signedIn();
