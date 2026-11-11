@@ -37,4 +37,8 @@ abstract final class BusinessRules {
   /// P6 · O admin recebe alerta quando os inativos passam desta fração dos
   /// alunos ativos (0.10 = 10%).
   static const double inactiveStudentsAlertRatio = 0.10;
+
+  /// GB-085 · Capacidade de alunos de um professor sem `studentCapacity`
+  /// cadastrada. Acima dela, o admin recebe o alerta de sobrecarga.
+  static const int defaultStudentCapacity = 30;
 }

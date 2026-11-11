@@ -39,12 +39,18 @@ class InstructorWorkload {
   final String email;
   final int activeStudents;
 
+  /// `studentCapacity` do professor, ou o padrão de [BusinessRules].
+  final int capacity;
+
   const InstructorWorkload({
     required this.id,
     required this.name,
     required this.email,
     required this.activeStudents,
+    this.capacity = BusinessRules.defaultStudentCapacity,
   });
+
+  bool get isOverCapacity => activeStudents > capacity;
 }
 
 class InstructorStudent {
@@ -202,6 +208,9 @@ class AdminDashboardService {
             name: (data["name"] as String?)?.trim() ?? "",
             email: data["email"] as String? ?? "",
             activeStudents: studentsByInstructor[doc.id] ?? 0,
+            capacity:
+                (data["studentCapacity"] as num?)?.toInt() ??
+                BusinessRules.defaultStudentCapacity,
           );
         }).toList();
 

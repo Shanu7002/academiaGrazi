@@ -204,6 +204,25 @@ void main() {
       expect(team.first.email, 'p2@grazi.com');
     });
 
+    test('usa a capacidade do professor ou o padrão de 30', () async {
+      await db.collection('users').doc('p1').set({
+        'name': 'Marcos',
+        'type': 'instructor',
+        'studentCapacity': 2,
+      });
+      await addMember('p2', 'instructor', name: 'Juliana');
+      for (final aluno in ['a1', 'a2', 'a3']) {
+        await addMember(aluno, 'user', responsable: 'p1');
+      }
+
+      final team = {for (final i in await service.getTeamWorkload()) i.id: i};
+
+      expect(team['p1']!.capacity, 2);
+      expect(team['p1']!.isOverCapacity, isTrue);
+      expect(team['p2']!.capacity, 30);
+      expect(team['p2']!.isOverCapacity, isFalse);
+    });
+
     test('retorna lista vazia sem professores', () async {
       await addMember('a1', 'user', responsable: 'p1');
 
