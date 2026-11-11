@@ -1,5 +1,6 @@
 import 'package:academiagrazi/models/users/user_model.dart';
 import 'package:academiagrazi/service/admin/admin_student_service.dart';
+import 'package:academiagrazi/service/admin/redistribution.dart';
 import 'package:academiagrazi/service/students/student_status.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -137,6 +138,59 @@ void main() {
 
       expect(atividade.status, StudentStatus.newcomer);
       expect(atividade.lastFinishedAt, isNull);
+    });
+  });
+
+  group('redistribuição', () {
+    test('monta a prévia com a capacidade dos professores', () async {
+      await db.collection('users').doc('p1').set({
+        'name': 'Lucas',
+        'type': 'instructor',
+        'studentCapacity': 20,
+      });
+      await addUser('p2', 'instructor', name: 'Marina');
+      for (var i = 0; i < 5; i++) {
+        await addUser(
+          'a$i',
+          'user',
+          responsable: 'p1',
+          createdAt: DateTime(2026, 1, 1 + i),
+        );
+      }
+      await addUser('sem', 'user');
+
+      final plano = await service.planAutomaticRedistribution();
+
+      // 6 alunos, capacidades 20 e 30 (padrão): 2,4 e 3,6.
+      expect(plano.instructors.map((i) => i.capacity), [20, 30]);
+      expect(plano.before, {'p1': 5, 'p2': 0});
+      expect(plano.unassignedBefore, 1);
+      expect(plano.after, {'p1': 2, 'p2': 4});
+    });
+
+    test('grava as trocas de professor', () async {
+      await addUser('a1', 'user', responsable: 'p1');
+      await addUser('a2', 'user');
+
+      await service.moveStudents(const [
+        StudentMove(
+          studentId: 'a1',
+          studentName: 'a1',
+          fromInstructorId: 'p1',
+          toInstructorId: 'p2',
+        ),
+        StudentMove(
+          studentId: 'a2',
+          studentName: 'a2',
+          fromInstructorId: null,
+          toInstructorId: 'p2',
+        ),
+      ]);
+
+      for (final id in ['a1', 'a2']) {
+        final data = (await db.collection('users').doc(id).get()).data()!;
+        expect(data['responsable'], 'p2');
+      }
     });
   });
 }

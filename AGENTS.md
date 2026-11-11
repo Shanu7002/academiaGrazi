@@ -12,7 +12,7 @@ Aplicativo mobile (Flutter) da Academia Grazi Braz, **em português do Brasil**,
 
 | Perfil | `UserType` | Faz o quê |
 |---|---|---|
-| Administrador | `admin` | Visão da operação, gestão dos alunos (professor responsável e modalidade), equipe (carga dos professores), cadastro de professores, unidades e escala, grade de aulas, biblioteca de exercícios, ocorrências |
+| Administrador | `admin` | Visão da operação, gestão dos alunos (professor responsável e modalidade), redistribuição de alunos entre professores (automática, proporcional à capacidade, ou manual), equipe (carga dos professores), cadastro de professores, unidades e escala, grade de aulas, biblioteca de exercícios, ocorrências |
 | Professor | `instructor` | Painel com unidade atual/próxima e pendências, lista de alunos, montagem e prescrição de treinos, avaliações físicas |
 | Aluno | `user` | Treino em destaque, execução do treino com registro de carga, evolução e avaliações, perfil e ficha de saúde |
 
@@ -25,7 +25,7 @@ O aluno se cadastra sozinho usando o **código de convite do professor** (4 díg
 **Fora desta versão: não implemente, mesmo que pareça útil:**
 - Pagamentos, mensalidade, planos, finanças, vendas digitais.
 - Reserva de aulas e controle de lotação (a grade de aulas é **somente leitura**).
-- Mensagens/chat entre professor e aluno; "Redistribuir alunos".
+- Mensagens/chat entre professor e aluno.
 - **Vídeos de exercício** (upload e player). O campo `exercises.videoUrl` existe, mas fica sempre `null`. Onde o protótipo mostra vídeo, exiba a imagem do exercício.
 - Push notification (FCM). As notificações são **somente a lista interna no app**.
 - Inteligência artificial: o card "Sugestão com IA" fica **desabilitado** com o selo "Recurso futuro".

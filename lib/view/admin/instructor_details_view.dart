@@ -1,6 +1,7 @@
 import 'package:academiagrazi/locator.dart';
 import 'package:academiagrazi/service/admin/admin_dashboard.dart';
 import 'package:academiagrazi/theme/app_colors.dart';
+import 'package:academiagrazi/view/admin/manual_redistribution_view.dart';
 import 'package:academiagrazi/view/admin/mocks/admin_team_mock_data.dart';
 import 'package:academiagrazi/view/admin/widgets/student_registration_details.dart';
 import 'package:academiagrazi/view/components/app_bar.dart';
@@ -43,10 +44,17 @@ class _InstructorDetailsViewState extends State<InstructorDetailsView> {
     });
   }
 
-  void _showMessage(String message) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(message)));
+  /// Redistribuição manual com este professor como origem.
+  Future<void> _openManualRedistribution() async {
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder:
+            (_) => ManualRedistributionView(
+              initialFromInstructorId: widget.instructorId,
+            ),
+      ),
+    );
+    if (mounted) _reload();
   }
 
   @override
@@ -126,10 +134,7 @@ class _InstructorDetailsViewState extends State<InstructorDetailsView> {
             height: 52,
             child: OutlinedButton.icon(
               key: const Key('botao_redistribuir_professor'),
-              onPressed:
-                  () => _showMessage(
-                    'Redistribuir alunos estará disponível em breve.',
-                  ),
+              onPressed: _openManualRedistribution,
               icon: const Icon(Icons.sync, size: 20),
               label: Text(
                 'Redistribuir Alunos',

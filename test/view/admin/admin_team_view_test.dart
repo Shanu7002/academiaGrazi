@@ -1,6 +1,9 @@
 import 'package:academiagrazi/locator.dart';
 import 'package:academiagrazi/service/admin/admin_dashboard.dart';
+import 'package:academiagrazi/service/admin/admin_student_service.dart';
 import 'package:academiagrazi/view/admin/admin_team_view.dart';
+import 'package:academiagrazi/view/admin/auto_redistribution_view.dart';
+import 'package:academiagrazi/view/admin/manual_redistribution_view.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -92,18 +95,32 @@ void main() {
     expect(find.text('Nenhum professor cadastrado ainda.'), findsOneWidget);
   });
 
-  testWidgets('redistribuir alunos avisa que ainda não está disponível', (
-    tester,
-  ) async {
-    registerService(() async => const []);
+  group('redistribuir alunos', () {
+    Future<void> escolher(WidgetTester tester, Key opcao) async {
+      locator.registerSingleton<AdminStudentService>(
+        AdminStudentService(db: FakeFirebaseFirestore()),
+      );
+      registerService(() async => const []);
+      await pumpView(tester);
 
-    await pumpView(tester);
-    await tester.tap(find.byKey(const Key('botao_redistribuir_alunos')));
-    await tester.pump();
+      await tester.tap(find.byKey(const Key('botao_redistribuir_alunos')));
+      await tester.pumpAndSettle();
+      expect(find.text('Como redistribuir?'), findsOneWidget);
 
-    expect(
-      find.text('Redistribuir alunos estará disponível em breve.'),
-      findsOneWidget,
-    );
+      await tester.tap(find.byKey(opcao));
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets('a opção automática abre a prévia', (tester) async {
+      await escolher(tester, const Key('opcao_redistribuir_automatico'));
+
+      expect(find.byType(AutoRedistributionView), findsOneWidget);
+    });
+
+    testWidgets('a opção manual abre a escolha de alunos', (tester) async {
+      await escolher(tester, const Key('opcao_redistribuir_manual'));
+
+      expect(find.byType(ManualRedistributionView), findsOneWidget);
+    });
   });
 }
