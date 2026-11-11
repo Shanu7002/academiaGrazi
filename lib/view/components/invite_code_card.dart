@@ -75,7 +75,7 @@ class _InviteCodeCardState extends State<InviteCodeCard> {
 
   @override
   Widget build(BuildContext context) {
-    final labelStyle = GoogleFonts.inter(
+    final labelStyle = GoogleFonts.barlowCondensed(
       fontSize: 12,
       fontWeight: FontWeight.w600,
       letterSpacing: .5,
@@ -97,7 +97,7 @@ class _InviteCodeCardState extends State<InviteCodeCard> {
           if (snapshot.hasError) {
             content = Text(
               'Não foi possível carregar o código.',
-              style: GoogleFonts.inter(
+              style: GoogleFonts.barlowCondensed(
                 fontSize: 14,
                 color: AppColors.slateText,
               ),
@@ -121,7 +121,7 @@ class _InviteCodeCardState extends State<InviteCodeCard> {
                 Text(
                   invite.code,
                   key: const Key('codigo_convite'),
-                  style: GoogleFonts.inter(
+                  style: GoogleFonts.barlowCondensed(
                     fontSize: 28,
                     fontWeight: FontWeight.w800,
                     letterSpacing: 8,
@@ -131,7 +131,7 @@ class _InviteCodeCardState extends State<InviteCodeCard> {
                 Text(
                   'Válido até ${_formatTime(invite.expiresAt)} • '
                   'renova a cada 15 min',
-                  style: GoogleFonts.inter(
+                  style: GoogleFonts.barlowCondensed(
                     fontSize: 12,
                     color: AppColors.slateText,
                   ),
@@ -155,7 +155,7 @@ class _InviteCodeCardState extends State<InviteCodeCard> {
                       const SizedBox(height: 6),
                       Text(
                         widget.description!,
-                        style: GoogleFonts.inter(
+                        style: GoogleFonts.barlowCondensed(
                           fontSize: 13,
                           height: 1.4,
                           color: AppColors.textBody,

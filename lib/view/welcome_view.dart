@@ -1,3 +1,4 @@
+import 'package:academiagrazi/theme/app_colors.dart';
 import 'dart:async';
 import 'dart:math' as math;
 
@@ -240,7 +241,7 @@ class _WelcomeViewState extends State<WelcomeView>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF02594F),
+      backgroundColor: AppColors.primary,
 
       body: GestureDetector(
         behavior: HitTestBehavior.opaque,

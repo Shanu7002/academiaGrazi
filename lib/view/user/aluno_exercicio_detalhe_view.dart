@@ -364,7 +364,7 @@ class _AlunoExercicioDetalheViewState extends State<AlunoExercicioDetalheView> {
             legenda,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: GoogleFonts.inter(
+            style: GoogleFonts.barlowCondensed(
               color: AppColors.textSecondary,
               fontSize: 10,
               fontWeight: FontWeight.w600,
@@ -398,7 +398,7 @@ class _AlunoExercicioDetalheViewState extends State<AlunoExercicioDetalheView> {
           ),
           child: Text(
             _orientacoes,
-            style: GoogleFonts.inter(
+            style: GoogleFonts.barlowCondensed(
               color: AppColors.textBody,
               fontSize: 13,
               height: 1.55,
@@ -506,7 +506,7 @@ class _AlunoExercicioDetalheViewState extends State<AlunoExercicioDetalheView> {
                     decimal: true,
                   ),
                   textAlign: TextAlign.center,
-                  style: GoogleFonts.inter(
+                  style: GoogleFonts.barlowCondensed(
                     color: AppColors.textPrimary,
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
@@ -569,7 +569,7 @@ class _AlunoExercicioDetalheViewState extends State<AlunoExercicioDetalheView> {
   }
 
   TextStyle _tableHeaderStyle() {
-    return GoogleFonts.inter(
+    return GoogleFonts.barlowCondensed(
       color: AppColors.textSecondary,
       fontSize: 10,
       fontWeight: FontWeight.w700,

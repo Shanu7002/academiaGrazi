@@ -1,3 +1,4 @@
+import 'package:academiagrazi/theme/app_colors.dart';
 import 'package:academiagrazi/controller/users/login.dart';
 import 'package:academiagrazi/locator.dart';
 import 'package:academiagrazi/models/users/user_model.dart';
@@ -19,9 +20,9 @@ class _LandingPageState extends State<LoginView> {
   bool _isLoading = false;
   TrainingMode _selectedMode = TrainingMode.presencial;
 
-  static const Color _primaryDarkGreen = Color(0xFF0A4D43);
-  static const Color _badgeLightGreen = Color(0xFFDFF4F0);
-  static const Color _textGrey = Color(0xFF5A5A5A);
+  static const Color _primaryDarkGreen = AppColors.primaryDark;
+  static const Color _badgeLightGreen = AppColors.avatarBackground;
+  static const Color _textGrey = AppColors.textSecondary;
 
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -106,7 +107,7 @@ class _LandingPageState extends State<LoginView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFE5E5E5),
+      backgroundColor: AppColors.background,
       body: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 430),
@@ -134,7 +135,7 @@ class _LandingPageState extends State<LoginView> {
               ),
               Positioned.fill(
                 child: ColoredBox(
-                  color: const Color(0xFFF6F4F0).withValues(alpha: 0.65),
+                  color: AppColors.background.withValues(alpha: 0.65),
                 ),
               ),
               SafeArea(
@@ -260,7 +261,7 @@ class _LandingPageState extends State<LoginView> {
           color: isActive ? _badgeLightGreen : Colors.white,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: isActive ? Colors.transparent : Colors.grey.shade300,
+            color: isActive ? Colors.transparent : AppColors.border,
             width: 1.5,
           ),
         ),
@@ -301,9 +302,9 @@ class _LandingPageState extends State<LoginView> {
                 borderRadius: BorderRadius.circular(12),
               ),
               hintText: 'Email',
-              hintStyle: const TextStyle(color: Color(0xFF757575)),
+              hintStyle: const TextStyle(color: AppColors.textSecondary),
               filled: true,
-              fillColor: const Color(0xFFEEEEEE),
+              fillColor: AppColors.border,
             ),
           ),
           const SizedBox(height: 16),
@@ -315,13 +316,13 @@ class _LandingPageState extends State<LoginView> {
                 borderRadius: BorderRadius.circular(12),
               ),
               hintText: 'Senha',
-              hintStyle: const TextStyle(color: Color(0xFF757575)),
+              hintStyle: const TextStyle(color: AppColors.textSecondary),
               filled: true,
-              fillColor: const Color(0xFFEEEEEE),
+              fillColor: AppColors.border,
               suffixIcon: IconButton(
                 icon: Icon(
                   _obscureText ? Icons.visibility_off : Icons.visibility,
-                  color: const Color(0xFF757575),
+                  color: AppColors.textSecondary,
                 ),
                 onPressed: () {
                   setState(() {

@@ -165,7 +165,7 @@ class _AdminTeamViewState extends State<AdminTeamView> {
                   Text(
                     'Volume de alunos por professor e alertas de '
                     'capacidade.',
-                    style: GoogleFonts.inter(
+                    style: GoogleFonts.barlowCondensed(
                       fontSize: 14,
                       height: 1.4,
                       color: AppColors.slateText,
@@ -338,7 +338,7 @@ class _ActionButton extends StatelessWidget {
         icon: Icon(icon, size: 20, color: foreground),
         label: Text(
           label,
-          style: GoogleFonts.inter(
+          style: GoogleFonts.barlowCondensed(
             fontSize: 15,
             fontWeight: FontWeight.w700,
             color: foreground,
@@ -379,7 +379,9 @@ class _NoteCard extends StatelessWidget {
                 children: [
                   TextSpan(
                     text: 'Nota: ',
-                    style: GoogleFonts.inter(fontWeight: FontWeight.w700),
+                    style: GoogleFonts.barlowCondensed(
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                   const TextSpan(
                     text:
@@ -389,7 +391,7 @@ class _NoteCard extends StatelessWidget {
                   ),
                 ],
               ),
-              style: GoogleFonts.inter(
+              style: GoogleFonts.barlowCondensed(
                 fontSize: 13,
                 height: 1.5,
                 color: AppColors.textPrimary,
@@ -462,7 +464,7 @@ class _InstructorCard extends StatelessWidget {
                                 name,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
-                                style: GoogleFonts.inter(
+                                style: GoogleFonts.barlowCondensed(
                                   fontSize: 17,
                                   fontWeight: FontWeight.w700,
                                   color: AppColors.textPrimary,
@@ -471,7 +473,7 @@ class _InstructorCard extends StatelessWidget {
                               const SizedBox(height: 2),
                               Text(
                                 AdminTeamMockData.instructorRole.toUpperCase(),
-                                style: GoogleFonts.inter(
+                                style: GoogleFonts.barlowCondensed(
                                   fontSize: 11,
                                   fontWeight: FontWeight.w600,
                                   letterSpacing: .5,
@@ -517,7 +519,7 @@ class _InstructorCard extends StatelessWidget {
                         Expanded(
                           child: Text(
                             'Capacidade (${(load * 100).round()}%)',
-                            style: GoogleFonts.inter(
+                            style: GoogleFonts.barlowCondensed(
                               fontSize: 13,
                               fontWeight: FontWeight.w600,
                               color: AppColors.slateText,
@@ -526,7 +528,7 @@ class _InstructorCard extends StatelessWidget {
                         ),
                         Text(
                           '${instructor.activeStudents}/$_capacity',
-                          style: GoogleFonts.inter(
+                          style: GoogleFonts.barlowCondensed(
                             fontSize: 13,
                             fontWeight: FontWeight.w700,
                             color:
@@ -559,7 +561,7 @@ class _InstructorCard extends StatelessWidget {
                         ),
                         label: Text(
                           overloaded ? 'Ver Pendências' : 'Ver Detalhes',
-                          style: GoogleFonts.inter(
+                          style: GoogleFonts.barlowCondensed(
                             fontSize: 14,
                             fontWeight: FontWeight.w700,
                           ),
@@ -596,7 +598,7 @@ class _StatusChip extends StatelessWidget {
       ),
       child: Text(
         overloaded ? 'Sobrecarga' : 'Carga equilibrada',
-        style: GoogleFonts.inter(
+        style: GoogleFonts.barlowCondensed(
           fontSize: 12,
           fontWeight: FontWeight.w600,
           color: overloaded ? AppColors.danger : AppColors.primary,
@@ -642,7 +644,10 @@ class _StatTile extends StatelessWidget {
           const SizedBox(height: 6),
           Text(
             label,
-            style: GoogleFonts.inter(fontSize: 13, color: AppColors.slateText),
+            style: GoogleFonts.barlowCondensed(
+              fontSize: 13,
+              color: AppColors.slateText,
+            ),
           ),
         ],
       ),
@@ -669,7 +674,7 @@ class _DistributionCard extends StatelessWidget {
         children: [
           Text(
             'Comparativo de alunos por professor',
-            style: GoogleFonts.inter(
+            style: GoogleFonts.barlowCondensed(
               fontSize: 15,
               fontWeight: FontWeight.w600,
               color: AppColors.textPrimary,
@@ -716,7 +721,7 @@ class _DistributionBar extends StatelessWidget {
                 name,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: GoogleFonts.inter(
+                style: GoogleFonts.barlowCondensed(
                   fontSize: 13,
                   color: AppColors.slateText,
                 ),
@@ -724,7 +729,7 @@ class _DistributionBar extends StatelessWidget {
             ),
             Text(
               '${instructor.activeStudents}',
-              style: GoogleFonts.inter(
+              style: GoogleFonts.barlowCondensed(
                 fontSize: 13,
                 fontWeight: FontWeight.w700,
                 color: overloaded ? AppColors.danger : AppColors.textPrimary,
@@ -795,7 +800,10 @@ class _LegendItem extends StatelessWidget {
         const SizedBox(width: 8),
         Text(
           label,
-          style: GoogleFonts.inter(fontSize: 13, color: AppColors.slateText),
+          style: GoogleFonts.barlowCondensed(
+            fontSize: 13,
+            color: AppColors.slateText,
+          ),
         ),
       ],
     );
@@ -827,7 +835,10 @@ class _MessageCard extends StatelessWidget {
           Text(
             message,
             textAlign: TextAlign.center,
-            style: GoogleFonts.inter(fontSize: 14, color: AppColors.slateText),
+            style: GoogleFonts.barlowCondensed(
+              fontSize: 14,
+              color: AppColors.slateText,
+            ),
           ),
           const SizedBox(height: 12),
           TextButton(
@@ -835,7 +846,7 @@ class _MessageCard extends StatelessWidget {
             style: TextButton.styleFrom(foregroundColor: AppColors.primary),
             child: Text(
               actionLabel,
-              style: GoogleFonts.inter(fontWeight: FontWeight.w700),
+              style: GoogleFonts.barlowCondensed(fontWeight: FontWeight.w700),
             ),
           ),
         ],

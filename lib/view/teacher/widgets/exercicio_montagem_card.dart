@@ -149,7 +149,7 @@ class ExercicioMontagemCard extends StatelessWidget {
                     children: [
                       Text(
                         exercicio.nome,
-                        style: GoogleFonts.inter(
+                        style: GoogleFonts.barlowCondensed(
                           fontWeight: FontWeight.w700,
                           fontSize: 14,
                           color: AppColors.textPrimary,

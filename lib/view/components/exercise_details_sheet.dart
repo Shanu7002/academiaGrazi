@@ -104,7 +104,7 @@ class ExerciseDetailsSheet extends StatelessWidget {
                   ),
                   child: Text(
                     group,
-                    style: GoogleFonts.inter(
+                    style: GoogleFonts.barlowCondensed(
                       color: AppColors.primary,
                       fontSize: 12,
                       fontWeight: FontWeight.w700,
@@ -126,7 +126,7 @@ class ExerciseDetailsSheet extends StatelessWidget {
                 guidance.isEmpty
                     ? 'Orientações de execução não cadastradas.'
                     : guidance,
-                style: GoogleFonts.inter(
+                style: GoogleFonts.barlowCondensed(
                   color:
                       guidance.isEmpty
                           ? AppColors.textSecondary

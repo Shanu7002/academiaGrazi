@@ -305,7 +305,7 @@ class _ClassCard extends StatelessWidget {
                   children: [
                     Text(
                       item.name,
-                      style: GoogleFonts.inter(
+                      style: GoogleFonts.barlowCondensed(
                         fontSize: 15,
                         fontWeight: FontWeight.w700,
                         color:
@@ -316,7 +316,7 @@ class _ClassCard extends StatelessWidget {
                     ),
                     Text(
                       details,
-                      style: GoogleFonts.inter(
+                      style: GoogleFonts.barlowCondensed(
                         fontSize: 12,
                         color: AppColors.textSecondary,
                       ),
@@ -324,7 +324,7 @@ class _ClassCard extends StatelessWidget {
                     if (!item.active)
                       Text(
                         'Fora da grade',
-                        style: GoogleFonts.inter(
+                        style: GoogleFonts.barlowCondensed(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
                           color: AppColors.danger,
@@ -587,7 +587,7 @@ class _CenteredMessage extends StatelessWidget {
             Text(
               text,
               textAlign: TextAlign.center,
-              style: GoogleFonts.inter(
+              style: GoogleFonts.barlowCondensed(
                 fontSize: 14,
                 color: AppColors.textSecondary,
               ),

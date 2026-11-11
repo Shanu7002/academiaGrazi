@@ -242,7 +242,7 @@ class _StudentTile extends StatelessWidget {
                   children: [
                     Text(
                       name,
-                      style: GoogleFonts.inter(
+                      style: GoogleFonts.barlowCondensed(
                         fontSize: 15,
                         fontWeight: FontWeight.w700,
                         color: AppColors.textPrimary,
@@ -250,7 +250,7 @@ class _StudentTile extends StatelessWidget {
                     ),
                     Text(
                       subtitle,
-                      style: GoogleFonts.inter(
+                      style: GoogleFonts.barlowCondensed(
                         fontSize: 12,
                         color: AppColors.textSecondary,
                       ),
@@ -295,7 +295,7 @@ class _Message extends StatelessWidget {
           Text(
             text,
             textAlign: TextAlign.center,
-            style: GoogleFonts.inter(
+            style: GoogleFonts.barlowCondensed(
               fontSize: 14,
               color: AppColors.textSecondary,
             ),

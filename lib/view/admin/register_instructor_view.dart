@@ -142,7 +142,7 @@ class _RegisterInstructorViewState extends State<RegisterInstructorView> {
               '$name já pode entrar no app com o e-mail $email e a senha '
               'definida por você.',
               textAlign: TextAlign.center,
-              style: GoogleFonts.inter(
+              style: GoogleFonts.barlowCondensed(
                 fontSize: 14,
                 height: 1.4,
                 color: AppColors.slateText,
@@ -253,7 +253,8 @@ class _RegisterInstructorViewState extends State<RegisterInstructorView> {
                   children: [
                     Text(
                       'CADASTRAR PROFESSOR',
-                      style: GoogleFonts.anton(
+                      style: GoogleFonts.barlowCondensed(
+                        fontWeight: FontWeight.w700,
                         fontSize: 30,
                         color: AppColors.primary,
                         letterSpacing: .4,
@@ -263,7 +264,7 @@ class _RegisterInstructorViewState extends State<RegisterInstructorView> {
                     Text(
                       'Crie o acesso de um novo professor da academia. Ele vai '
                       'entrar no app com o e-mail e a senha definidos aqui.',
-                      style: GoogleFonts.inter(
+                      style: GoogleFonts.barlowCondensed(
                         fontSize: 14,
                         height: 1.4,
                         color: AppColors.slateText,
@@ -358,7 +359,7 @@ class _RegisterInstructorViewState extends State<RegisterInstructorView> {
                                   'Passe a senha inicial para o professor '
                                   'pessoalmente e oriente-o a não '
                                   'compartilhá-la.',
-                                  style: GoogleFonts.inter(
+                                  style: GoogleFonts.barlowCondensed(
                                     fontSize: 12,
                                     height: 1.4,
                                     color: AppColors.textBody,
@@ -509,7 +510,7 @@ class _FormField extends StatelessWidget {
         children: [
           Text(
             label,
-            style: GoogleFonts.inter(
+            style: GoogleFonts.barlowCondensed(
               fontSize: 12,
               fontWeight: FontWeight.w700,
               letterSpacing: .7,
@@ -526,13 +527,13 @@ class _FormField extends StatelessWidget {
             autocorrect: false,
             validator: validator,
             onFieldSubmitted: onSubmitted,
-            style: GoogleFonts.inter(
+            style: GoogleFonts.barlowCondensed(
               fontSize: 15,
               color: AppColors.textPrimary,
             ),
             decoration: InputDecoration(
               hintText: hint,
-              hintStyle: GoogleFonts.inter(
+              hintStyle: GoogleFonts.barlowCondensed(
                 fontSize: 14,
                 color: AppColors.textMuted,
               ),

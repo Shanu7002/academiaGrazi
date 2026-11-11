@@ -12,7 +12,7 @@ class PrivacyTermsView extends StatelessWidget {
       appBar: AppBar(
         title: Text(
           'PRIVACIDADE & TERMOS',
-          style: GoogleFonts.inter(
+          style: GoogleFonts.barlowCondensed(
             fontSize: 16,
             fontWeight: FontWeight.bold,
             color: AppColors.textPrimary,
@@ -48,7 +48,7 @@ class PrivacyTermsView extends StatelessWidget {
                       children: [
                         Text(
                           'Sua privacidade importa!',
-                          style: GoogleFonts.inter(
+                          style: GoogleFonts.barlowCondensed(
                             fontWeight: FontWeight.bold,
                             fontSize: 15,
                             color: AppColors.textPrimary,
@@ -57,7 +57,7 @@ class PrivacyTermsView extends StatelessWidget {
                         const SizedBox(height: 6),
                         Text(
                           'Conheça como seus dados pessoais e informações de saúde são utilizados e protegidos pela academia.',
-                          style: GoogleFonts.inter(
+                          style: GoogleFonts.barlowCondensed(
                             fontSize: 13,
                             height: 1.5,
                             color: AppColors.textSecondary,
@@ -74,7 +74,7 @@ class PrivacyTermsView extends StatelessWidget {
 
             Text(
               'POLÍTICA DE PRIVACIDADE',
-              style: GoogleFonts.inter(
+              style: GoogleFonts.barlowCondensed(
                 fontSize: 12,
                 fontWeight: FontWeight.bold,
                 letterSpacing: 1,
@@ -167,7 +167,7 @@ Qualquer compartilhamento deverá observar as finalidades informadas, a legisla�
 
             Text(
               'TERMOS DE USO',
-              style: GoogleFonts.inter(
+              style: GoogleFonts.barlowCondensed(
                 fontSize: 12,
                 fontWeight: FontWeight.bold,
                 letterSpacing: 1,
@@ -205,7 +205,7 @@ Em caso de dúvidas sobre sua aptidão para atividades físicas, recomenda-se pr
 
             Text(
               'SEUS DIREITOS',
-              style: GoogleFonts.inter(
+              style: GoogleFonts.barlowCondensed(
                 fontSize: 12,
                 fontWeight: FontWeight.bold,
                 letterSpacing: 1,
@@ -249,7 +249,7 @@ A equipe responsável deverá orientar você sobre os procedimentos para exercer
                 'Última atualização: Novembro de 2026\n'
                 'Proteção de dados conforme a Lei nº 13.709/2018 (LGPD).',
                 textAlign: TextAlign.center,
-                style: GoogleFonts.inter(
+                style: GoogleFonts.barlowCondensed(
                   fontSize: 11,
                   height: 1.6,
                   color: AppColors.textSecondary,
@@ -300,7 +300,7 @@ class _PrivacySection extends StatelessWidget {
             leading: Icon(icon, color: AppColors.primary, size: 22),
             title: Text(
               title,
-              style: GoogleFonts.inter(
+              style: GoogleFonts.barlowCondensed(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
                 color: AppColors.textPrimary,
@@ -313,7 +313,7 @@ class _PrivacySection extends StatelessWidget {
                 alignment: Alignment.centerLeft,
                 child: Text(
                   content.trim(),
-                  style: GoogleFonts.inter(
+                  style: GoogleFonts.barlowCondensed(
                     fontSize: 13,
                     height: 1.7,
                     color: AppColors.textSecondary,

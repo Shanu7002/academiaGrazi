@@ -80,7 +80,7 @@ class _AdminHomeViewState extends State<AdminHomeView> {
                 const SizedBox(height: 4),
                 Text(
                   'Resumo operacional de hoje',
-                  style: GoogleFonts.inter(
+                  style: GoogleFonts.barlowCondensed(
                     fontSize: 14,
                     color: AppColors.slateText,
                   ),
@@ -281,7 +281,7 @@ class _StatCard extends StatelessWidget {
                     child: Text(
                       badge!,
                       overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.inter(
+                      style: GoogleFonts.barlowCondensed(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
                         color: AppColors.primaryDark,
@@ -294,7 +294,7 @@ class _StatCard extends StatelessWidget {
           const SizedBox(height: 12),
           Text(
             label.toUpperCase(),
-            style: GoogleFonts.inter(
+            style: GoogleFonts.barlowCondensed(
               fontSize: 11,
               fontWeight: FontWeight.w600,
               letterSpacing: 0.5,
@@ -338,7 +338,7 @@ class _InactiveCard extends StatelessWidget {
           const SizedBox(height: 12),
           Text(
             'INATIVOS (30D+)',
-            style: GoogleFonts.inter(
+            style: GoogleFonts.barlowCondensed(
               fontSize: 11,
               fontWeight: FontWeight.w600,
               letterSpacing: 0.5,
@@ -386,7 +386,7 @@ class _QuickAccessButton extends StatelessWidget {
         icon: Icon(icon, size: 20, color: foreground),
         label: Text(
           label,
-          style: GoogleFonts.inter(
+          style: GoogleFonts.barlowCondensed(
             fontSize: 15,
             fontWeight: FontWeight.w600,
             color: foreground,
@@ -491,7 +491,7 @@ class _MovementCard extends StatelessWidget {
                           const SizedBox(width: 4),
                           Text(
                             'Pico ${peakHour}h',
-                            style: GoogleFonts.inter(
+                            style: GoogleFonts.barlowCondensed(
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
                               color: AppColors.accentText,
@@ -506,7 +506,7 @@ class _MovementCard extends StatelessWidget {
               const SizedBox(height: 4),
               Text(
                 'Treinos finalizados nos últimos 30 dias',
-                style: GoogleFonts.inter(
+                style: GoogleFonts.barlowCondensed(
                   fontSize: 12,
                   color: AppColors.textSecondary,
                 ),
@@ -573,7 +573,7 @@ class _MovementCard extends StatelessWidget {
             for (final hour in labels)
               Text(
                 _hourLabel(hour),
-                style: GoogleFonts.inter(
+                style: GoogleFonts.barlowCondensed(
                   fontSize: 12,
                   color: AppColors.textSecondary,
                 ),
@@ -723,7 +723,7 @@ class _AlertTile extends StatelessWidget {
                   children: [
                     Text(
                       alert.title,
-                      style: GoogleFonts.inter(
+                      style: GoogleFonts.barlowCondensed(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
                         color: textColor,
@@ -732,7 +732,7 @@ class _AlertTile extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       alert.description,
-                      style: GoogleFonts.inter(
+                      style: GoogleFonts.barlowCondensed(
                         fontSize: 13,
                         height: 1.4,
                         color: _isWarning ? textColor : AppColors.textBody,
@@ -767,7 +767,7 @@ class _MovementMessage extends StatelessWidget {
           Text(
             text,
             textAlign: TextAlign.center,
-            style: GoogleFonts.inter(
+            style: GoogleFonts.barlowCondensed(
               fontSize: 13,
               color: AppColors.textSecondary,
             ),

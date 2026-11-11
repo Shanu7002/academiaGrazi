@@ -249,7 +249,7 @@ class _ManualRedistributionViewState extends State<ManualRedistributionView> {
                     Expanded(
                       child: Text(
                         '${_selected.length} de ${origin.length} selecionado(s)',
-                        style: GoogleFonts.inter(
+                        style: GoogleFonts.barlowCondensed(
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
                           color: AppColors.slateText,
@@ -373,7 +373,7 @@ class _Message extends StatelessWidget {
           Text(
             text,
             textAlign: TextAlign.center,
-            style: GoogleFonts.inter(
+            style: GoogleFonts.barlowCondensed(
               fontSize: 14,
               color: AppColors.textSecondary,
             ),

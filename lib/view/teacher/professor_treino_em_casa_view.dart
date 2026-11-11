@@ -298,7 +298,7 @@ class _ProfessorTreinoEmCasaViewState extends State<ProfessorTreinoEmCasaView> {
               'uma nova prescrição.', style: TextStyle(fontSize: 12,
                 color: AppColors.textSecondary)),
           if (_error != null) ...[const SizedBox(height: 8),
-            Text(_error!, style: const TextStyle(color: Colors.red))],
+            Text(_error!, style: const TextStyle(color: AppColors.danger))],
           const SizedBox(height: 12),
           for (final routine in _routines) Card(color: Colors.white, child: ExpansionTile(
             key: Key('casa_routine_${routine.id}'), initiallyExpanded: true,

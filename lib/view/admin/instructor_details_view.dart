@@ -140,7 +140,7 @@ class _InstructorDetailsViewState extends State<InstructorDetailsView> {
               icon: const Icon(Icons.sync, size: 20),
               label: Text(
                 'Redistribuir Alunos',
-                style: GoogleFonts.inter(
+                style: GoogleFonts.barlowCondensed(
                   fontSize: 15,
                   fontWeight: FontWeight.w700,
                 ),
@@ -167,13 +167,13 @@ class _InstructorDetailsViewState extends State<InstructorDetailsView> {
               key: const Key('campo_busca_aluno'),
               controller: _searchController,
               onChanged: (value) => setState(() => _search = value),
-              style: GoogleFonts.inter(
+              style: GoogleFonts.barlowCondensed(
                 fontSize: 15,
                 color: AppColors.textPrimary,
               ),
               decoration: InputDecoration(
                 hintText: 'Buscar aluno por nome ou e-mail',
-                hintStyle: GoogleFonts.inter(
+                hintStyle: GoogleFonts.barlowCondensed(
                   fontSize: 14,
                   color: AppColors.textMuted,
                 ),
@@ -204,7 +204,7 @@ class _InstructorDetailsViewState extends State<InstructorDetailsView> {
                 child: Text(
                   'Nenhum aluno encontrado para "$_search".',
                   textAlign: TextAlign.center,
-                  style: GoogleFonts.inter(
+                  style: GoogleFonts.barlowCondensed(
                     fontSize: 14,
                     color: AppColors.slateText,
                   ),
@@ -394,7 +394,7 @@ class _WorkloadCard extends StatelessWidget {
                 ),
                 child: Text(
                   overloaded ? 'Sobrecarga' : 'Carga equilibrada',
-                  style: GoogleFonts.inter(
+                  style: GoogleFonts.barlowCondensed(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
                     color: overloaded ? AppColors.danger : AppColors.primary,
@@ -432,7 +432,7 @@ class _WorkloadCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   'Capacidade (${(load * 100).round()}%)',
-                  style: GoogleFonts.inter(
+                  style: GoogleFonts.barlowCondensed(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
                     color: AppColors.slateText,
@@ -441,7 +441,7 @@ class _WorkloadCard extends StatelessWidget {
               ),
               Text(
                 '$total/$_capacity',
-                style: GoogleFonts.inter(
+                style: GoogleFonts.barlowCondensed(
                   fontSize: 13,
                   fontWeight: FontWeight.w700,
                   color: overloaded ? AppColors.danger : AppColors.slateText,
@@ -499,7 +499,7 @@ class _StatTile extends StatelessWidget {
           const SizedBox(height: 6),
           Text(
             label,
-            style: GoogleFonts.inter(
+            style: GoogleFonts.barlowCondensed(
               fontSize: 12,
               height: 1.3,
               color: AppColors.slateText,
@@ -588,7 +588,7 @@ class _StudentTile extends StatelessWidget {
                       name,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.inter(
+                      style: GoogleFonts.barlowCondensed(
                         fontSize: 15,
                         fontWeight: FontWeight.w700,
                         color: AppColors.textPrimary,
@@ -600,7 +600,7 @@ class _StudentTile extends StatelessWidget {
                         subtitle,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: GoogleFonts.inter(
+                        style: GoogleFonts.barlowCondensed(
                           fontSize: 13,
                           color: AppColors.slateText,
                         ),
@@ -619,7 +619,7 @@ class _StudentTile extends StatelessWidget {
                           Flexible(
                             child: Text(
                               'Atenção à saúde',
-                              style: GoogleFonts.inter(
+                              style: GoogleFonts.barlowCondensed(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w600,
                                 color: AppColors.accentDark,
@@ -681,7 +681,7 @@ class _StudentSheet extends StatelessWidget {
               ),
               Text(
                 user.email,
-                style: GoogleFonts.inter(
+                style: GoogleFonts.barlowCondensed(
                   fontSize: 14,
                   color: AppColors.slateText,
                 ),
@@ -735,7 +735,7 @@ class _EmptyStudents extends StatelessWidget {
             'Nenhum aluno vinculado a este professor ainda. Os alunos se '
             'vinculam usando o código de convite.',
             textAlign: TextAlign.center,
-            style: GoogleFonts.inter(
+            style: GoogleFonts.barlowCondensed(
               fontSize: 14,
               height: 1.4,
               color: AppColors.slateText,
@@ -773,7 +773,7 @@ class _CenteredMessage extends StatelessWidget {
             Text(
               message,
               textAlign: TextAlign.center,
-              style: GoogleFonts.inter(
+              style: GoogleFonts.barlowCondensed(
                 fontSize: 15,
                 color: AppColors.slateText,
               ),
@@ -784,7 +784,7 @@ class _CenteredMessage extends StatelessWidget {
               style: TextButton.styleFrom(foregroundColor: AppColors.primary),
               child: Text(
                 actionLabel,
-                style: GoogleFonts.inter(fontWeight: FontWeight.w700),
+                style: GoogleFonts.barlowCondensed(fontWeight: FontWeight.w700),
               ),
             ),
           ],

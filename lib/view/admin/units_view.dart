@@ -216,7 +216,7 @@ class _UnitCard extends StatelessWidget {
                   children: [
                     Text(
                       unit.name,
-                      style: GoogleFonts.inter(
+                      style: GoogleFonts.barlowCondensed(
                         fontSize: 15,
                         fontWeight: FontWeight.w700,
                         color:
@@ -228,7 +228,7 @@ class _UnitCard extends StatelessWidget {
                     if (address != null && address.isNotEmpty)
                       Text(
                         address,
-                        style: GoogleFonts.inter(
+                        style: GoogleFonts.barlowCondensed(
                           fontSize: 12,
                           color: AppColors.textSecondary,
                         ),
@@ -236,7 +236,7 @@ class _UnitCard extends StatelessWidget {
                     if (!unit.active)
                       Text(
                         'Desativado',
-                        style: GoogleFonts.inter(
+                        style: GoogleFonts.barlowCondensed(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
                           color: AppColors.danger,
@@ -373,7 +373,7 @@ class _CenteredMessage extends StatelessWidget {
             Text(
               text,
               textAlign: TextAlign.center,
-              style: GoogleFonts.inter(
+              style: GoogleFonts.barlowCondensed(
                 fontSize: 14,
                 color: AppColors.textSecondary,
               ),

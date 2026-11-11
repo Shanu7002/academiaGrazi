@@ -132,7 +132,7 @@ class _AutoRedistributionViewState extends State<AutoRedistributionView> {
                 'capacidade. Mudam primeiro os alunos cadastrados mais '
                 'recentemente. A ficha atual de cada aluno continua valendo '
                 'até o novo professor publicar outra.',
-                style: GoogleFonts.inter(
+                style: GoogleFonts.barlowCondensed(
                   fontSize: 13,
                   height: 1.4,
                   color: AppColors.slateText,
@@ -144,7 +144,7 @@ class _AutoRedistributionViewState extends State<AutoRedistributionView> {
                   '${plan.moves.length} aluno(s) vão mudar de professor'
                   '${fromUnassigned > 0 ? ', incluindo $fromUnassigned sem professor' : ''}.',
                   key: const Key('resumo_redistribuicao'),
-                  style: GoogleFonts.inter(
+                  style: GoogleFonts.barlowCondensed(
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
                     color: AppColors.textPrimary,
@@ -175,7 +175,7 @@ class _AutoRedistributionViewState extends State<AutoRedistributionView> {
                     key: const Key('lista_alunos_redistribuicao'),
                     title: Text(
                       'Ver alunos que mudam',
-                      style: GoogleFonts.inter(
+                      style: GoogleFonts.barlowCondensed(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
                         color: AppColors.primary,
@@ -193,7 +193,7 @@ class _AutoRedistributionViewState extends State<AutoRedistributionView> {
                                   move.studentName.trim().isEmpty
                                       ? 'Sem nome'
                                       : move.studentName,
-                                  style: GoogleFonts.inter(
+                                  style: GoogleFonts.barlowCondensed(
                                     fontSize: 13,
                                     fontWeight: FontWeight.w600,
                                     color: AppColors.textPrimary,
@@ -205,7 +205,7 @@ class _AutoRedistributionViewState extends State<AutoRedistributionView> {
                                   '${move.fromInstructorId == null ? 'Sem professor' : names[move.fromInstructorId] ?? '-'}'
                                   ' → ${names[move.toInstructorId] ?? '-'}',
                                   textAlign: TextAlign.end,
-                                  style: GoogleFonts.inter(
+                                  style: GoogleFonts.barlowCondensed(
                                     fontSize: 12,
                                     color: AppColors.textSecondary,
                                   ),
@@ -280,7 +280,7 @@ class _InstructorRow extends StatelessWidget {
                   instructor.name.isEmpty
                       ? 'Professor sem nome'
                       : instructor.name,
-                  style: GoogleFonts.inter(
+                  style: GoogleFonts.barlowCondensed(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
                     color: AppColors.textPrimary,
@@ -288,7 +288,7 @@ class _InstructorRow extends StatelessWidget {
                 ),
                 Text(
                   'Capacidade ${instructor.capacity}',
-                  style: GoogleFonts.inter(
+                  style: GoogleFonts.barlowCondensed(
                     fontSize: 12,
                     color: AppColors.textSecondary,
                   ),
@@ -347,7 +347,7 @@ class _Message extends StatelessWidget {
             Text(
               text,
               textAlign: TextAlign.center,
-              style: GoogleFonts.inter(
+              style: GoogleFonts.barlowCondensed(
                 fontSize: 14,
                 color: AppColors.textSecondary,
               ),

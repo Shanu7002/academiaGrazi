@@ -146,8 +146,8 @@ class _CurrentUserAvatarState extends State<_CurrentUserAvatar> {
       key: const Key('appbar_user_avatar'),
       photoUrl: _photoUrl,
       size: 40,
-      backgroundColor: const Color(0xFFD6D6D6),
-      iconColor: const Color(0xFF8A8A8A),
+      backgroundColor: AppColors.border,
+      iconColor: AppColors.textMuted,
     );
   }
 }

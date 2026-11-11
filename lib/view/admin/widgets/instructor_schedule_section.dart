@@ -201,7 +201,7 @@ class _InstructorScheduleSectionState extends State<InstructorScheduleSection> {
                   else if (shifts.isEmpty)
                     Text(
                       'Nenhum turno na escala deste professor.',
-                      style: GoogleFonts.inter(
+                      style: GoogleFonts.barlowCondensed(
                         fontSize: 14,
                         color: AppColors.textSecondary,
                       ),
@@ -239,7 +239,7 @@ class _InstructorScheduleSectionState extends State<InstructorScheduleSection> {
       children: [
         Text(
           'Não foi possível carregar a escala.',
-          style: GoogleFonts.inter(
+          style: GoogleFonts.barlowCondensed(
             fontSize: 14,
             color: AppColors.textSecondary,
           ),
@@ -281,7 +281,7 @@ class _ShiftTile extends StatelessWidget {
                 Text(
                   '${weekdayName(shift.weekday)} · '
                   '${shift.startTime}–${shift.endTime}',
-                  style: GoogleFonts.inter(
+                  style: GoogleFonts.barlowCondensed(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
                     color: AppColors.textPrimary,
@@ -289,7 +289,7 @@ class _ShiftTile extends StatelessWidget {
                 ),
                 Text(
                   unitName ?? 'Bloco removido',
-                  style: GoogleFonts.inter(
+                  style: GoogleFonts.barlowCondensed(
                     fontSize: 12,
                     color: AppColors.textSecondary,
                   ),
@@ -456,7 +456,7 @@ class _ShiftFormDialogState extends State<_ShiftFormDialog> {
                 Text(
                   _overlap!,
                   key: const Key('erro_sobreposicao_turno'),
-                  style: GoogleFonts.inter(
+                  style: GoogleFonts.barlowCondensed(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
                     color: AppColors.danger,

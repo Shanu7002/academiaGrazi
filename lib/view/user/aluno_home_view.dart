@@ -1,3 +1,4 @@
+import 'package:academiagrazi/theme/app_colors.dart';
 import 'package:academiagrazi/view/components/app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -31,12 +32,7 @@ class _AlunoHomeViewState extends State<AlunoHomeView> {
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: const Color.fromARGB(
-                          255,
-                          2,
-                          89,
-                          79,
-                        ).withValues(alpha: 0.3),
+                        color: AppColors.primary.withValues(alpha: 0.3),
                         blurRadius: 6,
                         offset: const Offset(0, 3),
                       ),
@@ -52,15 +48,16 @@ class _AlunoHomeViewState extends State<AlunoHomeView> {
                           const Icon(
                             Icons.local_fire_department,
                             size: 18,
-                            color: Color.fromARGB(255, 0, 90, 79),
+                            color: AppColors.primary,
                           ),
                           const SizedBox(width: 8),
                           Text(
                             'Treino do dia',
                             style: TextStyle(
-                              fontFamily: GoogleFonts.inter().fontFamily,
+                              fontFamily:
+                                  GoogleFonts.barlowCondensed().fontFamily,
                               fontWeight: FontWeight.bold,
-                              color: const Color.fromARGB(255, 0, 90, 79),
+                              color: AppColors.primary,
                               fontSize: 14,
                             ),
                           ),
@@ -74,7 +71,7 @@ class _AlunoHomeViewState extends State<AlunoHomeView> {
                         style: GoogleFonts.barlowCondensed(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
-                          color: const Color.fromARGB(255, 0, 30, 45),
+                          color: AppColors.primaryDark,
                         ),
                       ),
 
@@ -82,9 +79,9 @@ class _AlunoHomeViewState extends State<AlunoHomeView> {
 
                       Text(
                         'Nível intermediário - Foco em Hipertrofia',
-                        style: GoogleFonts.inter(
+                        style: GoogleFonts.barlowCondensed(
                           fontSize: 12,
-                          color: const Color.fromARGB(255, 63, 73, 70),
+                          color: AppColors.textSecondary,
                         ),
                       ),
 
@@ -93,7 +90,7 @@ class _AlunoHomeViewState extends State<AlunoHomeView> {
                       Text(
                         'Quadríceps, posterior e panturrilha',
                         style: TextStyle(
-                          color: Colors.black,
+                          color: AppColors.textPrimary,
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
@@ -114,7 +111,7 @@ class _AlunoHomeViewState extends State<AlunoHomeView> {
                               Text(
                                 "Professor",
                                 style: TextStyle(
-                                  color: Colors.black,
+                                  color: AppColors.textPrimary,
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -122,7 +119,7 @@ class _AlunoHomeViewState extends State<AlunoHomeView> {
                               Text(
                                 "Prof. Marcos",
                                 style: TextStyle(
-                                  color: Colors.black,
+                                  color: AppColors.textPrimary,
                                   fontSize: 16,
                                 ),
                               ),
@@ -137,12 +134,7 @@ class _AlunoHomeViewState extends State<AlunoHomeView> {
                         key: const Key('botao_iniciar_treino'),
                         onPressed: () {},
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color.fromARGB(
-                            255,
-                            244,
-                            121,
-                            67,
-                          ),
+                          backgroundColor: AppColors.accent,
                           foregroundColor: Colors.white,
                           minimumSize: const Size(double.infinity, 50),
                           padding: const EdgeInsets.symmetric(
@@ -159,16 +151,17 @@ class _AlunoHomeViewState extends State<AlunoHomeView> {
                             const Icon(
                               Icons.play_arrow,
                               size: 18,
-                              color: Colors.black,
+                              color: AppColors.onAccent,
                             ),
                             const SizedBox(width: 8),
                             Text(
                               'Iniciar treino',
                               style: TextStyle(
-                                fontFamily: GoogleFonts.inter().fontFamily,
+                                fontFamily:
+                                    GoogleFonts.barlowCondensed().fontFamily,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.black,
-                                fontSize: 14,
+                                color: AppColors.onAccent,
+                                fontSize: 16,
                               ),
                             ),
                           ],
@@ -187,12 +180,7 @@ class _AlunoHomeViewState extends State<AlunoHomeView> {
                       ElevatedButton(
                         onPressed: () {},
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color.fromARGB(
-                            255,
-                            221,
-                            245,
-                            242,
-                          ),
+                          backgroundColor: AppColors.avatarBackground,
                           minimumSize: const Size(100, 40),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(16.0),
@@ -206,12 +194,7 @@ class _AlunoHomeViewState extends State<AlunoHomeView> {
                       ElevatedButton(
                         onPressed: () {},
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color.fromARGB(
-                            255,
-                            221,
-                            245,
-                            242,
-                          ),
+                          backgroundColor: AppColors.avatarBackground,
                           minimumSize: const Size(100, 40),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(16.0),
@@ -225,12 +208,7 @@ class _AlunoHomeViewState extends State<AlunoHomeView> {
                       ElevatedButton(
                         onPressed: () {},
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color.fromARGB(
-                            255,
-                            221,
-                            245,
-                            242,
-                          ),
+                          backgroundColor: AppColors.avatarBackground,
                           minimumSize: const Size(100, 40),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(16.0),
@@ -244,12 +222,7 @@ class _AlunoHomeViewState extends State<AlunoHomeView> {
                       ElevatedButton(
                         onPressed: () {},
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color.fromARGB(
-                            255,
-                            221,
-                            245,
-                            242,
-                          ),
+                          backgroundColor: AppColors.avatarBackground,
                           minimumSize: const Size(100, 40),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(16.0),
@@ -271,12 +244,7 @@ class _AlunoHomeViewState extends State<AlunoHomeView> {
                     borderRadius: BorderRadius.circular(16.0),
                     boxShadow: [
                       BoxShadow(
-                        color: const Color.fromARGB(
-                          255,
-                          2,
-                          89,
-                          79,
-                        ).withValues(alpha: 0.3),
+                        color: AppColors.primary.withValues(alpha: 0.3),
                         blurRadius: 6,
                         offset: const Offset(0, 3),
                       ),
@@ -313,12 +281,7 @@ class _AlunoHomeViewState extends State<AlunoHomeView> {
                                     style: GoogleFonts.barlowCondensed(
                                       fontSize: 32,
                                       fontWeight: FontWeight.bold,
-                                      color: const Color.fromARGB(
-                                        255,
-                                        0,
-                                        30,
-                                        45,
-                                      ),
+                                      color: AppColors.primaryDark,
                                     ),
                                   ),
                                 ),
@@ -327,10 +290,10 @@ class _AlunoHomeViewState extends State<AlunoHomeView> {
                             const SizedBox(height: 4),
                             Text(
                               'Você está on fire!',
-                              style: GoogleFonts.inter(
+                              style: GoogleFonts.barlowCondensed(
                                 fontSize: 13,
                                 fontWeight: FontWeight.bold,
-                                color: const Color.fromARGB(255, 0, 65, 100),
+                                color: AppColors.info,
                               ),
                             ),
                           ],
@@ -342,15 +305,15 @@ class _AlunoHomeViewState extends State<AlunoHomeView> {
                           vertical: 8,
                         ),
                         decoration: BoxDecoration(
-                          color: const Color.fromARGB(255, 221, 245, 242),
+                          color: AppColors.avatarBackground,
                           borderRadius: BorderRadius.circular(16),
                         ),
                         child: Text(
                           'Sequência',
-                          style: GoogleFonts.inter(
+                          style: GoogleFonts.barlowCondensed(
                             fontSize: 13,
                             fontWeight: FontWeight.bold,
-                            color: const Color.fromARGB(255, 0, 90, 79),
+                            color: AppColors.primary,
                           ),
                         ),
                       ),
@@ -368,12 +331,7 @@ class _AlunoHomeViewState extends State<AlunoHomeView> {
                     borderRadius: BorderRadius.circular(16.0),
                     boxShadow: [
                       BoxShadow(
-                        color: const Color.fromARGB(
-                          255,
-                          2,
-                          89,
-                          79,
-                        ).withValues(alpha: 0.3),
+                        color: AppColors.primary.withValues(alpha: 0.3),
                         blurRadius: 6,
                         offset: const Offset(0, 3),
                       ),
@@ -402,10 +360,10 @@ class _AlunoHomeViewState extends State<AlunoHomeView> {
                             const SizedBox(height: 10),
                             Text(
                               '+15% esta semana.',
-                              style: GoogleFonts.inter(
+                              style: GoogleFonts.barlowCondensed(
                                 fontSize: 13,
                                 fontWeight: FontWeight.bold,
-                                color: const Color.fromARGB(255, 63, 73, 70),
+                                color: AppColors.textSecondary,
                               ),
                             ),
                           ],
@@ -417,15 +375,15 @@ class _AlunoHomeViewState extends State<AlunoHomeView> {
                           vertical: 8,
                         ),
                         decoration: BoxDecoration(
-                          color: const Color.fromARGB(255, 221, 245, 242),
+                          color: AppColors.avatarBackground,
                           borderRadius: BorderRadius.circular(16),
                         ),
                         child: Text(
                           'Evolução',
-                          style: GoogleFonts.inter(
+                          style: GoogleFonts.barlowCondensed(
                             fontSize: 13,
                             fontWeight: FontWeight.bold,
-                            color: const Color.fromARGB(255, 0, 90, 79),
+                            color: AppColors.primary,
                           ),
                         ),
                       ),
@@ -439,16 +397,11 @@ class _AlunoHomeViewState extends State<AlunoHomeView> {
                   width: double.infinity,
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 0, 90, 79),
+                    color: AppColors.primary,
                     borderRadius: BorderRadius.circular(16.0),
                     boxShadow: [
                       BoxShadow(
-                        color: const Color.fromARGB(
-                          255,
-                          2,
-                          89,
-                          79,
-                        ).withValues(alpha: 0.3),
+                        color: AppColors.primary.withValues(alpha: 0.3),
                         blurRadius: 6,
                         offset: const Offset(0, 3),
                       ),
@@ -481,15 +434,10 @@ class _AlunoHomeViewState extends State<AlunoHomeView> {
                                 const SizedBox(height: 10),
                                 Text(
                                   'Pilates',
-                                  style: GoogleFonts.inter(
+                                  style: GoogleFonts.barlowCondensed(
                                     fontSize: 20,
                                     fontWeight: FontWeight.bold,
-                                    color: const Color.fromARGB(
-                                      255,
-                                      136,
-                                      207,
-                                      193,
-                                    ),
+                                    color: AppColors.mintBorderBright,
                                   ),
                                 ),
                               ],
@@ -501,15 +449,15 @@ class _AlunoHomeViewState extends State<AlunoHomeView> {
                               vertical: 8,
                             ),
                             decoration: BoxDecoration(
-                              color: const Color.fromARGB(255, 168, 240, 225),
+                              color: AppColors.primaryChipSurface,
                               borderRadius: BorderRadius.circular(16),
                             ),
                             child: Text(
                               'Próxima aula',
-                              style: GoogleFonts.inter(
+                              style: GoogleFonts.barlowCondensed(
                                 fontSize: 13,
                                 fontWeight: FontWeight.bold,
-                                color: const Color.fromARGB(255, 0, 90, 79),
+                                color: AppColors.primary,
                               ),
                             ),
                           ),
@@ -518,9 +466,9 @@ class _AlunoHomeViewState extends State<AlunoHomeView> {
                       const SizedBox(height: 8),
                       Text(
                         'Hoje as 18h',
-                        style: GoogleFonts.inter(
+                        style: GoogleFonts.barlowCondensed(
                           fontSize: 13,
-                          color: const Color.fromARGB(255, 136, 207, 193),
+                          color: AppColors.mintBorderBright,
                         ),
                       ),
                     ],

@@ -226,7 +226,7 @@ class _AdminStudentDetailsViewState extends State<AdminStudentDetailsView> {
                     ),
                     Text(
                       student.email,
-                      style: GoogleFonts.inter(
+                      style: GoogleFonts.barlowCondensed(
                         fontSize: 13,
                         color: AppColors.slateText,
                       ),
@@ -393,7 +393,7 @@ class _ActivityBadge extends StatelessWidget {
               ),
               child: Text(
                 _statusLabel(data.status),
-                style: GoogleFonts.inter(
+                style: GoogleFonts.barlowCondensed(
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
                   color: color,
@@ -404,7 +404,7 @@ class _ActivityBadge extends StatelessWidget {
               last == null
                   ? 'Nenhum treino finalizado'
                   : 'Último treino em ${formatDateBr(last.toLocal())}',
-              style: GoogleFonts.inter(
+              style: GoogleFonts.barlowCondensed(
                 fontSize: 12,
                 color: AppColors.textSecondary,
               ),
@@ -555,7 +555,7 @@ class _Message extends StatelessWidget {
             Text(
               text,
               textAlign: TextAlign.center,
-              style: GoogleFonts.inter(
+              style: GoogleFonts.barlowCondensed(
                 fontSize: 14,
                 color: AppColors.textSecondary,
               ),

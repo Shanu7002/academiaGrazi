@@ -370,7 +370,7 @@ class _ProfessorMontagemTreinoViewState
                       child: Text(
                         'Editando: ${_alunoAtual.nome}',
                         overflow: TextOverflow.ellipsis,
-                        style: GoogleFonts.inter(
+                        style: GoogleFonts.barlowCondensed(
                           fontSize: 14,
                           color: AppColors.textBody,
                         ),
@@ -544,7 +544,7 @@ class _ProfessorMontagemTreinoViewState
               const SizedBox(width: 8),
               Text(
                 'Arraste para\nreordenar',
-                style: GoogleFonts.inter(
+                style: GoogleFonts.barlowCondensed(
                   fontSize: 11,
                   color: AppColors.textBody,
                 ),

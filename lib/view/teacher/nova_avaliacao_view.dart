@@ -223,7 +223,9 @@ class _NovaAvaliacaoViewState extends State<NovaAvaliacaoView> {
                 ),
                 Text(
                   'Protocolo Jackson & Pollock · 7 dobras',
-                  style: GoogleFonts.inter(color: AppColors.textSecondary),
+                  style: GoogleFonts.barlowCondensed(
+                    color: AppColors.textSecondary,
+                  ),
                 ),
                 const SizedBox(height: 16),
                 _Secao(
@@ -273,7 +275,7 @@ class _NovaAvaliacaoViewState extends State<NovaAvaliacaoView> {
                     if (avaliacao == null)
                       Text(
                         'Preencha o sexo e todas as medidas para calcular.',
-                        style: GoogleFonts.inter(
+                        style: GoogleFonts.barlowCondensed(
                           color: AppColors.textSecondary,
                         ),
                       )

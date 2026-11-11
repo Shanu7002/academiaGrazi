@@ -130,7 +130,9 @@ class _AlunoTreinoDiaViewState extends State<AlunoTreinoDiaView> {
                       children: [
                         _buildProgresso(),
                         const SizedBox(height: 24),
-                        if (widget.data.aquecimentoResumo.trim().isNotEmpty) ...[
+                        if (widget.data.aquecimentoResumo
+                            .trim()
+                            .isNotEmpty) ...[
                           _buildTituloSecao('AQUECIMENTO'),
                           const SizedBox(height: 10),
                           _buildAquecimentoCard(),
@@ -239,7 +241,8 @@ class _AlunoTreinoDiaViewState extends State<AlunoTreinoDiaView> {
                       child: Text(
                         'GRAZI BRAZ',
                         textAlign: TextAlign.center,
-                        style: GoogleFonts.anton(
+                        style: GoogleFonts.barlowCondensed(
+                          fontWeight: FontWeight.w700,
                           color: AppColors.primary,
                           fontSize: 23,
                           letterSpacing: 0.6,
@@ -271,7 +274,7 @@ class _AlunoTreinoDiaViewState extends State<AlunoTreinoDiaView> {
                       textAlign: TextAlign.center,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.inter(
+                      style: GoogleFonts.barlowCondensed(
                         color: AppColors.textPrimary,
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
@@ -281,7 +284,7 @@ class _AlunoTreinoDiaViewState extends State<AlunoTreinoDiaView> {
                     Text(
                       widget.data.professorNome,
                       textAlign: TextAlign.center,
-                      style: GoogleFonts.inter(
+                      style: GoogleFonts.barlowCondensed(
                         color: AppColors.textSecondary,
                         fontSize: 11,
                         fontWeight: FontWeight.w500,
@@ -331,7 +334,7 @@ class _AlunoTreinoDiaViewState extends State<AlunoTreinoDiaView> {
                 Text(
                   '$_quantidadeConcluida de $_totalExercicios '
                   'exercícios concluídos',
-                  style: GoogleFonts.inter(
+                  style: GoogleFonts.barlowCondensed(
                     color: AppColors.textSecondary,
                     fontSize: 12,
                     fontWeight: FontWeight.w500,
@@ -432,7 +435,7 @@ class _AlunoTreinoDiaViewState extends State<AlunoTreinoDiaView> {
                     const SizedBox(height: 6),
                     Text(
                       widget.data.aquecimentoResumo,
-                      style: GoogleFonts.inter(
+                      style: GoogleFonts.barlowCondensed(
                         color: AppColors.textSecondary,
                         fontSize: 11,
                         fontWeight: FontWeight.w600,
@@ -592,7 +595,7 @@ class _AlunoTreinoDiaViewState extends State<AlunoTreinoDiaView> {
       ),
       child: Text(
         texto,
-        style: GoogleFonts.inter(
+        style: GoogleFonts.barlowCondensed(
           color: destaque ? AppColors.primary : AppColors.textSecondary,
           fontSize: 9,
           fontWeight: FontWeight.w700,

@@ -1,3 +1,4 @@
+import 'package:academiagrazi/theme/app_colors.dart';
 import 'package:academiagrazi/controller/teachers/teacher_user_searcher.dart';
 import 'package:academiagrazi/locator.dart';
 import 'package:academiagrazi/view/components/app_bar.dart';
@@ -19,11 +20,11 @@ class _ProfessorDashboardViewState extends State<ProfessorDashboardView> {
   bool _isLoading = true;
   String _userQuantity = '0'; // Variável de estado para a quantidade
 
-  static const Color navy = Color(0xFF001E2D);
-  static const Color green = Color(0xFF005A4F);
-  static const Color textColor = Color(0xFF3F4946);
-  static const Color red = Color(0xFFBA1A1A);
-  static const Color orange = Color(0xFFA73A03);
+  static const Color navy = AppColors.primaryDark;
+  static const Color green = AppColors.primary;
+  static const Color textColor = AppColors.textSecondary;
+  static const Color red = AppColors.danger;
+  static const Color orange = AppColors.accentDark;
 
   @override
   void initState() {
@@ -90,7 +91,7 @@ class _ProfessorDashboardViewState extends State<ProfessorDashboardView> {
                         Text(
                           schedule.currentLabel,
                           key: const Key('texto_turno_atual'),
-                          style: GoogleFonts.inter(
+                          style: GoogleFonts.barlowCondensed(
                             color: textColor,
                             fontSize: 16,
                           ),
@@ -143,7 +144,7 @@ class _ProfessorDashboardViewState extends State<ProfessorDashboardView> {
                       value: schedule.nextUnitLabel,
                       description: schedule.nextWhenLabel,
                       isNextShift: true,
-                      accentColor: Color(0xFF00564B),
+                      accentColor: AppColors.primary,
                       shadowColor: navy,
                     ),
 
@@ -154,7 +155,11 @@ class _ProfessorDashboardViewState extends State<ProfessorDashboardView> {
                       children: [
                         Text(
                           'Prioridades',
-                          style: GoogleFonts.anton(fontSize: 32, color: navy),
+                          style: GoogleFonts.barlowCondensed(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 32,
+                            color: navy,
+                          ),
                         ),
                         Container(
                           padding: const EdgeInsets.symmetric(
@@ -167,10 +172,10 @@ class _ProfessorDashboardViewState extends State<ProfessorDashboardView> {
                           ),
                           child: Text(
                             '3 Alertas',
-                            style: GoogleFonts.inter(
+                            style: GoogleFonts.barlowCondensed(
                               fontSize: 13,
                               fontWeight: FontWeight.bold,
-                              color: const Color(0xFFA8F0E1),
+                              color: AppColors.primaryChipSurface,
                             ),
                           ),
                         ),
@@ -185,7 +190,7 @@ class _ProfessorDashboardViewState extends State<ProfessorDashboardView> {
                       asset: 'assets/quadradoAviso.svg',
                       action: 'Revisar',
                       accentColor: orange,
-                      iconBackgroundColor: Color(0xFFE6A07D),
+                      iconBackgroundColor: AppColors.accentAlertBorder,
                     ),
 
                     const SizedBox(height: 15),
@@ -196,7 +201,7 @@ class _ProfessorDashboardViewState extends State<ProfessorDashboardView> {
                       asset: 'assets/alertaVermelho.svg',
                       action: 'Contatar',
                       accentColor: red,
-                      iconBackgroundColor: Color(0xFFE6A07D),
+                      iconBackgroundColor: AppColors.accentAlertBorder,
                     ),
 
                     const SizedBox(height: 15),
@@ -207,7 +212,7 @@ class _ProfessorDashboardViewState extends State<ProfessorDashboardView> {
                       asset: 'assets/halter.svg',
                       action: 'Montar',
                       accentColor: green,
-                      iconBackgroundColor: Color(0xFF84D3CA),
+                      iconBackgroundColor: AppColors.mintBorderBright,
                     ),
                   ],
                 ),
@@ -240,8 +245,8 @@ class _DashboardMetricCard extends StatelessWidget {
     required this.description,
     this.fullWidth = false,
     this.isNextShift = false,
-    this.accentColor = const Color(0xFF005A4F),
-    this.shadowColor = const Color(0xFF02594F),
+    this.accentColor = AppColors.primary,
+    this.shadowColor = AppColors.primary,
   });
 
   @override
@@ -274,7 +279,7 @@ class _DashboardMetricCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   title,
-                  style: GoogleFonts.inter(
+                  style: GoogleFonts.barlowCondensed(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                     color: accentColor,
@@ -290,15 +295,16 @@ class _DashboardMetricCard extends StatelessWidget {
           if (isNextShift) ...[
             Text(
               value,
-              style: GoogleFonts.anton(
+              style: GoogleFonts.barlowCondensed(
+                fontWeight: FontWeight.w700,
                 fontSize: 32,
-                color: const Color(0xFF001E2D),
+                color: AppColors.primaryDark,
               ),
             ),
             const SizedBox(height: 10),
             Text(
               description,
-              style: GoogleFonts.inter(
+              style: GoogleFonts.barlowCondensed(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
                 color: accentColor,
@@ -316,12 +322,13 @@ class _DashboardMetricCard extends StatelessWidget {
                     alignment: Alignment.centerLeft,
                     child: Text(
                       value,
-                      style: GoogleFonts.anton(
+                      style: GoogleFonts.barlowCondensed(
+                        fontWeight: FontWeight.w700,
                         fontSize: 48,
                         color:
                             fullWidth
-                                ? const Color(0xFFBA1A1A)
-                                : const Color(0xFF001E2D),
+                                ? AppColors.danger
+                                : AppColors.primaryDark,
                       ),
                     ),
                   ),
@@ -330,10 +337,10 @@ class _DashboardMetricCard extends StatelessWidget {
                 Expanded(
                   child: Text(
                     description,
-                    style: GoogleFonts.inter(
+                    style: GoogleFonts.barlowCondensed(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: const Color(0xFF3F4946),
+                      color: AppColors.textSecondary,
                     ),
                   ),
                 ),
@@ -375,7 +382,7 @@ class _PriorityCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF001E2D).withValues(alpha: 0.3),
+            color: AppColors.primaryDark.withValues(alpha: 0.3),
             blurRadius: 6,
             offset: const Offset(0, 3),
           ),
@@ -427,18 +434,18 @@ class _PriorityCard extends StatelessWidget {
                       children: [
                         Text(
                           name,
-                          style: GoogleFonts.inter(
+                          style: GoogleFonts.barlowCondensed(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
-                            color: const Color(0xFF001E2D),
+                            color: AppColors.primaryDark,
                           ),
                         ),
                         const SizedBox(height: 4),
                         Text(
                           description,
-                          style: GoogleFonts.inter(
+                          style: GoogleFonts.barlowCondensed(
                             fontSize: 16,
-                            color: const Color(0xFF3F4946),
+                            color: AppColors.textSecondary,
                           ),
                         ),
                       ],
@@ -449,7 +456,7 @@ class _PriorityCard extends StatelessWidget {
 
                   Text(
                     action,
-                    style: GoogleFonts.inter(
+                    style: GoogleFonts.barlowCondensed(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
                       color: accentColor,
