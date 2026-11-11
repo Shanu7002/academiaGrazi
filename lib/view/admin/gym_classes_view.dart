@@ -6,23 +6,12 @@ import 'package:academiagrazi/service/admin/admin_dashboard.dart';
 import 'package:academiagrazi/service/units/gym_class_service.dart';
 import 'package:academiagrazi/service/units/unit_service.dart';
 import 'package:academiagrazi/theme/app_colors.dart';
+import 'package:academiagrazi/view/admin/widgets/weekdays.dart';
 import 'package:academiagrazi/view/components/app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
-
-const List<String> _weekdayNames = [
-  'Segunda',
-  'Terça',
-  'Quarta',
-  'Quinta',
-  'Sexta',
-  'Sábado',
-  'Domingo',
-];
-
-String _weekdayName(int weekday) => _weekdayNames[weekday - 1];
 
 /// Grade de aulas cadastrada pelo admin. Somente informativa: não há
 /// reserva nem controle de lotação nesta versão.
@@ -229,7 +218,7 @@ class _GymClassesViewState extends State<GymClassesView> {
           Padding(
             padding: EdgeInsets.only(top: children.isEmpty ? 0 : 20, bottom: 8),
             child: Text(
-              _weekdayName(item.weekday).toUpperCase(),
+              weekdayName(item.weekday).toUpperCase(),
               style: GoogleFonts.barlowCondensed(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -517,10 +506,7 @@ class _GymClassFormDialogState extends State<_GymClassFormDialog> {
                 decoration: const InputDecoration(labelText: 'Dia da semana'),
                 items: [
                   for (var day = DateTime.monday; day <= DateTime.sunday; day++)
-                    DropdownMenuItem(
-                      value: day,
-                      child: Text(_weekdayName(day)),
-                    ),
+                    DropdownMenuItem(value: day, child: Text(weekdayName(day))),
                 ],
                 onChanged:
                     (value) =>

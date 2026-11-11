@@ -179,7 +179,7 @@ studentCapacity?: int           # professor; só o admin altera (GB-003); padrã
 
 **✅ `units/{unitId}`**: `UnitModel` (`lib/models/units/unit_model.dart`), `UnitService`. `{ name, address?, active, createdAt }`. Nunca apagada: desative com `active: false`.
 
-**✅ `instructorShifts/{id}`**: `InstructorShiftModel` (`lib/models/units/instructor_shift_model.dart`), `InstructorShiftService`. `{ instructorId, unitId, weekday: 1..7 (DateTime.weekday, 1 = segunda), startTime: 'HH:mm', endTime: 'HH:mm', createdAt }`. Horário local da academia; `startTime < endTime` (o turno não vira a meia-noite). Turno atual/próximo: `currentAndNextShift(shifts, now)` em `lib/service/units/shift_schedule.dart`.
+**✅ `instructorShifts/{id}`**: `InstructorShiftModel` (`lib/models/units/instructor_shift_model.dart`), `InstructorShiftService`. `{ instructorId, unitId, weekday: 1..7 (DateTime.weekday, 1 = segunda), startTime: 'HH:mm', endTime: 'HH:mm', createdAt }`. Horário local da academia; `startTime < endTime` (o turno não vira a meia-noite). Turno atual/próximo: `currentAndNextShift(shifts, now)` em `lib/service/units/shift_schedule.dart`. Turnos do mesmo professor não se sobrepõem no mesmo dia (encostar pode): `findOverlappingShift`, conferido no diálogo e no `InstructorShiftService.addShift`. O admin monta a escala na seção "Escala" dos detalhes do professor.
 
 **🆕 `exercises/{id}`**
 ```

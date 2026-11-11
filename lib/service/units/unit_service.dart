@@ -19,13 +19,16 @@ class UnitService {
   /// Unidades em ordem alfabética. As desativadas só aparecem com
   /// [includeInactive] (tela de gestão do admin).
   Stream<List<UnitModel>> streamUnits({bool includeInactive = false}) {
-    return _units.orderBy('name').snapshots().map(
-      (snapshot) =>
-          snapshot.docs
-              .map((doc) => UnitModel.fromJson(doc.data(), doc.id))
-              .where((unit) => includeInactive || unit.active)
-              .toList(),
-    );
+    return _units
+        .orderBy('name')
+        .snapshots()
+        .map(
+          (snapshot) =>
+              snapshot.docs
+                  .map((doc) => UnitModel.fromJson(doc.data(), doc.id))
+                  .where((unit) => includeInactive || unit.active)
+                  .toList(),
+        );
   }
 
   /// Cria a unidade e devolve o id do documento.

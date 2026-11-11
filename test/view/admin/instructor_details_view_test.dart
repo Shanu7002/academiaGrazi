@@ -2,6 +2,8 @@ import 'package:academiagrazi/locator.dart';
 import 'package:academiagrazi/models/users/registration_profile.dart';
 import 'package:academiagrazi/models/users/user_model.dart';
 import 'package:academiagrazi/service/admin/admin_dashboard.dart';
+import 'package:academiagrazi/service/units/instructor_shift_service.dart';
+import 'package:academiagrazi/service/units/unit_service.dart';
 import 'package:academiagrazi/service/users/register_instructor.dart';
 import 'package:academiagrazi/service/admin/admin_student_service.dart';
 import 'package:academiagrazi/view/admin/instructor_details_view.dart';
@@ -94,6 +96,11 @@ void main() {
     locator.registerSingleton<RegisterInstructorService>(
       _FakeInstructorService(),
     );
+    final db = FakeFirebaseFirestore();
+    locator.registerSingleton<InstructorShiftService>(
+      InstructorShiftService(db: db),
+    );
+    locator.registerSingleton<UnitService>(UnitService(db: db));
     await tester.pumpWidget(
       const MaterialApp(home: InstructorDetailsView(instructorId: 'p1')),
     );
@@ -126,6 +133,7 @@ void main() {
       findsOneWidget,
     );
     expect(find.text('Atenção à saúde'), findsOneWidget);
+    expect(find.byKey(const Key('secao_escala')), findsOneWidget);
   });
 
   testWidgets('filtra alunos pela busca', (tester) async {
