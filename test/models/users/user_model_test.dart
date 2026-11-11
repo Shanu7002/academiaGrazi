@@ -120,6 +120,7 @@ void main() {
       termsAcceptedAt: acceptedAt,
       registrationProfile: RegistrationProfile(
         measurements: BodyMeasurements(age: 28, heightCm: 165, weightKg: 68.5),
+        gender: Gender.female,
         primaryGoal: PrimaryGoal.conditioning,
         health: HealthProfile(
           conditions: ['Joelho'],
@@ -144,6 +145,18 @@ void main() {
     expect(parsed.registrationProfile?.primaryGoal, PrimaryGoal.conditioning);
     expect(parsed.registrationProfile?.health.conditions, ['Joelho']);
     expect(parsed.registrationProfile?.emergencyContact.phone, '11999999999');
+    expect(json['registrationProfile']['gender'], 'female');
+    expect(parsed.registrationProfile?.gender, Gender.female);
+  });
+
+  test('perfil anterior ao campo gender é lido sem gênero', () {
+    final profile = RegistrationProfile.fromJson({
+      'measurements': {'age': 28, 'heightCm': 165, 'weightKg': 68.5},
+      'primaryGoal': 'conditioning',
+    });
+
+    expect(profile.gender, isNull);
+    expect(profile.toJson(), isNot(contains('gender')));
   });
 
   group('photoUrl |', () {

@@ -1,5 +1,6 @@
 import 'package:academiagrazi/theme/app_colors.dart';
 import 'package:academiagrazi/view/preferences_service.dart';
+import 'package:academiagrazi/view/user/ui_models/termos_privacidade_view.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:academiagrazi/controller/users/update_data.dart';
@@ -9,6 +10,7 @@ import 'package:academiagrazi/service/users/profile_photo.dart';
 import 'package:academiagrazi/service/users/register_user.dart';
 import 'package:academiagrazi/view/components/app_bar.dart';
 import 'package:academiagrazi/view/components/invite_code_card.dart';
+import 'package:academiagrazi/view/components/user_avatar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -301,13 +303,11 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
                           ),
                           const SizedBox(height: 16),
                           _ProfessionalInfoCard(
-                            avatar: const CircleAvatar(
-                              radius: 22,
+                            avatar: UserAvatar(
+                              key: const Key('responsable_avatar'),
+                              photoUrl: responsable?.photoUrl,
                               backgroundColor: AppColors.avatarBackground,
-                              child: Icon(
-                                Icons.person,
-                                color: AppColors.primary,
-                              ),
+                              iconColor: AppColors.primary,
                             ),
                             label: 'PROFESSOR RESPONSÁVEL',
                             title:
@@ -997,6 +997,14 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
                               Icons.chevron_right,
                               color: AppColors.textSecondary,
                             ),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const PrivacyTermsView(),
+                                ),
+                              );
+                            },
                           ),
                         ),
                       ],

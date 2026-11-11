@@ -1,50 +1,175 @@
 rules_version = '2';
 
+// ETAPA 5 - PROPOSTA PARA TESTE NO FIRESTORE EMULATOR.
+// NAO PUBLICAR EM PRODUCAO SEM PASSAR NOS TESTES E REVISAR FLUXOS EXISTENTES.
 service cloud.firestore {
   match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function ownUser(userId) {
+      return signedIn() && request.auth.uid == userId;
+    }
+
+    function userPath(userId) {
+      return /databases/$(database)/documents/users/$(userId);
+    }
+
     function isAdmin() {
-      return request.auth != null
-        && get(
-          /databases/$(database)/documents/users/$(request.auth.uid)
-        ).data.type == 'admin';
+      return signedIn()
+        && exists(userPath(request.auth.uid))
+        && get(userPath(request.auth.uid)).data.type == 'admin';
+    }
+
+    function isValidInstructor(userId) {
+      return userId is string
+        && userId.size() > 0
+        && exists(userPath(userId))
+        && get(userPath(userId)).data.type == 'instructor';
+    }
+
+    function linkedInstructor(studentId) {
+      return signedIn()
+        && exists(userPath(request.auth.uid))
+        && get(userPath(request.auth.uid)).data.type == 'instructor'
+        && exists(userPath(studentId))
+        && get(userPath(studentId)).data.type == 'user'
+        && get(userPath(studentId)).data.responsable == request.auth.uid;
+    }
+
+    function canReadStudentData(studentId) {
+      return ownUser(studentId) || linkedInstructor(studentId) || isAdmin();
+    }
+
+    function planPath(studentId, planId) {
+      return /databases/$(database)/documents/users/$(studentId)/trainingPlans/$(planId);
+    }
+
+    function currentPlanPath(studentId) {
+      return /databases/$(database)/documents/users/$(studentId)/trainingState/current;
+    }
+
+    function homeWorkoutPath(studentId) {
+      return /databases/$(database)/documents/users/$(studentId)/homeWorkouts/current;
     }
 
     match /users/{userId} {
-      // O usuário pode acessar o próprio documento.
-      allow read, write: if request.auth != null
-        && request.auth.uid == userId;
-
-      // O aluno pode ler o documento do seu responsável.
-      allow read: if request.auth != null
-        && get(
-          /databases/$(database)/documents/users/$(request.auth.uid)
-        ).data.responsable == userId;
-
-      allow read: if request.auth != null 
-        && resource.data.responsable == request.auth.uid;
-
-      // O admin pode ler todos os usuários (home do admin e gestão da equipe).
+      // Permissoes de leitura existentes, preservadas.
+      allow read: if ownUser(userId);
+      allow read: if signedIn()
+        && exists(userPath(request.auth.uid))
+        && get(userPath(request.auth.uid)).data.responsable == userId;
+      allow read: if signedIn() && resource.data.responsable == request.auth.uid;
       allow read: if isAdmin();
 
-      // O admin renova o código de convite dos professores.
+      // Autocadastro: aluno nao pode criar perfil de admin/instrutor.
+      // O codigo de convite continua sendo validado no fluxo existente;
+      // esta regra verifica apenas que o instrutor indicado existe.
+      // Cadastro do próprio usuário
+   allow create: if ownUser(userId)
+   && request.resource.data.keys().hasOnly([
+    'name',
+    'email',
+    'type',
+    'responsable',
+    'registrationProfile',
+    'onboardingCompleted',
+    'termsAcceptedAt',
+    'createdAt'
+    ])
+    && request.resource.data.keys().hasAll([
+    'name',
+    'email',
+    'type',
+    'responsable'
+    ])
+    && request.resource.data.type == 'user'
+    && request.resource.data.name is string
+    && request.resource.data.name.size() > 0
+    && request.resource.data.email is string
+    && request.resource.data.email.size() > 0
+    && request.resource.data.responsable is string
+    && isValidInstructor(request.resource.data.responsable);
+
+      // Edicao do proprio perfil: permite apenas dados de perfil, sem
+      // modificar papel, vinculo, codigo de convite, email ou timestamps.
+      allow update: if ownUser(userId)
+        && request.resource.data.diff(resource.data).affectedKeys()
+             .hasOnly(['name', 'photoUrl', 'registrationProfile'])
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0;
+
+      // Mantem a renovacao de codigo feita pelo administrador.
       allow update: if isAdmin()
         && resource.data.type == 'instructor'
         && request.resource.data.diff(resource.data).affectedKeys()
           .hasOnly(['registrationCode', 'registrationCodeExpiresAt']);
 
-      // O admin cria o perfil dos professores que cadastra.
+      // Mantem a criacao do professor pelo administrador.
       allow create: if isAdmin()
         && request.resource.data.type == 'instructor'
         && request.resource.data.responsable == request.auth.uid;
+
+      // Avaliações físicas: o professor responsável registra e exclui;
+      // o aluno apenas consulta. Os resultados são calculados no app a
+      // partir das medidas, por isso só elas são aceitas.
+      match /evaluations/{evaluationId} {
+        function isStudentInstructor() {
+          return request.auth != null
+            && get(
+              /databases/$(database)/documents/users/$(userId)
+            ).data.responsable == request.auth.uid;
+        }
+
+        function isBetween(value, min, max) {
+          return value is number && value >= min && value <= max;
+        }
+
+        function isValidSkinfolds(folds) {
+          return folds is map
+            && folds.keys().hasOnly([
+              'chest', 'midaxillary', 'triceps', 'subscapular',
+              'abdominal', 'suprailiac', 'thigh'
+            ])
+            && isBetween(folds.chest, 1, 100)
+            && isBetween(folds.midaxillary, 1, 100)
+            && isBetween(folds.triceps, 1, 100)
+            && isBetween(folds.subscapular, 1, 100)
+            && isBetween(folds.abdominal, 1, 100)
+            && isBetween(folds.suprailiac, 1, 100)
+            && isBetween(folds.thigh, 1, 100);
+        }
+
+        function isValidEvaluation(data) {
+          return data.keys().hasOnly([
+              'date', 'instructorId', 'sex', 'age',
+              'weightKg', 'heightCm', 'skinfolds'
+            ])
+            && data.date is timestamp
+            && data.instructorId == request.auth.uid
+            && data.sex in ['male', 'female']
+            && data.age is int && isBetween(data.age, 10, 100)
+            && isBetween(data.weightKg, 20, 300)
+            && data.heightCm is int && isBetween(data.heightCm, 100, 250)
+            && isValidSkinfolds(data.skinfolds);
+        }
+
+        allow read: if request.auth != null
+          && (request.auth.uid == userId || isStudentInstructor());
+
+        allow create: if isStudentInstructor()
+          && isValidEvaluation(request.resource.data);
+
+        allow delete: if isStudentInstructor();
+      }
     }
 
+    // Logica existente de codigos de convite - preservada.
     match /instructorCodes/{code} {
-      // O cadastro do aluno consulta somente um código conhecido; listagens
-      // continuam bloqueadas e nenhum perfil de usuário fica público.
       allow get: if true;
       allow list: if false;
 
-      // Formato de um código emitido: 4 dígitos, válido por 15 minutos.
       function isValidCode(data) {
         return code.matches('^[0-9]{4}$')
           && data.active == true
@@ -60,18 +185,12 @@ service cloud.firestore {
           ]);
       }
 
-      // Quem pode emitir o código: o próprio professor, ou o admin (no
-      // cadastro o perfil é criado na mesma transação, por isso getAfter).
       function canIssueFor(instructorId) {
-        return request.auth != null
-          && getAfter(
-            /databases/$(database)/documents/users/$(instructorId)
-          ).data.type == 'instructor'
+        return signedIn()
+          && getAfter(userPath(instructorId)).data.type == 'instructor'
           && (request.auth.uid == instructorId || isAdmin());
       }
 
-      // Um código só pode ser reaproveitado se for do mesmo professor,
-      // estiver desativado ou já tiver vencido.
       function isFree() {
         return resource == null
           || resource.data.instructorId == request.resource.data.instructorId
@@ -88,8 +207,7 @@ service cloud.firestore {
           && isFree()
           && isValidCode(request.resource.data)
         ) || (
-          // Desativação do código anterior na renovação.
-          request.auth != null
+          signedIn()
           && (request.auth.uid == resource.data.instructorId || isAdmin())
           && request.resource.data.diff(resource.data).affectedKeys()
             .hasOnly(['active'])
@@ -99,9 +217,325 @@ service cloud.firestore {
       allow delete: if false;
     }
 
+    // Mantido: aulas publicadas somente para leitura.
     match /gym_classes/{classId} {
-      allow read: if request.auth != null;
+      allow read: if signedIn();
       allow write: if false;
     }
+
+    function validNewTrainingPlan(studentId, planId) {
+      return linkedInstructor(studentId)
+        && request.resource.data.keys().hasOnly([
+          'schemaVersion', 'id', 'studentId', 'instructorId',
+          'name', 'version', 'status', 'routines', 'weeklySchedule',
+          'createdAt', 'updatedAt'
+        ])
+        && request.resource.data.keys().hasAll([
+          'schemaVersion', 'id', 'studentId', 'instructorId',
+          'name', 'version', 'status', 'routines', 'weeklySchedule',
+          'createdAt', 'updatedAt'
+        ])
+        && request.resource.data.schemaVersion == 1
+        && request.resource.data.id == planId
+        && request.resource.data.studentId == studentId
+        && request.resource.data.instructorId == request.auth.uid
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0
+        && request.resource.data.name.size() <= 160
+        && request.resource.data.status == 'draft'
+        && request.resource.data.version == 1
+        && request.resource.data.routines is list
+        && request.resource.data.routines.size() <= 12
+        && request.resource.data.weeklySchedule is map
+        && request.resource.data.weeklySchedule.size() <= 7
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.updatedAt == request.time;
+    }
+
+    match /users/{studentId}/trainingPlans/{planId} {
+      // Professor vinculado le seus rascunhos; aluno le SOMENTE publicadas.
+      // Consultas do aluno devem filtrar status='published'.
+      allow get, list: if linkedInstructor(studentId)
+        || isAdmin()
+        || (ownUser(studentId) && resource.data.status == 'published');
+
+      allow create: if validNewTrainingPlan(studentId, planId);
+
+      // Rascunho: atualizacao controlada e versao incrementada.
+      allow update: if linkedInstructor(studentId)
+        && resource.data.status == 'draft'
+        && resource.data.id == planId
+        && resource.data.studentId == studentId
+        && resource.data.instructorId == request.auth.uid
+        && request.resource.data.id == resource.data.id
+        && request.resource.data.studentId == resource.data.studentId
+        && request.resource.data.instructorId == resource.data.instructorId
+        && request.resource.data.schemaVersion == resource.data.schemaVersion
+        && request.resource.data.createdAt == resource.data.createdAt
+        && (
+          (
+            request.resource.data.status == 'draft'
+            && request.resource.data.version == resource.data.version + 1
+            && request.resource.data.name is string
+            && request.resource.data.name.size() > 0
+            && request.resource.data.name.size() <= 160
+            && request.resource.data.routines is list
+            && request.resource.data.routines.size() <= 12
+            && request.resource.data.weeklySchedule is map
+            && request.resource.data.weeklySchedule.size() <= 7
+            && request.resource.data.updatedAt == request.time
+            && request.resource.data.diff(resource.data).affectedKeys()
+                 .hasOnly(['name','routines','weeklySchedule','version','updatedAt'])
+          )
+          ||
+          (
+            // Publicacao exige transacao com trainingState/current.
+            request.resource.data.status == 'published'
+            && request.resource.data.version == resource.data.version
+            && request.resource.data.routines is list
+            && request.resource.data.routines.size() > 0
+            && request.resource.data.weeklySchedule is map
+            && request.resource.data.weeklySchedule.size() > 0
+            && request.resource.data.publishedAt == request.time
+            && request.resource.data.updatedAt == request.time
+            && request.resource.data.diff(resource.data).affectedKeys()
+                 .hasOnly(['status', 'publishedAt', 'updatedAt'])
+            && getAfter(currentPlanPath(studentId)).data.activePlanId == planId
+            && getAfter(currentPlanPath(studentId)).data.instructorId == request.auth.uid
+            && getAfter(currentPlanPath(studentId)).data.updatedAt == request.time
+          )
+        );
+
+      // Uma ficha publicada continua imutavel para preservar o historico.
+      // Apenas montagens nunca publicadas podem ser excluidas pelo professor.
+      allow delete: if linkedInstructor(studentId)
+        && resource.data.status == 'draft'
+        && resource.data.studentId == studentId
+        && resource.data.instructorId == request.auth.uid;
+    }
+
+    match /users/{studentId}/trainingState/{stateId} {
+      // Apenas o ponteiro 'current', nunca uma lista arbitraria de estados.
+      allow get: if stateId == 'current'
+        && canReadStudentData(studentId);
+      allow list: if false;
+
+      allow create, update: if stateId == 'current'
+        && linkedInstructor(studentId)
+        && request.resource.data.keys().hasOnly([
+          'activePlanId', 'instructorId', 'updatedAt'
+        ])
+        && request.resource.data.keys().hasAll([
+          'activePlanId', 'instructorId', 'updatedAt'
+        ])
+        && request.resource.data.activePlanId is string
+        && request.resource.data.activePlanId.size() > 0
+        && request.resource.data.instructorId == request.auth.uid
+        && request.resource.data.updatedAt == request.time
+        && getAfter(planPath(studentId, request.resource.data.activePlanId)).data.status == 'published'
+        && getAfter(planPath(studentId, request.resource.data.activePlanId)).data.instructorId == request.auth.uid
+        && getAfter(planPath(studentId, request.resource.data.activePlanId)).data.publishedAt == request.time;
+
+      // Excluir ficha completa: desfaz apenas a atribuicao ativa.
+      // Fichas publicadas e sessoes passadas continuam no historico.
+      allow delete: if stateId == 'current'
+        && linkedInstructor(studentId)
+        && resource.data.instructorId == request.auth.uid;
+    }
+
+    // Treinos em casa: prescricao opcional, independente da ficha presencial.
+    // Somente o professor vinculado publica/retira; aluno apenas le.
+    match /users/{studentId}/homeWorkouts/{homeId} {
+      allow get: if homeId == 'current' && canReadStudentData(studentId);
+      allow list: if false;
+
+      function validHome() {
+        return homeId == 'current'
+          && linkedInstructor(studentId)
+          && request.resource.data.keys().hasOnly([
+            'schemaVersion', 'studentId', 'instructorId', 'status',
+            'version', 'routines', 'updatedAt'
+          ])
+          && request.resource.data.keys().hasAll([
+            'schemaVersion', 'studentId', 'instructorId', 'status',
+            'version', 'routines', 'updatedAt'
+          ])
+          && request.resource.data.schemaVersion == 1
+          && request.resource.data.studentId == studentId
+          && request.resource.data.instructorId == request.auth.uid
+          && request.resource.data.status == 'published'
+          && request.resource.data.version is int
+          && request.resource.data.version >= 1
+          && request.resource.data.routines is list
+          && request.resource.data.routines.size() >= 1
+          && request.resource.data.routines.size() <= 8
+          && request.resource.data.updatedAt == request.time;
+      }
+
+      allow create: if validHome() && request.resource.data.version == 1;
+      allow update: if validHome()
+        && resource.data.instructorId == request.auth.uid
+        && request.resource.data.version == resource.data.version + 1;
+      allow delete: if homeId == 'current'
+        && linkedInstructor(studentId)
+        && resource.data.instructorId == request.auth.uid;
+    }
+
+    // Etapa 6: execucao da ficha publicada pelo proprio aluno.
+    // Professor vinculado e administrador podem acompanhar, mas nao escrever.
+    match /users/{studentId}/trainingSessions/{sessionId} {
+      allow get, list: if canReadStudentData(studentId);
+
+      allow create: if ownUser(studentId)
+        && request.resource.data.keys().hasOnly([
+          'schemaVersion', 'id', 'studentId', 'instructorId',
+          'planId', 'planVersion', 'routineId', 'routineName',
+          'status', 'startedAt', 'warmupDone', 'exercises',
+          'createdAt', 'updatedAt'
+        ])
+        && request.resource.data.keys().hasAll([
+          'schemaVersion', 'id', 'studentId', 'instructorId',
+          'planId', 'planVersion', 'routineId', 'routineName',
+          'status', 'startedAt', 'warmupDone', 'exercises',
+          'createdAt', 'updatedAt'
+        ])
+        && request.resource.data.schemaVersion == 1
+        && request.resource.data.id == sessionId
+        && request.resource.data.studentId == studentId
+        && request.resource.data.instructorId is string
+        && request.resource.data.planId is string
+        && request.resource.data.planVersion is int
+        && request.resource.data.planVersion >= 1
+        && request.resource.data.routineId is string
+        && request.resource.data.routineId.size() > 0
+        && request.resource.data.routineName is string
+        && request.resource.data.status == 'inProgress'
+        && request.resource.data.startedAt is string
+        && request.resource.data.warmupDone == false
+        && request.resource.data.exercises is list
+        && request.resource.data.exercises.size() > 0
+        && request.resource.data.exercises.size() <= 60
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.updatedAt == request.time
+        && get(userPath(studentId)).data.responsable
+             == request.resource.data.instructorId
+        && (
+          (
+            request.resource.data.planId == 'home'
+            && exists(homeWorkoutPath(studentId))
+            && get(homeWorkoutPath(studentId)).data.status == 'published'
+            && get(homeWorkoutPath(studentId)).data.studentId == studentId
+            && get(homeWorkoutPath(studentId)).data.instructorId
+                 == request.resource.data.instructorId
+            && get(homeWorkoutPath(studentId)).data.version
+                 == request.resource.data.planVersion
+          )
+          ||
+          (
+            request.resource.data.planId != 'home'
+            && exists(currentPlanPath(studentId))
+            && get(currentPlanPath(studentId)).data.activePlanId
+                 == request.resource.data.planId
+            && exists(planPath(studentId, request.resource.data.planId))
+            && get(planPath(studentId, request.resource.data.planId)).data.status
+                 == 'published'
+            && get(planPath(studentId, request.resource.data.planId)).data.studentId
+                 == studentId
+            && get(planPath(studentId, request.resource.data.planId)).data.instructorId
+                 == request.resource.data.instructorId
+            && get(planPath(studentId, request.resource.data.planId)).data.version
+                 == request.resource.data.planVersion
+          )
+        );
+
+      // Apenas a sessao em andamento pode registrar progresso ou finalizar.
+      // Nao permite alterar IDs, vinculo, inicio ou dados de criacao.
+      allow update: if ownUser(studentId)
+        && resource.data.status == 'inProgress'
+        && request.resource.data.status in ['inProgress', 'finished']
+        && request.resource.data.diff(resource.data).affectedKeys()
+             .hasOnly(['exercises', 'warmupDone', 'status',
+                       'finishedAt', 'updatedAt'])
+        && request.resource.data.updatedAt == request.time
+        && request.resource.data.warmupDone is bool
+        && request.resource.data.exercises is list
+        && request.resource.data.exercises.size()
+             == resource.data.exercises.size()
+        && (
+          (request.resource.data.status == 'inProgress'
+            && !('finishedAt' in request.resource.data))
+          ||
+          (request.resource.data.status == 'finished'
+            && request.resource.data.finishedAt is string
+            && request.resource.data.finishedAt.size() > 0)
+        );
+
+      allow delete: if false;
+    }
+
+    // Catalogo global de movimentos: leitura autenticada, cadastro manual
+    // restrito a professores. A importacao inicial e feita pelo Admin SDK.
+    match /exerciseCatalog/{exerciseId} {
+      allow get, list: if signedIn();
+
+      allow create: if signedIn()
+        && get(userPath(request.auth.uid)).data.type == 'instructor'
+        && request.resource.data.keys().hasOnly([
+          'name', 'nameNormalized', 'muscleGroup', 'instructions',
+          'imageUrl', 'source', 'createdBy', 'createdAt', 'updatedAt'
+        ])
+        && request.resource.data.keys().hasAll([
+          'name', 'nameNormalized', 'muscleGroup', 'instructions',
+          'imageUrl', 'source', 'createdBy', 'createdAt', 'updatedAt'
+        ])
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0
+        && request.resource.data.name.size() <= 150
+        && request.resource.data.nameNormalized is string
+        && request.resource.data.muscleGroup is string
+        && request.resource.data.instructions is string
+        && request.resource.data.imageUrl is string
+        && request.resource.data.source == 'manual'
+        && request.resource.data.createdBy == request.auth.uid
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.updatedAt == request.time;
+
+      allow update: if signedIn()
+        && resource.data.source == 'manual'
+        && resource.data.createdBy == request.auth.uid
+        && get(userPath(request.auth.uid)).data.type == 'instructor'
+        && request.resource.data.diff(resource.data).affectedKeys()
+             .hasOnly(['name', 'nameNormalized', 'muscleGroup',
+               'instructions', 'imageUrl', 'updatedAt'])
+        && request.resource.data.updatedAt == request.time;
+
+      allow delete: if false;
+    }
+
+    // Biblioteca de treinos reutilizaveis, privada de cada professor.
+    match /users/{teacherId}/routineTemplates/{templateId} {
+      allow get, list: if ownUser(teacherId)
+        && get(userPath(teacherId)).data.type == 'instructor';
+
+      allow create, update: if ownUser(teacherId)
+        && get(userPath(teacherId)).data.type == 'instructor'
+        && request.resource.data.keys().hasOnly([
+          'teacherId', 'studentId', 'name', 'nameNormalized',
+          'routine', 'updatedAt'
+        ])
+        && request.resource.data.keys().hasAll([
+          'teacherId', 'studentId', 'name', 'nameNormalized',
+          'routine', 'updatedAt'
+        ])
+        && request.resource.data.teacherId == teacherId
+        && request.resource.data.studentId is string
+        && request.resource.data.name is string
+        && request.resource.data.nameNormalized is string
+        && request.resource.data.routine is map
+        && request.resource.data.updatedAt == request.time;
+
+      allow delete: if false;
+    }
+
   }
 }

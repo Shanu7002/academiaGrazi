@@ -3,6 +3,8 @@ import 'package:academiagrazi/view/user/ui_models/treino_ui_models.dart';
 
 class AlunoTreinosUiData {
   final String alunoNome;
+  final String planId;
+  final Map<int, String?> programacaoSemanal;
   final String semana;
   final String professorNome;
   final String ultimaAtualizacao;
@@ -21,6 +23,8 @@ class AlunoTreinosUiData {
 
   const AlunoTreinosUiData({
     required this.alunoNome,
+    this.planId = '',
+    this.programacaoSemanal = const {},
     required this.semana,
     required this.professorNome,
     required this.ultimaAtualizacao,

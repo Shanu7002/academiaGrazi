@@ -6,6 +6,12 @@ enum PrimaryGoal {
   mobility,
 }
 
+/// Gênero informado pelo aluno no cadastro.
+///
+/// [male] e [female] também definem o sexo usado nas fórmulas da
+/// avaliação física; [undisclosed] deixa essa escolha para o professor.
+enum Gender { male, female, undisclosed }
+
 class BodyMeasurements {
   final int age;
   final int heightCm;
@@ -88,12 +94,16 @@ class EmergencyContact {
 
 class RegistrationProfile {
   final BodyMeasurements measurements;
+
+  /// Ausente nos perfis criados antes de o campo existir.
+  final Gender? gender;
   final PrimaryGoal primaryGoal;
   final HealthProfile health;
   final EmergencyContact emergencyContact;
 
   const RegistrationProfile({
     required this.measurements,
+    this.gender,
     required this.primaryGoal,
     required this.health,
     required this.emergencyContact,
@@ -101,6 +111,7 @@ class RegistrationProfile {
 
   Map<String, dynamic> toJson() => {
     'measurements': measurements.toJson(),
+    if (gender != null) 'gender': gender!.name,
     'primaryGoal': primaryGoal.name,
     'health': health.toJson(),
     'emergencyContact': emergencyContact.toJson(),
@@ -108,10 +119,12 @@ class RegistrationProfile {
 
   factory RegistrationProfile.fromJson(Map<String, dynamic> json) {
     final goalName = json['primaryGoal'] as String?;
+    final genderName = json['gender'] as String?;
     return RegistrationProfile(
       measurements: BodyMeasurements.fromJson(
         Map<String, dynamic>.from(json['measurements'] as Map? ?? const {}),
       ),
+      gender: Gender.values.asNameMap()[genderName],
       primaryGoal: PrimaryGoal.values.firstWhere(
         (goal) => goal.name == goalName,
         orElse: () => PrimaryGoal.conditioning,
@@ -138,6 +151,7 @@ class RegistrationDraft {
   int age = 28;
   int heightCm = 165;
   double weightKg = 68.5;
+  Gender? gender;
   PrimaryGoal? primaryGoal;
   final Set<String> conditions = {'Nenhuma dor'};
   String healthNotes = '';
@@ -151,6 +165,10 @@ class RegistrationDraft {
     if (selectedGoal == null) {
       throw StateError('Primary goal is required');
     }
+    final selectedGender = gender;
+    if (selectedGender == null) {
+      throw StateError('Gender is required');
+    }
 
     return RegistrationProfile(
       measurements: BodyMeasurements(
@@ -158,6 +176,7 @@ class RegistrationDraft {
         heightCm: heightCm,
         weightKg: weightKg,
       ),
+      gender: selectedGender,
       primaryGoal: selectedGoal,
       health: HealthProfile(
         conditions: conditions.toList(growable: false),

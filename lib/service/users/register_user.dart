@@ -23,9 +23,24 @@ class RegisterUserService {
     return UserModel.fromJson(doc.data()!, doc.id);
   }
 
-  Future<UserType>? getUserRole(String uid) async {
+  /// Acompanha o documento do usuário em tempo real (ex.: foto de perfil
+  /// trocada em outra tela). Emite null enquanto o documento não existir.
+  Stream<UserModel?> watchUserById(String uid) {
+    return _db
+        .collection("users")
+        .doc(uid)
+        .snapshots()
+        .map(
+          (doc) =>
+              doc.exists && doc.data() != null
+                  ? UserModel.fromJson(doc.data()!, doc.id)
+                  : null,
+        );
+  }
+
+  Future<UserType?>? getUserRole(String uid) async {
     UserModel? user = await getUserById(uid);
-    return user!.type;
+    return user?.type;
   }
 
   Future<UserModel?> getResponsableData(String uid) async {

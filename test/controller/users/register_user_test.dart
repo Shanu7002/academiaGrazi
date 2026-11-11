@@ -49,6 +49,7 @@ void main() {
         ..passwordConfirmation = 'password123'
         ..termsAcceptedAt = DateTime.utc(2026, 9, 29)
         ..instructorCode = 'ABCD2345'
+        ..gender = Gender.female
         ..primaryGoal = PrimaryGoal.conditioning
         ..emergencyName = 'Contato'
         ..emergencyRelationship = 'Amigo(a) Próximo(a)'
@@ -84,6 +85,7 @@ void main() {
       expect(savedUser.type, UserType.user);
       expect(savedUser.responsable, 'instructor_uid_456');
       expect(savedUser.onboardingCompleted, isTrue);
+      expect(savedUser.registrationProfile?.gender, Gender.female);
       expect(
         savedUser.registrationProfile?.primaryGoal,
         PrimaryGoal.conditioning,

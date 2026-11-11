@@ -1,9 +1,9 @@
 import 'package:academiagrazi/theme/app_colors.dart';
-import 'package:academiagrazi/view/components/app_bar.dart';
 import 'package:academiagrazi/view/components/app_bottom_navigation.dart';
 import 'package:academiagrazi/view/user/aluno_profile_view.dart';
 import 'package:academiagrazi/view/teacher/professor_dashboard_view.dart';
-import 'package:academiagrazi/view/teacher/professor_montagem_treino_view.dart';
+import 'package:academiagrazi/view/teacher/professor_evolucao_view.dart';
+import 'package:academiagrazi/view/teacher/professor_ficha_treinos_view.dart';
 import 'package:flutter/material.dart';
 
 /// Controla as quatro abas da área do professor.
@@ -49,16 +49,13 @@ class _ProfessorAreaViewState extends State<ProfessorAreaView> {
                 // Aba 0 - Dashboard do outro desenvolvedor.
                 const ProfessorDashboardView(),
 
-                // Aba 1 - Nossa montagem de treinos.
-                ProfessorMontagemTreinoView(
+                // Aba 1 - Fluxo real: alunos vinculados -> ficha -> edição.
+                ProfessorFichaTreinosView(
                   onVoltarInicio: () => _selecionarAba(0),
                 ),
 
-                // Aba 2 - Desenvolvimento futuro.
-                const _AbaProfessorPendente(
-                  titulo: 'Evolução',
-                  icone: Icons.insights_outlined,
-                ),
+                // Aba 2 - Avaliações físicas dos alunos.
+                const ProfessorEvolucaoView(),
 
                 // Aba 3 - Perfil compartilhado com aluno e admin.
                 const AlunoProfileView(),
@@ -71,48 +68,6 @@ class _ProfessorAreaViewState extends State<ProfessorAreaView> {
               selectedIndex: _abaSelecionada,
               onDestinationSelected: _selecionarAba,
             ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-/// Página temporária para funcionalidades ainda
-/// não desenvolvidas no perfil de instrutor.
-class _AbaProfessorPendente extends StatelessWidget {
-  final String titulo;
-  final IconData icone;
-
-  const _AbaProfessorPendente({required this.titulo, required this.icone});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: const CustomAppBar(title: 'GRAZI BRAZ'),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(icone, color: AppColors.primary, size: 42),
-              const SizedBox(height: 12),
-              Text(
-                titulo,
-                style: const TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
-                ),
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                'Tela em desenvolvimento',
-                style: TextStyle(color: AppColors.textSecondary),
-              ),
-            ],
           ),
         ),
       ),

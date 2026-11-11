@@ -129,10 +129,12 @@ class _AlunoTreinoDiaViewState extends State<AlunoTreinoDiaView> {
                       children: [
                         _buildProgresso(),
                         const SizedBox(height: 24),
-                        _buildTituloSecao('AQUECIMENTO'),
-                        const SizedBox(height: 10),
-                        _buildAquecimentoCard(),
-                        const SizedBox(height: 26),
+                        if (widget.data.aquecimentoResumo.trim().isNotEmpty) ...[
+                          _buildTituloSecao('AQUECIMENTO'),
+                          const SizedBox(height: 10),
+                          _buildAquecimentoCard(),
+                          const SizedBox(height: 26),
+                        ],
                         _buildTituloSecao('SÉRIE PRINCIPAL'),
                         const SizedBox(height: 10),
                         ...widget.data.treino.exercicios.map(

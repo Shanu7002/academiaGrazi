@@ -3,18 +3,18 @@ import 'package:academiagrazi/view/components/app_bar.dart';
 import 'package:academiagrazi/view/teacher/ui_data/montagem_treino_ui_data.dart';
 import 'package:academiagrazi/view/teacher/ui_models/montagem_treino_ui_models.dart';
 import 'package:academiagrazi/view/teacher/widgets/exercicio_montagem_card.dart';
+import 'package:academiagrazi/view/teacher/professor_ficha_treinos_view.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-
+import 'package:academiagrazi/view/teacher/services/seletor_imagem_exercicio.dart';
+import 'package:academiagrazi/view/teacher/widgets/cadastrar_exercicio_dialog.dart';
 import 'package:academiagrazi/locator.dart';
 import 'package:academiagrazi/controller/teachers/teacher_user_searcher.dart';
 
 class ProfessorMontagemTreinoView extends StatefulWidget {
   final VoidCallback? onVoltarInicio;
-
   const ProfessorMontagemTreinoView({super.key, this.onVoltarInicio});
-
   @override
   State<ProfessorMontagemTreinoView> createState() =>
       _ProfessorMontagemTreinoViewState();
@@ -25,7 +25,6 @@ class _ProfessorMontagemTreinoViewState
   final FirebaseAuth _authInstance = locator<FirebaseAuth>();
   bool _isLoading = true;
   MontagemTreinoProfessorUiData? _data;
-
   late final List<ExercicioCatalogoProfessorUi> _catalogo;
   late List<ExercicioMontadoProfessorUi> _exercicios;
   late String _alunoId;
@@ -33,7 +32,8 @@ class _ProfessorMontagemTreinoViewState
   String _busca = '';
   String? _grupoFiltrado;
   int _proximoNumero = 0;
-
+  final SeletorImagemExercicio _seletorImagem = SeletorImagemExercicioPadrao();
+  int _proximoExercicioManual = 0;
   @override
   void initState() {
     super.initState();
@@ -44,18 +44,14 @@ class _ProfessorMontagemTreinoViewState
     try {
       final teacherUID = _authInstance.currentUser!.uid;
       final searcher = locator<TeacherUserSearcher>();
-
       final usersFirestore = await searcher.streamLinkedUsers(teacherUID).first;
-
       if (usersFirestore.isEmpty && mounted) {
         _mostrarAviso('Nenhum aluno vinculado encontrado.');
       }
-
       final alunosReais =
           usersFirestore.map((u) {
             return AlunoResumoProfessorUi(id: u.id, nome: u.name);
           }).toList();
-
       final fetchedData = MontagemTreinoProfessorUiData(
         nomeTreino: 'Nova Série',
         alunoSelecionadoId: alunosReais.isNotEmpty ? alunosReais.first.id : '',
@@ -87,9 +83,7 @@ class _ProfessorMontagemTreinoViewState
         duracaoEstimadaMinutos: 45,
         volume: 'Médio',
       );
-
       if (!mounted) return;
-
       setState(() {
         _data = fetchedData;
         _catalogo = List.of(fetchedData.catalogo);
@@ -115,10 +109,8 @@ class _ProfessorMontagemTreinoViewState
                 ? _data!.alunos.first
                 : AlunoResumoProfessorUi(id: '', nome: 'Sem Aluno'),
   );
-
   ExercicioCatalogoProfessorUi _encontrarExercicio(String id) =>
       _catalogo.firstWhere((e) => e.id == id);
-
   void _adicionar(ExercicioCatalogoProfessorUi exercicio) {
     setState(() {
       _proximoNumero++;
@@ -157,45 +149,22 @@ class _ProfessorMontagemTreinoViewState
   }
 
   Future<void> _adicionarManual() async {
-    final controller = TextEditingController();
-    final nome = await showDialog<String>(
+    final exercicio = await showDialog<ExercicioCatalogoProfessorUi>(
       context: context,
       builder:
-          (dialogContext) => AlertDialog(
-            title: const Text('Adicionar exercício manual'),
-            content: TextField(
-              key: const Key('nome_exercicio_manual'),
-              controller: controller,
-              autofocus: true,
-              textCapitalization: TextCapitalization.words,
-              decoration: const InputDecoration(
-                labelText: 'Nome do exercício',
-                hintText: 'Ex.: Elevação lateral',
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(dialogContext),
-                child: const Text('Cancelar'),
-              ),
-              FilledButton(
-                onPressed:
-                    () => Navigator.pop(dialogContext, controller.text.trim()),
-                child: const Text('Adicionar'),
-              ),
-            ],
+          (_) => CadastrarExercicioDialog(
+            exercicioId: 'manual-${_proximoExercicioManual + 1}',
+            seletorImagem: _seletorImagem,
           ),
     );
-    controller.dispose();
 
-    if (!mounted || nome == null || nome.isEmpty) return;
-    _proximoNumero++;
-    final exercicio = ExercicioCatalogoProfessorUi(
-      id: 'manual-$_proximoNumero',
-      nome: nome,
-      grupoMuscular: 'Exercício manual',
-    );
-    _catalogo.add(exercicio);
+    if (!mounted || exercicio == null) return;
+
+    setState(() {
+      _proximoExercicioManual++;
+      _catalogo.add(exercicio);
+    });
+
     _adicionar(exercicio);
   }
 
@@ -284,6 +253,22 @@ class _ProfessorMontagemTreinoViewState
                     children: [
                       _cabecalho(),
                       const SizedBox(height: 14),
+                      SizedBox(
+                        width: double.infinity,
+                        child: OutlinedButton.icon(
+                          key: const Key('abrir-fichas-abc'),
+                          onPressed:
+                              () => Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder:
+                                      (_) => const ProfessorFichaTreinosView(),
+                                ),
+                              ),
+                          icon: const Icon(Icons.calendar_month_outlined),
+                          label: const Text('Montar ficha A/B/C para um aluno'),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
                       _acoesPrincipais(),
                       const SizedBox(height: 18),
                       const Divider(height: 1, color: AppColors.border),

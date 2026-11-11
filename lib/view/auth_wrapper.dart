@@ -25,7 +25,7 @@ class AuthWrapper extends StatelessWidget {
         if (authSnapshot.hasData) {
           final currentUid = authSnapshot.data!.uid;
 
-          return FutureBuilder<UserType>(
+          return FutureBuilder<UserType?>(
             future: locator<RegisterUserService>().getUserRole(currentUid),
             builder: (context, roleSnapshot) {
               if (roleSnapshot.connectionState == ConnectionState.waiting) {
@@ -36,7 +36,9 @@ class AuthWrapper extends StatelessWidget {
 
               if (roleSnapshot.hasError) {
                 return const Scaffold(
-                  body: Center(child: Text('Authentication Error')),
+                  body: Center(
+                    child: Text('Não foi possível carregar seu perfil'),
+                  ),
                 );
               }
 
@@ -45,11 +47,15 @@ class AuthWrapper extends StatelessWidget {
               if (type == UserType.user) {
                 return const MainShell();
               } else if (type == UserType.instructor) {
-                // Area do professor: Inicio, Treinos, Evolucao e Perfil.
-                // A navegacao inferior fica no ProfessorAreaView.
                 return const ProfessorAreaView();
-              } else {
+              } else if (type == UserType.admin) {
                 return const MainShell(isAdmin: true);
+              } else {
+                return const Scaffold(
+                  body: Center(
+                    child: Text('Não foi possível carregar seu perfil.'),
+                  ),
+                );
               }
             },
           );
