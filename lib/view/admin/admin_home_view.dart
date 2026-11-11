@@ -1,9 +1,10 @@
 import 'package:academiagrazi/locator.dart';
+import 'package:academiagrazi/service/admin/admin_alerts.dart';
 import 'package:academiagrazi/service/admin/admin_dashboard.dart';
 import 'package:academiagrazi/service/admin/hourly_movement.dart';
 import 'package:academiagrazi/theme/app_colors.dart';
-import 'package:academiagrazi/view/admin/mocks/admin_home_mock_data.dart';
 import 'package:academiagrazi/view/admin/gym_classes_view.dart';
+import 'package:academiagrazi/view/admin/instructor_details_view.dart';
 import 'package:academiagrazi/view/admin/register_instructor_view.dart';
 import 'package:academiagrazi/view/admin/units_view.dart';
 import 'package:academiagrazi/view/components/app_bar.dart';
@@ -22,12 +23,32 @@ class _AdminHomeViewState extends State<AdminHomeView> {
       locator<AdminDashboardService>();
   late final Future<StudentStats> _studentStats;
   late Future<HourlyMovement> _movement;
+  late Future<List<AdminAlert>> _alerts;
 
   @override
   void initState() {
     super.initState();
     _studentStats = _dashboardService.getStudentStats();
     _movement = _dashboardService.getHourlyMovement();
+    _alerts = _loadAlerts(_studentStats);
+  }
+
+  /// Alertas automáticos; reaproveita a busca de alunos dos cards.
+  Future<List<AdminAlert>> _loadAlerts(Future<StudentStats> stats) async {
+    final results = await Future.wait([
+      stats,
+      _dashboardService.getTeamWorkload(),
+    ]);
+    return adminAlerts(
+      stats: results[0] as StudentStats,
+      team: results[1] as List<InstructorWorkload>,
+    );
+  }
+
+  void _reloadAlerts() {
+    setState(() {
+      _alerts = _loadAlerts(_dashboardService.getStudentStats());
+    });
   }
 
   void _reloadMovement() {
@@ -165,7 +186,7 @@ class _AdminHomeViewState extends State<AdminHomeView> {
                 const SizedBox(height: 32),
                 _MovementCard(movement: _movement, onRetry: _reloadMovement),
                 const SizedBox(height: 32),
-                const _AlertsCard(),
+                _AlertsCard(alerts: _alerts, onRetry: _reloadAlerts),
               ],
             ),
           ),
@@ -571,11 +592,15 @@ class _MovementCard extends StatelessWidget {
 }
 
 class _AlertsCard extends StatelessWidget {
-  const _AlertsCard();
+  final Future<List<AdminAlert>> alerts;
+  final VoidCallback onRetry;
+
+  const _AlertsCard({required this.alerts, required this.onRetry});
 
   @override
   Widget build(BuildContext context) {
     return Container(
+      key: const Key('card_alertas'),
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: _cardDecoration(),
@@ -599,10 +624,44 @@ class _AlertsCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
-          for (final alert in AdminHomeMockData.alerts) ...[
-            _AlertTile(alert: alert),
-            const SizedBox(height: 12),
-          ],
+          FutureBuilder<List<AdminAlert>>(
+            future: alerts,
+            builder: (context, snapshot) {
+              if (snapshot.hasError) {
+                debugPrint('Erro ao calcular alertas: ${snapshot.error}');
+                return _MovementMessage(
+                  text: 'Não foi possível carregar os alertas.',
+                  action: TextButton(
+                    key: const Key('botao_tentar_alertas'),
+                    onPressed: onRetry,
+                    child: const Text('Tentar novamente'),
+                  ),
+                );
+              }
+              final items = snapshot.data;
+              if (items == null) {
+                return const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 12),
+                  child: Center(
+                    child: CircularProgressIndicator(color: AppColors.primary),
+                  ),
+                );
+              }
+              if (items.isEmpty) {
+                return const _MovementMessage(
+                  text: 'Nenhum alerta no momento.',
+                );
+              }
+              return Column(
+                children: [
+                  for (final alert in items) ...[
+                    _AlertTile(alert: alert),
+                    const SizedBox(height: 12),
+                  ],
+                ],
+              );
+            },
+          ),
         ],
       ),
     );
@@ -610,65 +669,83 @@ class _AlertsCard extends StatelessWidget {
 }
 
 class _AlertTile extends StatelessWidget {
-  final AdminAlertMock alert;
+  final AdminAlert alert;
 
   const _AlertTile({required this.alert});
 
+  bool get _isWarning => alert.type == AdminAlertType.instructorOverCapacity;
+
+  void _open(BuildContext context) {
+    final instructorId = alert.instructorId;
+    if (instructorId == null) return;
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => InstructorDetailsView(instructorId: instructorId),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final textColor =
-        alert.isWarning ? AppColors.accentText : AppColors.primaryDark;
+    final textColor = _isWarning ? AppColors.accentText : AppColors.primaryDark;
+    final canOpen = alert.instructorId != null;
 
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color:
-            alert.isWarning
-                ? AppColors.accentAlertSurface
-                : AppColors.infoSoftSurface,
+    return Material(
+      color:
+          _isWarning ? AppColors.accentAlertSurface : AppColors.infoSoftSurface,
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(
+        side: BorderSide(
           color:
-              alert.isWarning
+              _isWarning
                   ? AppColors.accentAlertBorder
                   : AppColors.borderTranslucent,
         ),
       ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(
-            alert.isWarning ? Icons.build : Icons.groups,
-            size: 20,
-            color: alert.isWarning ? AppColors.accent : AppColors.primaryDark,
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  alert.title,
-                  style: GoogleFonts.inter(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: textColor,
-                  ),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        key: Key('alerta_${alert.type.name}_${alert.instructorId ?? ''}'),
+        onTap: canOpen ? () => _open(context) : null,
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(
+                _isWarning ? Icons.groups : Icons.person_off_outlined,
+                size: 20,
+                color: _isWarning ? AppColors.accent : AppColors.primaryDark,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      alert.title,
+                      style: GoogleFonts.inter(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: textColor,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      alert.description,
+                      style: GoogleFonts.inter(
+                        fontSize: 13,
+                        height: 1.4,
+                        color: _isWarning ? textColor : AppColors.textBody,
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  alert.description,
-                  style: GoogleFonts.inter(
-                    fontSize: 13,
-                    height: 1.4,
-                    color: alert.isWarning ? textColor : AppColors.textBody,
-                  ),
-                ),
-              ],
-            ),
+              ),
+              if (canOpen)
+                Icon(Icons.chevron_right, size: 20, color: textColor),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

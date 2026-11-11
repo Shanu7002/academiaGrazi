@@ -5,6 +5,7 @@ import 'package:academiagrazi/service/units/gym_class_service.dart';
 import 'package:academiagrazi/service/units/unit_service.dart';
 import 'package:academiagrazi/view/admin/admin_home_view.dart';
 import 'package:academiagrazi/view/admin/gym_classes_view.dart';
+import 'package:academiagrazi/view/admin/instructor_details_view.dart';
 import 'package:academiagrazi/view/admin/units_view.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -13,9 +14,13 @@ import 'package:flutter_test/flutter_test.dart';
 class _FakeDashboardService extends AdminDashboardService {
   final Future<StudentStats> Function() onGetStats;
   final Future<HourlyMovement> Function() onGetMovement;
+  final Future<List<InstructorWorkload>> Function() onGetTeam;
 
-  _FakeDashboardService(this.onGetStats, this.onGetMovement)
+  _FakeDashboardService(this.onGetStats, this.onGetMovement, this.onGetTeam)
     : super(db: FakeFirebaseFirestore());
+
+  @override
+  Future<List<InstructorWorkload>> getTeamWorkload() => onGetTeam();
 
   @override
   Future<StudentStats> getStudentStats({DateTime? now}) => onGetStats();
@@ -25,6 +30,11 @@ class _FakeDashboardService extends AdminDashboardService {
 }
 
 Future<HourlyMovement> _semMovimento() async => hourlyMovement(const []);
+
+Future<List<InstructorWorkload>> _semEquipe() async => const [];
+
+Future<StudentStats> umAluno() async =>
+    const StudentStats(total: 1, newLast30Days: 1);
 
 void main() {
   setUp(() {
@@ -37,14 +47,88 @@ void main() {
   void registerService(
     Future<StudentStats> Function() onGetStats, {
     Future<HourlyMovement> Function() onGetMovement = _semMovimento,
+    Future<List<InstructorWorkload>> Function() onGetTeam = _semEquipe,
   }) {
     locator.registerSingleton<AdminDashboardService>(
-      _FakeDashboardService(onGetStats, onGetMovement),
+      _FakeDashboardService(onGetStats, onGetMovement, onGetTeam),
     );
   }
 
-  Future<StudentStats> umAluno() async =>
-      const StudentStats(total: 1, newLast30Days: 1);
+  group('alertas operacionais', () {
+    Finder noCard(Finder finder) => find.descendant(
+      of: find.byKey(const Key('card_alertas')),
+      matching: finder,
+    );
+
+    testWidgets('sem alertas mostra o estado vazio', (tester) async {
+      registerService(umAluno);
+
+      await tester.pumpWidget(const MaterialApp(home: AdminHomeView()));
+      await tester.pumpAndSettle();
+
+      expect(noCard(find.text('Nenhum alerta no momento.')), findsOneWidget);
+    });
+
+    testWidgets('alerta de capacidade abre os detalhes do professor', (
+      tester,
+    ) async {
+      registerService(
+        () async =>
+            const StudentStats(total: 50, newLast30Days: 0, inactive: 20),
+        onGetTeam:
+            () async => const [
+              InstructorWorkload(
+                id: 'p1',
+                name: 'Prof. Lucas',
+                email: 'lucas@test.com',
+                activeStudents: 35,
+              ),
+            ],
+      );
+
+      await tester.pumpWidget(const MaterialApp(home: AdminHomeView()));
+      await tester.pumpAndSettle();
+
+      expect(
+        noCard(find.text('Prof. Lucas está com 35 alunos para 30 vagas.')),
+        findsOneWidget,
+      );
+      expect(noCard(find.text('Muitos alunos inativos')), findsOneWidget);
+
+      final alerta = find.byKey(const Key('alerta_instructorOverCapacity_p1'));
+      await tester.ensureVisible(alerta);
+      await tester.tap(alerta);
+      await tester.pumpAndSettle();
+
+      expect(find.byType(InstructorDetailsView), findsOneWidget);
+    });
+
+    testWidgets('na falha mostra erro e tenta de novo', (tester) async {
+      var chamadas = 0;
+      registerService(
+        umAluno,
+        onGetTeam: () async {
+          chamadas++;
+          if (chamadas == 1) throw Exception('sem permissão');
+          return const [];
+        },
+      );
+
+      await tester.pumpWidget(const MaterialApp(home: AdminHomeView()));
+      await tester.pumpAndSettle();
+
+      expect(
+        noCard(find.text('Não foi possível carregar os alertas.')),
+        findsOneWidget,
+      );
+
+      await tester.ensureVisible(find.byKey(const Key('botao_tentar_alertas')));
+      await tester.tap(find.byKey(const Key('botao_tentar_alertas')));
+      await tester.pumpAndSettle();
+
+      expect(noCard(find.text('Nenhum alerta no momento.')), findsOneWidget);
+    });
+  });
 
   group('movimentação por horário', () {
     Finder noCard(Finder finder) => find.descendant(
