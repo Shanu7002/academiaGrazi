@@ -77,6 +77,20 @@ async function main() {
     await test('codigos de convite nao podem ser listados',()=>assertFails(getDocs(collection(anon,'instructorCodes'))));
     await test('professor pode emitir codigo valido',()=>assertSucceeds(setDoc(doc(prof1,'instructorCodes/5678'),{instructorId:'prof1',instructorName:'Prof 1',active:true,createdAt:serverTimestamp(),expiresAtMillis:Date.now()+600000})));
     await test('aluno nao pode emitir codigo para professor',()=>assertFails(setDoc(doc(aluno1,'instructorCodes/5555'),{instructorId:'prof1',instructorName:'Prof 1',active:true,createdAt:serverTimestamp(),expiresAtMillis:Date.now()+600000})));
+    // Renovacao do codigo no perfil do professor (mesma transacao do app).
+    const renovarCodigo=(db,instructorId,code)=>{
+      const batch=writeBatch(db);
+      batch.update(user(db,instructorId),{registrationCode:code,registrationCodeExpiresAt:new Date(Date.now()+900000).toISOString()});
+      batch.set(doc(db,'instructorCodes',code),{instructorId,instructorName:'Prof',active:true,createdAt:new Date().toISOString(),expiresAtMillis:Date.now()+900000});
+      return batch.commit();
+    };
+    await test('professor renova o proprio codigo de convite',()=>assertSucceeds(renovarCodigo(prof1,'prof1','4321')));
+    await test('admin renova o codigo de convite do professor',()=>assertSucceeds(renovarCodigo(admin,'prof2','8765')));
+    await test('professor nao grava codigo sem emiti-lo',()=>assertFails(updateDoc(user(prof1,'prof1'),{registrationCode:'9999',registrationCodeExpiresAt:new Date().toISOString()})));
+    await test('professor nao grava no perfil codigo de outro professor',()=>assertFails(updateDoc(user(prof1,'prof1'),{registrationCode:'8765',registrationCodeExpiresAt:new Date().toISOString()})));
+    await test('professor nao renova codigo de outro professor',()=>assertFails(renovarCodigo(prof1,'prof2','2468')));
+    await test('aluno nao grava codigo de convite no proprio perfil',()=>assertFails(updateDoc(user(aluno1,'aluno1'),{registrationCode:'1234',registrationCodeExpiresAt:new Date().toISOString()})));
+    await test('professor nao altera o tipo junto com o codigo',()=>assertFails(updateDoc(user(prof1,'prof1'),{registrationCode:'4321',type:'admin'})));
 
     await test('professor vinculado cria rascunho',()=>assertSucceeds(setDoc(plan(prof1),draft())));
     await test('professor alheio nao cria rascunho',()=>assertFails(setDoc(plan(prof2,'outra'),draft('outra'))));
