@@ -1,8 +1,10 @@
 import 'package:academiagrazi/locator.dart';
 import 'package:academiagrazi/service/admin/admin_dashboard.dart';
 import 'package:academiagrazi/service/admin/hourly_movement.dart';
+import 'package:academiagrazi/service/units/gym_class_service.dart';
 import 'package:academiagrazi/service/units/unit_service.dart';
 import 'package:academiagrazi/view/admin/admin_home_view.dart';
+import 'package:academiagrazi/view/admin/gym_classes_view.dart';
 import 'package:academiagrazi/view/admin/units_view.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -165,18 +167,24 @@ void main() {
     expect(find.byType(UnitsView), findsOneWidget);
   });
 
-  testWidgets('atalhos ainda não implementados avisam com SnackBar', (
+  testWidgets('atalho Aulas abre a grade e Finanças não aparece', (
     tester,
   ) async {
-    registerService(() async => const StudentStats(total: 1, newLast30Days: 1));
+    final db = FakeFirebaseFirestore();
+    locator.registerSingleton<UnitService>(UnitService(db: db));
+    locator.registerSingleton<GymClassService>(GymClassService(db: db));
+    registerService(umAluno);
 
     await tester.pumpWidget(const MaterialApp(home: AdminHomeView()));
     await tester.pumpAndSettle();
 
-    await tester.ensureVisible(find.text('Finanças'));
-    await tester.tap(find.text('Finanças'));
-    await tester.pump();
+    expect(find.text('Finanças'), findsNothing);
 
-    expect(find.text('Finanças estará disponível em breve.'), findsOneWidget);
+    await tester.ensureVisible(find.byKey(const Key('botao_aulas')));
+    await tester.tap(find.byKey(const Key('botao_aulas')));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(GymClassesView), findsOneWidget);
+    expect(find.textContaining('disponível em breve'), findsNothing);
   });
 }

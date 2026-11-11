@@ -3,6 +3,7 @@ import 'package:academiagrazi/service/admin/admin_dashboard.dart';
 import 'package:academiagrazi/service/admin/hourly_movement.dart';
 import 'package:academiagrazi/theme/app_colors.dart';
 import 'package:academiagrazi/view/admin/mocks/admin_home_mock_data.dart';
+import 'package:academiagrazi/view/admin/gym_classes_view.dart';
 import 'package:academiagrazi/view/admin/register_instructor_view.dart';
 import 'package:academiagrazi/view/admin/units_view.dart';
 import 'package:academiagrazi/view/components/app_bar.dart';
@@ -33,12 +34,6 @@ class _AdminHomeViewState extends State<AdminHomeView> {
     setState(() {
       _movement = _dashboardService.getHourlyMovement();
     });
-  }
-
-  void _showSoon(String feature) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('$feature estará disponível em breve.')),
-    );
   }
 
   @override
@@ -158,15 +153,14 @@ class _AdminHomeViewState extends State<AdminHomeView> {
                 ),
                 const SizedBox(height: 12),
                 _QuickAccessButton(
+                  key: const Key('botao_aulas'),
                   icon: Icons.calendar_month,
                   label: 'Aulas',
-                  onPressed: () => _showSoon('Aulas'),
-                ),
-                const SizedBox(height: 12),
-                _QuickAccessButton(
-                  icon: Icons.attach_money,
-                  label: 'Finanças',
-                  onPressed: () => _showSoon('Finanças'),
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const GymClassesView()),
+                    );
+                  },
                 ),
                 const SizedBox(height: 32),
                 _MovementCard(movement: _movement, onRetry: _reloadMovement),
