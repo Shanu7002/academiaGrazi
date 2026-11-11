@@ -3,7 +3,7 @@ const fs = require('node:fs');
 const assert = require('node:assert/strict');
 const { initializeTestEnvironment, assertFails, assertSucceeds } = require('@firebase/rules-unit-testing');
 const {
-  doc, collection, query, where, getDoc, getDocs,
+  doc, collection, collectionGroup, query, where, getDoc, getDocs,
   setDoc, updateDoc, deleteDoc, writeBatch, serverTimestamp
 } = require('firebase/firestore');
 
@@ -91,6 +91,12 @@ async function main() {
     await test('professor nao renova codigo de outro professor',()=>assertFails(renovarCodigo(prof1,'prof2','2468')));
     await test('aluno nao grava codigo de convite no proprio perfil',()=>assertFails(updateDoc(user(aluno1,'aluno1'),{registrationCode:'1234',registrationCodeExpiresAt:new Date().toISOString()})));
     await test('professor nao altera o tipo junto com o codigo',()=>assertFails(updateDoc(user(prof1,'prof1'),{registrationCode:'4321',type:'admin'})));
+
+    // GB-080: consulta de grupo das sessoes, so para o admin.
+    const sessoesFinalizadas=db=>getDocs(query(collectionGroup(db,'trainingSessions'),where('status','==','finished'),where('finishedAt','>=','2026-01-01T00:00:00.000Z')));
+    await test('admin consulta as sessoes de todos os alunos',()=>assertSucceeds(sessoesFinalizadas(admin)));
+    await test('professor nao consulta sessoes de todos os alunos',()=>assertFails(sessoesFinalizadas(prof1)));
+    await test('aluno nao consulta sessoes de todos os alunos',()=>assertFails(sessoesFinalizadas(aluno1)));
 
     // GB-040: unidades e escala. Qualquer autenticado le; so o admin grava.
     const unidade=(extra={})=>({name:'Bloco A',active:true,createdAt:'2026-11-11T12:00:00.000Z',...extra});

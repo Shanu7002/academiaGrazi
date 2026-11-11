@@ -65,45 +65,53 @@ class _AdminHomeViewState extends State<AdminHomeView> {
                   builder: (context, snapshot) {
                     final stats = snapshot.data;
                     final growth = stats?.growthPercent;
-                    final String activeValue;
-                    if (snapshot.hasError) {
-                      activeValue = '--';
-                    } else if (stats == null) {
-                      activeValue = '...';
-                    } else {
-                      activeValue = '${stats.total}';
+
+                    String value(int Function(StudentStats) pick) {
+                      if (snapshot.hasError) return '--';
+                      if (stats == null) return '...';
+                      return '${pick(stats)}';
                     }
 
-                    return Row(
+                    return Column(
                       children: [
-                        Expanded(
-                          child: _StatCard(
-                            key: const Key('card_alunos_ativos'),
-                            icon: Icons.directions_walk,
-                            iconColor: AppColors.primary,
-                            iconBackground: AppColors.avatarBackground,
-                            label: 'Alunos ativos',
-                            value: activeValue,
-                            badge:
-                                growth == null ? null : '+${growth.round()}%',
-                          ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _StatCard(
+                                key: const Key('card_alunos_ativos'),
+                                icon: Icons.directions_walk,
+                                iconColor: AppColors.primary,
+                                iconBackground: AppColors.avatarBackground,
+                                label: 'Alunos ativos',
+                                value: value((s) => s.active),
+                                badge:
+                                    growth == null
+                                        ? null
+                                        : '+${growth.round()}%',
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: _StatCard(
+                                key: const Key('card_alunos_remotos'),
+                                icon: Icons.laptop_chromebook,
+                                iconColor: AppColors.primaryDark,
+                                iconBackground: AppColors.infoSoftSurface,
+                                label: 'Remotos',
+                                value: value((s) => s.remote),
+                              ),
+                            ),
+                          ],
                         ),
-                        const SizedBox(width: 16),
-                        const Expanded(
-                          child: _StatCard(
-                            icon: Icons.laptop_chromebook,
-                            iconColor: AppColors.primaryDark,
-                            iconBackground: AppColors.infoSoftSurface,
-                            label: 'Remotos',
-                            value: '${AdminHomeMockData.remoteStudents}',
-                          ),
+                        const SizedBox(height: 16),
+                        _InactiveCard(
+                          key: const Key('card_alunos_inativos'),
+                          value: value((s) => s.inactive),
                         ),
                       ],
                     );
                   },
                 ),
-                const SizedBox(height: 16),
-                const _InactiveCard(value: AdminHomeMockData.inactiveStudents),
                 const SizedBox(height: 32),
                 Text(
                   'Acesso Rápido',
@@ -279,9 +287,9 @@ class _StatCard extends StatelessWidget {
 }
 
 class _InactiveCard extends StatelessWidget {
-  final int value;
+  final String value;
 
-  const _InactiveCard({required this.value});
+  const _InactiveCard({super.key, required this.value});
 
   @override
   Widget build(BuildContext context) {
@@ -309,7 +317,7 @@ class _InactiveCard extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            '$value',
+            value,
             style: GoogleFonts.barlowCondensed(
               fontSize: 32,
               fontWeight: FontWeight.bold,

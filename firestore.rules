@@ -559,6 +559,12 @@ service cloud.firestore {
       allow delete: if false;
     }
 
+    // GB-080: o admin le as sessoes de todos os alunos numa consulta de
+    // grupo (inativos e horarios de pico da home). So leitura.
+    match /{path=**}/trainingSessions/{sessionId} {
+      allow list: if isAdmin();
+    }
+
     // Catalogo global de movimentos: leitura autenticada, cadastro manual
     // restrito a professores. A importacao inicial e feita pelo Admin SDK.
     match /exerciseCatalog/{exerciseId} {

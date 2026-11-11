@@ -32,14 +32,26 @@ void main() {
     tester,
   ) async {
     registerService(
-      () async => const StudentStats(total: 156, newLast30Days: 6),
+      () async => const StudentStats(
+        total: 156,
+        newLast30Days: 6,
+        remote: 24,
+        inactive: 8,
+      ),
     );
 
     await tester.pumpWidget(const MaterialApp(home: AdminHomeView()));
     await tester.pumpAndSettle();
 
     expect(find.text('Visão Geral'), findsOneWidget);
-    expect(find.text('156'), findsOneWidget);
+    Finder valor(String card, String texto) => find.descendant(
+      of: find.byKey(Key(card)),
+      matching: find.text(texto),
+    );
+    // Ativos = total − inativos.
+    expect(valor('card_alunos_ativos', '148'), findsOneWidget);
+    expect(valor('card_alunos_remotos', '24'), findsOneWidget);
+    expect(valor('card_alunos_inativos', '8'), findsOneWidget);
     expect(find.text('+4%'), findsOneWidget);
     expect(find.text('Acesso Rápido'), findsOneWidget);
     expect(find.text('Alertas Operacionais'), findsOneWidget);
@@ -51,7 +63,8 @@ void main() {
     await tester.pumpWidget(const MaterialApp(home: AdminHomeView()));
     await tester.pumpAndSettle();
 
-    expect(find.text('--'), findsOneWidget);
+    // Ativos, remotos e inativos.
+    expect(find.text('--'), findsNWidgets(3));
   });
 
   testWidgets('atalhos ainda não implementados avisam com SnackBar', (
