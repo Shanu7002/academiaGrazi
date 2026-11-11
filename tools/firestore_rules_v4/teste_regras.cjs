@@ -172,6 +172,20 @@ async function main() {
     await test('aluno nao reabre sessao finalizada',()=>assertFails(updateDoc(session(aluno1),{status:'inProgress',updatedAt:serverTimestamp()})));
     await test('professor nao altera sessao do aluno',()=>assertFails(updateDoc(session(prof1),{warmupDone:false,updatedAt:serverTimestamp()})));
     await test('aluno nao edita sessao de outro aluno',()=>assertFails(updateDoc(doc(aluno2,'users/aluno1/trainingSessions/sessao1'),{warmupDone:false,updatedAt:serverTimestamp()})));
+    // Admin troca o professor responsavel; o aluno segue com a ficha atual.
+    await test('admin troca o professor responsavel do aluno',()=>assertSucceeds(updateDoc(user(admin,'aluno1'),{responsable:'prof2'})));
+    await test('admin nao vincula aluno a quem nao e professor',()=>assertFails(updateDoc(user(admin,'aluno1'),{responsable:'aluno2'})));
+    await test('admin nao troca professor junto com outro campo',()=>assertFails(updateDoc(user(admin,'aluno1'),{responsable:'prof1',name:'Outro'})));
+    await test('professor nao troca o professor do aluno',()=>assertFails(updateDoc(user(prof2,'aluno1'),{responsable:'prof1'})));
+    await test('aluno segue treinando a ficha do professor anterior',()=>assertSucceeds(setDoc(session(aluno1,'sessao-troca'),{
+      schemaVersion:1,id:'sessao-troca',studentId:'aluno1',instructorId:'prof1',planId:'ficha1',planVersion:3,routineId:'A',routineName:'Treino A',status:'inProgress',startedAt:new Date().toISOString(),warmupDone:false,exercises:exercise,createdAt:serverTimestamp(),updatedAt:serverTimestamp()
+    })));
+    await test('sessao nao aceita professor diferente do autor da ficha',()=>assertFails(setDoc(session(aluno1,'sessao-falsa'),{
+      schemaVersion:1,id:'sessao-falsa',studentId:'aluno1',instructorId:'prof2',planId:'ficha1',planVersion:3,routineId:'A',routineName:'Treino A',status:'inProgress',startedAt:new Date().toISOString(),warmupDone:false,exercises:exercise,createdAt:serverTimestamp(),updatedAt:serverTimestamp()
+    })));
+    await test('novo professor acompanha a sessao',()=>assertSucceeds(getDoc(session(prof2,'sessao-troca'))));
+    await test('professor anterior deixa de acompanhar',()=>assertFails(getDoc(session(prof1,'sessao-troca'))));
+    await test('admin devolve o aluno ao professor original',()=>assertSucceeds(updateDoc(user(admin,'aluno1'),{responsable:'prof1'})));
     // Testes adicionais da biblioteca de exercicios e treinos reutilizaveis.
     const exerciseCatalog = (db, id) => doc(db, 'exerciseCatalog', id);
     const newManualExercise = () => ({

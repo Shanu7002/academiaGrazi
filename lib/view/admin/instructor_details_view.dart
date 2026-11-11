@@ -1,8 +1,8 @@
 import 'package:academiagrazi/locator.dart';
-import 'package:academiagrazi/models/users/registration_profile.dart';
 import 'package:academiagrazi/service/admin/admin_dashboard.dart';
 import 'package:academiagrazi/theme/app_colors.dart';
 import 'package:academiagrazi/view/admin/mocks/admin_team_mock_data.dart';
+import 'package:academiagrazi/view/admin/widgets/student_registration_details.dart';
 import 'package:academiagrazi/view/components/app_bar.dart';
 import 'package:academiagrazi/view/components/invite_code_card.dart';
 import 'package:flutter/material.dart';
@@ -240,50 +240,6 @@ String _initials(String name) {
   return (parts.first[0] + parts.last[0]).toUpperCase();
 }
 
-String _formatDate(DateTime date) {
-  String two(int value) => value.toString().padLeft(2, '0');
-  return '${two(date.day)}/${two(date.month)}/${date.year}';
-}
-
-String _formatPhone(String phone) {
-  final digits = phone.replaceAll(RegExp(r'\D'), '');
-  if (digits.length == 11) {
-    return '(${digits.substring(0, 2)}) ${digits.substring(2, 7)}-'
-        '${digits.substring(7)}';
-  }
-  if (digits.length == 10) {
-    return '(${digits.substring(0, 2)}) ${digits.substring(2, 6)}-'
-        '${digits.substring(6)}';
-  }
-  return phone;
-}
-
-String _goalLabel(PrimaryGoal goal) {
-  switch (goal) {
-    case PrimaryGoal.weightLoss:
-      return 'Emagrecimento & Definição';
-    case PrimaryGoal.muscleGain:
-      return 'Ganho de Massa Muscular';
-    case PrimaryGoal.conditioning:
-      return 'Condicionamento & Saúde';
-    case PrimaryGoal.strengthening:
-      return 'Fortalecimento & Postura';
-    case PrimaryGoal.mobility:
-      return 'Mobilidade & Flexibilidade';
-  }
-}
-
-const _noneOptions = {'Nenhuma dor', 'Não possuo'};
-
-/// Condições e restrições relevantes, sem as opções de "nenhuma".
-List<String> _healthAlerts(RegistrationProfile? profile) {
-  if (profile == null) return const [];
-  return [
-    ...profile.health.conditions,
-    ...profile.health.restrictions,
-  ].where((item) => !_noneOptions.contains(item)).toList();
-}
-
 BoxDecoration _cardDecoration({
   Color borderColor = AppColors.borderTranslucent,
 }) {
@@ -300,13 +256,6 @@ BoxDecoration _cardDecoration({
     ],
   );
 }
-
-TextStyle get _labelStyle => GoogleFonts.inter(
-  fontSize: 12,
-  fontWeight: FontWeight.w600,
-  letterSpacing: .5,
-  color: AppColors.slateText,
-);
 
 // ---------------------------------------------------------------------------
 // Widgets
@@ -364,7 +313,7 @@ class _ProfileCard extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       AdminTeamMockData.instructorRole.toUpperCase(),
-                      style: _labelStyle,
+                      style: adminLabelStyle,
                     ),
                   ],
                 ),
@@ -372,7 +321,7 @@ class _ProfileCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
-          _InfoRow(
+          AdminInfoRow(
             icon: Icons.mail_outline,
             label: 'E-mail',
             value:
@@ -386,46 +335,6 @@ class _ProfileCard extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-class _InfoRow extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final String value;
-
-  const _InfoRow({
-    required this.icon,
-    required this.label,
-    required this.value,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Icon(icon, size: 20, color: AppColors.primary),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(label.toUpperCase(), style: _labelStyle),
-              const SizedBox(height: 2),
-              Text(
-                value,
-                style: GoogleFonts.inter(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w500,
-                  color: AppColors.textPrimary,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
     );
   }
 }
@@ -628,10 +537,10 @@ class _StudentTile extends StatelessWidget {
     final user = student.user;
     final name = user.name.trim().isEmpty ? 'Sem nome' : user.name;
     final profile = user.registrationProfile;
-    final alerts = _healthAlerts(profile);
+    final alerts = healthAlerts(profile);
     final subtitle = [
-      if (profile != null) _goalLabel(profile.primaryGoal),
-      if (student.joinedAt != null) 'Desde ${_formatDate(student.joinedAt!)}',
+      if (profile != null) goalLabel(profile.primaryGoal),
+      if (student.joinedAt != null) 'Desde ${formatDateBr(student.joinedAt!)}',
     ].join(' • ');
 
     return Material(
@@ -731,11 +640,6 @@ class _StudentSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final user = student.user;
-    final profile = user.registrationProfile;
-    final alerts = _healthAlerts(profile);
-    final notes = profile?.health.notes.trim() ?? '';
-    final emergency = profile?.emergencyContact;
-
     return SafeArea(
       child: ConstrainedBox(
         constraints: BoxConstraints(
@@ -774,103 +678,10 @@ class _StudentSheet extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 20),
-              if (profile == null)
-                Text(
-                  'Este aluno ainda não completou a ficha de cadastro.',
-                  style: GoogleFonts.inter(
-                    fontSize: 14,
-                    color: AppColors.slateText,
-                  ),
-                )
-              else ...[
-                _InfoRow(
-                  icon: Icons.flag_outlined,
-                  label: 'Objetivo',
-                  value: _goalLabel(profile.primaryGoal),
-                ),
-                const SizedBox(height: 14),
-                _InfoRow(
-                  icon: Icons.straighten,
-                  label: 'Medidas',
-                  value:
-                      '${profile.measurements.age} anos • '
-                      '${profile.measurements.heightCm} cm • '
-                      '${profile.measurements.weightKg.toStringAsFixed(1)} kg',
-                ),
-                if (student.joinedAt != null) ...[
-                  const SizedBox(height: 14),
-                  _InfoRow(
-                    icon: Icons.event_outlined,
-                    label: 'Aluno desde',
-                    value: _formatDate(student.joinedAt!),
-                  ),
-                ],
-                const SizedBox(height: 20),
-                Text('SAÚDE', style: _labelStyle),
-                const SizedBox(height: 8),
-                if (alerts.isEmpty)
-                  Text(
-                    'Sem condições ou restrições informadas.',
-                    style: GoogleFonts.inter(
-                      fontSize: 14,
-                      color: AppColors.textBody,
-                    ),
-                  )
-                else
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: [
-                      for (final alert in alerts)
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 6,
-                          ),
-                          decoration: BoxDecoration(
-                            color: AppColors.accentAlertSurface,
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(
-                              color: AppColors.accentAlertBorder,
-                            ),
-                          ),
-                          child: Text(
-                            alert,
-                            style: GoogleFonts.inter(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.accentText,
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
-                if (notes.isNotEmpty) ...[
-                  const SizedBox(height: 10),
-                  Text(
-                    notes,
-                    style: GoogleFonts.inter(
-                      fontSize: 14,
-                      height: 1.4,
-                      color: AppColors.textBody,
-                    ),
-                  ),
-                ],
-                if (emergency != null && emergency.name.trim().isNotEmpty) ...[
-                  const SizedBox(height: 20),
-                  _InfoRow(
-                    icon: Icons.contact_phone_outlined,
-                    label: 'Contato de emergência',
-                    value: [
-                      emergency.name,
-                      if (emergency.relationship.isNotEmpty)
-                        emergency.relationship,
-                      if (emergency.phone.isNotEmpty)
-                        _formatPhone(emergency.phone),
-                    ].join(' • '),
-                  ),
-                ],
-              ],
+              StudentRegistrationDetails(
+                user: user,
+                joinedAt: student.joinedAt,
+              ),
             ],
           ),
         ),
