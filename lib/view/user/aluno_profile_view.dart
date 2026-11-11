@@ -8,7 +8,10 @@ import 'package:academiagrazi/locator.dart';
 import 'package:academiagrazi/models/users/user_model.dart';
 import 'package:academiagrazi/service/users/profile_photo.dart';
 import 'package:academiagrazi/service/users/register_user.dart';
+import 'package:academiagrazi/models/units/unit_model.dart';
+import 'package:academiagrazi/service/units/unit_service.dart';
 import 'package:academiagrazi/view/components/app_bar.dart';
+import 'package:academiagrazi/view/components/instructor_schedule_builder.dart';
 import 'package:academiagrazi/view/components/invite_code_card.dart';
 import 'package:academiagrazi/view/components/user_avatar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -314,23 +317,7 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
                             subtitleColor: AppColors.primaryText,
                           ),
                           const SizedBox(height: 12),
-                          _ProfessionalInfoCard(
-                            avatar: CircleAvatar(
-                              radius: 22,
-                              backgroundColor: AppColors.primary,
-                              child: Text(
-                                'A',
-                                style: GoogleFonts.barlowCondensed(
-                                  color: Colors.white,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                            label: 'BLOCO / TURNO',
-                            title: 'Bloco A',
-                            subtitle: '06:00 - 09:00',
-                          ),
+                          _UnitShiftCard(user: user),
                         ],
                       ),
                     ),
@@ -1356,6 +1343,7 @@ class _SectionHeader extends StatelessWidget {
 
 class _ProfessionalInfoCard extends StatelessWidget {
   const _ProfessionalInfoCard({
+    super.key,
     required this.avatar,
     required this.label,
     required this.title,
@@ -1624,3 +1612,88 @@ InputDecoration _profileInputDecoration({
     ),
   );
 }
+
+/// Bloco do aluno (`unitId`) ou, para o professor, o turno atual ou o
+/// próximo da escala.
+class _UnitShiftCard extends StatelessWidget {
+  const _UnitShiftCard({required this.user});
+
+  final UserModel user;
+
+  static const Widget _icon = CircleAvatar(
+    radius: 22,
+    backgroundColor: AppColors.primary,
+    child: Icon(Icons.grid_view_rounded, color: Colors.white, size: 20),
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    if (user.type == UserType.instructor) {
+      return InstructorScheduleBuilder(
+        instructorId: user.id,
+        builder: (context, schedule) {
+          final current = schedule.schedule.current;
+          final next = schedule.schedule.next;
+          final String title;
+          final String subtitle;
+          if (schedule.loading) {
+            title = '...';
+            subtitle = '';
+          } else if (current != null) {
+            title = schedule.unitName(current);
+            subtitle = 'Agora, até ${current.endTime}';
+          } else if (next != null) {
+            title = schedule.unitName(next);
+            subtitle = 'Próximo turno: ${schedule.nextWhenLabel}';
+          } else {
+            title = 'Sem turno na escala';
+            subtitle = schedule.hasError ? 'Escala indisponível' : '';
+          }
+          return _ProfessionalInfoCard(
+            key: const Key('card_bloco_turno'),
+            avatar: _icon,
+            label: 'BLOCO / TURNO',
+            title: title,
+            subtitle: subtitle,
+          );
+        },
+      );
+    }
+
+    final unitId = user.unitId;
+    final modality = switch (user.modality) {
+      StudentModality.remote => 'Remoto (treina em casa)',
+      StudentModality.onSite => 'Presencial',
+      null => '',
+    };
+    if (unitId == null || !locator.isRegistered<UnitService>()) {
+      return _ProfessionalInfoCard(
+        key: const Key('card_bloco_turno'),
+        avatar: _icon,
+        label: 'BLOCO',
+        title: 'Sem bloco definido',
+        subtitle: modality,
+      );
+    }
+    return StreamBuilder<List<UnitModel>>(
+      stream: locator<UnitService>().streamUnits(includeInactive: true),
+      builder: (context, snapshot) {
+        final unit =
+            snapshot.data?.where((u) => u.id == unitId).firstOrNull;
+        return _ProfessionalInfoCard(
+          key: const Key('card_bloco_turno'),
+          avatar: _icon,
+          label: 'BLOCO',
+          title:
+              snapshot.hasError
+                  ? 'Bloco indisponível'
+                  : snapshot.data == null
+                  ? '...'
+                  : unit?.name ?? 'Bloco removido',
+          subtitle: modality,
+        );
+      },
+    );
+  }
+}
+

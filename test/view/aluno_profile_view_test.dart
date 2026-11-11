@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:academiagrazi/locator.dart';
 import 'package:academiagrazi/service/users/profile_photo.dart';
+import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
+import 'package:academiagrazi/service/units/unit_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
@@ -441,6 +443,60 @@ void main() {
 
       verify(mockAuth.signOut()).called(1);
       expect(tester.takeException(), isNull);
+    });
+  });
+
+  group('card de bloco', () {
+    testWidgets('aluno sem bloco mostra "Sem bloco definido"', (tester) async {
+      await pumpProfileWith(
+        tester,
+        UserModel(
+          id: 'aluno_1',
+          name: 'Aluno',
+          email: 'a@test.com',
+          responsable: 'resp',
+          modality: StudentModality.remote,
+        ),
+      );
+
+      final card = find.byKey(const Key('card_bloco_turno'));
+      expect(
+        find.descendant(of: card, matching: find.text('Sem bloco definido')),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(
+          of: card,
+          matching: find.text('Remoto (treina em casa)'),
+        ),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('aluno com bloco mostra o nome do bloco', (tester) async {
+      final db = FakeFirebaseFirestore();
+      final unidades = UnitService(db: db);
+      locator.registerSingleton<UnitService>(unidades);
+      final bloco = await unidades.createUnit(name: 'Bloco Sul');
+
+      await pumpProfileWith(
+        tester,
+        UserModel(
+          id: 'aluno_1',
+          name: 'Aluno',
+          email: 'a@test.com',
+          responsable: 'resp',
+          unitId: bloco,
+        ),
+      );
+
+      expect(
+        find.descendant(
+          of: find.byKey(const Key('card_bloco_turno')),
+          matching: find.text('Bloco Sul'),
+        ),
+        findsOneWidget,
+      );
     });
   });
 }

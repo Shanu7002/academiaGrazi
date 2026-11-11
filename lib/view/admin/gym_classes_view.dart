@@ -6,7 +6,7 @@ import 'package:academiagrazi/service/admin/admin_dashboard.dart';
 import 'package:academiagrazi/service/units/gym_class_service.dart';
 import 'package:academiagrazi/service/units/unit_service.dart';
 import 'package:academiagrazi/theme/app_colors.dart';
-import 'package:academiagrazi/view/admin/widgets/weekdays.dart';
+import 'package:academiagrazi/view/components/weekdays.dart';
 import 'package:academiagrazi/view/components/app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
