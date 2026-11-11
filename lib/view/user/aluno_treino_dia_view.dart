@@ -1,5 +1,6 @@
 import 'package:academiagrazi/theme/app_colors.dart';
 import 'package:academiagrazi/view/user/aluno_exercicio_detalhe_view.dart';
+import 'package:academiagrazi/view/user/student_exercise_photo.dart';
 import 'package:academiagrazi/view/user/ui_data/aluno_treino_dia_ui_data.dart';
 import 'package:academiagrazi/view/user/ui_models/treino_ui_models.dart';
 import 'package:flutter/material.dart';
@@ -480,7 +481,12 @@ class _AlunoTreinoDiaViewState extends State<AlunoTreinoDiaView> {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              _buildThumb(icon: Icons.fitness_center_rounded),
+              StudentExercisePhoto(
+                url: exercicio.imageUrl,
+                size: 82,
+                height: 76,
+                radius: BorderRadius.circular(12),
+              ),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
@@ -541,29 +547,8 @@ class _AlunoTreinoDiaViewState extends State<AlunoTreinoDiaView> {
           colors: [AppColors.thumbnailStart, AppColors.slateSurface],
         ),
       ),
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          Icon(icon, color: AppColors.primary, size: 31),
-          Positioned(
-            right: 7,
-            bottom: 7,
-            child: Container(
-              width: 24,
-              height: 24,
-              decoration: const BoxDecoration(
-                color: AppColors.primaryDark,
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.play_arrow_rounded,
-                color: Colors.white,
-                size: 16,
-              ),
-            ),
-          ),
-        ],
-      ),
+      alignment: Alignment.center,
+      child: Icon(icon, color: AppColors.primary, size: 31),
     );
   }
 
