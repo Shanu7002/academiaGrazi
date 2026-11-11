@@ -50,6 +50,13 @@ async function run() {
     await test('professor alheio nao edita',()=>assertFails(updateDoc(home(p2),{version:2,updatedAt:serverTimestamp()})));
     await test('professor nao repete versao',()=>assertFails(updateDoc(home(p1),{routines:payload(1).routines,updatedAt:serverTimestamp()})));
     await test('professor atualiza com versao sequencial',()=>assertSucceeds(updateDoc(home(p1),{version:2,updatedAt:serverTimestamp()})));
+    // Troca de professor: o responsavel atual assume a prescricao de casa.
+    const vincular=(professor)=>env.withSecurityRulesDisabled(c=>updateDoc(doc(c.firestore(),'users/aluno1'),{responsable:professor}));
+    await vincular('prof2');
+    await test('novo professor responsavel substitui o treino em casa',()=>assertSucceeds(updateDoc(home(p2),{instructorId:'prof2',version:3,updatedAt:serverTimestamp()})));
+    await test('professor anterior nao edita mais',()=>assertFails(updateDoc(home(p1),{instructorId:'prof1',version:4,updatedAt:serverTimestamp()})));
+    await vincular('prof1');
+    await test('professor original reassume com versao seguinte',()=>assertSucceeds(updateDoc(home(p1),{instructorId:'prof1',version:4,updatedAt:serverTimestamp()})));
     const session=(d,id)=>doc(d,`users/aluno1/trainingSessions/${id}`);
     const sessionPayload=(id,version)=>({schemaVersion:1,id,studentId:'aluno1',instructorId:'prof1',
       planId:'home',planVersion:version,routineId:'casa-a',routineName:'Casa A',
@@ -57,12 +64,12 @@ async function run() {
       exercises:[{itemId:'item1',sets:[{number:1,completed:false,loadKg:null}]}],
       createdAt:serverTimestamp(),updatedAt:serverTimestamp()});
     await test('aluno nao inicia versao obsoleta',()=>assertFails(setDoc(session(student,'antiga'),sessionPayload('antiga',1))));
-    await test('aluno inicia em casa sem ficha presencial',()=>assertSucceeds(setDoc(session(student,'casa1'),sessionPayload('casa1',2))));
+    await test('aluno inicia em casa sem ficha presencial',()=>assertSucceeds(setDoc(session(student,'casa1'),sessionPayload('casa1',4))));
     await test('professor vinculado acompanha execucao',()=>assertSucceeds(getDoc(session(p1,'casa1'))));
-    await test('outro aluno nao cria sessao',()=>assertFails(setDoc(session(other,'invasao'),sessionPayload('invasao',2))));
+    await test('outro aluno nao cria sessao',()=>assertFails(setDoc(session(other,'invasao'),sessionPayload('invasao',4))));
     await test('aluno nao retira prescricao',()=>assertFails(deleteDoc(home(student))));
     await test('professor retira prescricao de casa',()=>assertSucceeds(deleteDoc(home(p1))));
-    await test('nao inicia mais depois de retirar',()=>assertFails(setDoc(session(student,'apos'),sessionPayload('apos',2))));
+    await test('nao inicia mais depois de retirar',()=>assertFails(setDoc(session(student,'apos'),sessionPayload('apos',4))));
     await test('historico existente continua acessivel',()=>assertSucceeds(getDoc(session(student,'casa1'))));
     console.log(`SUCESSO CASA: ${ok} verificacoes no emulador.`);
   } finally {await env.cleanup();}

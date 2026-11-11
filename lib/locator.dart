@@ -1,7 +1,11 @@
 import 'package:academiagrazi/controller/teachers/teacher_user_searcher.dart';
 import 'package:academiagrazi/controller/users/update_data.dart';
 import 'package:academiagrazi/service/admin/admin_dashboard.dart';
+import 'package:academiagrazi/service/admin/admin_student_service.dart';
 import 'package:academiagrazi/service/evaluations/physical_evaluation_service.dart';
+import 'package:academiagrazi/service/units/gym_class_service.dart';
+import 'package:academiagrazi/service/units/instructor_shift_service.dart';
+import 'package:academiagrazi/service/units/unit_service.dart';
 import 'package:academiagrazi/service/users/register_instructor.dart';
 import 'package:academiagrazi/view/preferences_service.dart';
 import 'package:get_it/get_it.dart';
@@ -51,6 +55,13 @@ Future<void> setupLocator() async {
     () => PhysicalEvaluationService(),
   );
 
+  // Units and instructor schedule
+  locator.registerLazySingleton<UnitService>(() => UnitService());
+  locator.registerLazySingleton<InstructorShiftService>(
+    () => InstructorShiftService(),
+  );
+  locator.registerLazySingleton<GymClassService>(() => GymClassService());
+
   // Update data
   locator.registerLazySingleton<UpdateDataController>(
     () => UpdateDataController(),
@@ -67,6 +78,9 @@ Future<void> setupLocator() async {
   // Admin dashboard
   locator.registerLazySingleton<AdminDashboardService>(
     () => AdminDashboardService(),
+  );
+  locator.registerLazySingleton<AdminStudentService>(
+    () => AdminStudentService(),
   );
 
   // Login

@@ -98,7 +98,7 @@ class _ProfessorDashboardViewState extends State<ProfessorDashboardView> {
                     child: _DashboardMetricCard(
                       asset: 'assets/tresAlunos.svg',
                       title: 'Alunos',
-                      value: _userQuantity,
+                      value: _isLoading ? '…' : _userQuantity,
                       description: 'Ativos',
                     ),
                   ),
@@ -243,7 +243,7 @@ class _DashboardMetricCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: shadowColor.withOpacity(0.3),
+            color: shadowColor.withValues(alpha: 0.3),
             blurRadius: 6,
             offset: const Offset(0, 3),
           ),
@@ -364,7 +364,7 @@ class _PriorityCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF001E2D).withOpacity(0.3),
+            color: const Color(0xFF001E2D).withValues(alpha: 0.3),
             blurRadius: 6,
             offset: const Offset(0, 3),
           ),

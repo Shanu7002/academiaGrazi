@@ -1,7 +1,9 @@
 import 'package:academiagrazi/locator.dart';
 import 'package:academiagrazi/service/admin/admin_dashboard.dart';
 import 'package:academiagrazi/theme/app_colors.dart';
+import 'package:academiagrazi/view/admin/auto_redistribution_view.dart';
 import 'package:academiagrazi/view/admin/instructor_details_view.dart';
+import 'package:academiagrazi/view/admin/manual_redistribution_view.dart';
 import 'package:academiagrazi/view/admin/mocks/admin_team_mock_data.dart';
 import 'package:academiagrazi/view/admin/register_instructor_view.dart';
 import 'package:academiagrazi/view/components/app_bar.dart';
@@ -33,10 +35,86 @@ class _AdminTeamViewState extends State<AdminTeamView> {
     });
   }
 
-  void _showSoon(String feature) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('$feature estará disponível em breve.')),
+  /// Pergunta se a redistribuição é automática ou manual e abre a tela.
+  Future<void> _openRedistribution() async {
+    final automatic = await showModalBottomSheet<bool>(
+      context: context,
+      backgroundColor: AppColors.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder:
+          (sheetContext) => SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 12),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Como redistribuir?',
+                    style: GoogleFonts.barlowCondensed(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.primaryDark,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  ListTile(
+                    key: const Key('opcao_redistribuir_automatico'),
+                    contentPadding: EdgeInsets.zero,
+                    leading: const Icon(
+                      Icons.auto_mode,
+                      color: AppColors.primary,
+                    ),
+                    title: const Text('Automática'),
+                    subtitle: const Text(
+                      'Divide os alunos pela capacidade de cada professor. '
+                      'Você vê a prévia antes de aplicar.',
+                    ),
+                    onTap: () => Navigator.pop(sheetContext, true),
+                  ),
+                  ListTile(
+                    key: const Key('opcao_redistribuir_manual'),
+                    contentPadding: EdgeInsets.zero,
+                    leading: const Icon(
+                      Icons.touch_app_outlined,
+                      color: AppColors.primary,
+                    ),
+                    title: const Text('Manual'),
+                    subtitle: const Text(
+                      'Escolha os alunos e o professor de destino.',
+                    ),
+                    onTap: () => Navigator.pop(sheetContext, false),
+                  ),
+                ],
+              ),
+            ),
+          ),
     );
+    if (automatic == null || !mounted) return;
+
+    if (automatic) {
+      final moved = await Navigator.of(context).push<int>(
+        MaterialPageRoute(builder: (_) => const AutoRedistributionView()),
+      );
+      if (!mounted) return;
+      if (moved != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Redistribuição aplicada: $moved aluno(s) mudaram de professor.',
+            ),
+          ),
+        );
+      }
+    } else {
+      await Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => const ManualRedistributionView()),
+      );
+      if (!mounted) return;
+    }
+    _reload();
   }
 
   Future<void> _openDetails(InstructorWorkload instructor) async {
@@ -100,7 +178,7 @@ class _AdminTeamViewState extends State<AdminTeamView> {
                     label: 'Redistribuir Alunos',
                     background: AppColors.accent,
                     foreground: AppColors.accentText,
-                    onPressed: () => _showSoon('Redistribuir alunos'),
+                    onPressed: _openRedistribution,
                   ),
                   const SizedBox(height: 12),
                   _ActionButton(

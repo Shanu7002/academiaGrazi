@@ -48,7 +48,8 @@ void main() {
 
         expect(json['name'], 'Teste da Silva');
         expect(json['type'], 'instructor');
-        expect(json['createdAt'], isA<String>());
+        // Sem createdAt no modelo, o toJson não inventa uma data nova.
+        expect(json, isNot(contains('createdAt')));
       },
     );
   });
@@ -157,6 +158,99 @@ void main() {
 
     expect(profile.gender, isNull);
     expect(profile.toJson(), isNot(contains('gender')));
+  });
+
+  group('GB-003 | createdAt e novos campos |', () {
+    test('grava createdAt em UTC e o lê de volta sem alterar', () {
+      final criadoEm = DateTime.utc(2026, 3, 10, 14, 30);
+      final user = UserModel(
+        id: 'u1',
+        name: 'Ana',
+        email: 'ana@example.com',
+        createdAt: criadoEm,
+      );
+
+      final json = user.toJson();
+      expect(json['createdAt'], '2026-03-10T14:30:00.000Z');
+
+      final lido = UserModel.fromJson(json, 'u1');
+      expect(lido.createdAt, criadoEm);
+      expect(lido.toJson()['createdAt'], json['createdAt']);
+    });
+
+    test('copyWith mantém createdAt e os novos campos', () {
+      final user = UserModel(
+        id: 'p1',
+        name: 'Prof',
+        email: 'prof@example.com',
+        type: UserType.instructor,
+        createdAt: DateTime.utc(2026, 1, 1),
+        specialty: 'Pilates',
+        studentCapacity: 25,
+      );
+
+      final copia = user.copyWith(registrationCode: '1234');
+
+      expect(copia.createdAt, DateTime.utc(2026, 1, 1));
+      expect(copia.specialty, 'Pilates');
+      expect(copia.studentCapacity, 25);
+      expect(copia.registrationCode, '1234');
+    });
+
+    test('serializa e lê unidade, modalidade, especialidade e capacidade', () {
+      final aluno = UserModel(
+        id: 'a1',
+        name: 'Aluno',
+        email: 'a@example.com',
+        unitId: 'unidade-centro',
+        modality: StudentModality.remote,
+      );
+      final professor = UserModel(
+        id: 'p1',
+        name: 'Prof',
+        email: 'p@example.com',
+        type: UserType.instructor,
+        specialty: 'Musculação',
+        studentCapacity: 40,
+      );
+
+      final alunoJson = aluno.toJson();
+      expect(alunoJson['unitId'], 'unidade-centro');
+      expect(alunoJson['modality'], 'remote');
+      final alunoLido = UserModel.fromJson(alunoJson, 'a1');
+      expect(alunoLido.unitId, 'unidade-centro');
+      expect(alunoLido.modality, StudentModality.remote);
+
+      final professorLido = UserModel.fromJson(professor.toJson(), 'p1');
+      expect(professorLido.specialty, 'Musculação');
+      expect(professorLido.studentCapacity, 40);
+    });
+
+    test('documento antigo sem os campos novos é lido sem erro', () {
+      final user = UserModel.fromJson({
+        'name': 'Antigo',
+        'email': 'antigo@example.com',
+        'type': 'user',
+        'modality': 'valor-desconhecido',
+      }, 'old');
+
+      expect(user.createdAt, isNull);
+      expect(user.responsable, isNull);
+      expect(user.unitId, isNull);
+      expect(user.modality, isNull);
+      expect(user.specialty, isNull);
+      expect(user.studentCapacity, isNull);
+      expect(
+        user.toJson().keys,
+        isNot(
+          anyOf(
+            contains('createdAt'),
+            contains('unitId'),
+            contains('modality'),
+          ),
+        ),
+      );
+    });
   });
 
   group('photoUrl |', () {

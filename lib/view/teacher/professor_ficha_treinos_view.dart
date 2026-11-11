@@ -16,6 +16,8 @@ import 'package:academiagrazi/service/training/training_plan_service.dart';
 import 'package:academiagrazi/service/training/training_session_service.dart';
 import 'package:academiagrazi/theme/app_colors.dart';
 import 'package:academiagrazi/view/components/app_bar.dart';
+import 'package:academiagrazi/view/components/exercise_details_sheet.dart';
+import 'package:academiagrazi/view/components/user_avatar.dart';
 import 'package:academiagrazi/view/teacher/professor_historico_aluno_view.dart';
 import 'package:academiagrazi/view/teacher/professor_resumo_treinos_aluno.dart';
 import 'package:academiagrazi/view/teacher/services/seletor_imagem_exercicio.dart';
@@ -1161,11 +1163,12 @@ class _ProfessorFichaTreinosViewState extends State<ProfessorFichaTreinosView> {
             child: ListTile(
               key: Key('professor_aluno_${student.id}'),
               contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-              leading: CircleAvatar(
+              leading: UserAvatar(
+                key: Key('foto_aluno_${student.id}'),
+                photoUrl: student.photoUrl,
+                size: 40,
                 backgroundColor: AppColors.avatarBackground,
-                child: Text(student.name.isEmpty ? '?' : student.name[0].toUpperCase(),
-                    style: const TextStyle(color: AppColors.primary,
-                        fontWeight: FontWeight.bold)),
+                iconColor: AppColors.primary,
               ),
               title: Text(student.name, style: const TextStyle(
                   fontSize: 15, fontWeight: FontWeight.w700,
@@ -1450,18 +1453,32 @@ class _ProfessorFichaTreinosViewState extends State<ProfessorFichaTreinosView> {
             color: AppColors.primary, fontWeight: FontWeight.bold)),
       ),
       const SizedBox(width: 8),
-      _exerciseImage(item.imageUrl, size: 43),
-      const SizedBox(width: 9),
-      Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text(item.name, maxLines: 2, overflow: TextOverflow.ellipsis,
-            style: const TextStyle(color: AppColors.textPrimary,
-                fontWeight: FontWeight.w700)),
-        Text('${item.sets} séries • ${item.repetitions} reps • ${item.restSeconds}s',
-            style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
-        if (item.targetLoadKg != null)
-          Text('Carga sugerida: ${item.targetLoadKg} kg', style: const TextStyle(
-              fontSize: 12, color: AppColors.textSecondary)),
-      ])),
+      // Tocar na foto ou no nome abre os detalhes do exercício (GB-014).
+      Expanded(child: InkWell(
+        key: Key('card_detalhes_exercicio_${item.id}'),
+        borderRadius: BorderRadius.circular(9),
+        onTap: () => showExerciseDetailsSheet(
+          context,
+          name: item.name,
+          muscleGroup: item.muscleGroup,
+          instructions: item.instructions,
+          imageUrl: item.imageUrl,
+        ),
+        child: Row(children: [
+          _exerciseImage(item.imageUrl, size: 43),
+          const SizedBox(width: 9),
+          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text(item.name, maxLines: 2, overflow: TextOverflow.ellipsis,
+                style: const TextStyle(color: AppColors.textPrimary,
+                    fontWeight: FontWeight.w700)),
+            Text('${item.sets} séries • ${item.repetitions} reps • ${item.restSeconds}s',
+                style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+            if (item.targetLoadKg != null)
+              Text('Carga sugerida: ${item.targetLoadKg} kg', style: const TextStyle(
+                  fontSize: 12, color: AppColors.textSecondary)),
+          ])),
+        ]),
+      )),
       if (onEdit != null)
         IconButton(
           key: Key('editar-exercicio-${item.id}'),

@@ -77,6 +77,7 @@ class RegisterInstructorController {
         email: email,
         type: UserType.instructor,
         responsable: currentUser.id,
+        createdAt: DateTime.now(),
       );
 
       // A gravação usa o Firestore principal, autenticado como o admin.

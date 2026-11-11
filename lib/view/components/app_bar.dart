@@ -10,12 +10,11 @@ import 'package:flutter/material.dart';
 
 /// Cabeçalho compartilhado entre aluno e professor.
 ///
-/// Centraliza a identidade visual e permite que cada tela
-/// configure seu título, suas ações e sua cor de fundo.
+/// Centraliza a identidade visual (fundo branco) e permite que cada tela
+/// configure seu título e suas ações.
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final List<Widget>? actions;
-  final Color backgroundColor;
   final VoidCallback? onNotificationPressed;
   final bool showBackButton;
 
@@ -23,8 +22,12 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     super.key,
     required this.title,
     this.actions,
+<<<<<<< HEAD
     this.showBackButton = false,
     this.backgroundColor = Colors.blue, // Cor padrão caso nenhuma seja enviada
+=======
+    this.showBackButton = true,
+>>>>>>> 420086f8e6e1a1b6b8618160dd457bc8fc5c9587
     this.onNotificationPressed,
   });
 

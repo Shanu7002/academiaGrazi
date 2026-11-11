@@ -69,17 +69,13 @@ abstract final class AppColors {
   static const Color chartBar = Color(0xFF2CA99F);
   static const Color chartBarInactive = Color(0xFFE9EEEC);
 
-  // Thumbnails / vídeo
+  // Thumbnails
   static const Color thumbnailStart = Color(0xFFE1EEEC);
-  static const Color videoGradientStart = Color(0xFFB8CBC8);
-  static const Color videoGradientMiddle = Color(0xFF7C9691);
-  static const Color videoGradientEnd = Color(0xFF4E6964);
 
   // Sombras e overlays
   static const Color shadowFaint = Color(0x0A0F172A);
   static const Color shadowCard = Color(0x0F0F172A);
   static const Color shadowSoft = Color(0x140F172A);
-  static const Color shadowBlack20 = Color(0x33000000);
   static const Color white90 = Color(0xE6FFFFFF);
 
   static const Color navy = Color(0xFF001E2D);

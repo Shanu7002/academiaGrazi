@@ -74,6 +74,7 @@ void main() {
         expect(savedInstructor.email, 'marina@example.com');
         expect(savedInstructor.type, UserType.instructor);
         expect(savedInstructor.responsable, 'admin_123');
+        expect(savedInstructor.createdAt, isNotNull);
         verify(mockAuth.signOut()).called(1);
         verifyNever(mockUser.delete());
       },

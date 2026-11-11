@@ -65,7 +65,8 @@ class _AlunoHistoricoSessoesViewState extends State<AlunoHistoricoSessoesView> {
     body: StreamBuilder<List<TrainingSession>>(
       stream: _history,
       builder: (context, snapshot) {
-        if (snapshot.hasError) return Center(child: Padding(
+        if (snapshot.hasError) {
+          return Center(child: Padding(
           padding: const EdgeInsets.all(24),
           child: Column(mainAxisSize: MainAxisSize.min, children: [
             const Text('Não foi possível carregar seu histórico.',
@@ -75,14 +76,17 @@ class _AlunoHistoricoSessoesViewState extends State<AlunoHistoricoSessoesView> {
                 child: const Text('Tentar novamente')),
           ]),
         ));
+        }
         if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
         final sessions = snapshot.data!;
-        if (sessions.isEmpty) return const Center(child: Padding(
+        if (sessions.isEmpty) {
+          return const Center(child: Padding(
           padding: EdgeInsets.all(28),
           child: Text('Nenhum treino finalizado ainda. Quando você finalizar uma '
               'sessão, ela aparecerá aqui e também para o seu professor.',
               textAlign: TextAlign.center),
         ));
+        }
         return Center(child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 440),
           child: ListView(

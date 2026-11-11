@@ -12,6 +12,7 @@ import 'package:academiagrazi/view/tab_router.dart';
 import 'package:academiagrazi/models/users/user_model.dart';
 import 'package:academiagrazi/service/users/register_user.dart';
 import 'package:academiagrazi/service/admin/admin_dashboard.dart';
+import 'package:academiagrazi/service/admin/admin_student_service.dart';
 import 'package:academiagrazi/service/evaluations/physical_evaluation_service.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 
@@ -158,6 +159,9 @@ void main() {
     locator.registerSingleton<AdminDashboardService>(
       AdminDashboardService(db: FakeFirebaseFirestore()),
     );
+    locator.registerSingleton<AdminStudentService>(
+      AdminStudentService(db: FakeFirebaseFirestore()),
+    );
 
     await tester.pumpWidget(const MaterialApp(home: MainShell(isAdmin: true)));
     await tester.pumpAndSettle();
@@ -173,5 +177,32 @@ void main() {
       2,
     );
     expect(find.text('Carga da Equipe'), findsOneWidget);
+  });
+
+  testWidgets('admin vê Alunos no lugar de Treinos', (tester) async {
+    final db = FakeFirebaseFirestore();
+    await db.collection('users').doc('a1').set({
+      'name': 'Ana Lima',
+      'email': 'ana@test.com',
+      'type': 'user',
+    });
+    locator.registerSingleton<AdminDashboardService>(
+      AdminDashboardService(db: db),
+    );
+    locator.registerSingleton<AdminStudentService>(AdminStudentService(db: db));
+
+    await tester.pumpWidget(const MaterialApp(home: MainShell(isAdmin: true)));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Treinos'), findsNothing);
+
+    await tester.tap(find.byKey(const ValueKey('admin_tab_alunos')));
+    await tester.pumpAndSettle();
+
+    expect(
+      tester.widget<NavigationBar>(find.byType(NavigationBar)).selectedIndex,
+      1,
+    );
+    expect(find.text('Ana Lima'), findsOneWidget);
   });
 }
