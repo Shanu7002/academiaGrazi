@@ -5,6 +5,9 @@ class UserSummary {
   final String id;
   final String name;
 
+  /// Foto de perfil do aluno (Cloudinary), quando ele cadastrou uma.
+  final String? photoUrl;
+
   /// Medidas informadas pelo aluno no cadastro, quando existirem.
   final BodyMeasurements? measurements;
 
@@ -14,6 +17,7 @@ class UserSummary {
   const UserSummary({
     required this.id,
     required this.name,
+    this.photoUrl,
     this.measurements,
     this.gender,
   });
@@ -28,6 +32,7 @@ class UserSummary {
     return UserSummary(
       id: doc.id,
       name: (data['name'] as String?) ?? 'Unknown User',
+      photoUrl: data['photoUrl'] as String?,
       measurements:
           measurements is Map
               ? BodyMeasurements.fromJson(

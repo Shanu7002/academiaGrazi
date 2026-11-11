@@ -17,6 +17,7 @@ import 'package:academiagrazi/service/training/training_session_service.dart';
 import 'package:academiagrazi/theme/app_colors.dart';
 import 'package:academiagrazi/view/components/app_bar.dart';
 import 'package:academiagrazi/view/components/exercise_details_sheet.dart';
+import 'package:academiagrazi/view/components/user_avatar.dart';
 import 'package:academiagrazi/view/teacher/professor_historico_aluno_view.dart';
 import 'package:academiagrazi/view/teacher/professor_resumo_treinos_aluno.dart';
 import 'package:academiagrazi/view/teacher/services/seletor_imagem_exercicio.dart';
@@ -1162,11 +1163,12 @@ class _ProfessorFichaTreinosViewState extends State<ProfessorFichaTreinosView> {
             child: ListTile(
               key: Key('professor_aluno_${student.id}'),
               contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-              leading: CircleAvatar(
+              leading: UserAvatar(
+                key: Key('foto_aluno_${student.id}'),
+                photoUrl: student.photoUrl,
+                size: 40,
                 backgroundColor: AppColors.avatarBackground,
-                child: Text(student.name.isEmpty ? '?' : student.name[0].toUpperCase(),
-                    style: const TextStyle(color: AppColors.primary,
-                        fontWeight: FontWeight.bold)),
+                iconColor: AppColors.primary,
               ),
               title: Text(student.name, style: const TextStyle(
                   fontSize: 15, fontWeight: FontWeight.w700,
