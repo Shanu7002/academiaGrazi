@@ -62,8 +62,6 @@ class TrainingPlanUiMapper {
           exercicio: items[index],
           descanso: '${exercise.restSeconds}s',
           orientacoes: items[index].instructions,
-          // O player da tela antiga continua demonstrativo neste momento.
-          tempoVideo: '--',
         );
       }
       routineDetails[routine.id] = AlunoTreinoDiaUiData(

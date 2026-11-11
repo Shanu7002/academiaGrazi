@@ -10,15 +10,16 @@ class AppBottomNavigation extends StatelessWidget {
   final ValueChanged<int> onDestinationSelected;
   final String keyPrefix;
 
-  /// Mostra a aba Equipe (gestão do admin) no lugar da Evolução.
-  final bool showTeamTab;
+  /// Abas do admin: Alunos no lugar de Treinos e Equipe no lugar de
+  /// Evolução.
+  final bool adminTabs;
 
   const AppBottomNavigation({
     super.key,
     required this.selectedIndex,
     required this.onDestinationSelected,
     this.keyPrefix = 'app',
-    this.showTeamTab = false,
+    this.adminTabs = false,
   });
 
   @override
@@ -42,12 +43,20 @@ class AppBottomNavigation extends StatelessWidget {
               selectedIcon: const Icon(Icons.home),
               label: 'Início',
             ),
-            NavigationDestination(
-              key: ValueKey('${keyPrefix}_tab_treinos'),
-              icon: const Icon(Icons.fitness_center),
-              label: 'Treinos',
-            ),
-            if (showTeamTab)
+            if (adminTabs)
+              NavigationDestination(
+                key: ValueKey('${keyPrefix}_tab_alunos'),
+                icon: const Icon(Icons.people_outline),
+                selectedIcon: const Icon(Icons.people),
+                label: 'Alunos',
+              )
+            else
+              NavigationDestination(
+                key: ValueKey('${keyPrefix}_tab_treinos'),
+                icon: const Icon(Icons.fitness_center),
+                label: 'Treinos',
+              ),
+            if (adminTabs)
               NavigationDestination(
                 key: ValueKey('${keyPrefix}_tab_equipe'),
                 icon: const Icon(Icons.groups_outlined),

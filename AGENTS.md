@@ -12,7 +12,7 @@ Aplicativo mobile (Flutter) da Academia Grazi Braz, **em português do Brasil**,
 
 | Perfil | `UserType` | Faz o quê |
 |---|---|---|
-| Administrador | `admin` | Visão da operação, equipe (carga dos professores), cadastro de professores, unidades e escala, grade de aulas, biblioteca de exercícios, ocorrências |
+| Administrador | `admin` | Visão da operação, gestão dos alunos (professor responsável e modalidade), equipe (carga dos professores), cadastro de professores, unidades e escala, grade de aulas, biblioteca de exercícios, ocorrências |
 | Professor | `instructor` | Painel com unidade atual/próxima e pendências, lista de alunos, montagem e prescrição de treinos, avaliações físicas |
 | Aluno | `user` | Treino em destaque, execução do treino com registro de carga, evolução e avaliações, perfil e ficha de saúde |
 
@@ -159,27 +159,27 @@ Legenda: ✅ existe · 🆕 planejada (schema de referência; quem implementar s
 name: string
 email: string
 type: 'admin' | 'instructor' | 'user'
-createdAt: string ISO
+createdAt: string ISO UTC        # gravado só na criação (UserModel.createdAt); nunca reescrito
 responsable?: string            # aluno → uid do professor; professor → uid do admin que o cadastrou
 photoUrl?: string               # Cloudinary
 # aluno
 registrationProfile?: { measurements{age,heightCm,weightKg}, gender?: 'male'|'female'|'undisclosed', primaryGoal, health{conditions[],restrictions[],notes}, emergencyContact{name,relationship,phone} }
 onboardingCompleted: bool
 termsAcceptedAt?: string ISO
-unitId?: string                 # 🆕 GB-003/GB-043
-modality?: 'onSite' | 'remote'  # 🆕 definido por professor/admin
+unitId?: string                 # aluno; campo no modelo (GB-003), tela no GB-043
+modality?: 'onSite' | 'remote'  # aluno; definido pelo professor responsável ou admin (GB-003)
 # professor
 registrationCode?: string       # 4 dígitos
 registrationCodeExpiresAt?: string ISO UTC
-specialty?: string              # 🆕 GB-085
-studentCapacity?: int           # 🆕 GB-085 (padrão 30 quando ausente)
+specialty?: string              # professor; só o admin altera (GB-003), tela no GB-085
+studentCapacity?: int           # professor; só o admin altera (GB-003); padrão 30 quando ausente (GB-085)
 ```
 
 **✅ `instructorCodes/{code}`**: `{ instructorId, instructorName, active, createdAt, expiresAtMillis }`. Leitura pública apenas por `get`.
 
-**🆕 `units/{unitId}`**: `{ name, address?, active, createdAt }`
+**✅ `units/{unitId}`**: `UnitModel` (`lib/models/units/unit_model.dart`), `UnitService`. `{ name, address?, active, createdAt }`. Nunca apagada: desative com `active: false`.
 
-**🆕 `instructorShifts/{id}`**: `{ instructorId, unitId, weekday: 1..7 (DateTime.weekday, 1 = segunda), startTime: 'HH:mm', endTime: 'HH:mm', createdAt }`
+**✅ `instructorShifts/{id}`**: `InstructorShiftModel` (`lib/models/units/instructor_shift_model.dart`), `InstructorShiftService`. `{ instructorId, unitId, weekday: 1..7 (DateTime.weekday, 1 = segunda), startTime: 'HH:mm', endTime: 'HH:mm', createdAt }`. Horário local da academia; `startTime < endTime` (o turno não vira a meia-noite). Turno atual/próximo: `currentAndNextShift(shifts, now)` em `lib/service/units/shift_schedule.dart`.
 
 **🆕 `exercises/{id}`**
 ```
@@ -246,7 +246,7 @@ Pendente = `scheduled` com data futura · vencida = `scheduled` com `scheduledAt
 
 **🆕 `occurrences/{id}`**: `{ title, description, unitId?, severity: 'warning'|'info', status: 'open'|'resolved', reportedBy, reportedByName, createdAt, resolvedAt?, resolvedBy? }`
 
-**🆕 `gym_classes/{id}`**: grade de aulas, somente leitura para o aluno. O nome da coleção já está nas regras. `{ name, unitId, instructorId?, weekday, startTime, durationMinutes, capacity (informativo), active }`
+**✅ `gym_classes/{id}`**: `GymClassModel` (`lib/models/units/gym_class_model.dart`), `GymClassService`; cadastro pelo admin em `GymClassesView`. Grade de aulas, somente leitura para o aluno, sem reserva e sem lotação. `{ name, unitId, instructorId?, weekday, startTime: 'HH:mm', durationMinutes, capacity? (informativo), active, createdAt }`. Nunca apagada: retire da grade com `active: false`.
 
 ---
 
@@ -258,7 +258,8 @@ As regras do Firestore (`firestore.rules`) são a **barreira real**; checagens n
 |---|---|---|---|
 | Próprio `users` | lê; altera só `name`, `photoUrl`, `registrationProfile.health`, `registrationProfile.emergencyContact` | lê; altera os mesmos campos + renova o próprio código | lê/altera |
 | `users` de outros | lê só o do seu professor (nome/foto) | lê os alunos com `responsable == uid`; altera `unitId`/`modality` deles | lê todos; cria professores; altera `specialty`, `studentCapacity`, `unitId`, `modality` |
-| Campos `type`, `responsable`, `createdAt` | ❌ nunca | ❌ nunca | só na criação |
+| Campos `type`, `createdAt` | ❌ nunca | ❌ nunca | só na criação |
+| Campo `responsable` (vínculo aluno → professor) | ❌ nunca | ❌ nunca | define na criação do professor; troca o professor do aluno, sempre para um professor válido |
 | `exercises` | lê | lê, cria, edita os que criou | tudo |
 | `workouts` | lê os próprios | CRUD dos seus alunos | lê |
 | `workoutTemplates` | ❌ | CRUD dos próprios | lê |
@@ -267,6 +268,8 @@ As regras do Firestore (`firestore.rules`) são a **barreira real**; checagens n
 | `units`, `instructorShifts`, `gym_classes` | lê | lê | CRUD |
 | `notifications` | lê as próprias; altera só `read` | lê as próprias; cria para seus alunos | lê as próprias; cria para qualquer um |
 | `occurrences` | ❌ | cria; lê as que criou | tudo |
+
+**Troca de professor responsável:** a sessão de treino registra o professor autor da ficha ativa, não o responsável atual. Depois de uma troca, o aluno segue treinando a ficha vigente até o novo professor publicar outra, e o novo responsável pode substituir ou retirar a ficha ativa e o treino em casa deixados pelo anterior.
 
 **Dados de saúde** (`registrationProfile.health`, `assessments`) e **contato de emergência** são sensíveis (LGPD): nunca exiba para outro aluno, nunca grave em log, nunca envie para serviço externo.
 
@@ -284,7 +287,7 @@ As regras do Firestore (`firestore.rules`) são a **barreira real**; checagens n
 - **Navegação inferior**: `AppBottomNavigation`. Abas finais por perfil:
   - Aluno: Início · Treinos · Evolução · Perfil
   - Professor: Início · Treinos (montagem) · Evolução (avaliações) · Perfil; a lista de alunos abre pelo Início
-  - Admin: Início · Exercícios · Equipe · Perfil
+  - Admin: Início · Alunos · Equipe · Perfil (a aba Alunos lista todos, filtra remotos e troca professor e modalidade)
 - Foto de usuário: `UserAvatar` (usa miniatura do Cloudinary).
 - Recursos fora do escopo **não aparecem** na UI. Exceção: o card de IA desabilitado com "Recurso futuro".
 - Nenhum botão sem ação (`onPressed: () {}`). Se a função ainda não existe, o botão não aparece.
