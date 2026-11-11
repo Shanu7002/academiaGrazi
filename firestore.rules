@@ -106,6 +106,28 @@ service cloud.firestore {
         && request.resource.data.diff(resource.data).affectedKeys()
           .hasOnly(['registrationCode', 'registrationCodeExpiresAt']);
 
+      // GB-003: o professor responsavel e o admin definem a unidade e a
+      // modalidade do aluno. O proprio aluno nao altera esses campos.
+      allow update: if resource.data.type == 'user'
+        && (linkedInstructor(userId) || isAdmin())
+        && request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['unitId', 'modality'])
+        && (!('unitId' in request.resource.data)
+          || request.resource.data.unitId is string)
+        && (!('modality' in request.resource.data)
+          || request.resource.data.modality in ['onSite', 'remote']);
+
+      // GB-003: so o admin define especialidade e capacidade do professor.
+      allow update: if isAdmin()
+        && resource.data.type == 'instructor'
+        && request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['specialty', 'studentCapacity'])
+        && (!('specialty' in request.resource.data)
+          || request.resource.data.specialty is string)
+        && (!('studentCapacity' in request.resource.data)
+          || (request.resource.data.studentCapacity is int
+            && request.resource.data.studentCapacity > 0));
+
       // Mantem a criacao do professor pelo administrador.
       allow create: if isAdmin()
         && request.resource.data.type == 'instructor'

@@ -2,6 +2,9 @@ import 'registration_profile.dart';
 
 enum UserType { admin, instructor, user }
 
+/// Como o aluno treina; definida pelo professor responsável ou pelo admin.
+enum StudentModality { onSite, remote }
+
 class UserModel {
   final String id;
   final String name;
@@ -15,6 +18,17 @@ class UserModel {
   final DateTime? termsAcceptedAt;
   final String? photoUrl;
 
+  /// Gravado uma única vez, na criação do documento (ver [toJson]).
+  final DateTime? createdAt;
+
+  // Aluno
+  final String? unitId;
+  final StudentModality? modality;
+
+  // Professor
+  final String? specialty;
+  final int? studentCapacity;
+
   UserModel({
     required this.id,
     required this.name,
@@ -27,13 +41,20 @@ class UserModel {
     this.onboardingCompleted = false,
     this.termsAcceptedAt,
     this.photoUrl,
+    this.createdAt,
+    this.unitId,
+    this.modality,
+    this.specialty,
+    this.studentCapacity,
   });
 
+  /// Documento completo, usado somente na criação. Edições posteriores
+  /// gravam apenas os campos alterados, para não sobrescrever `createdAt`.
   Map<String, dynamic> toJson() => {
     'name': name,
     'email': email,
     'type': type.name,
-    'createdAt': DateTime.now().toIso8601String(),
+    if (createdAt != null) 'createdAt': createdAt!.toUtc().toIso8601String(),
     'responsable': responsable,
     if (registrationCode != null) 'registrationCode': registrationCode,
     if (registrationCodeExpiresAt != null)
@@ -45,6 +66,10 @@ class UserModel {
     if (termsAcceptedAt != null)
       'termsAcceptedAt': termsAcceptedAt!.toIso8601String(),
     if (photoUrl != null) 'photoUrl': photoUrl,
+    if (unitId != null) 'unitId': unitId,
+    if (modality != null) 'modality': modality!.name,
+    if (specialty != null) 'specialty': specialty,
+    if (studentCapacity != null) 'studentCapacity': studentCapacity,
   };
 
   factory UserModel.fromJson(Map<String, dynamic> json, String documentId) {
@@ -53,7 +78,7 @@ class UserModel {
       name: json['name'] as String? ?? 'Unknown',
       email: json['email'] as String? ?? '',
       type: _parseUserType(json['type'] as String?),
-      responsable: json['responsable'] as String? ?? '',
+      responsable: json['responsable'] as String?,
       registrationCode: json['registrationCode'] as String?,
       registrationCodeExpiresAt: _parseDateTime(
         json['registrationCodeExpiresAt'],
@@ -67,6 +92,11 @@ class UserModel {
       onboardingCompleted: json['onboardingCompleted'] as bool? ?? false,
       termsAcceptedAt: _parseDateTime(json['termsAcceptedAt']),
       photoUrl: json['photoUrl'] as String?,
+      createdAt: _parseDateTime(json['createdAt']),
+      unitId: json['unitId'] as String?,
+      modality: StudentModality.values.asNameMap()[json['modality']],
+      specialty: json['specialty'] as String?,
+      studentCapacity: (json['studentCapacity'] as num?)?.toInt(),
     );
   }
 
@@ -88,6 +118,11 @@ class UserModel {
       onboardingCompleted: onboardingCompleted,
       termsAcceptedAt: termsAcceptedAt,
       photoUrl: photoUrl ?? this.photoUrl,
+      createdAt: createdAt,
+      unitId: unitId,
+      modality: modality,
+      specialty: specialty,
+      studentCapacity: studentCapacity,
     );
   }
 

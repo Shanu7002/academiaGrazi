@@ -159,20 +159,20 @@ Legenda: ✅ existe · 🆕 planejada (schema de referência; quem implementar s
 name: string
 email: string
 type: 'admin' | 'instructor' | 'user'
-createdAt: string ISO
+createdAt: string ISO UTC        # gravado só na criação (UserModel.createdAt); nunca reescrito
 responsable?: string            # aluno → uid do professor; professor → uid do admin que o cadastrou
 photoUrl?: string               # Cloudinary
 # aluno
 registrationProfile?: { measurements{age,heightCm,weightKg}, gender?: 'male'|'female'|'undisclosed', primaryGoal, health{conditions[],restrictions[],notes}, emergencyContact{name,relationship,phone} }
 onboardingCompleted: bool
 termsAcceptedAt?: string ISO
-unitId?: string                 # 🆕 GB-003/GB-043
-modality?: 'onSite' | 'remote'  # 🆕 definido por professor/admin
+unitId?: string                 # aluno; campo no modelo (GB-003), tela no GB-043
+modality?: 'onSite' | 'remote'  # aluno; definido pelo professor responsável ou admin (GB-003)
 # professor
 registrationCode?: string       # 4 dígitos
 registrationCodeExpiresAt?: string ISO UTC
-specialty?: string              # 🆕 GB-085
-studentCapacity?: int           # 🆕 GB-085 (padrão 30 quando ausente)
+specialty?: string              # professor; só o admin altera (GB-003), tela no GB-085
+studentCapacity?: int           # professor; só o admin altera (GB-003); padrão 30 quando ausente (GB-085)
 ```
 
 **✅ `instructorCodes/{code}`**: `{ instructorId, instructorName, active, createdAt, expiresAtMillis }`. Leitura pública apenas por `get`.

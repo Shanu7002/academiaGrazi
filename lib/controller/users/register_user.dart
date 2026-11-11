@@ -75,6 +75,7 @@ class RegisterUserController {
         registrationProfile: draft.toProfile(),
         onboardingCompleted: true,
         termsAcceptedAt: draft.termsAcceptedAt,
+        createdAt: DateTime.now(),
       );
       await _userService.registerUser(userModel);
 
