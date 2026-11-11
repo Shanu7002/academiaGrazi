@@ -30,7 +30,7 @@ class PrivacyTermsView extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(18),
               decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.08),
+                color: AppColors.primary.withValues(alpha: 0.08),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Row(
@@ -278,42 +278,50 @@ class _PrivacySection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      decoration: BoxDecoration(
+    // Material (e não Container com cor) para o ExpansionTile mostrar o
+    // efeito de toque; com DecoratedBox o Flutter acusa o ListTile escondido.
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Material(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.border),
-      ),
-      child: Theme(
-        data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
-        child: ExpansionTile(
-          tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-          childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 18),
-          leading: Icon(icon, color: AppColors.primary, size: 22),
-          title: Text(
-            title,
-            style: GoogleFonts.inter(
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
+        clipBehavior: Clip.antiAlias,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(14),
+          side: const BorderSide(color: AppColors.border),
+        ),
+        child: Theme(
+          data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+          child: ExpansionTile(
+            tilePadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 4,
             ),
-          ),
-          iconColor: AppColors.primary,
-          collapsedIconColor: AppColors.textSecondary,
-          children: [
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                content.trim(),
-                style: GoogleFonts.inter(
-                  fontSize: 13,
-                  height: 1.7,
-                  color: AppColors.textSecondary,
-                ),
+            childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 18),
+            leading: Icon(icon, color: AppColors.primary, size: 22),
+            title: Text(
+              title,
+              style: GoogleFonts.inter(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: AppColors.textPrimary,
               ),
             ),
-          ],
+            iconColor: AppColors.primary,
+            collapsedIconColor: AppColors.textSecondary,
+            children: [
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  content.trim(),
+                  style: GoogleFonts.inter(
+                    fontSize: 13,
+                    height: 1.7,
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
