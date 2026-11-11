@@ -28,21 +28,11 @@ jobs:
       - name: Generate Mocks
         run: dart run build_runner build --delete-conflicting-outputs
 
-      - name: Install LCOV (Linux Dependency)
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y lcov
-
+      # A cobertura do flutter test inclui apenas lib/, onde nao ha arquivos
+      # gerados (*.mocks.dart ficam em test/). O relatorio vai direto para o
+      # SonarCloud, sem instalar lcov via apt (o espelho do Azure caia).
       - name: Run Tests and Generate Coverage
         run: flutter test --coverage
-
-      - name: Sanitize Coverage Report
-        run: |
-          lcov --remove coverage/lcov.info \
-          'lib/**/*.mocks.dart' \
-          'lib/**/*.g.dart' \
-          -o coverage/lcov.info \
-          --ignore-errors unused
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@ffc3010689be73b8e5ae0c57ce35968afd7909e8
