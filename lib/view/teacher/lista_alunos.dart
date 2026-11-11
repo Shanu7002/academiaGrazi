@@ -1,3 +1,4 @@
+import 'package:academiagrazi/theme/app_font_size.dart';
 import 'package:academiagrazi/locator.dart';
 import 'package:academiagrazi/theme/app_colors.dart';
 import 'package:academiagrazi/view/components/app_bar.dart';
@@ -36,7 +37,7 @@ class _ListaAlunosViewState extends State<ListaAlunosView> {
                 style: GoogleFonts.barlowCondensed(
                   fontWeight: FontWeight.bold,
                   color: AppColors.navy,
-                  fontSize: 32,
+                  fontSize: AppFontSize.headline,
                 ),
               ),
               const SizedBox(height: 10),
@@ -47,7 +48,7 @@ class _ListaAlunosViewState extends State<ListaAlunosView> {
                       schedule.currentLabel,
                       style: GoogleFonts.barlowCondensed(
                         color: AppColors.textBody,
-                        fontSize: 16,
+                        fontSize: AppFontSize.body,
                       ),
                     ),
               ),
@@ -245,7 +246,7 @@ class CardAluno extends StatelessWidget {
                       nome,
                       style: GoogleFonts.barlowCondensed(
                         color: AppColors.navy,
-                        fontSize: 24,
+                        fontSize: AppFontSize.title,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -254,7 +255,7 @@ class CardAluno extends StatelessWidget {
                       proximoTreino,
                       style: GoogleFonts.barlowCondensed(
                         color: AppColors.textBody,
-                        fontSize: 13,
+                        fontSize: AppFontSize.caption,
                       ),
                     ),
                   ],
@@ -272,7 +273,7 @@ class CardAluno extends StatelessWidget {
                     statusTexto,
                     style: GoogleFonts.barlowCondensed(
                       color: statusColor,
-                      fontSize: 12,
+                      fontSize: AppFontSize.caption,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -312,7 +313,7 @@ class CardAluno extends StatelessWidget {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: GoogleFonts.barlowCondensed(
-                            fontSize: 13,
+                            fontSize: AppFontSize.caption,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -357,7 +358,7 @@ class CardAluno extends StatelessWidget {
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: GoogleFonts.barlowCondensed(
-                              fontSize: 13,
+                              fontSize: AppFontSize.caption,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -396,7 +397,7 @@ class CardAluno extends StatelessWidget {
                             overflow: TextOverflow.ellipsis,
                             style: GoogleFonts.barlowCondensed(
                               color: AppColors.accentText,
-                              fontSize: 13,
+                              fontSize: AppFontSize.caption,
                               fontWeight: FontWeight.bold,
                             ),
                           ),

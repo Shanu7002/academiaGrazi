@@ -1,3 +1,4 @@
+import 'package:academiagrazi/theme/app_font_size.dart';
 import 'package:academiagrazi/theme/app_colors.dart';
 import 'package:academiagrazi/view/user/aluno_exercicio_detalhe_view.dart';
 import 'package:academiagrazi/view/user/student_exercise_photo.dart';
@@ -190,7 +191,7 @@ class _AlunoTreinoDiaViewState extends State<AlunoTreinoDiaView> {
                             ? 'FINALIZAR TREINO'
                             : 'CONTINUAR TREINO',
                         style: GoogleFonts.barlowCondensed(
-                          fontSize: 18,
+                          fontSize: AppFontSize.subtitle,
                           fontWeight: FontWeight.w800,
                           letterSpacing: 0.6,
                         ),
@@ -244,7 +245,7 @@ class _AlunoTreinoDiaViewState extends State<AlunoTreinoDiaView> {
                         style: GoogleFonts.barlowCondensed(
                           fontWeight: FontWeight.w700,
                           color: AppColors.primary,
-                          fontSize: 23,
+                          fontSize: AppFontSize.title,
                           letterSpacing: 0.6,
                           height: 1,
                         ),
@@ -276,7 +277,7 @@ class _AlunoTreinoDiaViewState extends State<AlunoTreinoDiaView> {
                       overflow: TextOverflow.ellipsis,
                       style: GoogleFonts.barlowCondensed(
                         color: AppColors.textPrimary,
-                        fontSize: 14,
+                        fontSize: AppFontSize.small,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
@@ -286,7 +287,7 @@ class _AlunoTreinoDiaViewState extends State<AlunoTreinoDiaView> {
                       textAlign: TextAlign.center,
                       style: GoogleFonts.barlowCondensed(
                         color: AppColors.textSecondary,
-                        fontSize: 11,
+                        fontSize: AppFontSize.caption,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -326,7 +327,7 @@ class _AlunoTreinoDiaViewState extends State<AlunoTreinoDiaView> {
                   'Seu Progresso',
                   style: GoogleFonts.barlowCondensed(
                     color: AppColors.textPrimary,
-                    fontSize: 24,
+                    fontSize: AppFontSize.title,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
@@ -336,7 +337,7 @@ class _AlunoTreinoDiaViewState extends State<AlunoTreinoDiaView> {
                   'exercícios concluídos',
                   style: GoogleFonts.barlowCondensed(
                     color: AppColors.textSecondary,
-                    fontSize: 12,
+                    fontSize: AppFontSize.caption,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -367,7 +368,7 @@ class _AlunoTreinoDiaViewState extends State<AlunoTreinoDiaView> {
                   '$_percentualProgresso%',
                   style: GoogleFonts.barlowCondensed(
                     color: AppColors.textPrimary,
-                    fontSize: 18,
+                    fontSize: AppFontSize.subtitle,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
@@ -384,7 +385,7 @@ class _AlunoTreinoDiaViewState extends State<AlunoTreinoDiaView> {
       titulo,
       style: GoogleFonts.barlowCondensed(
         color: AppColors.textPrimary,
-        fontSize: 21,
+        fontSize: AppFontSize.subtitle,
         fontWeight: FontWeight.w800,
         letterSpacing: 0.4,
       ),
@@ -428,7 +429,7 @@ class _AlunoTreinoDiaViewState extends State<AlunoTreinoDiaView> {
                       overflow: TextOverflow.ellipsis,
                       style: GoogleFonts.barlowCondensed(
                         color: AppColors.textPrimary,
-                        fontSize: 20,
+                        fontSize: AppFontSize.subtitle,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
@@ -437,7 +438,7 @@ class _AlunoTreinoDiaViewState extends State<AlunoTreinoDiaView> {
                       widget.data.aquecimentoResumo,
                       style: GoogleFonts.barlowCondensed(
                         color: AppColors.textSecondary,
-                        fontSize: 11,
+                        fontSize: AppFontSize.caption,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -501,7 +502,7 @@ class _AlunoTreinoDiaViewState extends State<AlunoTreinoDiaView> {
                       overflow: TextOverflow.ellipsis,
                       style: GoogleFonts.barlowCondensed(
                         color: AppColors.textPrimary,
-                        fontSize: 20,
+                        fontSize: AppFontSize.subtitle,
                         fontWeight: FontWeight.w700,
                         height: 1.1,
                       ),
@@ -597,7 +598,7 @@ class _AlunoTreinoDiaViewState extends State<AlunoTreinoDiaView> {
         texto,
         style: GoogleFonts.barlowCondensed(
           color: destaque ? AppColors.primary : AppColors.textSecondary,
-          fontSize: 9,
+          fontSize: AppFontSize.caption,
           fontWeight: FontWeight.w700,
           letterSpacing: 0.3,
         ),

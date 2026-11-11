@@ -1,3 +1,4 @@
+import 'package:academiagrazi/theme/app_font_size.dart';
 import 'dart:async';
 
 import 'package:academiagrazi/locator.dart';
@@ -76,7 +77,7 @@ class _InviteCodeCardState extends State<InviteCodeCard> {
   @override
   Widget build(BuildContext context) {
     final labelStyle = GoogleFonts.barlowCondensed(
-      fontSize: 12,
+      fontSize: AppFontSize.caption,
       fontWeight: FontWeight.w600,
       letterSpacing: .5,
       color: AppColors.slateText,
@@ -98,7 +99,7 @@ class _InviteCodeCardState extends State<InviteCodeCard> {
             content = Text(
               'Não foi possível carregar o código.',
               style: GoogleFonts.barlowCondensed(
-                fontSize: 14,
+                fontSize: AppFontSize.small,
                 color: AppColors.slateText,
               ),
             );
@@ -122,7 +123,7 @@ class _InviteCodeCardState extends State<InviteCodeCard> {
                   invite.code,
                   key: const Key('codigo_convite'),
                   style: GoogleFonts.barlowCondensed(
-                    fontSize: 28,
+                    fontSize: AppFontSize.headline,
                     fontWeight: FontWeight.w800,
                     letterSpacing: 8,
                     color: AppColors.primaryDark,
@@ -132,7 +133,7 @@ class _InviteCodeCardState extends State<InviteCodeCard> {
                   'Válido até ${_formatTime(invite.expiresAt)} • '
                   'renova a cada 15 min',
                   style: GoogleFonts.barlowCondensed(
-                    fontSize: 12,
+                    fontSize: AppFontSize.caption,
                     color: AppColors.slateText,
                   ),
                 ),
@@ -156,7 +157,7 @@ class _InviteCodeCardState extends State<InviteCodeCard> {
                       Text(
                         widget.description!,
                         style: GoogleFonts.barlowCondensed(
-                          fontSize: 13,
+                          fontSize: AppFontSize.caption,
                           height: 1.4,
                           color: AppColors.textBody,
                         ),

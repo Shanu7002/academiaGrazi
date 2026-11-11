@@ -1,3 +1,4 @@
+import 'package:academiagrazi/theme/app_font_size.dart';
 import 'package:academiagrazi/locator.dart';
 import 'package:academiagrazi/service/admin/admin_student_service.dart';
 import 'package:academiagrazi/service/admin/redistribution.dart';
@@ -121,7 +122,7 @@ class _AutoRedistributionViewState extends State<AutoRedistributionView> {
               Text(
                 'Prévia',
                 style: GoogleFonts.barlowCondensed(
-                  fontSize: 28,
+                  fontSize: AppFontSize.headline,
                   fontWeight: FontWeight.bold,
                   color: AppColors.primaryDark,
                 ),
@@ -133,7 +134,7 @@ class _AutoRedistributionViewState extends State<AutoRedistributionView> {
                 'recentemente. A ficha atual de cada aluno continua valendo '
                 'até o novo professor publicar outra.',
                 style: GoogleFonts.barlowCondensed(
-                  fontSize: 13,
+                  fontSize: AppFontSize.caption,
                   height: 1.4,
                   color: AppColors.slateText,
                 ),
@@ -145,7 +146,7 @@ class _AutoRedistributionViewState extends State<AutoRedistributionView> {
                   '${fromUnassigned > 0 ? ', incluindo $fromUnassigned sem professor' : ''}.',
                   key: const Key('resumo_redistribuicao'),
                   style: GoogleFonts.barlowCondensed(
-                    fontSize: 15,
+                    fontSize: AppFontSize.small,
                     fontWeight: FontWeight.w700,
                     color: AppColors.textPrimary,
                   ),
@@ -176,7 +177,7 @@ class _AutoRedistributionViewState extends State<AutoRedistributionView> {
                     title: Text(
                       'Ver alunos que mudam',
                       style: GoogleFonts.barlowCondensed(
-                        fontSize: 14,
+                        fontSize: AppFontSize.small,
                         fontWeight: FontWeight.w600,
                         color: AppColors.primary,
                       ),
@@ -194,7 +195,7 @@ class _AutoRedistributionViewState extends State<AutoRedistributionView> {
                                       ? 'Sem nome'
                                       : move.studentName,
                                   style: GoogleFonts.barlowCondensed(
-                                    fontSize: 13,
+                                    fontSize: AppFontSize.caption,
                                     fontWeight: FontWeight.w600,
                                     color: AppColors.textPrimary,
                                   ),
@@ -206,7 +207,7 @@ class _AutoRedistributionViewState extends State<AutoRedistributionView> {
                                   ' → ${names[move.toInstructorId] ?? '-'}',
                                   textAlign: TextAlign.end,
                                   style: GoogleFonts.barlowCondensed(
-                                    fontSize: 12,
+                                    fontSize: AppFontSize.caption,
                                     color: AppColors.textSecondary,
                                   ),
                                 ),
@@ -281,7 +282,7 @@ class _InstructorRow extends StatelessWidget {
                       ? 'Professor sem nome'
                       : instructor.name,
                   style: GoogleFonts.barlowCondensed(
-                    fontSize: 14,
+                    fontSize: AppFontSize.small,
                     fontWeight: FontWeight.w600,
                     color: AppColors.textPrimary,
                   ),
@@ -289,7 +290,7 @@ class _InstructorRow extends StatelessWidget {
                 Text(
                   'Capacidade ${instructor.capacity}',
                   style: GoogleFonts.barlowCondensed(
-                    fontSize: 12,
+                    fontSize: AppFontSize.caption,
                     color: AppColors.textSecondary,
                   ),
                 ),
@@ -299,7 +300,7 @@ class _InstructorRow extends StatelessWidget {
           Text(
             '$before → $after',
             style: GoogleFonts.barlowCondensed(
-              fontSize: 22,
+              fontSize: AppFontSize.title,
               fontWeight: FontWeight.bold,
               color: changed ? AppColors.accent : AppColors.textSecondary,
             ),
@@ -348,7 +349,7 @@ class _Message extends StatelessWidget {
               text,
               textAlign: TextAlign.center,
               style: GoogleFonts.barlowCondensed(
-                fontSize: 14,
+                fontSize: AppFontSize.small,
                 color: AppColors.textSecondary,
               ),
             ),

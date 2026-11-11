@@ -1,3 +1,4 @@
+import 'package:academiagrazi/theme/app_font_size.dart';
 import 'package:academiagrazi/models/training/training_session.dart';
 import 'package:academiagrazi/service/training/exercise_catalog_service.dart';
 import 'package:academiagrazi/service/training/student_exercise_presentation.dart';
@@ -280,7 +281,7 @@ class _AlunoSessaoTreinoViewState extends State<AlunoSessaoTreinoView> {
       backgroundColor: AppColors.trainingListBackground,
       appBar: AppBar(
         title: Text(session?.routineName ?? 'Meu treino',
-          style: GoogleFonts.barlowCondensed(fontSize: 24,
+          style: GoogleFonts.barlowCondensed(fontSize: AppFontSize.title,
             fontWeight: FontWeight.w800, color: AppColors.primary)),
         backgroundColor: Colors.white,
         foregroundColor: AppColors.primary,
@@ -320,7 +321,7 @@ class _AlunoSessaoTreinoViewState extends State<AlunoSessaoTreinoView> {
               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 Row(children: [
                   Expanded(child: Text('SEU PROGRESSO', style:
-                      GoogleFonts.barlowCondensed(fontSize: 24,
+                      GoogleFonts.barlowCondensed(fontSize: AppFontSize.title,
                         fontWeight: FontWeight.w800, color: AppColors.textPrimary))),
                   Container(padding: const EdgeInsets.all(9),
                     decoration: const BoxDecoration(color: AppColors.primaryActionSurface,
@@ -345,7 +346,7 @@ class _AlunoSessaoTreinoViewState extends State<AlunoSessaoTreinoView> {
                     color: AppColors.primary)),
                 const SizedBox(height: 5),
                 Text(_warmupInstructions,
-                  style: const TextStyle(color: AppColors.textBody, fontSize: 13)),
+                  style: const TextStyle(color: AppColors.textBody, fontSize: AppFontSize.caption)),
                 CheckboxListTile(
                   key: const Key('marcar_aquecimento'),
                   contentPadding: EdgeInsets.zero,
@@ -363,7 +364,7 @@ class _AlunoSessaoTreinoViewState extends State<AlunoSessaoTreinoView> {
             ),
             const SizedBox(height: 22),
             Text('EXERCÍCIOS', style: GoogleFonts.barlowCondensed(
-              fontSize: 25, fontWeight: FontWeight.w800,
+              fontSize: AppFontSize.title, fontWeight: FontWeight.w800,
               color: AppColors.textPrimary)),
             const SizedBox(height: 10),
             for (var i = 0; i < session.exercises.length; i++)
@@ -406,20 +407,20 @@ class _AlunoSessaoTreinoViewState extends State<AlunoSessaoTreinoView> {
             const SizedBox(width: 12),
             Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text('$number. ', style: const TextStyle(fontSize: 16,
+                Text('$number. ', style: const TextStyle(fontSize: AppFontSize.body,
                     fontWeight: FontWeight.w800, color: AppColors.primary)),
-                Expanded(child: Text(name, style: const TextStyle(fontSize: 16,
+                Expanded(child: Text(name, style: const TextStyle(fontSize: AppFontSize.body,
                     fontWeight: FontWeight.w800, color: AppColors.textPrimary))),
               ]),
               const SizedBox(height: 4),
               Text(StudentExercisePresentation.muscleGroup(exercise.muscleGroup),
-                style: const TextStyle(color: AppColors.textSecondary, fontSize: 12)),
+                style: const TextStyle(color: AppColors.textSecondary, fontSize: AppFontSize.caption)),
               const SizedBox(height: 7),
               Text('$done/${exercise.sets.length} séries  •  ${exercise.repetitions} repetições',
                 style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.w700,
-                  fontSize: 12)),
+                  fontSize: AppFontSize.caption)),
               Text('${exercise.restSeconds}s de descanso',
-                style: const TextStyle(color: AppColors.textSecondary, fontSize: 12)),
+                style: const TextStyle(color: AppColors.textSecondary, fontSize: AppFontSize.caption)),
             ])),
             Icon(exercise.completed ? Icons.check_circle : Icons.circle_outlined,
               color: exercise.completed ? AppColors.success : AppColors.inactive),
@@ -427,15 +428,15 @@ class _AlunoSessaoTreinoViewState extends State<AlunoSessaoTreinoView> {
           const SizedBox(height: 12),
           if (instructions != null) ...[
             const Text('ORIENTAÇÕES DE EXECUÇÃO',
-              style: TextStyle(fontWeight: FontWeight.w700, fontSize: 11,
+              style: TextStyle(fontWeight: FontWeight.w700, fontSize: AppFontSize.caption,
                 color: AppColors.primary)),
             const SizedBox(height: 4),
             Text(instructions,
-              style: const TextStyle(fontSize: 13, color: AppColors.textBody)),
+              style: const TextStyle(fontSize: AppFontSize.caption, color: AppColors.textBody)),
             const SizedBox(height: 8),
           ] else ...[
             const Text('Orientações de execução não cadastradas.',
-              style: TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+              style: TextStyle(fontSize: AppFontSize.caption, color: AppColors.textSecondary)),
             const SizedBox(height: 8),
           ],
           const Divider(height: 14),
@@ -451,7 +452,7 @@ class _AlunoSessaoTreinoViewState extends State<AlunoSessaoTreinoView> {
       child: Row(children: [
         SizedBox(width: 57,
           child: Text('${set.number}ª série',
-            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600))),
+            style: const TextStyle(fontSize: AppFontSize.caption, fontWeight: FontWeight.w600))),
         const SizedBox(width: 7),
         Expanded(child: TextFormField(
           key: Key('carga_${exercise.itemId}_${set.number}'),

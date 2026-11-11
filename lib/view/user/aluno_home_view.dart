@@ -1,3 +1,4 @@
+import 'package:academiagrazi/theme/app_font_size.dart';
 import 'package:academiagrazi/theme/app_colors.dart';
 import 'package:academiagrazi/view/components/app_bar.dart';
 import 'package:flutter/material.dart';
@@ -58,7 +59,7 @@ class _AlunoHomeViewState extends State<AlunoHomeView> {
                                   GoogleFonts.barlowCondensed().fontFamily,
                               fontWeight: FontWeight.bold,
                               color: AppColors.primary,
-                              fontSize: 14,
+                              fontSize: AppFontSize.small,
                             ),
                           ),
                         ],
@@ -69,7 +70,7 @@ class _AlunoHomeViewState extends State<AlunoHomeView> {
                       Text(
                         'Pernas + Glúteos',
                         style: GoogleFonts.barlowCondensed(
-                          fontSize: 24,
+                          fontSize: AppFontSize.title,
                           fontWeight: FontWeight.bold,
                           color: AppColors.primaryDark,
                         ),
@@ -80,7 +81,7 @@ class _AlunoHomeViewState extends State<AlunoHomeView> {
                       Text(
                         'Nível intermediário - Foco em Hipertrofia',
                         style: GoogleFonts.barlowCondensed(
-                          fontSize: 12,
+                          fontSize: AppFontSize.caption,
                           color: AppColors.textSecondary,
                         ),
                       ),
@@ -91,7 +92,7 @@ class _AlunoHomeViewState extends State<AlunoHomeView> {
                         'Quadríceps, posterior e panturrilha',
                         style: TextStyle(
                           color: AppColors.textPrimary,
-                          fontSize: 16,
+                          fontSize: AppFontSize.body,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -112,7 +113,7 @@ class _AlunoHomeViewState extends State<AlunoHomeView> {
                                 "Professor",
                                 style: TextStyle(
                                   color: AppColors.textPrimary,
-                                  fontSize: 16,
+                                  fontSize: AppFontSize.body,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -120,7 +121,7 @@ class _AlunoHomeViewState extends State<AlunoHomeView> {
                                 "Prof. Marcos",
                                 style: TextStyle(
                                   color: AppColors.textPrimary,
-                                  fontSize: 16,
+                                  fontSize: AppFontSize.body,
                                 ),
                               ),
                             ],
@@ -161,7 +162,7 @@ class _AlunoHomeViewState extends State<AlunoHomeView> {
                                     GoogleFonts.barlowCondensed().fontFamily,
                                 fontWeight: FontWeight.bold,
                                 color: AppColors.onAccent,
-                                fontSize: 16,
+                                fontSize: AppFontSize.body,
                               ),
                             ),
                           ],
@@ -279,7 +280,7 @@ class _AlunoHomeViewState extends State<AlunoHomeView> {
                                     '12 dias',
                                     overflow: TextOverflow.ellipsis,
                                     style: GoogleFonts.barlowCondensed(
-                                      fontSize: 32,
+                                      fontSize: AppFontSize.headline,
                                       fontWeight: FontWeight.bold,
                                       color: AppColors.primaryDark,
                                     ),
@@ -291,7 +292,7 @@ class _AlunoHomeViewState extends State<AlunoHomeView> {
                             Text(
                               'Você está on fire!',
                               style: GoogleFonts.barlowCondensed(
-                                fontSize: 13,
+                                fontSize: AppFontSize.caption,
                                 fontWeight: FontWeight.bold,
                                 color: AppColors.info,
                               ),
@@ -311,7 +312,7 @@ class _AlunoHomeViewState extends State<AlunoHomeView> {
                         child: Text(
                           'Sequência',
                           style: GoogleFonts.barlowCondensed(
-                            fontSize: 13,
+                            fontSize: AppFontSize.caption,
                             fontWeight: FontWeight.bold,
                             color: AppColors.primary,
                           ),
@@ -361,7 +362,7 @@ class _AlunoHomeViewState extends State<AlunoHomeView> {
                             Text(
                               '+15% esta semana.',
                               style: GoogleFonts.barlowCondensed(
-                                fontSize: 13,
+                                fontSize: AppFontSize.caption,
                                 fontWeight: FontWeight.bold,
                                 color: AppColors.textSecondary,
                               ),
@@ -381,7 +382,7 @@ class _AlunoHomeViewState extends State<AlunoHomeView> {
                         child: Text(
                           'Evolução',
                           style: GoogleFonts.barlowCondensed(
-                            fontSize: 13,
+                            fontSize: AppFontSize.caption,
                             fontWeight: FontWeight.bold,
                             color: AppColors.primary,
                           ),
@@ -435,7 +436,7 @@ class _AlunoHomeViewState extends State<AlunoHomeView> {
                                 Text(
                                   'Pilates',
                                   style: GoogleFonts.barlowCondensed(
-                                    fontSize: 20,
+                                    fontSize: AppFontSize.subtitle,
                                     fontWeight: FontWeight.bold,
                                     color: AppColors.mintBorderBright,
                                   ),
@@ -455,7 +456,7 @@ class _AlunoHomeViewState extends State<AlunoHomeView> {
                             child: Text(
                               'Próxima aula',
                               style: GoogleFonts.barlowCondensed(
-                                fontSize: 13,
+                                fontSize: AppFontSize.caption,
                                 fontWeight: FontWeight.bold,
                                 color: AppColors.primary,
                               ),
@@ -467,7 +468,7 @@ class _AlunoHomeViewState extends State<AlunoHomeView> {
                       Text(
                         'Hoje as 18h',
                         style: GoogleFonts.barlowCondensed(
-                          fontSize: 13,
+                          fontSize: AppFontSize.caption,
                           color: AppColors.mintBorderBright,
                         ),
                       ),

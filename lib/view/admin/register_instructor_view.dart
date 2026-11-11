@@ -1,3 +1,4 @@
+import 'package:academiagrazi/theme/app_font_size.dart';
 import 'package:academiagrazi/controller/users/register_instructor.dart';
 import 'package:academiagrazi/locator.dart';
 import 'package:academiagrazi/service/users/register_user.dart';
@@ -133,7 +134,7 @@ class _RegisterInstructorViewState extends State<RegisterInstructorView> {
             title: Text(
               'Professor cadastrado',
               style: GoogleFonts.barlowCondensed(
-                fontSize: 26,
+                fontSize: AppFontSize.title,
                 fontWeight: FontWeight.bold,
                 color: AppColors.primaryDark,
               ),
@@ -143,7 +144,7 @@ class _RegisterInstructorViewState extends State<RegisterInstructorView> {
               'definida por você.',
               textAlign: TextAlign.center,
               style: GoogleFonts.barlowCondensed(
-                fontSize: 14,
+                fontSize: AppFontSize.small,
                 height: 1.4,
                 color: AppColors.slateText,
               ),
@@ -234,7 +235,7 @@ class _RegisterInstructorViewState extends State<RegisterInstructorView> {
         title: Text(
           'Equipe',
           style: GoogleFonts.barlowCondensed(
-            fontSize: 22,
+            fontSize: AppFontSize.title,
             fontWeight: FontWeight.bold,
             color: AppColors.primary,
           ),
@@ -255,7 +256,7 @@ class _RegisterInstructorViewState extends State<RegisterInstructorView> {
                       'CADASTRAR PROFESSOR',
                       style: GoogleFonts.barlowCondensed(
                         fontWeight: FontWeight.w700,
-                        fontSize: 30,
+                        fontSize: AppFontSize.headline,
                         color: AppColors.primary,
                         letterSpacing: .4,
                       ),
@@ -265,7 +266,7 @@ class _RegisterInstructorViewState extends State<RegisterInstructorView> {
                       'Crie o acesso de um novo professor da academia. Ele vai '
                       'entrar no app com o e-mail e a senha definidos aqui.',
                       style: GoogleFonts.barlowCondensed(
-                        fontSize: 14,
+                        fontSize: AppFontSize.small,
                         height: 1.4,
                         color: AppColors.slateText,
                       ),
@@ -360,7 +361,7 @@ class _RegisterInstructorViewState extends State<RegisterInstructorView> {
                                   'pessoalmente e oriente-o a não '
                                   'compartilhá-la.',
                                   style: GoogleFonts.barlowCondensed(
-                                    fontSize: 12,
+                                    fontSize: AppFontSize.caption,
                                     height: 1.4,
                                     color: AppColors.textBody,
                                   ),
@@ -398,7 +399,7 @@ class _RegisterInstructorViewState extends State<RegisterInstructorView> {
                         label: Text(
                           _isLoading ? 'CADASTRANDO...' : 'CADASTRAR PROFESSOR',
                           style: GoogleFonts.barlowCondensed(
-                            fontSize: 20,
+                            fontSize: AppFontSize.subtitle,
                             fontWeight: FontWeight.bold,
                             letterSpacing: .6,
                             color: Colors.white,
@@ -455,7 +456,7 @@ class _SectionCard extends StatelessWidget {
                 child: Text(
                   title,
                   style: GoogleFonts.barlowCondensed(
-                    fontSize: 20,
+                    fontSize: AppFontSize.subtitle,
                     fontWeight: FontWeight.bold,
                     color: AppColors.primaryDark,
                   ),
@@ -511,7 +512,7 @@ class _FormField extends StatelessWidget {
           Text(
             label,
             style: GoogleFonts.barlowCondensed(
-              fontSize: 12,
+              fontSize: AppFontSize.caption,
               fontWeight: FontWeight.w700,
               letterSpacing: .7,
               color: AppColors.slateText,
@@ -528,13 +529,13 @@ class _FormField extends StatelessWidget {
             validator: validator,
             onFieldSubmitted: onSubmitted,
             style: GoogleFonts.barlowCondensed(
-              fontSize: 15,
+              fontSize: AppFontSize.small,
               color: AppColors.textPrimary,
             ),
             decoration: InputDecoration(
               hintText: hint,
               hintStyle: GoogleFonts.barlowCondensed(
-                fontSize: 14,
+                fontSize: AppFontSize.small,
                 color: AppColors.textMuted,
               ),
               prefixIcon: Icon(icon, color: AppColors.primary),

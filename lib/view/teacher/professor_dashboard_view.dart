@@ -1,3 +1,4 @@
+import 'package:academiagrazi/theme/app_font_size.dart';
 import 'package:academiagrazi/theme/app_colors.dart';
 import 'package:academiagrazi/controller/teachers/teacher_user_searcher.dart';
 import 'package:academiagrazi/locator.dart';
@@ -84,7 +85,7 @@ class _ProfessorDashboardViewState extends State<ProfessorDashboardView> {
                           style: GoogleFonts.barlowCondensed(
                             fontWeight: FontWeight.bold,
                             color: navy,
-                            fontSize: 32,
+                            fontSize: AppFontSize.headline,
                           ),
                         ),
                         const SizedBox(height: 10),
@@ -93,7 +94,7 @@ class _ProfessorDashboardViewState extends State<ProfessorDashboardView> {
                           key: const Key('texto_turno_atual'),
                           style: GoogleFonts.barlowCondensed(
                             color: textColor,
-                            fontSize: 16,
+                            fontSize: AppFontSize.body,
                           ),
                         ),
                       ],
@@ -157,7 +158,7 @@ class _ProfessorDashboardViewState extends State<ProfessorDashboardView> {
                           'Prioridades',
                           style: GoogleFonts.barlowCondensed(
                             fontWeight: FontWeight.w700,
-                            fontSize: 32,
+                            fontSize: AppFontSize.headline,
                             color: navy,
                           ),
                         ),
@@ -173,7 +174,7 @@ class _ProfessorDashboardViewState extends State<ProfessorDashboardView> {
                           child: Text(
                             '3 Alertas',
                             style: GoogleFonts.barlowCondensed(
-                              fontSize: 13,
+                              fontSize: AppFontSize.caption,
                               fontWeight: FontWeight.bold,
                               color: AppColors.primaryChipSurface,
                             ),
@@ -280,7 +281,7 @@ class _DashboardMetricCard extends StatelessWidget {
                 child: Text(
                   title,
                   style: GoogleFonts.barlowCondensed(
-                    fontSize: 16,
+                    fontSize: AppFontSize.body,
                     fontWeight: FontWeight.bold,
                     color: accentColor,
                   ),
@@ -297,7 +298,7 @@ class _DashboardMetricCard extends StatelessWidget {
               value,
               style: GoogleFonts.barlowCondensed(
                 fontWeight: FontWeight.w700,
-                fontSize: 32,
+                fontSize: AppFontSize.headline,
                 color: AppColors.primaryDark,
               ),
             ),
@@ -305,7 +306,7 @@ class _DashboardMetricCard extends StatelessWidget {
             Text(
               description,
               style: GoogleFonts.barlowCondensed(
-                fontSize: 16,
+                fontSize: AppFontSize.body,
                 fontWeight: FontWeight.bold,
                 color: accentColor,
               ),
@@ -324,7 +325,7 @@ class _DashboardMetricCard extends StatelessWidget {
                       value,
                       style: GoogleFonts.barlowCondensed(
                         fontWeight: FontWeight.w700,
-                        fontSize: 48,
+                        fontSize: AppFontSize.display,
                         color:
                             fullWidth
                                 ? AppColors.danger
@@ -338,7 +339,7 @@ class _DashboardMetricCard extends StatelessWidget {
                   child: Text(
                     description,
                     style: GoogleFonts.barlowCondensed(
-                      fontSize: 16,
+                      fontSize: AppFontSize.body,
                       fontWeight: FontWeight.bold,
                       color: AppColors.textSecondary,
                     ),
@@ -435,7 +436,7 @@ class _PriorityCard extends StatelessWidget {
                         Text(
                           name,
                           style: GoogleFonts.barlowCondensed(
-                            fontSize: 24,
+                            fontSize: AppFontSize.title,
                             fontWeight: FontWeight.bold,
                             color: AppColors.primaryDark,
                           ),
@@ -444,7 +445,7 @@ class _PriorityCard extends StatelessWidget {
                         Text(
                           description,
                           style: GoogleFonts.barlowCondensed(
-                            fontSize: 16,
+                            fontSize: AppFontSize.body,
                             color: AppColors.textSecondary,
                           ),
                         ),
@@ -457,7 +458,7 @@ class _PriorityCard extends StatelessWidget {
                   Text(
                     action,
                     style: GoogleFonts.barlowCondensed(
-                      fontSize: 14,
+                      fontSize: AppFontSize.small,
                       fontWeight: FontWeight.bold,
                       color: accentColor,
                     ),

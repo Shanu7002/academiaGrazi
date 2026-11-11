@@ -1,3 +1,4 @@
+import 'package:academiagrazi/theme/app_font_size.dart';
 import 'package:academiagrazi/theme/app_colors.dart';
 import 'package:academiagrazi/controller/users/register_user.dart';
 import 'package:academiagrazi/locator.dart';
@@ -317,7 +318,7 @@ class _SelfRegisterViewState extends State<SelfRegisterView> {
                         label: Text(
                           _step == 5 ? 'FINALIZAR CADASTRO' : 'CONTINUAR',
                           style: GoogleFonts.barlowCondensed(
-                            fontSize: 18,
+                            fontSize: AppFontSize.subtitle,
                             fontWeight: FontWeight.w700,
                             letterSpacing: 1,
                           ),
@@ -419,7 +420,7 @@ class _SelfRegisterViewState extends State<SelfRegisterView> {
               ),
           title: const Text(
             'Li e concordo com os Termos de Uso e a Política de Privacidade (LGPD).',
-            style: TextStyle(fontSize: 13, color: _muted),
+            style: TextStyle(fontSize: AppFontSize.caption, color: _muted),
           ),
           controlAffinity: ListTileControlAffinity.leading,
         ),
@@ -497,13 +498,13 @@ class _SelfRegisterViewState extends State<SelfRegisterView> {
                     text: '${_draft.heightCm}',
                     style: GoogleFonts.barlowCondensed(
                       fontWeight: FontWeight.w700,
-                      fontSize: 46,
+                      fontSize: AppFontSize.display,
                       color: _primary,
                     ),
                     children: const [
                       TextSpan(
                         text: ' cm',
-                        style: TextStyle(fontSize: 15, color: _muted),
+                        style: TextStyle(fontSize: AppFontSize.small, color: _muted),
                       ),
                     ],
                   ),
@@ -805,7 +806,7 @@ class _SelfRegisterViewState extends State<SelfRegisterView> {
             title,
             style: GoogleFonts.barlowCondensed(
               fontWeight: FontWeight.w700,
-              fontSize: 32,
+              fontSize: AppFontSize.headline,
               color: _primary,
               letterSpacing: .4,
             ),
@@ -814,7 +815,7 @@ class _SelfRegisterViewState extends State<SelfRegisterView> {
           Text(
             subtitle,
             style: GoogleFonts.barlowCondensed(
-              fontSize: 15,
+              fontSize: AppFontSize.small,
               color: _muted,
               height: 1.4,
             ),
@@ -885,7 +886,7 @@ class _SelfRegisterViewState extends State<SelfRegisterView> {
   }
 
   static const _labelStyle = TextStyle(
-    fontSize: 12,
+    fontSize: AppFontSize.caption,
     color: _muted,
     fontWeight: FontWeight.w700,
     letterSpacing: .7,
@@ -909,7 +910,7 @@ class _ProgressHeader extends StatelessWidget {
               Text(
                 'ETAPA ${step + 1} DE 6',
                 style: const TextStyle(
-                  fontSize: 11,
+                  fontSize: AppFontSize.caption,
                   fontWeight: FontWeight.w700,
                   color: _SelfRegisterViewState._muted,
                   letterSpacing: .8,
@@ -918,7 +919,7 @@ class _ProgressHeader extends StatelessWidget {
               Text(
                 '${(((step + 1) / 6) * 100).round()}% CONCLUÍDO',
                 style: const TextStyle(
-                  fontSize: 11,
+                  fontSize: AppFontSize.caption,
                   color: _SelfRegisterViewState._muted,
                 ),
               ),
@@ -1000,14 +1001,14 @@ class _CounterCard extends StatelessWidget {
                   text: value,
                   style: GoogleFonts.barlowCondensed(
                     fontWeight: FontWeight.w700,
-                    fontSize: 46,
+                    fontSize: AppFontSize.display,
                     color: _SelfRegisterViewState._primary,
                   ),
                   children: [
                     TextSpan(
                       text: ' $unit',
                       style: const TextStyle(
-                        fontSize: 15,
+                        fontSize: AppFontSize.small,
                         color: _SelfRegisterViewState._muted,
                       ),
                     ),
@@ -1075,7 +1076,7 @@ class _GoalCard extends StatelessWidget {
                       style: GoogleFonts.barlowCondensed(
                         color: foreground,
                         fontWeight: FontWeight.w700,
-                        fontSize: 17,
+                        fontSize: AppFontSize.body,
                       ),
                     ),
                     Text(
@@ -1085,7 +1086,7 @@ class _GoalCard extends StatelessWidget {
                             selected
                                 ? AppColors.primaryChipSurface
                                 : _SelfRegisterViewState._muted,
-                        fontSize: 12,
+                        fontSize: AppFontSize.caption,
                       ),
                     ),
                   ],
@@ -1144,7 +1145,7 @@ class _InfoBanner extends StatelessWidget {
                   message,
                   style: const TextStyle(
                     color: _SelfRegisterViewState._muted,
-                    fontSize: 12,
+                    fontSize: AppFontSize.caption,
                   ),
                 ),
               ],

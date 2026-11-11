@@ -1,3 +1,4 @@
+import 'package:academiagrazi/theme/app_font_size.dart';
 import 'package:academiagrazi/theme/app_colors.dart';
 import 'package:academiagrazi/controller/users/login.dart';
 import 'package:academiagrazi/locator.dart';
@@ -183,7 +184,7 @@ class _LandingPageState extends State<LoginView> {
       child: Text(
         'GRAZI BRAZ',
         style: TextStyle(
-          fontSize: 22,
+          fontSize: AppFontSize.title,
           fontWeight: FontWeight.w900,
           color: _primaryDarkGreen,
           letterSpacing: -0.5,
@@ -199,7 +200,7 @@ class _LandingPageState extends State<LoginView> {
           'Seu corpo.\nSeu ritmo.',
           textAlign: TextAlign.center,
           style: TextStyle(
-            fontSize: 42,
+            fontSize: AppFontSize.display,
             fontWeight: FontWeight.w900,
             color: _primaryDarkGreen,
             height: 1.1,
@@ -210,7 +211,7 @@ class _LandingPageState extends State<LoginView> {
           'Treine na academia ou em casa com\norientação que acompanha sua\nevolução de verdade.',
           textAlign: TextAlign.center,
           style: TextStyle(
-            fontSize: 16,
+            fontSize: AppFontSize.body,
             fontWeight: FontWeight.w500,
             color: _textGrey,
             height: 1.4,
@@ -221,8 +222,12 @@ class _LandingPageState extends State<LoginView> {
   }
 
   Widget _buildBadges() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+    // Wrap: em telas estreitas os dois botões quebram de linha em vez de
+    // estourar a largura.
+    return Wrap(
+      alignment: WrapAlignment.center,
+      spacing: 12,
+      runSpacing: 8,
       children: [
         _buildToggleButton(
           title: 'Presencial',
@@ -233,7 +238,6 @@ class _LandingPageState extends State<LoginView> {
             }
           },
         ),
-        const SizedBox(width: 12),
         _buildToggleButton(
           title: 'Treino em casa',
           isActive: _selectedMode == TrainingMode.home,
@@ -268,7 +272,7 @@ class _LandingPageState extends State<LoginView> {
         child: Text(
           title,
           style: TextStyle(
-            fontSize: 12,
+            fontSize: AppFontSize.caption,
             fontWeight: FontWeight.bold,
             color: isActive ? _primaryDarkGreen : _textGrey,
           ),
@@ -346,7 +350,7 @@ class _LandingPageState extends State<LoginView> {
             ),
             child: const Text(
               'Entrar',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: AppFontSize.body, fontWeight: FontWeight.bold),
             ),
           ),
           const SizedBox(height: 16),
@@ -372,7 +376,7 @@ class _LandingPageState extends State<LoginView> {
             ),
             child: const Text(
               'Criar minha conta',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: AppFontSize.body, fontWeight: FontWeight.bold),
             ),
           ),
         ],
@@ -386,7 +390,7 @@ class _LandingPageState extends State<LoginView> {
       child: const Text(
         'Esqueci minha senha',
         style: TextStyle(
-          fontSize: 13,
+          fontSize: AppFontSize.caption,
           fontWeight: FontWeight.w600,
           color: _textGrey,
         ),

@@ -1,3 +1,4 @@
+import 'package:academiagrazi/theme/app_font_size.dart';
 import 'package:academiagrazi/models/training/training_session.dart';
 import 'package:academiagrazi/service/training/training_session_service.dart';
 import 'package:academiagrazi/theme/app_colors.dart';
@@ -217,12 +218,12 @@ class _ProfessorHistoricoAlunoViewState
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(label, style: const TextStyle(fontSize: 11)),
+            Text(label, style: const TextStyle(fontSize: AppFontSize.caption)),
             const SizedBox(height: 4),
             Text(
               value,
               style: const TextStyle(
-                fontSize: 19,
+                fontSize: AppFontSize.subtitle,
                 fontWeight: FontWeight.bold,
                 color: AppColors.primary,
               ),

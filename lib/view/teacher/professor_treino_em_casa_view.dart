@@ -1,3 +1,4 @@
+import 'package:academiagrazi/theme/app_font_size.dart';
 import 'package:academiagrazi/models/training/training_exercise.dart';
 import 'package:academiagrazi/models/training/training_routine.dart';
 import 'package:academiagrazi/service/training/exercise_catalog_service.dart';
@@ -125,7 +126,7 @@ class _ProfessorTreinoEmCasaViewState extends State<ProfessorTreinoEmCasaView> {
       builder: (sheetContext) => StatefulBuilder(builder: (ctx, updateModal) =>
         SizedBox(height: MediaQuery.of(ctx).size.height * .75,
           child: Padding(padding: const EdgeInsets.all(16), child: Column(children: [
-            const Text('Biblioteca de exercícios', style: TextStyle(fontSize: 18,
+            const Text('Biblioteca de exercícios', style: TextStyle(fontSize: AppFontSize.subtitle,
                 fontWeight: FontWeight.bold)),
             const SizedBox(height: 12),
             TextField(controller: search,
@@ -289,13 +290,13 @@ class _ProfessorTreinoEmCasaViewState extends State<ProfessorTreinoEmCasaView> {
       Center(child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 520),
         child: ListView(padding: const EdgeInsets.all(16), children: [
           Text('Aluno: ${widget.studentName}', style: const TextStyle(
-            fontSize: 18, fontWeight: FontWeight.w800)),
+            fontSize: AppFontSize.subtitle, fontWeight: FontWeight.w800)),
           const SizedBox(height: 6),
           const Text('Prescrição opcional e independente da ficha presencial. '
               'Só aparece para o aluno depois de publicar.'),
           const SizedBox(height: 5),
           const Text('Revise tecnicamente as orientações antes de disponibilizar '
-              'uma nova prescrição.', style: TextStyle(fontSize: 12,
+              'uma nova prescrição.', style: TextStyle(fontSize: AppFontSize.caption,
                 color: AppColors.textSecondary)),
           if (_error != null) ...[const SizedBox(height: 8),
             Text(_error!, style: const TextStyle(color: AppColors.danger))],

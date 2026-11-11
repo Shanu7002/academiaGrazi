@@ -1,3 +1,4 @@
+import 'package:academiagrazi/theme/app_font_size.dart';
 import 'package:academiagrazi/locator.dart';
 import 'package:academiagrazi/models/users/user_model.dart';
 import 'package:academiagrazi/service/admin/admin_student_service.dart';
@@ -243,7 +244,7 @@ class _StudentTile extends StatelessWidget {
                     Text(
                       name,
                       style: GoogleFonts.barlowCondensed(
-                        fontSize: 15,
+                        fontSize: AppFontSize.small,
                         fontWeight: FontWeight.w700,
                         color: AppColors.textPrimary,
                       ),
@@ -251,7 +252,7 @@ class _StudentTile extends StatelessWidget {
                     Text(
                       subtitle,
                       style: GoogleFonts.barlowCondensed(
-                        fontSize: 12,
+                        fontSize: AppFontSize.caption,
                         color: AppColors.textSecondary,
                       ),
                     ),
@@ -296,7 +297,7 @@ class _Message extends StatelessWidget {
             text,
             textAlign: TextAlign.center,
             style: GoogleFonts.barlowCondensed(
-              fontSize: 14,
+              fontSize: AppFontSize.small,
               color: AppColors.textSecondary,
             ),
           ),

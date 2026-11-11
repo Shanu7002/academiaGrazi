@@ -1,3 +1,4 @@
+import 'package:academiagrazi/theme/app_font_size.dart';
 import 'package:academiagrazi/theme/app_colors.dart';
 import 'package:academiagrazi/view/components/app_bar.dart';
 import 'package:academiagrazi/view/teacher/ui_data/montagem_treino_ui_data.dart';
@@ -338,7 +339,7 @@ class _ProfessorMontagemTreinoViewState
               Text(
                 'Montagem de Treino',
                 style: GoogleFonts.barlowCondensed(
-                  fontSize: 27,
+                  fontSize: AppFontSize.headline,
                   fontWeight: FontWeight.w800,
                   color: AppColors.textPrimary,
                 ),
@@ -371,7 +372,7 @@ class _ProfessorMontagemTreinoViewState
                         'Editando: ${_alunoAtual.nome}',
                         overflow: TextOverflow.ellipsis,
                         style: GoogleFonts.barlowCondensed(
-                          fontSize: 14,
+                          fontSize: AppFontSize.small,
                           color: AppColors.textBody,
                         ),
                       ),
@@ -534,7 +535,7 @@ class _ProfessorMontagemTreinoViewState
                   child: Text(
                     'Série Atual – $_nomeTreino',
                     style: GoogleFonts.barlowCondensed(
-                      fontSize: 22,
+                      fontSize: AppFontSize.title,
                       fontWeight: FontWeight.w800,
                       color: AppColors.textPrimary,
                     ),
@@ -545,7 +546,7 @@ class _ProfessorMontagemTreinoViewState
               Text(
                 'Arraste para\nreordenar',
                 style: GoogleFonts.barlowCondensed(
-                  fontSize: 11,
+                  fontSize: AppFontSize.caption,
                   color: AppColors.textBody,
                 ),
               ),
@@ -633,7 +634,7 @@ class _ProfessorMontagemTreinoViewState
                   color: AppColors.infoSurface,
                   child: const Text(
                     'RECURSO FUTURO',
-                    style: TextStyle(fontSize: 10),
+                    style: TextStyle(fontSize: AppFontSize.caption),
                   ),
                 ),
               ],
@@ -685,13 +686,13 @@ class _ProfessorMontagemTreinoViewState
           Text(
             titulo,
             style: GoogleFonts.barlowCondensed(
-              fontSize: 21,
+              fontSize: AppFontSize.subtitle,
               color: AppColors.textPrimary,
             ),
           ),
           Text(
             subtitulo,
-            style: const TextStyle(fontSize: 12, color: AppColors.textBody),
+            style: const TextStyle(fontSize: AppFontSize.caption, color: AppColors.textBody),
           ),
         ],
       ),

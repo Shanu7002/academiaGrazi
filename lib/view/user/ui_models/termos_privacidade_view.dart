@@ -1,3 +1,4 @@
+import 'package:academiagrazi/theme/app_font_size.dart';
 import 'package:academiagrazi/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -13,7 +14,7 @@ class PrivacyTermsView extends StatelessWidget {
         title: Text(
           'PRIVACIDADE & TERMOS',
           style: GoogleFonts.barlowCondensed(
-            fontSize: 16,
+            fontSize: AppFontSize.body,
             fontWeight: FontWeight.bold,
             color: AppColors.textPrimary,
           ),
@@ -50,7 +51,7 @@ class PrivacyTermsView extends StatelessWidget {
                           'Sua privacidade importa!',
                           style: GoogleFonts.barlowCondensed(
                             fontWeight: FontWeight.bold,
-                            fontSize: 15,
+                            fontSize: AppFontSize.small,
                             color: AppColors.textPrimary,
                           ),
                         ),
@@ -58,7 +59,7 @@ class PrivacyTermsView extends StatelessWidget {
                         Text(
                           'Conheça como seus dados pessoais e informações de saúde são utilizados e protegidos pela academia.',
                           style: GoogleFonts.barlowCondensed(
-                            fontSize: 13,
+                            fontSize: AppFontSize.caption,
                             height: 1.5,
                             color: AppColors.textSecondary,
                           ),
@@ -75,7 +76,7 @@ class PrivacyTermsView extends StatelessWidget {
             Text(
               'POLÍTICA DE PRIVACIDADE',
               style: GoogleFonts.barlowCondensed(
-                fontSize: 12,
+                fontSize: AppFontSize.caption,
                 fontWeight: FontWeight.bold,
                 letterSpacing: 1,
                 color: AppColors.textSecondary,
@@ -168,7 +169,7 @@ Qualquer compartilhamento deverá observar as finalidades informadas, a legisla�
             Text(
               'TERMOS DE USO',
               style: GoogleFonts.barlowCondensed(
-                fontSize: 12,
+                fontSize: AppFontSize.caption,
                 fontWeight: FontWeight.bold,
                 letterSpacing: 1,
                 color: AppColors.textSecondary,
@@ -206,7 +207,7 @@ Em caso de dúvidas sobre sua aptidão para atividades físicas, recomenda-se pr
             Text(
               'SEUS DIREITOS',
               style: GoogleFonts.barlowCondensed(
-                fontSize: 12,
+                fontSize: AppFontSize.caption,
                 fontWeight: FontWeight.bold,
                 letterSpacing: 1,
                 color: AppColors.textSecondary,
@@ -250,7 +251,7 @@ A equipe responsável deverá orientar você sobre os procedimentos para exercer
                 'Proteção de dados conforme a Lei nº 13.709/2018 (LGPD).',
                 textAlign: TextAlign.center,
                 style: GoogleFonts.barlowCondensed(
-                  fontSize: 11,
+                  fontSize: AppFontSize.caption,
                   height: 1.6,
                   color: AppColors.textSecondary,
                 ),
@@ -301,7 +302,7 @@ class _PrivacySection extends StatelessWidget {
             title: Text(
               title,
               style: GoogleFonts.barlowCondensed(
-                fontSize: 13,
+                fontSize: AppFontSize.caption,
                 fontWeight: FontWeight.w600,
                 color: AppColors.textPrimary,
               ),
@@ -314,7 +315,7 @@ class _PrivacySection extends StatelessWidget {
                 child: Text(
                   content.trim(),
                   style: GoogleFonts.barlowCondensed(
-                    fontSize: 13,
+                    fontSize: AppFontSize.caption,
                     height: 1.7,
                     color: AppColors.textSecondary,
                   ),

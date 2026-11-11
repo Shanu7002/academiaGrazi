@@ -1,3 +1,4 @@
+import 'package:academiagrazi/theme/app_font_size.dart';
 import 'package:academiagrazi/locator.dart';
 import 'package:academiagrazi/models/units/unit_model.dart';
 import 'package:academiagrazi/service/units/unit_service.dart';
@@ -217,7 +218,7 @@ class _UnitCard extends StatelessWidget {
                     Text(
                       unit.name,
                       style: GoogleFonts.barlowCondensed(
-                        fontSize: 15,
+                        fontSize: AppFontSize.small,
                         fontWeight: FontWeight.w700,
                         color:
                             unit.active
@@ -229,7 +230,7 @@ class _UnitCard extends StatelessWidget {
                       Text(
                         address,
                         style: GoogleFonts.barlowCondensed(
-                          fontSize: 12,
+                          fontSize: AppFontSize.caption,
                           color: AppColors.textSecondary,
                         ),
                       ),
@@ -237,7 +238,7 @@ class _UnitCard extends StatelessWidget {
                       Text(
                         'Desativado',
                         style: GoogleFonts.barlowCondensed(
-                          fontSize: 12,
+                          fontSize: AppFontSize.caption,
                           fontWeight: FontWeight.w600,
                           color: AppColors.danger,
                         ),
@@ -374,7 +375,7 @@ class _CenteredMessage extends StatelessWidget {
               text,
               textAlign: TextAlign.center,
               style: GoogleFonts.barlowCondensed(
-                fontSize: 14,
+                fontSize: AppFontSize.small,
                 color: AppColors.textSecondary,
               ),
             ),

@@ -1,3 +1,4 @@
+import 'package:academiagrazi/theme/app_font_size.dart';
 import 'package:academiagrazi/models/users/registration_profile.dart';
 import 'package:academiagrazi/models/users/user_model.dart';
 import 'package:academiagrazi/theme/app_colors.dart';
@@ -56,7 +57,7 @@ List<String> healthAlerts(RegistrationProfile? profile) {
 
 /// Rótulo em caixa alta das fichas do admin.
 TextStyle get adminLabelStyle => GoogleFonts.barlowCondensed(
-  fontSize: 12,
+  fontSize: AppFontSize.caption,
   fontWeight: FontWeight.w600,
   letterSpacing: .5,
   color: AppColors.slateText,
@@ -90,7 +91,7 @@ class AdminInfoRow extends StatelessWidget {
               Text(
                 value,
                 style: GoogleFonts.barlowCondensed(
-                  fontSize: 15,
+                  fontSize: AppFontSize.small,
                   fontWeight: FontWeight.w500,
                   color: AppColors.textPrimary,
                 ),
@@ -128,7 +129,7 @@ class StudentRegistrationDetails extends StatelessWidget {
           Text(
             'Este aluno ainda não completou a ficha de cadastro.',
             style: GoogleFonts.barlowCondensed(
-              fontSize: 14,
+              fontSize: AppFontSize.small,
               color: AppColors.slateText,
             ),
           )
@@ -162,7 +163,7 @@ class StudentRegistrationDetails extends StatelessWidget {
             Text(
               'Sem condições ou restrições informadas.',
               style: GoogleFonts.barlowCondensed(
-                fontSize: 14,
+                fontSize: AppFontSize.small,
                 color: AppColors.textBody,
               ),
             )
@@ -185,7 +186,7 @@ class StudentRegistrationDetails extends StatelessWidget {
                     child: Text(
                       alert,
                       style: GoogleFonts.barlowCondensed(
-                        fontSize: 13,
+                        fontSize: AppFontSize.caption,
                         fontWeight: FontWeight.w600,
                         color: AppColors.accentText,
                       ),
@@ -198,7 +199,7 @@ class StudentRegistrationDetails extends StatelessWidget {
             Text(
               notes,
               style: GoogleFonts.barlowCondensed(
-                fontSize: 14,
+                fontSize: AppFontSize.small,
                 height: 1.4,
                 color: AppColors.textBody,
               ),

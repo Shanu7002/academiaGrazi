@@ -1,3 +1,4 @@
+import 'package:academiagrazi/theme/app_font_size.dart';
 import 'package:academiagrazi/theme/app_colors.dart';
 import 'dart:math' as math;
 
@@ -60,7 +61,7 @@ class AlunoEvolutionView extends StatelessWidget {
             Text(
               'Evolução',
               style: GoogleFonts.barlowCondensed(
-                fontSize: 27,
+                fontSize: AppFontSize.headline,
                 fontWeight: FontWeight.bold,
                 color: _navy,
               ),
@@ -203,7 +204,7 @@ class _EvolucaoAlunoConteudoState extends State<EvolucaoAlunoConteudo> {
             Text(
               'Histórico de Avaliações',
               style: GoogleFonts.barlowCondensed(
-                fontSize: 24,
+                fontSize: AppFontSize.title,
                 fontWeight: FontWeight.bold,
                 color: _navy,
               ),
@@ -272,7 +273,7 @@ class _Aviso extends StatelessWidget {
             child: Text(
               texto,
               style: GoogleFonts.barlowCondensed(
-                fontSize: 16,
+                fontSize: AppFontSize.body,
                 fontWeight: FontWeight.bold,
                 color: _navy,
               ),
@@ -311,7 +312,7 @@ class _Selo extends StatelessWidget {
       child: Text(
         texto,
         style: GoogleFonts.barlowCondensed(
-          fontSize: 10,
+          fontSize: AppFontSize.caption,
           fontWeight: FontWeight.bold,
           color: _badgeText,
         ),
@@ -359,7 +360,7 @@ class _CardGraficoState extends State<_CardGrafico> {
   Widget build(BuildContext context) {
     final anterior = widget.anterior;
     final estiloTitulo = GoogleFonts.barlowCondensed(
-      fontSize: 24,
+      fontSize: AppFontSize.title,
       fontWeight: FontWeight.bold,
       color: _navy,
     );
@@ -416,7 +417,7 @@ class _CardGraficoState extends State<_CardGrafico> {
               const SizedBox(width: 4),
               Text(
                 _metrica.unidade,
-                style: estiloTitulo.copyWith(fontSize: 18),
+                style: estiloTitulo.copyWith(fontSize: AppFontSize.subtitle),
               ),
             ],
           ),
@@ -482,7 +483,7 @@ class _Grafico extends StatelessWidget {
                     child: Text(
                       formatarNumero(valor, 0),
                       style: GoogleFonts.barlowCondensed(
-                        fontSize: 10,
+                        fontSize: AppFontSize.caption,
                         color: _subtitle,
                       ),
                     ),
@@ -506,7 +507,7 @@ class _Grafico extends StatelessWidget {
                   child: Text(
                     '${data.day.toString().padLeft(2, '0')}/${data.month.toString().padLeft(2, '0')}',
                     style: GoogleFonts.barlowCondensed(
-                      fontSize: 10,
+                      fontSize: AppFontSize.caption,
                       color: _subtitle,
                     ),
                   ),
@@ -600,7 +601,7 @@ class _CardComposicao extends StatelessWidget {
                   titulo,
                   overflow: TextOverflow.ellipsis,
                   style: GoogleFonts.barlowCondensed(
-                    fontSize: 20,
+                    fontSize: AppFontSize.subtitle,
                     fontWeight: FontWeight.bold,
                     color: _navy,
                   ),
@@ -612,7 +613,7 @@ class _CardComposicao extends StatelessWidget {
           Text(
             valor,
             style: GoogleFonts.barlowCondensed(
-              fontSize: 20,
+              fontSize: AppFontSize.subtitle,
               fontWeight: FontWeight.bold,
               color: AppColors.info,
             ),
@@ -673,7 +674,7 @@ class _ItemHistorico extends StatelessWidget {
                     Text(
                       formatarData(avaliacao.date),
                       style: GoogleFonts.barlowCondensed(
-                        fontSize: 16,
+                        fontSize: AppFontSize.body,
                         fontWeight: FontWeight.bold,
                         color: _navy,
                       ),
@@ -682,7 +683,7 @@ class _ItemHistorico extends StatelessWidget {
                       '${formatarNumero(avaliacao.weightKg)} kg · '
                       '${formatarNumero(avaliacao.bodyFatPercent)} % gordura',
                       style: GoogleFonts.barlowCondensed(
-                        fontSize: 14,
+                        fontSize: AppFontSize.small,
                         fontWeight: FontWeight.bold,
                         color: _subtitle,
                       ),
@@ -723,7 +724,7 @@ class _DetalhesAvaliacao extends StatelessWidget {
             Text(
               formatarData(avaliacao.date),
               style: GoogleFonts.barlowCondensed(
-                fontSize: 24,
+                fontSize: AppFontSize.title,
                 fontWeight: FontWeight.bold,
                 color: _navy,
               ),
@@ -801,7 +802,7 @@ class _Linha extends StatelessWidget {
             child: Text(
               rotulo,
               style: GoogleFonts.barlowCondensed(
-                fontSize: 14,
+                fontSize: AppFontSize.small,
                 color: _subtitle,
               ),
             ),
@@ -809,7 +810,7 @@ class _Linha extends StatelessWidget {
           Text(
             valor,
             style: GoogleFonts.barlowCondensed(
-              fontSize: destaque ? 18 : 14,
+              fontSize: destaque ? AppFontSize.subtitle : AppFontSize.small,
               fontWeight: FontWeight.bold,
               color: destaque ? _green : _navy,
             ),

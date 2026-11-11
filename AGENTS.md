@@ -126,6 +126,7 @@ lib/
 | Keys de widget para teste | `Key('snake_case_em_portugues')`, ex.: `Key('botao_iniciar_treino')`, `Key('campo_busca_aluno')`. Prefixo pelo tipo: `botao_`, `campo_`, `card_`, `aba_`/`<perfil>_tab_`. |
 | Números mágicos de negócio | Proibidos nas telas. Use `lib/config/business_rules.dart`. |
 | Cores | Somente `AppColors.*`. Nada de `Color(0x…)` fora de `lib/theme/`. Use `withValues(alpha:)`, não `withOpacity`. |
+| Tamanho de fonte | Somente `AppFontSize.*` (`lib/theme/app_font_size.dart`). Nada de `fontSize: 14` com número solto. |
 | Log | `debugPrint` ou `dart:developer log`. Nunca `print`. |
 | Formatação | `dart format` (largura 80, `analysis_options.yaml`). `flutter analyze` sem warnings. |
 | Datas | Ver §5.1. |
@@ -310,6 +311,17 @@ Manual completo: [`docs/MANUAL_DE_MARCA.md`](docs/MANUAL_DE_MARCA.md). Em confli
 - Subtítulo e tagline: *itálico*, Light/Regular, caixa baixa ou de título.
 - Corpo: Regular, tracking levemente aberto (~0,2).
 - Números de métrica: Barlow Condensed Bold, grande.
+- **Tamanhos: escala única `AppFontSize`** (nunca número solto em `fontSize`). Escolha pelo papel do texto, não pelo espaço disponível; se não couber, ajuste o layout (`Expanded`, `Wrap`, `maxLines`/`ellipsis`), não a fonte.
+
+| Token | px | Uso |
+|---|---|---|
+| `caption` | 13 | rótulos pequenos, sobretítulos em caixa alta, selos (mínimo do app) |
+| `small` | 15 | legendas, texto secundário |
+| `body` | 17 | texto corrido, nomes em listas, campos, botões |
+| `subtitle` | 20 | título de cartão ou item de destaque |
+| `title` | 24 | título de seção |
+| `headline` | 30 | título da página |
+| `display` | 44 | números grandes de métrica |
 - Título de seção no padrão `PALAVRA EM CAIXA ALTA / Complemento em itálico` (ex.: `EVOLUÇÃO / Suas medidas`).
 - Destaque no corpo: a palavra-chave em CAIXA ALTA e/ou negrito na cor de impacto.
 
@@ -357,7 +369,7 @@ Predominância: laranja > verde > amarelo > azul. Superfícies e bordas usam nua
 - Navegação e "sobretítulos" discretos em caixa alta e tamanho pequeno.
 
 **Checklist de marca** (entra na DoD, §10):
-- [ ] Só Barlow Condensed
+- [ ] Só Barlow Condensed, com tamanhos da escala `AppFontSize`
 - [ ] Só cores da paleta via `AppColors` (+ cinza de texto e off-white), com os ajustes de leitura acima
 - [ ] Laranja no destaque principal; verde institucional; azul com moderação
 - [ ] Títulos em caixa alta; subtítulo/tagline em itálico

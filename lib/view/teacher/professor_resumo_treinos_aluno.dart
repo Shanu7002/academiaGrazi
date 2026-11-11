@@ -1,3 +1,4 @@
+import 'package:academiagrazi/theme/app_font_size.dart';
 import 'package:academiagrazi/models/training/training_session.dart';
 import 'package:academiagrazi/service/training/student_weekly_progress.dart';
 import 'package:academiagrazi/service/training/training_session_service.dart';
@@ -67,7 +68,7 @@ class _ProfessorResumoTreinosAlunoState
             const Icon(Icons.insights_outlined, color: AppColors.primary),
             const SizedBox(width: 8),
             const Expanded(child: Text('Acompanhamento de treinos',
-                style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16,
+                style: TextStyle(fontWeight: FontWeight.w800, fontSize: AppFontSize.body,
                   color: AppColors.textPrimary))),
             if (snapshot.hasData)
               const Icon(Icons.circle, size: 8, color: AppColors.success),
@@ -88,7 +89,7 @@ class _ProfessorResumoTreinosAlunoState
                 ? 'Nenhuma sessão finalizada registrada.'
                 : 'Último: ${last.routineName} · ${_format(last.finishedAt ?? last.startedAt)} '
                   '· ${last.completedSets}/${last.totalSets} séries',
-              style: const TextStyle(color: AppColors.textSecondary, fontSize: 12)),
+              style: const TextStyle(color: AppColors.textSecondary, fontSize: AppFontSize.caption)),
           ],
           const SizedBox(height: 12),
           SizedBox(width: double.infinity, child: OutlinedButton.icon(

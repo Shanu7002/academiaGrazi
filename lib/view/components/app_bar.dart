@@ -1,3 +1,4 @@
+import 'package:academiagrazi/theme/app_font_size.dart';
 import 'dart:async';
 
 import 'package:academiagrazi/locator.dart';
@@ -65,7 +66,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(
                 color: AppColors.primary,
-                fontSize: 22,
+                fontSize: AppFontSize.title,
                 fontWeight: FontWeight.bold,
               ),
             ),

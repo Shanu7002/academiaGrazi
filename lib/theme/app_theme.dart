@@ -1,4 +1,5 @@
 import 'package:academiagrazi/theme/app_colors.dart';
+import 'package:academiagrazi/theme/app_font_size.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -30,39 +31,57 @@ abstract final class AppTheme {
         )
         .copyWith(
           bodyLarge: base.bodyLarge?.copyWith(
-            fontSize: 17,
+            fontSize: AppFontSize.body,
             letterSpacing: 0.2,
             color: AppColors.textBody,
           ),
           bodyMedium: base.bodyMedium?.copyWith(
-            fontSize: 15,
+            fontSize: AppFontSize.small,
             letterSpacing: 0.2,
             color: AppColors.textBody,
           ),
           bodySmall: base.bodySmall?.copyWith(
-            fontSize: 13,
+            fontSize: AppFontSize.caption,
             letterSpacing: 0.2,
             color: AppColors.textSecondary,
           ),
           titleLarge: base.titleLarge?.copyWith(
+            fontSize: AppFontSize.title,
             fontWeight: FontWeight.w600,
             letterSpacing: 0.6,
             color: AppColors.textPrimary,
           ),
           titleMedium: base.titleMedium?.copyWith(
+            fontSize: AppFontSize.subtitle,
             fontWeight: FontWeight.w600,
             letterSpacing: 0.4,
             color: AppColors.textPrimary,
           ),
+          titleSmall: base.titleSmall?.copyWith(
+            fontSize: AppFontSize.body,
+            fontWeight: FontWeight.w600,
+            color: AppColors.textPrimary,
+          ),
+          headlineSmall: base.headlineSmall?.copyWith(
+            fontSize: AppFontSize.headline,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.8,
+            color: AppColors.textPrimary,
+          ),
+          displaySmall: base.displaySmall?.copyWith(
+            fontSize: AppFontSize.display,
+            fontWeight: FontWeight.w700,
+            color: AppColors.textPrimary,
+          ),
           labelLarge: base.labelLarge?.copyWith(
-            fontSize: 16,
+            fontSize: AppFontSize.body,
             fontWeight: FontWeight.w600,
             letterSpacing: 0.6,
           ),
         );
 
     final buttonText = GoogleFonts.barlowCondensed(
-      fontSize: 17,
+      fontSize: AppFontSize.body,
       fontWeight: FontWeight.w700,
       letterSpacing: 0.8,
     );
@@ -81,7 +100,7 @@ abstract final class AppTheme {
         foregroundColor: AppColors.primary,
         elevation: 0,
         titleTextStyle: GoogleFonts.barlowCondensed(
-          fontSize: 20,
+          fontSize: AppFontSize.subtitle,
           fontWeight: FontWeight.w600,
           letterSpacing: 1,
           color: AppColors.primary,
@@ -117,16 +136,16 @@ abstract final class AppTheme {
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           foregroundColor: AppColors.primary,
-          textStyle: buttonText.copyWith(fontSize: 16),
+          textStyle: buttonText,
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
         labelStyle: GoogleFonts.barlowCondensed(
-          fontSize: 16,
+          fontSize: AppFontSize.body,
           color: AppColors.textSecondary,
         ),
         hintStyle: GoogleFonts.barlowCondensed(
-          fontSize: 16,
+          fontSize: AppFontSize.body,
           color: AppColors.textMuted,
         ),
         focusedBorder: const UnderlineInputBorder(
@@ -135,7 +154,7 @@ abstract final class AppTheme {
       ),
       chipTheme: ChipThemeData(
         labelStyle: GoogleFonts.barlowCondensed(
-          fontSize: 15,
+          fontSize: AppFontSize.small,
           fontWeight: FontWeight.w600,
           color: AppColors.primary,
         ),
@@ -145,7 +164,7 @@ abstract final class AppTheme {
       snackBarTheme: SnackBarThemeData(
         backgroundColor: AppColors.primary,
         contentTextStyle: GoogleFonts.barlowCondensed(
-          fontSize: 16,
+          fontSize: AppFontSize.body,
           letterSpacing: 0.3,
           color: Colors.white,
         ),
@@ -154,13 +173,13 @@ abstract final class AppTheme {
       dialogTheme: DialogThemeData(
         backgroundColor: AppColors.surface,
         titleTextStyle: GoogleFonts.barlowCondensed(
-          fontSize: 24,
+          fontSize: AppFontSize.title,
           fontWeight: FontWeight.w600,
           letterSpacing: 0.6,
           color: AppColors.primary,
         ),
         contentTextStyle: GoogleFonts.barlowCondensed(
-          fontSize: 16,
+          fontSize: AppFontSize.body,
           letterSpacing: 0.2,
           color: AppColors.textSecondary,
         ),
@@ -173,7 +192,7 @@ abstract final class AppTheme {
         backgroundColor: AppColors.surface,
         labelTextStyle: WidgetStatePropertyAll(
           GoogleFonts.barlowCondensed(
-            fontSize: 14,
+            fontSize: AppFontSize.caption,
             fontWeight: FontWeight.w600,
             letterSpacing: 0.6,
             color: AppColors.primary,

@@ -1,3 +1,4 @@
+import 'package:academiagrazi/theme/app_font_size.dart';
 import 'package:academiagrazi/models/training/home_workout_plan.dart';
 import 'package:academiagrazi/service/training/exercise_catalog_service.dart';
 import 'package:academiagrazi/service/training/student_exercise_presentation.dart';
@@ -50,7 +51,7 @@ class _AlunoTreinoEmCasaViewState extends State<AlunoTreinoEmCasaView> {
     body: Center(child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 480),
       child: ListView(padding: const EdgeInsets.fromLTRB(16, 16, 16, 40), children: [
         const Text('Sua ficha para treinar em casa', style: TextStyle(
-          fontSize: 22, fontWeight: FontWeight.w800, color: AppColors.textPrimary)),
+          fontSize: AppFontSize.title, fontWeight: FontWeight.w800, color: AppColors.textPrimary)),
         const SizedBox(height: 7),
         const Text('Exercícios prescritos pelo seu professor. '
           'Você pode realizá-los nos dias adequados à sua rotina.'),
@@ -58,7 +59,7 @@ class _AlunoTreinoEmCasaViewState extends State<AlunoTreinoEmCasaView> {
         for (final routine in widget.plan.routines) Card(
           color: Colors.white, child: Padding(padding: const EdgeInsets.all(14),
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(routine.name, style: const TextStyle(fontSize: 19,
+            Text(routine.name, style: const TextStyle(fontSize: AppFontSize.subtitle,
               fontWeight: FontWeight.w800, color: AppColors.primary)),
             const SizedBox(height: 4),
             Text('${routine.exercises.length} exercícios • ${routine.estimatedMinutes} min previstos'),
@@ -83,10 +84,10 @@ class _AlunoTreinoEmCasaViewState extends State<AlunoTreinoEmCasaView> {
                   Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                     Text('${i + 1}. $label', style: const TextStyle(fontWeight: FontWeight.w700)),
                     Text('${exercise.sets} séries × ${exercise.repetitions} rep. • ${exercise.restSeconds}s descanso',
-                      style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+                      style: const TextStyle(fontSize: AppFontSize.caption, color: AppColors.textSecondary)),
                     if (guidance.text != null && guidance.text!.trim().isNotEmpty) ...[
                       const SizedBox(height: 6),
-                      Text(guidance.text!, style: const TextStyle(fontSize: 13)),
+                      Text(guidance.text!, style: const TextStyle(fontSize: AppFontSize.caption)),
                     ],
                   ])),
                 ]);
