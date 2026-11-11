@@ -51,10 +51,10 @@ void main() {
 
   test('turno de domingo é o atual e a segunda é o próximo', () {
     final domingo = turno('domingo', DateTime.sunday, '08:00', '12:00');
-    final agenda = currentAndNextShift(
-      [domingo, segundaManha],
-      DateTime(2026, 11, 15, 10),
-    );
+    final agenda = currentAndNextShift([
+      domingo,
+      segundaManha,
+    ], DateTime(2026, 11, 15, 10));
 
     expect(agenda.current?.id, 'domingo');
     expect(agenda.next?.id, 'seg-manha');
@@ -84,10 +84,9 @@ void main() {
   });
 
   test('com um único turno, o próximo é ele mesmo na semana seguinte', () {
-    final agenda = currentAndNextShift(
-      [segundaManha],
-      DateTime(2026, 11, 9, 8),
-    );
+    final agenda = currentAndNextShift([
+      segundaManha,
+    ], DateTime(2026, 11, 9, 8));
 
     expect(agenda.current?.id, 'seg-manha');
     expect(agenda.next?.id, 'seg-manha');
@@ -96,22 +95,57 @@ void main() {
 
   test('com turnos sobrepostos, o atual é o que começou primeiro', () {
     final cedo = turno('cedo', DateTime.monday, '06:00', '10:00');
-    final agenda = currentAndNextShift(
-      [segundaManha, cedo],
-      DateTime(2026, 11, 9, 8),
-    );
+    final agenda = currentAndNextShift([
+      segundaManha,
+      cedo,
+    ], DateTime(2026, 11, 9, 8));
 
     expect(agenda.current?.id, 'cedo');
   });
 
   test('ignora turnos inválidos', () {
     final invertido = turno('invertido', DateTime.monday, '12:00', '08:00');
-    final agenda = currentAndNextShift(
-      [invertido],
-      DateTime(2026, 11, 9, 9),
-    );
+    final agenda = currentAndNextShift([invertido], DateTime(2026, 11, 9, 9));
 
     expect(agenda.current, isNull);
     expect(agenda.next, isNull);
+  });
+
+  group('findOverlappingShift', () {
+    test('acha o turno que cruza no mesmo dia', () {
+      final novo = turno('novo', DateTime.monday, '10:00', '12:00');
+
+      expect(findOverlappingShift(escala, novo)?.id, 'seg-manha');
+    });
+
+    test('turno dentro de outro também cruza', () {
+      final novo = turno('novo', DateTime.monday, '15:00', '16:00');
+
+      expect(findOverlappingShift(escala, novo)?.id, 'seg-tarde');
+    });
+
+    test('encostar no fim ou no início não é sobrepor', () {
+      final entre = turno('novo', DateTime.monday, '11:00', '14:00');
+
+      expect(findOverlappingShift(escala, entre), isNull);
+    });
+
+    test('mesmo horário em outro dia não cruza', () {
+      final terca = turno('novo', DateTime.tuesday, '07:00', '11:00');
+
+      expect(findOverlappingShift(escala, terca), isNull);
+    });
+
+    test('ignora o próprio turno e turnos inválidos', () {
+      final invertido = turno('inv', DateTime.monday, '12:00', '08:00');
+
+      expect(findOverlappingShift([segundaManha], segundaManha), isNull);
+      expect(
+        findOverlappingShift([
+          invertido,
+        ], turno('novo', DateTime.monday, '09:00', '10:00')),
+        isNull,
+      );
+    });
   });
 }

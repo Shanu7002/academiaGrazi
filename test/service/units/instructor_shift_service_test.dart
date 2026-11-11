@@ -48,6 +48,35 @@ void main() {
     expect(() => adicionar(weekday: 8), throwsArgumentError);
   });
 
+  test('recusa turno que cruza com outro do mesmo professor', () async {
+    final existente = await adicionar(startTime: '07:00', endTime: '11:00');
+
+    await expectLater(
+      adicionar(startTime: '10:00', endTime: '12:00'),
+      throwsA(
+        isA<ShiftOverlapException>().having(
+          (e) => e.conflict.id,
+          'conflito',
+          existente,
+        ),
+      ),
+    );
+    expect((await db.collection('instructorShifts').get()).docs.length, 1);
+  });
+
+  test('aceita turno encostado e o mesmo horário de outro professor', () async {
+    await adicionar(startTime: '07:00', endTime: '11:00');
+
+    await adicionar(startTime: '11:00', endTime: '14:00');
+    await adicionar(
+      instructorId: 'prof-2',
+      startTime: '07:00',
+      endTime: '11:00',
+    );
+
+    expect((await db.collection('instructorShifts').get()).docs.length, 3);
+  });
+
   test('lista só os turnos do professor, por dia e horário', () async {
     await adicionar(weekday: DateTime.wednesday, startTime: '08:00');
     await adicionar(startTime: '14:00', endTime: '18:00');
@@ -55,10 +84,11 @@ void main() {
     await adicionar(instructorId: 'prof-2');
 
     final turnos = await service.streamShiftsForInstructor('prof-1').first;
-    expect(
-      turnos.map((t) => '${t.weekday} ${t.startTime}'),
-      ['1 07:00', '1 14:00', '3 08:00'],
-    );
+    expect(turnos.map((t) => '${t.weekday} ${t.startTime}'), [
+      '1 07:00',
+      '1 14:00',
+      '3 08:00',
+    ]);
   });
 
   test('remove o turno', () async {

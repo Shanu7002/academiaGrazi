@@ -3,6 +3,7 @@ import 'package:academiagrazi/service/admin/admin_dashboard.dart';
 import 'package:academiagrazi/theme/app_colors.dart';
 import 'package:academiagrazi/view/admin/manual_redistribution_view.dart';
 import 'package:academiagrazi/view/admin/mocks/admin_team_mock_data.dart';
+import 'package:academiagrazi/view/admin/widgets/instructor_schedule_section.dart';
 import 'package:academiagrazi/view/admin/widgets/student_registration_details.dart';
 import 'package:academiagrazi/view/components/app_bar.dart';
 import 'package:academiagrazi/view/components/invite_code_card.dart';
@@ -153,6 +154,8 @@ class _InstructorDetailsViewState extends State<InstructorDetailsView> {
               ),
             ),
           ),
+          const SizedBox(height: 16),
+          InstructorScheduleSection(instructorId: widget.instructorId),
           const SizedBox(height: 28),
           _SectionTitle('Alunos (${details.students.length})'),
           const SizedBox(height: 16),

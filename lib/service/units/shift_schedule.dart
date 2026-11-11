@@ -75,3 +75,25 @@ ShiftSchedule currentAndNextShift(
             : startOfMinute.add(Duration(minutes: nextDelta)),
   );
 }
+
+/// Primeiro turno de [existing] que se sobrepõe a [candidate] (mesmo dia e
+/// horários cruzados), ou `null`. Encostar não é sobrepor: 07:00–11:00 e
+/// 11:00–14:00 convivem. O próprio [candidate] (mesmo id) é ignorado.
+InstructorShiftModel? findOverlappingShift(
+  Iterable<InstructorShiftModel> existing,
+  InstructorShiftModel candidate,
+) {
+  if (!candidate.isValid) return null;
+  for (final shift in existing) {
+    if (!shift.isValid ||
+        shift.weekday != candidate.weekday ||
+        (shift.id.isNotEmpty && shift.id == candidate.id)) {
+      continue;
+    }
+    if (shift.startMinutes < candidate.endMinutes &&
+        candidate.startMinutes < shift.endMinutes) {
+      return shift;
+    }
+  }
+  return null;
+}

@@ -1,5 +1,16 @@
 import 'package:academiagrazi/models/units/instructor_shift_model.dart';
+import 'package:academiagrazi/service/units/shift_schedule.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+
+/// O turno novo cruza com [conflict], que já está na escala do professor.
+class ShiftOverlapException implements Exception {
+  final InstructorShiftModel conflict;
+
+  const ShiftOverlapException(this.conflict);
+
+  @override
+  String toString() => 'ShiftOverlapException(${conflict.id})';
+}
 
 /// Escala dos professores (`instructorShifts`). Só o admin grava; qualquer
 /// usuário autenticado lê (ver `firestore.rules`).
@@ -42,7 +53,8 @@ class InstructorShiftService {
         });
   }
 
-  /// Cria o turno e devolve o id do documento.
+  /// Cria o turno e devolve o id do documento. Lança
+  /// [ShiftOverlapException] se cruzar com outro turno do professor.
   Future<String> addShift({
     required String instructorId,
     required String unitId,
@@ -62,6 +74,15 @@ class InstructorShiftService {
     if (!shift.isValid) {
       throw ArgumentError('Invalid shift: weekday 1-7 and start before end');
     }
+    final current =
+        await _shifts.where('instructorId', isEqualTo: instructorId).get();
+    final conflict = findOverlappingShift(
+      current.docs.map(
+        (doc) => InstructorShiftModel.fromJson(doc.data(), doc.id),
+      ),
+      shift,
+    );
+    if (conflict != null) throw ShiftOverlapException(conflict);
     final reference = await _shifts.add(shift.toJson());
     return reference.id;
   }
