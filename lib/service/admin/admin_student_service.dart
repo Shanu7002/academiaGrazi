@@ -1,4 +1,6 @@
+import 'package:academiagrazi/config/business_rules.dart';
 import 'package:academiagrazi/models/users/user_model.dart';
+import 'package:academiagrazi/service/admin/redistribution.dart';
 import 'package:academiagrazi/service/students/student_status.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -135,6 +137,54 @@ class AdminStudentService {
       throw ArgumentError.value(instructorId, 'instructorId');
     }
     return _users.doc(studentId).update({'responsable': instructorId});
+  }
+
+  /// Prévia da redistribuição automática, proporcional à capacidade de cada
+  /// professor (ver [planRedistribution]). Nada é gravado aqui.
+  Future<RedistributionPlan> planAutomaticRedistribution() async {
+    final results = await Future.wait([
+      _users.where('type', isEqualTo: UserType.instructor.name).get(),
+      _users.where('type', isEqualTo: UserType.user.name).get(),
+    ]);
+    final instructors =
+        results[0].docs.map((doc) {
+            final user = UserModel.fromJson(doc.data(), doc.id);
+            return RedistributionInstructor(
+              id: user.id,
+              name: user.name,
+              capacity:
+                  user.studentCapacity ?? BusinessRules.defaultStudentCapacity,
+            );
+          }).toList()
+          ..sort(
+            (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()),
+          );
+    final students =
+        results[1].docs.map((doc) {
+          final user = UserModel.fromJson(doc.data(), doc.id);
+          return RedistributionStudent(
+            id: user.id,
+            name: user.name,
+            instructorId: user.responsable,
+            joinedAt: user.createdAt,
+          );
+        }).toList();
+    return planRedistribution(students: students, instructors: instructors);
+  }
+
+  /// Grava as trocas de professor em lotes (limite de 500 escritas por
+  /// lote no Firestore). Cada lote é atômico.
+  Future<void> moveStudents(List<StudentMove> moves) async {
+    const batchSize = 400;
+    for (var start = 0; start < moves.length; start += batchSize) {
+      final batch = _db.batch();
+      for (final move in moves.skip(start).take(batchSize)) {
+        batch.update(_users.doc(move.studentId), {
+          'responsable': move.toInstructorId,
+        });
+      }
+      await batch.commit();
+    }
   }
 
   /// Define se o aluno treina presencialmente ou remotamente.

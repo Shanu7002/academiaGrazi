@@ -3,7 +3,9 @@ import 'package:academiagrazi/models/users/registration_profile.dart';
 import 'package:academiagrazi/models/users/user_model.dart';
 import 'package:academiagrazi/service/admin/admin_dashboard.dart';
 import 'package:academiagrazi/service/users/register_instructor.dart';
+import 'package:academiagrazi/service/admin/admin_student_service.dart';
 import 'package:academiagrazi/view/admin/instructor_details_view.dart';
+import 'package:academiagrazi/view/admin/manual_redistribution_view.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -182,5 +184,25 @@ void main() {
     await pumpView(tester, () async => null);
 
     expect(find.text('Professor não encontrado.'), findsOneWidget);
+  });
+
+  testWidgets('redistribuir abre a manual com o professor como origem', (
+    tester,
+  ) async {
+    locator.registerSingleton<AdminStudentService>(
+      AdminStudentService(db: FakeFirebaseFirestore()),
+    );
+    await pumpView(
+      tester,
+      () async => InstructorDetails(instructor: instructor, students: const []),
+    );
+
+    await tester.tap(find.byKey(const Key('botao_redistribuir_professor')));
+    await tester.pumpAndSettle();
+
+    final tela = tester.widget<ManualRedistributionView>(
+      find.byType(ManualRedistributionView),
+    );
+    expect(tela.initialFromInstructorId, 'p1');
   });
 }
