@@ -50,10 +50,12 @@ class _ProfessorTreinoEmCasaViewState extends State<ProfessorTreinoEmCasaView> {
         _error = null;
       });
     } catch (_) {
-      if (mounted) setState(() {
-        _error = 'Não foi possível consultar os treinos em casa. Confira as permissões.';
-        _loading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _error = 'Não foi possível consultar os treinos em casa. Confira as permissões.';
+          _loading = false;
+        });
+      }
     }
   }
 

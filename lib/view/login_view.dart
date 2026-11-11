@@ -134,7 +134,7 @@ class _LandingPageState extends State<LoginView> {
               ),
               Positioned.fill(
                 child: ColoredBox(
-                  color: const Color(0xFFF6F4F0).withOpacity(0.65),
+                  color: const Color(0xFFF6F4F0).withValues(alpha: 0.65),
                 ),
               ),
               SafeArea(
@@ -285,7 +285,7 @@ class _LandingPageState extends State<LoginView> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),

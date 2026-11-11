@@ -55,10 +55,11 @@ void main() {
   Future<void> pumpProfileWith(WidgetTester tester, UserModel user) async {
     when(mockFirebaseUser.uid).thenReturn(user.id);
     when(mockAuth.currentUser).thenReturn(mockFirebaseUser);
-    when(mockUserService.getUserById(user.id)).thenAnswer((_) async => user);
-    when(mockUserService.getResponsableData(any)).thenAnswer(
+    // O stub genérico (professor) vem antes: no Mockito o último vence.
+    when(mockUserService.getUserById(any)).thenAnswer(
       (_) async => UserModel(id: 'resp', name: 'Resp', email: 'r@test.com'),
     );
+    when(mockUserService.getUserById(user.id)).thenAnswer((_) async => user);
 
     await tester.pumpWidget(const MaterialApp(home: AlunoProfileView()));
     await tester.pumpAndSettle();
@@ -110,7 +111,7 @@ void main() {
   testWidgets('Card do professor mostra a foto salva do professor', (
     WidgetTester tester,
   ) async {
-    when(mockUserService.getResponsableData('resp_456')).thenAnswer(
+    when(mockUserService.getUserById('resp_456')).thenAnswer(
       (_) async => UserModel(
         id: 'resp_456',
         name: 'Prof. Marcos',
@@ -210,7 +211,7 @@ void main() {
       mockUserService.getUserById("uid_123"),
     ).thenAnswer((_) async => testUserModel);
     when(
-      mockUserService.getResponsableData("resp_456"),
+      mockUserService.getUserById("resp_456"),
     ).thenAnswer((_) async => testResponsableModel);
 
     await tester.pumpWidget(MaterialApp(home: AlunoProfileView()));
@@ -239,13 +240,13 @@ void main() {
         email: 'test@example.com',
       );
 
-      when(
-        mockUserService.getUserById("uid_123"),
-      ).thenAnswer((_) async => testUserModel);
-      when(mockUserService.getResponsableData(any)).thenAnswer(
+      when(mockUserService.getUserById(any)).thenAnswer(
         (_) async =>
             UserModel(id: 'resp', name: 'Resp', email: 'resp@test.com'),
       );
+      when(
+        mockUserService.getUserById("uid_123"),
+      ).thenAnswer((_) async => testUserModel);
 
       when(
         mockUpdateDataController.updateHealthProfile(

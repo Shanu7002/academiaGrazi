@@ -108,7 +108,7 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
       UserModel? responsable;
 
       if (user?.responsable != null && user!.responsable!.isNotEmpty) {
-        responsable = await _userService.getResponsableData(user.responsable!);
+        responsable = await _userService.getUserById(user.responsable!);
       }
 
       if (!mounted) return;
@@ -201,11 +201,9 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
 
   Future<void> logout() async {
     try {
-      print('Executing sign out...');
       await _authInstance.signOut();
-      print('Sign out successful.');
     } catch (e) {
-      print('Logout Error: $e');
+      debugPrint('Erro ao sair: $e');
     }
   }
 
@@ -623,7 +621,7 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
                                                 _editingHealth = false;
                                               });
 
-                                              if (mounted) {
+                                              if (context.mounted) {
                                                 ScaffoldMessenger.of(
                                                   context,
                                                 ).showSnackBar(
@@ -637,7 +635,7 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
                                                 );
                                               }
                                             } catch (e) {
-                                              if (mounted) {
+                                              if (context.mounted) {
                                                 ScaffoldMessenger.of(
                                                   context,
                                                 ).showSnackBar(
@@ -719,7 +717,7 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
                                 ),
                                 const SizedBox(height: 12),
                                 DropdownButtonFormField<String>(
-                                  value:
+                                  initialValue:
                                       relationshipOptions.contains(
                                             _selectedRelationship,
                                           )
@@ -846,7 +844,7 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
                                                 _editingEmergency = false;
                                               });
 
-                                              if (mounted) {
+                                              if (context.mounted) {
                                                 ScaffoldMessenger.of(
                                                   context,
                                                 ).showSnackBar(
@@ -860,7 +858,7 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
                                                 );
                                               }
                                             } catch (e) {
-                                              if (mounted) {
+                                              if (context.mounted) {
                                                 ScaffoldMessenger.of(
                                                   context,
                                                 ).showSnackBar(
@@ -1273,11 +1271,10 @@ enum PreferenceType { dailyReminder, professorNotices }
 
 class _PreferenceSwitch extends StatefulWidget {
   const _PreferenceSwitch({
-    Key? key,
     required this.icon,
     required this.title,
     required this.type,
-  }) : super(key: key);
+  });
 
   final IconData icon;
   final String title;
