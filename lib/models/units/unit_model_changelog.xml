@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<changelog>
+    <model>
+        <version>1.0</version>
+        <owner>Bayer-07</owner>
+        <description>GB-040: criacao do modelo de unidade (Bloco). Exclusao logica com active = false.</description>
+        <actualModel>
+            unit = {
+                id: --gerado automaticamente 20-character strings (Base62)
+                name: string
+                address: string (optional)
+                active: bool --false = unidade desativada (nao e apagada)
+                createdAt: string (iso8601, UTC) --gravado uma unica vez, na criacao
+            }
+        </actualModel>
+    </model>
+</changelog>

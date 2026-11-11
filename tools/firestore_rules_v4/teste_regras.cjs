@@ -92,6 +92,29 @@ async function main() {
     await test('aluno nao grava codigo de convite no proprio perfil',()=>assertFails(updateDoc(user(aluno1,'aluno1'),{registrationCode:'1234',registrationCodeExpiresAt:new Date().toISOString()})));
     await test('professor nao altera o tipo junto com o codigo',()=>assertFails(updateDoc(user(prof1,'prof1'),{registrationCode:'4321',type:'admin'})));
 
+    // GB-040: unidades e escala. Qualquer autenticado le; so o admin grava.
+    const unidade=(extra={})=>({name:'Bloco A',active:true,createdAt:'2026-11-11T12:00:00.000Z',...extra});
+    const turno=(extra={})=>({instructorId:'prof1',unitId:'blocoA',weekday:1,startTime:'07:00',endTime:'11:00',createdAt:'2026-11-11T12:00:00.000Z',...extra});
+    await test('admin cria unidade',()=>assertSucceeds(setDoc(doc(admin,'units/blocoA'),unidade({address:'Rua 1'}))));
+    await test('aluno le unidades',()=>assertSucceeds(getDoc(doc(aluno1,'units/blocoA'))));
+    await test('nao autenticado nao le unidades',()=>assertFails(getDoc(doc(anon,'units/blocoA'))));
+    await test('professor nao cria unidade',()=>assertFails(setDoc(doc(prof1,'units/blocoB'),unidade())));
+    await test('unidade com campo desconhecido e recusada',()=>assertFails(setDoc(doc(admin,'units/blocoC'),unidade({lotacao:30}))));
+    await test('admin desativa unidade',()=>assertSucceeds(updateDoc(doc(admin,'units/blocoA'),{active:false})));
+    await test('admin nao reescreve createdAt da unidade',()=>assertFails(updateDoc(doc(admin,'units/blocoA'),{createdAt:'2020-01-01T00:00:00.000Z'})));
+    await test('unidade nao e apagada, nem pelo admin',()=>assertFails(deleteDoc(doc(admin,'units/blocoA'))));
+    await test('admin cria turno da escala',()=>assertSucceeds(setDoc(doc(admin,'instructorShifts/t1'),turno())));
+    await test('professor le a escala',()=>assertSucceeds(getDoc(doc(prof1,'instructorShifts/t1'))));
+    await test('aluno le a escala',()=>assertSucceeds(getDoc(doc(aluno1,'instructorShifts/t1'))));
+    await test('professor nao cria o proprio turno',()=>assertFails(setDoc(doc(prof1,'instructorShifts/t2'),turno())));
+    await test('turno em unidade inexistente e recusado',()=>assertFails(setDoc(doc(admin,'instructorShifts/t3'),turno({unitId:'naoExiste'}))));
+    await test('turno para quem nao e professor e recusado',()=>assertFails(setDoc(doc(admin,'instructorShifts/t4'),turno({instructorId:'aluno1'}))));
+    await test('turno com inicio depois do fim e recusado',()=>assertFails(setDoc(doc(admin,'instructorShifts/t5'),turno({startTime:'12:00'}))));
+    await test('turno com dia da semana invalido e recusado',()=>assertFails(setDoc(doc(admin,'instructorShifts/t6'),turno({weekday:8}))));
+    await test('turno com horario fora do formato e recusado',()=>assertFails(setDoc(doc(admin,'instructorShifts/t7'),turno({endTime:'24:00'}))));
+    await test('professor nao apaga turno',()=>assertFails(deleteDoc(doc(prof1,'instructorShifts/t1'))));
+    await test('admin apaga turno',()=>assertSucceeds(deleteDoc(doc(admin,'instructorShifts/t1'))));
+
     await test('professor vinculado cria rascunho',()=>assertSucceeds(setDoc(plan(prof1),draft())));
     await test('professor alheio nao cria rascunho',()=>assertFails(setDoc(plan(prof2,'outra'),draft('outra'))));
     await test('aluno nao cria ficha por conta propria',()=>assertFails(setDoc(plan(aluno1,'aluno-criou'),draft('aluno-criou'))));

@@ -1,7 +1,7 @@
 # Testes de regras Firestore - Academia Grazi
 
 Esta suite testa o arquivo oficial `firestore.rules`, na raiz do repositorio.
-Contem 80 cenarios de seguranca e nunca acessa o banco Firebase real.
+Contem 99 cenarios de seguranca e nunca acessa o banco Firebase real.
 
 ## Instalar e executar
 
