@@ -100,11 +100,18 @@ service cloud.firestore {
         && request.resource.data.name is string
         && request.resource.data.name.size() > 0;
 
-      // Mantem a renovacao de codigo feita pelo administrador.
-      allow update: if isAdmin()
+      // Renovacao do codigo de convite: o proprio professor (ao abrir o
+      // perfil) ou o admin. O codigo gravado no perfil precisa ser emitido
+      // para esse professor na mesma transacao (instructorCodes/{codigo}).
+      allow update: if (ownUser(userId) || isAdmin())
         && resource.data.type == 'instructor'
         && request.resource.data.diff(resource.data).affectedKeys()
-          .hasOnly(['registrationCode', 'registrationCodeExpiresAt']);
+          .hasOnly(['registrationCode', 'registrationCodeExpiresAt'])
+        && request.resource.data.registrationCode is string
+        && request.resource.data.registrationCode.matches('^[0-9]{4}$')
+        && request.resource.data.registrationCodeExpiresAt is string
+        && getAfter(/databases/$(database)/documents/instructorCodes/$(request.resource.data.registrationCode))
+          .data.instructorId == userId;
 
       // GB-003: o professor responsavel e o admin definem a unidade e a
       // modalidade do aluno. O proprio aluno nao altera esses campos.
