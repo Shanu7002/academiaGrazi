@@ -57,8 +57,20 @@ async function main() {
     await test('aluno nao troca de professor por conta propria',()=>assertFails(updateDoc(user(aluno1,'aluno1'),{responsable:'prof2'})));
     await test('aluno nao altera email arbitrariamente',()=>assertFails(updateDoc(user(aluno1,'aluno1'),{email:'outro@test.com.br'})));
     await test('aluno nao cria propria conta como admin',()=>assertFails(setDoc(user(d('novoAdmin'),'novoAdmin'),{name:'Novo Admin',type:'admin',responsable:'prof1'})));
-    await test('autocadastro de aluno com instrutor valido e permitido',()=>assertSucceeds(setDoc(user(d('novoAluno'),'novoAluno'),{name:'Novo Aluno',type:'user',responsable:'prof1'})));
+    await test('autocadastro de aluno com instrutor valido e permitido',()=>assertSucceeds(setDoc(user(d('novoAluno'),'novoAluno'),{name:'Novo Aluno',email:'novo@test.com.br',type:'user',responsable:'prof1'})));
     await test('aluno nao pode editar perfil do professor',()=>assertFails(updateDoc(user(aluno1,'prof1'),{name:'Hack'})));
+    // GB-003: createdAt imutavel; unidade/modalidade e especialidade/capacidade.
+    await test('aluno nao altera o proprio createdAt',()=>assertFails(updateDoc(user(aluno1,'aluno1'),{createdAt:'2020-01-01T00:00:00.000Z'})));
+    await test('aluno nao define a propria modalidade',()=>assertFails(updateDoc(user(aluno1,'aluno1'),{modality:'remote'})));
+    await test('professor responsavel define unidade e modalidade do aluno',()=>assertSucceeds(updateDoc(user(prof1,'aluno1'),{unitId:'unidade1',modality:'remote'})));
+    await test('professor alheio nao define modalidade do aluno',()=>assertFails(updateDoc(user(prof2,'aluno1'),{modality:'onSite'})));
+    await test('modalidade invalida e recusada',()=>assertFails(updateDoc(user(prof1,'aluno1'),{modality:'hibrido'})));
+    await test('professor nao altera outros campos do aluno junto com a modalidade',()=>assertFails(updateDoc(user(prof1,'aluno1'),{modality:'onSite',name:'Outro'})));
+    await test('admin define modalidade do aluno',()=>assertSucceeds(updateDoc(user(admin,'aluno1'),{modality:'onSite'})));
+    await test('admin define especialidade e capacidade do professor',()=>assertSucceeds(updateDoc(user(admin,'prof1'),{specialty:'Musculacao',studentCapacity:30})));
+    await test('professor nao define a propria capacidade',()=>assertFails(updateDoc(user(prof1,'prof1'),{studentCapacity:100})));
+    await test('capacidade zero e recusada',()=>assertFails(updateDoc(user(admin,'prof1'),{studentCapacity:0})));
+    await test('especialidade nao e definida em aluno',()=>assertFails(updateDoc(user(admin,'aluno1'),{specialty:'Musculacao'})));
     await test('aula pode ser lida apos login',()=>assertSucceeds(getDoc(doc(aluno1,'gym_classes/aula1'))));
     await test('aluno nao pode editar aula',()=>assertFails(updateDoc(doc(aluno1,'gym_classes/aula1'),{name:'Outra'})));
     await test('codigo publico conhecido pode ser consultado',()=>assertSucceeds(getDoc(doc(anon,'instructorCodes/1234'))));
