@@ -5,7 +5,7 @@ import 'package:academiagrazi/service/units/instructor_shift_service.dart';
 import 'package:academiagrazi/service/units/shift_schedule.dart';
 import 'package:academiagrazi/service/units/unit_service.dart';
 import 'package:academiagrazi/theme/app_colors.dart';
-import 'package:academiagrazi/view/admin/widgets/weekdays.dart';
+import 'package:academiagrazi/view/components/weekdays.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';

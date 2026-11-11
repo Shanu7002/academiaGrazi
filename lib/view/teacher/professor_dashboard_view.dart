@@ -1,6 +1,7 @@
 import 'package:academiagrazi/controller/teachers/teacher_user_searcher.dart';
 import 'package:academiagrazi/locator.dart';
 import 'package:academiagrazi/view/components/app_bar.dart';
+import 'package:academiagrazi/view/components/instructor_schedule_builder.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -67,140 +68,149 @@ class _ProfessorDashboardViewState extends State<ProfessorDashboardView> {
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // Saudação
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Olá, Marcos',
-                    style: GoogleFonts.barlowCondensed(
-                      fontWeight: FontWeight.bold,
-                      color: navy,
-                      fontSize: 32,
+          child: InstructorScheduleBuilder(
+            instructorId: _authInstance.currentUser?.uid,
+            builder:
+                (context, schedule) => Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // Saudação
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Olá, Marcos',
+                          style: GoogleFonts.barlowCondensed(
+                            fontWeight: FontWeight.bold,
+                            color: navy,
+                            fontSize: 32,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          schedule.currentLabel,
+                          key: const Key('texto_turno_atual'),
+                          style: GoogleFonts.inter(
+                            color: textColor,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    'Bloco atual: Bloco A (Manhã)',
-                    style: GoogleFonts.inter(color: textColor, fontSize: 16),
-                  ),
-                ],
-              ),
 
-              const SizedBox(height: 20),
+                    const SizedBox(height: 20),
 
-              Row(
-                children: [
-                  Expanded(
-                    child: _DashboardMetricCard(
-                      asset: 'assets/tresAlunos.svg',
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _DashboardMetricCard(
+                            asset: 'assets/tresAlunos.svg',
+                            title: 'Alunos',
+                            value: _isLoading ? '…' : _userQuantity,
+                            description: 'Ativos',
+                          ),
+                        ),
+                        const SizedBox(width: 15),
+                        Expanded(
+                          child: _DashboardMetricCard(
+                            asset: 'assets/presencas.svg',
+                            title: 'Presenças',
+                            value: '15',
+                            description: 'Hoje',
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    const _DashboardMetricCard(
+                      asset: 'assets/inativo.svg',
                       title: 'Alunos',
-                      value: _isLoading ? '…' : _userQuantity,
-                      description: 'Ativos',
+                      value: '3',
+                      description: 'Risco de evasão',
+                      fullWidth: true,
+                      accentColor: red,
+                      shadowColor: red,
                     ),
-                  ),
-                  const SizedBox(width: 15),
-                  Expanded(
-                    child: _DashboardMetricCard(
-                      asset: 'assets/presencas.svg',
-                      title: 'Presenças',
-                      value: '15',
-                      description: 'Hoje',
+
+                    const SizedBox(height: 15),
+
+                    _DashboardMetricCard(
+                      key: const Key('card_proximo_turno'),
+                      asset: 'assets/relogio.svg',
+                      title: 'Próximo Turno',
+                      value: schedule.nextUnitLabel,
+                      description: schedule.nextWhenLabel,
+                      isNextShift: true,
+                      accentColor: Color(0xFF00564B),
+                      shadowColor: navy,
                     ),
-                  ),
-                ],
-              ),
 
-              const SizedBox(height: 20),
+                    const SizedBox(height: 30),
 
-              const _DashboardMetricCard(
-                asset: 'assets/inativo.svg',
-                title: 'Alunos',
-                value: '3',
-                description: 'Risco de evasão',
-                fullWidth: true,
-                accentColor: red,
-                shadowColor: red,
-              ),
-
-              const SizedBox(height: 15),
-
-              const _DashboardMetricCard(
-                asset: 'assets/relogio.svg',
-                title: 'Próximo Turno',
-                value: 'Bloco B',
-                description: '11:00',
-                isNextShift: true,
-                accentColor: Color(0xFF00564B),
-                shadowColor: navy,
-              ),
-
-              const SizedBox(height: 30),
-
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Prioridades',
-                    style: GoogleFonts.anton(fontSize: 32, color: navy),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 8,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Prioridades',
+                          style: GoogleFonts.anton(fontSize: 32, color: navy),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 8,
+                          ),
+                          decoration: BoxDecoration(
+                            color: green,
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Text(
+                            '3 Alertas',
+                            style: GoogleFonts.inter(
+                              fontSize: 13,
+                              fontWeight: FontWeight.bold,
+                              color: const Color(0xFFA8F0E1),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                    decoration: BoxDecoration(
-                      color: green,
-                      borderRadius: BorderRadius.circular(16),
+
+                    const SizedBox(height: 15),
+
+                    const _PriorityCard(
+                      name: 'Ana Lima',
+                      description: 'Avaliação vence em dois dias.',
+                      asset: 'assets/quadradoAviso.svg',
+                      action: 'Revisar',
+                      accentColor: orange,
+                      iconBackgroundColor: Color(0xFFE6A07D),
                     ),
-                    child: Text(
-                      '3 Alertas',
-                      style: GoogleFonts.inter(
-                        fontSize: 13,
-                        fontWeight: FontWeight.bold,
-                        color: const Color(0xFFA8F0E1),
-                      ),
+
+                    const SizedBox(height: 15),
+
+                    const _PriorityCard(
+                      name: 'Bruno Alves',
+                      description: '12 dias sem treinar (inativo).',
+                      asset: 'assets/alertaVermelho.svg',
+                      action: 'Contatar',
+                      accentColor: red,
+                      iconBackgroundColor: Color(0xFFE6A07D),
                     ),
-                  ),
-                ],
-              ),
 
-              const SizedBox(height: 15),
+                    const SizedBox(height: 15),
 
-              const _PriorityCard(
-                name: 'Ana Lima',
-                description: 'Avaliação vence em dois dias.',
-                asset: 'assets/quadradoAviso.svg',
-                action: 'Revisar',
-                accentColor: orange,
-                iconBackgroundColor: Color(0xFFE6A07D),
-              ),
-
-              const SizedBox(height: 15),
-
-              const _PriorityCard(
-                name: 'Bruno Alves',
-                description: '12 dias sem treinar (inativo).',
-                asset: 'assets/alertaVermelho.svg',
-                action: 'Contatar',
-                accentColor: red,
-                iconBackgroundColor: Color(0xFFE6A07D),
-              ),
-
-              const SizedBox(height: 15),
-
-              const _PriorityCard(
-                name: 'Carla Souza',
-                description: 'Novo treino solicitado.',
-                asset: 'assets/halter.svg',
-                action: 'Montar',
-                accentColor: green,
-                iconBackgroundColor: Color(0xFF84D3CA),
-              ),
-            ],
+                    const _PriorityCard(
+                      name: 'Carla Souza',
+                      description: 'Novo treino solicitado.',
+                      asset: 'assets/halter.svg',
+                      action: 'Montar',
+                      accentColor: green,
+                      iconBackgroundColor: Color(0xFF84D3CA),
+                    ),
+                  ],
+                ),
           ),
         ),
       ),
@@ -223,6 +233,7 @@ class _DashboardMetricCard extends StatelessWidget {
   final Color shadowColor;
 
   const _DashboardMetricCard({
+    super.key,
     required this.asset,
     required this.title,
     required this.value,

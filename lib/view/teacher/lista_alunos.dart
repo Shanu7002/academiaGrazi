@@ -1,5 +1,8 @@
+import 'package:academiagrazi/locator.dart';
 import 'package:academiagrazi/theme/app_colors.dart';
 import 'package:academiagrazi/view/components/app_bar.dart';
+import 'package:academiagrazi/view/components/instructor_schedule_builder.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -12,6 +15,12 @@ class ListaAlunosView extends StatefulWidget {
 }
 
 class _ListaAlunosViewState extends State<ListaAlunosView> {
+  /// Professor logado; sem o FirebaseAuth no locator (testes), sem escala.
+  final String? _instructorId =
+      locator.isRegistered<FirebaseAuth>()
+          ? locator<FirebaseAuth>().currentUser?.uid
+          : null;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,12 +40,16 @@ class _ListaAlunosViewState extends State<ListaAlunosView> {
                 ),
               ),
               const SizedBox(height: 10),
-              Text(
-                'Bloco atual: Bloco A (Manhã)',
-                style: GoogleFonts.inter(
-                  color: AppColors.textBody,
-                  fontSize: 16,
-                ),
+              InstructorScheduleBuilder(
+                instructorId: _instructorId,
+                builder:
+                    (context, schedule) => Text(
+                      schedule.currentLabel,
+                      style: GoogleFonts.inter(
+                        color: AppColors.textBody,
+                        fontSize: 16,
+                      ),
+                    ),
               ),
               const SizedBox(height: 20),
 
@@ -91,25 +104,7 @@ class _ListaAlunosViewState extends State<ListaAlunosView> {
 
                     const SizedBox(width: 10),
 
-                    ElevatedButton(
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.white90,
-                        minimumSize: const Size(100, 40),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16.0),
-                        ),
-                      ),
-                      child: Text(
-                        'Bloco A',
-                        style: GoogleFonts.inter(
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.navy,
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(width: 15),
+                    const SizedBox(width: 5),
 
                     ElevatedButton(
                       onPressed: () {},
