@@ -1,3 +1,4 @@
+import 'package:academiagrazi/theme/app_font_size.dart';
 import 'package:academiagrazi/locator.dart';
 import 'package:academiagrazi/models/units/gym_class_model.dart';
 import 'package:academiagrazi/models/units/instructor_shift_model.dart';
@@ -220,7 +221,7 @@ class _GymClassesViewState extends State<GymClassesView> {
             child: Text(
               weekdayName(item.weekday).toUpperCase(),
               style: GoogleFonts.barlowCondensed(
-                fontSize: 18,
+                fontSize: AppFontSize.subtitle,
                 fontWeight: FontWeight.bold,
                 color: AppColors.primaryDark,
               ),
@@ -292,7 +293,7 @@ class _ClassCard extends StatelessWidget {
               Text(
                 item.startTime,
                 style: GoogleFonts.barlowCondensed(
-                  fontSize: 22,
+                  fontSize: AppFontSize.title,
                   fontWeight: FontWeight.bold,
                   color:
                       item.active ? AppColors.primary : AppColors.textSecondary,
@@ -305,8 +306,8 @@ class _ClassCard extends StatelessWidget {
                   children: [
                     Text(
                       item.name,
-                      style: GoogleFonts.inter(
-                        fontSize: 15,
+                      style: GoogleFonts.barlowCondensed(
+                        fontSize: AppFontSize.small,
                         fontWeight: FontWeight.w700,
                         color:
                             item.active
@@ -316,16 +317,16 @@ class _ClassCard extends StatelessWidget {
                     ),
                     Text(
                       details,
-                      style: GoogleFonts.inter(
-                        fontSize: 12,
+                      style: GoogleFonts.barlowCondensed(
+                        fontSize: AppFontSize.caption,
                         color: AppColors.textSecondary,
                       ),
                     ),
                     if (!item.active)
                       Text(
                         'Fora da grade',
-                        style: GoogleFonts.inter(
-                          fontSize: 12,
+                        style: GoogleFonts.barlowCondensed(
+                          fontSize: AppFontSize.caption,
                           fontWeight: FontWeight.w600,
                           color: AppColors.danger,
                         ),
@@ -587,8 +588,8 @@ class _CenteredMessage extends StatelessWidget {
             Text(
               text,
               textAlign: TextAlign.center,
-              style: GoogleFonts.inter(
-                fontSize: 14,
+              style: GoogleFonts.barlowCondensed(
+                fontSize: AppFontSize.small,
                 color: AppColors.textSecondary,
               ),
             ),

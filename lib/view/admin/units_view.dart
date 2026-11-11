@@ -1,3 +1,4 @@
+import 'package:academiagrazi/theme/app_font_size.dart';
 import 'package:academiagrazi/locator.dart';
 import 'package:academiagrazi/models/units/unit_model.dart';
 import 'package:academiagrazi/service/units/unit_service.dart';
@@ -216,8 +217,8 @@ class _UnitCard extends StatelessWidget {
                   children: [
                     Text(
                       unit.name,
-                      style: GoogleFonts.inter(
-                        fontSize: 15,
+                      style: GoogleFonts.barlowCondensed(
+                        fontSize: AppFontSize.small,
                         fontWeight: FontWeight.w700,
                         color:
                             unit.active
@@ -228,16 +229,16 @@ class _UnitCard extends StatelessWidget {
                     if (address != null && address.isNotEmpty)
                       Text(
                         address,
-                        style: GoogleFonts.inter(
-                          fontSize: 12,
+                        style: GoogleFonts.barlowCondensed(
+                          fontSize: AppFontSize.caption,
                           color: AppColors.textSecondary,
                         ),
                       ),
                     if (!unit.active)
                       Text(
                         'Desativado',
-                        style: GoogleFonts.inter(
-                          fontSize: 12,
+                        style: GoogleFonts.barlowCondensed(
+                          fontSize: AppFontSize.caption,
                           fontWeight: FontWeight.w600,
                           color: AppColors.danger,
                         ),
@@ -373,8 +374,8 @@ class _CenteredMessage extends StatelessWidget {
             Text(
               text,
               textAlign: TextAlign.center,
-              style: GoogleFonts.inter(
-                fontSize: 14,
+              style: GoogleFonts.barlowCondensed(
+                fontSize: AppFontSize.small,
                 color: AppColors.textSecondary,
               ),
             ),

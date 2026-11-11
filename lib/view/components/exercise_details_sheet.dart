@@ -1,3 +1,4 @@
+import 'package:academiagrazi/theme/app_font_size.dart';
 import 'package:academiagrazi/service/training/student_exercise_presentation.dart';
 import 'package:academiagrazi/theme/app_colors.dart';
 import 'package:academiagrazi/view/user/student_exercise_photo.dart';
@@ -86,7 +87,7 @@ class ExerciseDetailsSheet extends StatelessWidget {
                 name,
                 style: GoogleFonts.barlowCondensed(
                   color: AppColors.textPrimary,
-                  fontSize: 28,
+                  fontSize: AppFontSize.headline,
                   fontWeight: FontWeight.w800,
                   height: 1.05,
                 ),
@@ -104,9 +105,9 @@ class ExerciseDetailsSheet extends StatelessWidget {
                   ),
                   child: Text(
                     group,
-                    style: GoogleFonts.inter(
+                    style: GoogleFonts.barlowCondensed(
                       color: AppColors.primary,
-                      fontSize: 12,
+                      fontSize: AppFontSize.caption,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
@@ -117,7 +118,7 @@ class ExerciseDetailsSheet extends StatelessWidget {
                 'Orientações',
                 style: GoogleFonts.barlowCondensed(
                   color: AppColors.textPrimary,
-                  fontSize: 22,
+                  fontSize: AppFontSize.title,
                   fontWeight: FontWeight.w800,
                 ),
               ),
@@ -126,12 +127,12 @@ class ExerciseDetailsSheet extends StatelessWidget {
                 guidance.isEmpty
                     ? 'Orientações de execução não cadastradas.'
                     : guidance,
-                style: GoogleFonts.inter(
+                style: GoogleFonts.barlowCondensed(
                   color:
                       guidance.isEmpty
                           ? AppColors.textSecondary
                           : AppColors.textBody,
-                  fontSize: 13,
+                  fontSize: AppFontSize.caption,
                   height: 1.55,
                 ),
               ),

@@ -1,3 +1,4 @@
+import 'package:academiagrazi/theme/app_font_size.dart';
 import 'package:academiagrazi/theme/app_colors.dart';
 import 'package:academiagrazi/view/preferences_service.dart';
 import 'package:academiagrazi/view/user/ui_models/termos_privacidade_view.dart';
@@ -255,7 +256,7 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
                   Text(
                     'Meu Perfil',
                     style: GoogleFonts.barlowCondensed(
-                      fontSize: 30,
+                      fontSize: AppFontSize.headline,
                       fontWeight: FontWeight.bold,
                       color: AppColors.primaryDark,
                     ),
@@ -265,8 +266,8 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
                     user.type == UserType.admin
                         ? 'Seus dados e preferências'
                         : 'Seus dados, saúde e preferências',
-                    style: GoogleFonts.inter(
-                      fontSize: 14,
+                    style: GoogleFonts.barlowCondensed(
+                      fontSize: AppFontSize.small,
                       color: AppColors.slateText,
                     ),
                   ),
@@ -630,7 +631,7 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
                                                     content: Text(
                                                       'Falha ao salvar. Tente novamente.',
                                                     ),
-                                                    backgroundColor: Colors.red,
+                                                    backgroundColor: AppColors.danger,
                                                   ),
                                                 );
                                               }
@@ -853,7 +854,7 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
                                                     content: Text(
                                                       'Falha ao salvar contato. Tente novamente.',
                                                     ),
-                                                    backgroundColor: Colors.red,
+                                                    backgroundColor: AppColors.danger,
                                                   ),
                                                 );
                                               }
@@ -901,18 +902,18 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
                           const SizedBox(height: 16),
                           Text(
                             'Plano Conexão Semestral',
-                            style: GoogleFonts.inter(
+                            style: GoogleFonts.barlowCondensed(
                               color: AppColors.textPrimary,
-                              fontSize: 16,
+                              fontSize: AppFontSize.body,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                           const SizedBox(height: 4),
                           Text(
                             'Renovação em 10/11/2023',
-                            style: GoogleFonts.inter(
+                            style: GoogleFonts.barlowCondensed(
                               color: AppColors.textSecondary,
-                              fontSize: 13,
+                              fontSize: AppFontSize.caption,
                             ),
                           ),
                           const SizedBox(height: 16),
@@ -1053,7 +1054,7 @@ class _ProfileSummary extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: GoogleFonts.barlowCondensed(
                     color: AppColors.primaryDark,
-                    fontSize: 28,
+                    fontSize: AppFontSize.headline,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -1061,9 +1062,9 @@ class _ProfileSummary extends StatelessWidget {
                 Text(
                   user.email,
                   overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.inter(
+                  style: GoogleFonts.barlowCondensed(
                     color: AppColors.slateText,
-                    fontSize: 14,
+                    fontSize: AppFontSize.small,
                   ),
                 ),
                 if (user.type != UserType.admin) ...[
@@ -1090,9 +1091,9 @@ class _ProfileSummary extends StatelessWidget {
                           child: Text(
                             'Plano Presencial + App',
                             overflow: TextOverflow.ellipsis,
-                            style: GoogleFonts.inter(
+                            style: GoogleFonts.barlowCondensed(
                               color: AppColors.primary,
-                              fontSize: 13,
+                              fontSize: AppFontSize.caption,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -1330,7 +1331,7 @@ class _SectionHeader extends StatelessWidget {
             title,
             style: GoogleFonts.barlowCondensed(
               color: AppColors.primaryDark,
-              fontSize: 22,
+              fontSize: AppFontSize.title,
               fontWeight: FontWeight.bold,
               height: 1.1,
             ),
@@ -1386,9 +1387,9 @@ class _ProfessionalInfoCard extends StatelessWidget {
                 Text(
                   subtitle,
                   overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.inter(
+                  style: GoogleFonts.barlowCondensed(
                     color: subtitleColor,
-                    fontSize: 13,
+                    fontSize: AppFontSize.caption,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -1421,9 +1422,9 @@ class _PrivacyBanner extends StatelessWidget {
           Expanded(
             child: Text(
               'Proteção de dados: informações visíveis apenas a você e ao seu professor tutor.',
-              style: GoogleFonts.inter(
+              style: GoogleFonts.barlowCondensed(
                 color: AppColors.textBody,
-                fontSize: 13,
+                fontSize: AppFontSize.caption,
                 height: 1.4,
               ),
             ),
@@ -1497,38 +1498,38 @@ class _InfoCardString extends StatelessWidget {
 }
 
 abstract final class _ProfileText {
-  static TextStyle get label => GoogleFonts.inter(
+  static TextStyle get label => GoogleFonts.barlowCondensed(
     color: AppColors.slateText,
-    fontSize: 12,
+    fontSize: AppFontSize.caption,
     fontWeight: FontWeight.w600,
     letterSpacing: .5,
   );
 
-  static TextStyle get value => GoogleFonts.inter(
+  static TextStyle get value => GoogleFonts.barlowCondensed(
     color: AppColors.textPrimary,
-    fontSize: 15,
+    fontSize: AppFontSize.small,
     fontWeight: FontWeight.w600,
     height: 1.4,
   );
 
-  static TextStyle get fieldTitle => GoogleFonts.inter(
+  static TextStyle get fieldTitle => GoogleFonts.barlowCondensed(
     color: AppColors.textPrimary,
-    fontSize: 14,
+    fontSize: AppFontSize.small,
     fontWeight: FontWeight.w700,
   );
 
   static TextStyle get input =>
-      GoogleFonts.inter(color: AppColors.textPrimary, fontSize: 15);
+      GoogleFonts.barlowCondensed(color: AppColors.textPrimary, fontSize: AppFontSize.small);
 
-  static TextStyle get listTitle => GoogleFonts.inter(
+  static TextStyle get listTitle => GoogleFonts.barlowCondensed(
     color: AppColors.textPrimary,
-    fontSize: 15,
+    fontSize: AppFontSize.small,
     fontWeight: FontWeight.w500,
   );
 
-  static TextStyle chip(bool selected) => GoogleFonts.inter(
+  static TextStyle chip(bool selected) => GoogleFonts.barlowCondensed(
     color: selected ? AppColors.primary : AppColors.textBody,
-    fontSize: 14,
+    fontSize: AppFontSize.small,
     fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
   );
 }
@@ -1539,8 +1540,8 @@ abstract final class _ProfileButtonStyles {
   static OutlinedBorder get _shape =>
       RoundedRectangleBorder(borderRadius: BorderRadius.circular(12));
 
-  static TextStyle get _text => GoogleFonts.inter(
-    fontSize: 15,
+  static TextStyle get _text => GoogleFonts.barlowCondensed(
+    fontSize: AppFontSize.small,
     fontWeight: FontWeight.w700,
     letterSpacing: .3,
   );
@@ -1592,8 +1593,14 @@ InputDecoration _profileInputDecoration({
   return InputDecoration(
     labelText: label,
     hintText: hint,
-    labelStyle: GoogleFonts.inter(fontSize: 14, color: AppColors.slateText),
-    hintStyle: GoogleFonts.inter(fontSize: 14, color: AppColors.textMuted),
+    labelStyle: GoogleFonts.barlowCondensed(
+      fontSize: AppFontSize.small,
+      color: AppColors.slateText,
+    ),
+    hintStyle: GoogleFonts.barlowCondensed(
+      fontSize: AppFontSize.small,
+      color: AppColors.textMuted,
+    ),
     prefixIcon: icon == null ? null : Icon(icon, color: AppColors.primary),
     filled: true,
     fillColor: AppColors.surfaceSoft,
@@ -1678,8 +1685,7 @@ class _UnitShiftCard extends StatelessWidget {
     return StreamBuilder<List<UnitModel>>(
       stream: locator<UnitService>().streamUnits(includeInactive: true),
       builder: (context, snapshot) {
-        final unit =
-            snapshot.data?.where((u) => u.id == unitId).firstOrNull;
+        final unit = snapshot.data?.where((u) => u.id == unitId).firstOrNull;
         return _ProfessionalInfoCard(
           key: const Key('card_bloco_turno'),
           avatar: _icon,
@@ -1696,4 +1702,3 @@ class _UnitShiftCard extends StatelessWidget {
     );
   }
 }
-

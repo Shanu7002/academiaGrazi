@@ -1,3 +1,4 @@
+import 'package:academiagrazi/theme/app_font_size.dart';
 import 'dart:async';
 
 import 'package:academiagrazi/locator.dart';
@@ -75,8 +76,8 @@ class _InviteCodeCardState extends State<InviteCodeCard> {
 
   @override
   Widget build(BuildContext context) {
-    final labelStyle = GoogleFonts.inter(
-      fontSize: 12,
+    final labelStyle = GoogleFonts.barlowCondensed(
+      fontSize: AppFontSize.caption,
       fontWeight: FontWeight.w600,
       letterSpacing: .5,
       color: AppColors.slateText,
@@ -97,8 +98,8 @@ class _InviteCodeCardState extends State<InviteCodeCard> {
           if (snapshot.hasError) {
             content = Text(
               'Não foi possível carregar o código.',
-              style: GoogleFonts.inter(
-                fontSize: 14,
+              style: GoogleFonts.barlowCondensed(
+                fontSize: AppFontSize.small,
                 color: AppColors.slateText,
               ),
             );
@@ -121,8 +122,8 @@ class _InviteCodeCardState extends State<InviteCodeCard> {
                 Text(
                   invite.code,
                   key: const Key('codigo_convite'),
-                  style: GoogleFonts.inter(
-                    fontSize: 28,
+                  style: GoogleFonts.barlowCondensed(
+                    fontSize: AppFontSize.headline,
                     fontWeight: FontWeight.w800,
                     letterSpacing: 8,
                     color: AppColors.primaryDark,
@@ -131,8 +132,8 @@ class _InviteCodeCardState extends State<InviteCodeCard> {
                 Text(
                   'Válido até ${_formatTime(invite.expiresAt)} • '
                   'renova a cada 15 min',
-                  style: GoogleFonts.inter(
-                    fontSize: 12,
+                  style: GoogleFonts.barlowCondensed(
+                    fontSize: AppFontSize.caption,
                     color: AppColors.slateText,
                   ),
                 ),
@@ -155,8 +156,8 @@ class _InviteCodeCardState extends State<InviteCodeCard> {
                       const SizedBox(height: 6),
                       Text(
                         widget.description!,
-                        style: GoogleFonts.inter(
-                          fontSize: 13,
+                        style: GoogleFonts.barlowCondensed(
+                          fontSize: AppFontSize.caption,
                           height: 1.4,
                           color: AppColors.textBody,
                         ),

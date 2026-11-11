@@ -1,3 +1,4 @@
+import 'package:academiagrazi/theme/app_font_size.dart';
 import 'package:academiagrazi/locator.dart';
 import 'package:academiagrazi/theme/app_colors.dart';
 import 'package:academiagrazi/view/components/app_bar.dart';
@@ -36,7 +37,7 @@ class _ListaAlunosViewState extends State<ListaAlunosView> {
                 style: GoogleFonts.barlowCondensed(
                   fontWeight: FontWeight.bold,
                   color: AppColors.navy,
-                  fontSize: 32,
+                  fontSize: AppFontSize.headline,
                 ),
               ),
               const SizedBox(height: 10),
@@ -45,9 +46,9 @@ class _ListaAlunosViewState extends State<ListaAlunosView> {
                 builder:
                     (context, schedule) => Text(
                       schedule.currentLabel,
-                      style: GoogleFonts.inter(
+                      style: GoogleFonts.barlowCondensed(
                         color: AppColors.textBody,
-                        fontSize: 16,
+                        fontSize: AppFontSize.body,
                       ),
                     ),
               ),
@@ -95,7 +96,7 @@ class _ListaAlunosViewState extends State<ListaAlunosView> {
                       ),
                       child: Text(
                         'Todos',
-                        style: GoogleFonts.inter(
+                        style: GoogleFonts.barlowCondensed(
                           fontWeight: FontWeight.bold,
                           color: AppColors.navy,
                         ),
@@ -117,7 +118,7 @@ class _ListaAlunosViewState extends State<ListaAlunosView> {
                       ),
                       child: Text(
                         'Inativos',
-                        style: GoogleFonts.inter(
+                        style: GoogleFonts.barlowCondensed(
                           fontWeight: FontWeight.bold,
                           color: AppColors.navy,
                         ),
@@ -137,7 +138,7 @@ class _ListaAlunosViewState extends State<ListaAlunosView> {
                       ),
                       child: Text(
                         'Avaliação Pendente',
-                        style: GoogleFonts.inter(
+                        style: GoogleFonts.barlowCondensed(
                           fontWeight: FontWeight.bold,
                           color: AppColors.navy,
                         ),
@@ -198,8 +199,8 @@ class CardAluno extends StatelessWidget {
     required this.onMensagem,
   });
 
-  static const Color green = Color(0xFF005A4F);
-  static const Color red = Color(0xFFBA1A1A);
+  static const Color green = AppColors.primary;
+  static const Color red = AppColors.danger;
 
   @override
   Widget build(BuildContext context) {
@@ -245,16 +246,16 @@ class CardAluno extends StatelessWidget {
                       nome,
                       style: GoogleFonts.barlowCondensed(
                         color: AppColors.navy,
-                        fontSize: 24,
+                        fontSize: AppFontSize.title,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       proximoTreino,
-                      style: GoogleFonts.inter(
+                      style: GoogleFonts.barlowCondensed(
                         color: AppColors.textBody,
-                        fontSize: 13,
+                        fontSize: AppFontSize.caption,
                       ),
                     ),
                   ],
@@ -270,9 +271,9 @@ class CardAluno extends StatelessWidget {
                   const SizedBox(width: 5),
                   Text(
                     statusTexto,
-                    style: GoogleFonts.inter(
+                    style: GoogleFonts.barlowCondensed(
                       color: statusColor,
-                      fontSize: 12,
+                      fontSize: AppFontSize.caption,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -311,8 +312,8 @@ class CardAluno extends StatelessWidget {
                           'Ver perfil',
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: GoogleFonts.inter(
-                            fontSize: 13,
+                          style: GoogleFonts.barlowCondensed(
+                            fontSize: AppFontSize.caption,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -356,8 +357,8 @@ class CardAluno extends StatelessWidget {
                             'Editar treino',
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: GoogleFonts.inter(
-                              fontSize: 13,
+                            style: GoogleFonts.barlowCondensed(
+                              fontSize: AppFontSize.caption,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -371,7 +372,7 @@ class CardAluno extends StatelessWidget {
                   child: ElevatedButton(
                     onPressed: onMensagem,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(255, 255, 121, 67),
+                      backgroundColor: AppColors.accent,
                       foregroundColor: AppColors.white90,
                       elevation: 0,
                       minimumSize: const Size(0, 46),
@@ -394,9 +395,9 @@ class CardAluno extends StatelessWidget {
                             'Mensagem',
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: GoogleFonts.inter(
-                              color: const Color.fromARGB(255, 56, 13, 0),
-                              fontSize: 13,
+                            style: GoogleFonts.barlowCondensed(
+                              color: AppColors.accentText,
+                              fontSize: AppFontSize.caption,
                               fontWeight: FontWeight.bold,
                             ),
                           ),

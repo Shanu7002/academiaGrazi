@@ -1,3 +1,4 @@
+import 'package:academiagrazi/theme/app_font_size.dart';
 import 'package:academiagrazi/config/business_rules.dart';
 import 'package:academiagrazi/locator.dart';
 import 'package:academiagrazi/models/users/user_model.dart';
@@ -249,8 +250,8 @@ class _ManualRedistributionViewState extends State<ManualRedistributionView> {
                     Expanded(
                       child: Text(
                         '${_selected.length} de ${origin.length} selecionado(s)',
-                        style: GoogleFonts.inter(
-                          fontSize: 13,
+                        style: GoogleFonts.barlowCondensed(
+                          fontSize: AppFontSize.caption,
                           fontWeight: FontWeight.w600,
                           color: AppColors.slateText,
                         ),
@@ -373,8 +374,8 @@ class _Message extends StatelessWidget {
           Text(
             text,
             textAlign: TextAlign.center,
-            style: GoogleFonts.inter(
-              fontSize: 14,
+            style: GoogleFonts.barlowCondensed(
+              fontSize: AppFontSize.small,
               color: AppColors.textSecondary,
             ),
           ),

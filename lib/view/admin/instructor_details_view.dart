@@ -1,3 +1,4 @@
+import 'package:academiagrazi/theme/app_font_size.dart';
 import 'package:academiagrazi/locator.dart';
 import 'package:academiagrazi/service/admin/admin_dashboard.dart';
 import 'package:academiagrazi/theme/app_colors.dart';
@@ -140,8 +141,8 @@ class _InstructorDetailsViewState extends State<InstructorDetailsView> {
               icon: const Icon(Icons.sync, size: 20),
               label: Text(
                 'Redistribuir Alunos',
-                style: GoogleFonts.inter(
-                  fontSize: 15,
+                style: GoogleFonts.barlowCondensed(
+                  fontSize: AppFontSize.small,
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -167,14 +168,14 @@ class _InstructorDetailsViewState extends State<InstructorDetailsView> {
               key: const Key('campo_busca_aluno'),
               controller: _searchController,
               onChanged: (value) => setState(() => _search = value),
-              style: GoogleFonts.inter(
-                fontSize: 15,
+              style: GoogleFonts.barlowCondensed(
+                fontSize: AppFontSize.small,
                 color: AppColors.textPrimary,
               ),
               decoration: InputDecoration(
                 hintText: 'Buscar aluno por nome ou e-mail',
-                hintStyle: GoogleFonts.inter(
-                  fontSize: 14,
+                hintStyle: GoogleFonts.barlowCondensed(
+                  fontSize: AppFontSize.small,
                   color: AppColors.textMuted,
                 ),
                 prefixIcon: const Icon(Icons.search, color: AppColors.primary),
@@ -204,8 +205,8 @@ class _InstructorDetailsViewState extends State<InstructorDetailsView> {
                 child: Text(
                   'Nenhum aluno encontrado para "$_search".',
                   textAlign: TextAlign.center,
-                  style: GoogleFonts.inter(
-                    fontSize: 14,
+                  style: GoogleFonts.barlowCondensed(
+                    fontSize: AppFontSize.small,
                     color: AppColors.slateText,
                   ),
                 ),
@@ -297,7 +298,7 @@ class _ProfileCard extends StatelessWidget {
                 child: Text(
                   _initials(name),
                   style: GoogleFonts.barlowCondensed(
-                    fontSize: 26,
+                    fontSize: AppFontSize.title,
                     fontWeight: FontWeight.bold,
                     color: overloaded ? AppColors.danger : AppColors.primary,
                   ),
@@ -313,7 +314,7 @@ class _ProfileCard extends StatelessWidget {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: GoogleFonts.barlowCondensed(
-                        fontSize: 28,
+                        fontSize: AppFontSize.headline,
                         fontWeight: FontWeight.bold,
                         height: 1.1,
                         color: AppColors.primaryDark,
@@ -374,7 +375,7 @@ class _WorkloadCard extends StatelessWidget {
                 child: Text(
                   'Carga de Trabalho',
                   style: GoogleFonts.barlowCondensed(
-                    fontSize: 22,
+                    fontSize: AppFontSize.title,
                     fontWeight: FontWeight.bold,
                     color: AppColors.primaryDark,
                   ),
@@ -394,8 +395,8 @@ class _WorkloadCard extends StatelessWidget {
                 ),
                 child: Text(
                   overloaded ? 'Sobrecarga' : 'Carga equilibrada',
-                  style: GoogleFonts.inter(
-                    fontSize: 12,
+                  style: GoogleFonts.barlowCondensed(
+                    fontSize: AppFontSize.caption,
                     fontWeight: FontWeight.w600,
                     color: overloaded ? AppColors.danger : AppColors.primary,
                   ),
@@ -432,8 +433,8 @@ class _WorkloadCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   'Capacidade (${(load * 100).round()}%)',
-                  style: GoogleFonts.inter(
-                    fontSize: 13,
+                  style: GoogleFonts.barlowCondensed(
+                    fontSize: AppFontSize.caption,
                     fontWeight: FontWeight.w600,
                     color: AppColors.slateText,
                   ),
@@ -441,8 +442,8 @@ class _WorkloadCard extends StatelessWidget {
               ),
               Text(
                 '$total/$_capacity',
-                style: GoogleFonts.inter(
-                  fontSize: 13,
+                style: GoogleFonts.barlowCondensed(
+                  fontSize: AppFontSize.caption,
                   fontWeight: FontWeight.w700,
                   color: overloaded ? AppColors.danger : AppColors.slateText,
                 ),
@@ -490,7 +491,7 @@ class _StatTile extends StatelessWidget {
           Text(
             value,
             style: GoogleFonts.barlowCondensed(
-              fontSize: 30,
+              fontSize: AppFontSize.headline,
               fontWeight: FontWeight.bold,
               height: 1,
               color: valueColor,
@@ -499,8 +500,8 @@ class _StatTile extends StatelessWidget {
           const SizedBox(height: 6),
           Text(
             label,
-            style: GoogleFonts.inter(
-              fontSize: 12,
+            style: GoogleFonts.barlowCondensed(
+              fontSize: AppFontSize.caption,
               height: 1.3,
               color: AppColors.slateText,
             ),
@@ -526,7 +527,7 @@ class _SectionTitle extends StatelessWidget {
       child: Text(
         text,
         style: GoogleFonts.barlowCondensed(
-          fontSize: 22,
+          fontSize: AppFontSize.title,
           fontWeight: FontWeight.bold,
           color: AppColors.primaryDark,
         ),
@@ -573,7 +574,7 @@ class _StudentTile extends StatelessWidget {
                 child: Text(
                   _initials(name),
                   style: GoogleFonts.barlowCondensed(
-                    fontSize: 18,
+                    fontSize: AppFontSize.subtitle,
                     fontWeight: FontWeight.bold,
                     color: AppColors.primaryDark,
                   ),
@@ -588,8 +589,8 @@ class _StudentTile extends StatelessWidget {
                       name,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.inter(
-                        fontSize: 15,
+                      style: GoogleFonts.barlowCondensed(
+                        fontSize: AppFontSize.small,
                         fontWeight: FontWeight.w700,
                         color: AppColors.textPrimary,
                       ),
@@ -600,8 +601,8 @@ class _StudentTile extends StatelessWidget {
                         subtitle,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: GoogleFonts.inter(
-                          fontSize: 13,
+                        style: GoogleFonts.barlowCondensed(
+                          fontSize: AppFontSize.caption,
                           color: AppColors.slateText,
                         ),
                       ),
@@ -619,8 +620,8 @@ class _StudentTile extends StatelessWidget {
                           Flexible(
                             child: Text(
                               'Atenção à saúde',
-                              style: GoogleFonts.inter(
-                                fontSize: 12,
+                              style: GoogleFonts.barlowCondensed(
+                                fontSize: AppFontSize.caption,
                                 fontWeight: FontWeight.w600,
                                 color: AppColors.accentDark,
                               ),
@@ -674,15 +675,15 @@ class _StudentSheet extends StatelessWidget {
               Text(
                 user.name.trim().isEmpty ? 'Sem nome' : user.name,
                 style: GoogleFonts.barlowCondensed(
-                  fontSize: 28,
+                  fontSize: AppFontSize.headline,
                   fontWeight: FontWeight.bold,
                   color: AppColors.primaryDark,
                 ),
               ),
               Text(
                 user.email,
-                style: GoogleFonts.inter(
-                  fontSize: 14,
+                style: GoogleFonts.barlowCondensed(
+                  fontSize: AppFontSize.small,
                   color: AppColors.slateText,
                 ),
               ),
@@ -735,8 +736,8 @@ class _EmptyStudents extends StatelessWidget {
             'Nenhum aluno vinculado a este professor ainda. Os alunos se '
             'vinculam usando o código de convite.',
             textAlign: TextAlign.center,
-            style: GoogleFonts.inter(
-              fontSize: 14,
+            style: GoogleFonts.barlowCondensed(
+              fontSize: AppFontSize.small,
               height: 1.4,
               color: AppColors.slateText,
             ),
@@ -773,8 +774,8 @@ class _CenteredMessage extends StatelessWidget {
             Text(
               message,
               textAlign: TextAlign.center,
-              style: GoogleFonts.inter(
-                fontSize: 15,
+              style: GoogleFonts.barlowCondensed(
+                fontSize: AppFontSize.small,
                 color: AppColors.slateText,
               ),
             ),
@@ -784,7 +785,7 @@ class _CenteredMessage extends StatelessWidget {
               style: TextButton.styleFrom(foregroundColor: AppColors.primary),
               child: Text(
                 actionLabel,
-                style: GoogleFonts.inter(fontWeight: FontWeight.w700),
+                style: GoogleFonts.barlowCondensed(fontWeight: FontWeight.w700),
               ),
             ),
           ],

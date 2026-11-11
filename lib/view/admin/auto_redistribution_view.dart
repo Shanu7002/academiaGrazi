@@ -1,3 +1,4 @@
+import 'package:academiagrazi/theme/app_font_size.dart';
 import 'package:academiagrazi/locator.dart';
 import 'package:academiagrazi/service/admin/admin_student_service.dart';
 import 'package:academiagrazi/service/admin/redistribution.dart';
@@ -121,7 +122,7 @@ class _AutoRedistributionViewState extends State<AutoRedistributionView> {
               Text(
                 'Prévia',
                 style: GoogleFonts.barlowCondensed(
-                  fontSize: 28,
+                  fontSize: AppFontSize.headline,
                   fontWeight: FontWeight.bold,
                   color: AppColors.primaryDark,
                 ),
@@ -132,8 +133,8 @@ class _AutoRedistributionViewState extends State<AutoRedistributionView> {
                 'capacidade. Mudam primeiro os alunos cadastrados mais '
                 'recentemente. A ficha atual de cada aluno continua valendo '
                 'até o novo professor publicar outra.',
-                style: GoogleFonts.inter(
-                  fontSize: 13,
+                style: GoogleFonts.barlowCondensed(
+                  fontSize: AppFontSize.caption,
                   height: 1.4,
                   color: AppColors.slateText,
                 ),
@@ -144,8 +145,8 @@ class _AutoRedistributionViewState extends State<AutoRedistributionView> {
                   '${plan.moves.length} aluno(s) vão mudar de professor'
                   '${fromUnassigned > 0 ? ', incluindo $fromUnassigned sem professor' : ''}.',
                   key: const Key('resumo_redistribuicao'),
-                  style: GoogleFonts.inter(
-                    fontSize: 15,
+                  style: GoogleFonts.barlowCondensed(
+                    fontSize: AppFontSize.small,
                     fontWeight: FontWeight.w700,
                     color: AppColors.textPrimary,
                   ),
@@ -175,8 +176,8 @@ class _AutoRedistributionViewState extends State<AutoRedistributionView> {
                     key: const Key('lista_alunos_redistribuicao'),
                     title: Text(
                       'Ver alunos que mudam',
-                      style: GoogleFonts.inter(
-                        fontSize: 14,
+                      style: GoogleFonts.barlowCondensed(
+                        fontSize: AppFontSize.small,
                         fontWeight: FontWeight.w600,
                         color: AppColors.primary,
                       ),
@@ -193,8 +194,8 @@ class _AutoRedistributionViewState extends State<AutoRedistributionView> {
                                   move.studentName.trim().isEmpty
                                       ? 'Sem nome'
                                       : move.studentName,
-                                  style: GoogleFonts.inter(
-                                    fontSize: 13,
+                                  style: GoogleFonts.barlowCondensed(
+                                    fontSize: AppFontSize.caption,
                                     fontWeight: FontWeight.w600,
                                     color: AppColors.textPrimary,
                                   ),
@@ -205,8 +206,8 @@ class _AutoRedistributionViewState extends State<AutoRedistributionView> {
                                   '${move.fromInstructorId == null ? 'Sem professor' : names[move.fromInstructorId] ?? '-'}'
                                   ' → ${names[move.toInstructorId] ?? '-'}',
                                   textAlign: TextAlign.end,
-                                  style: GoogleFonts.inter(
-                                    fontSize: 12,
+                                  style: GoogleFonts.barlowCondensed(
+                                    fontSize: AppFontSize.caption,
                                     color: AppColors.textSecondary,
                                   ),
                                 ),
@@ -280,16 +281,16 @@ class _InstructorRow extends StatelessWidget {
                   instructor.name.isEmpty
                       ? 'Professor sem nome'
                       : instructor.name,
-                  style: GoogleFonts.inter(
-                    fontSize: 14,
+                  style: GoogleFonts.barlowCondensed(
+                    fontSize: AppFontSize.small,
                     fontWeight: FontWeight.w600,
                     color: AppColors.textPrimary,
                   ),
                 ),
                 Text(
                   'Capacidade ${instructor.capacity}',
-                  style: GoogleFonts.inter(
-                    fontSize: 12,
+                  style: GoogleFonts.barlowCondensed(
+                    fontSize: AppFontSize.caption,
                     color: AppColors.textSecondary,
                   ),
                 ),
@@ -299,7 +300,7 @@ class _InstructorRow extends StatelessWidget {
           Text(
             '$before → $after',
             style: GoogleFonts.barlowCondensed(
-              fontSize: 22,
+              fontSize: AppFontSize.title,
               fontWeight: FontWeight.bold,
               color: changed ? AppColors.accent : AppColors.textSecondary,
             ),
@@ -347,8 +348,8 @@ class _Message extends StatelessWidget {
             Text(
               text,
               textAlign: TextAlign.center,
-              style: GoogleFonts.inter(
-                fontSize: 14,
+              style: GoogleFonts.barlowCondensed(
+                fontSize: AppFontSize.small,
                 color: AppColors.textSecondary,
               ),
             ),

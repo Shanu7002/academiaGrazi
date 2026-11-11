@@ -1,3 +1,4 @@
+import 'package:academiagrazi/theme/app_font_size.dart';
 import 'package:academiagrazi/theme/app_colors.dart';
 import 'package:academiagrazi/view/teacher/ui_models/montagem_treino_ui_models.dart';
 import 'package:academiagrazi/view/teacher/widgets/imagem_exercicio.dart';
@@ -43,7 +44,7 @@ class ExercicioMontagemCard extends StatelessWidget {
           titulo,
           style: const TextStyle(
             color: AppColors.textSecondary,
-            fontSize: 12,
+            fontSize: AppFontSize.caption,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -87,7 +88,7 @@ class ExercicioMontagemCard extends StatelessWidget {
           'Técnica',
           style: TextStyle(
             color: AppColors.textSecondary,
-            fontSize: 12,
+            fontSize: AppFontSize.caption,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -149,9 +150,9 @@ class ExercicioMontagemCard extends StatelessWidget {
                     children: [
                       Text(
                         exercicio.nome,
-                        style: GoogleFonts.inter(
+                        style: GoogleFonts.barlowCondensed(
                           fontWeight: FontWeight.w700,
-                          fontSize: 14,
+                          fontSize: AppFontSize.small,
                           color: AppColors.textPrimary,
                         ),
                       ),
@@ -159,7 +160,7 @@ class ExercicioMontagemCard extends StatelessWidget {
                         exercicio.grupoMuscular,
                         style: const TextStyle(
                           color: AppColors.textBody,
-                          fontSize: 12,
+                          fontSize: AppFontSize.caption,
                         ),
                       ),
                       if (exercicio.orientacoes.isNotEmpty)
@@ -169,7 +170,7 @@ class ExercicioMontagemCard extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
                             color: AppColors.textSecondary,
-                            fontSize: 11,
+                            fontSize: AppFontSize.caption,
                           ),
                         ),
                     ],

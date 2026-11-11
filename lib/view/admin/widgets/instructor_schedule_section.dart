@@ -1,3 +1,4 @@
+import 'package:academiagrazi/theme/app_font_size.dart';
 import 'package:academiagrazi/locator.dart';
 import 'package:academiagrazi/models/units/instructor_shift_model.dart';
 import 'package:academiagrazi/models/units/unit_model.dart';
@@ -171,7 +172,7 @@ class _InstructorScheduleSectionState extends State<InstructorScheduleSection> {
                         child: Text(
                           'Escala',
                           style: GoogleFonts.barlowCondensed(
-                            fontSize: 22,
+                            fontSize: AppFontSize.title,
                             fontWeight: FontWeight.bold,
                             color: AppColors.primaryDark,
                           ),
@@ -201,8 +202,8 @@ class _InstructorScheduleSectionState extends State<InstructorScheduleSection> {
                   else if (shifts.isEmpty)
                     Text(
                       'Nenhum turno na escala deste professor.',
-                      style: GoogleFonts.inter(
-                        fontSize: 14,
+                      style: GoogleFonts.barlowCondensed(
+                        fontSize: AppFontSize.small,
                         color: AppColors.textSecondary,
                       ),
                     )
@@ -239,8 +240,8 @@ class _InstructorScheduleSectionState extends State<InstructorScheduleSection> {
       children: [
         Text(
           'Não foi possível carregar a escala.',
-          style: GoogleFonts.inter(
-            fontSize: 14,
+          style: GoogleFonts.barlowCondensed(
+            fontSize: AppFontSize.small,
             color: AppColors.textSecondary,
           ),
         ),
@@ -281,16 +282,16 @@ class _ShiftTile extends StatelessWidget {
                 Text(
                   '${weekdayName(shift.weekday)} · '
                   '${shift.startTime}–${shift.endTime}',
-                  style: GoogleFonts.inter(
-                    fontSize: 14,
+                  style: GoogleFonts.barlowCondensed(
+                    fontSize: AppFontSize.small,
                     fontWeight: FontWeight.w600,
                     color: AppColors.textPrimary,
                   ),
                 ),
                 Text(
                   unitName ?? 'Bloco removido',
-                  style: GoogleFonts.inter(
-                    fontSize: 12,
+                  style: GoogleFonts.barlowCondensed(
+                    fontSize: AppFontSize.caption,
                     color: AppColors.textSecondary,
                   ),
                 ),
@@ -456,8 +457,8 @@ class _ShiftFormDialogState extends State<_ShiftFormDialog> {
                 Text(
                   _overlap!,
                   key: const Key('erro_sobreposicao_turno'),
-                  style: GoogleFonts.inter(
-                    fontSize: 13,
+                  style: GoogleFonts.barlowCondensed(
+                    fontSize: AppFontSize.caption,
                     fontWeight: FontWeight.w600,
                     color: AppColors.danger,
                   ),

@@ -1,3 +1,4 @@
+import 'package:academiagrazi/theme/app_font_size.dart';
 import 'package:academiagrazi/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -12,8 +13,8 @@ class PrivacyTermsView extends StatelessWidget {
       appBar: AppBar(
         title: Text(
           'PRIVACIDADE & TERMOS',
-          style: GoogleFonts.inter(
-            fontSize: 16,
+          style: GoogleFonts.barlowCondensed(
+            fontSize: AppFontSize.body,
             fontWeight: FontWeight.bold,
             color: AppColors.textPrimary,
           ),
@@ -48,17 +49,17 @@ class PrivacyTermsView extends StatelessWidget {
                       children: [
                         Text(
                           'Sua privacidade importa!',
-                          style: GoogleFonts.inter(
+                          style: GoogleFonts.barlowCondensed(
                             fontWeight: FontWeight.bold,
-                            fontSize: 15,
+                            fontSize: AppFontSize.small,
                             color: AppColors.textPrimary,
                           ),
                         ),
                         const SizedBox(height: 6),
                         Text(
                           'Conheça como seus dados pessoais e informações de saúde são utilizados e protegidos pela academia.',
-                          style: GoogleFonts.inter(
-                            fontSize: 13,
+                          style: GoogleFonts.barlowCondensed(
+                            fontSize: AppFontSize.caption,
                             height: 1.5,
                             color: AppColors.textSecondary,
                           ),
@@ -74,8 +75,8 @@ class PrivacyTermsView extends StatelessWidget {
 
             Text(
               'POLÍTICA DE PRIVACIDADE',
-              style: GoogleFonts.inter(
-                fontSize: 12,
+              style: GoogleFonts.barlowCondensed(
+                fontSize: AppFontSize.caption,
                 fontWeight: FontWeight.bold,
                 letterSpacing: 1,
                 color: AppColors.textSecondary,
@@ -167,8 +168,8 @@ Qualquer compartilhamento deverá observar as finalidades informadas, a legisla�
 
             Text(
               'TERMOS DE USO',
-              style: GoogleFonts.inter(
-                fontSize: 12,
+              style: GoogleFonts.barlowCondensed(
+                fontSize: AppFontSize.caption,
                 fontWeight: FontWeight.bold,
                 letterSpacing: 1,
                 color: AppColors.textSecondary,
@@ -205,8 +206,8 @@ Em caso de dúvidas sobre sua aptidão para atividades físicas, recomenda-se pr
 
             Text(
               'SEUS DIREITOS',
-              style: GoogleFonts.inter(
-                fontSize: 12,
+              style: GoogleFonts.barlowCondensed(
+                fontSize: AppFontSize.caption,
                 fontWeight: FontWeight.bold,
                 letterSpacing: 1,
                 color: AppColors.textSecondary,
@@ -249,8 +250,8 @@ A equipe responsável deverá orientar você sobre os procedimentos para exercer
                 'Última atualização: Novembro de 2026\n'
                 'Proteção de dados conforme a Lei nº 13.709/2018 (LGPD).',
                 textAlign: TextAlign.center,
-                style: GoogleFonts.inter(
-                  fontSize: 11,
+                style: GoogleFonts.barlowCondensed(
+                  fontSize: AppFontSize.caption,
                   height: 1.6,
                   color: AppColors.textSecondary,
                 ),
@@ -300,8 +301,8 @@ class _PrivacySection extends StatelessWidget {
             leading: Icon(icon, color: AppColors.primary, size: 22),
             title: Text(
               title,
-              style: GoogleFonts.inter(
-                fontSize: 13,
+              style: GoogleFonts.barlowCondensed(
+                fontSize: AppFontSize.caption,
                 fontWeight: FontWeight.w600,
                 color: AppColors.textPrimary,
               ),
@@ -313,8 +314,8 @@ class _PrivacySection extends StatelessWidget {
                 alignment: Alignment.centerLeft,
                 child: Text(
                   content.trim(),
-                  style: GoogleFonts.inter(
-                    fontSize: 13,
+                  style: GoogleFonts.barlowCondensed(
+                    fontSize: AppFontSize.caption,
                     height: 1.7,
                     color: AppColors.textSecondary,
                   ),

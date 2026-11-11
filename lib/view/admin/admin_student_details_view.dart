@@ -1,3 +1,4 @@
+import 'package:academiagrazi/theme/app_font_size.dart';
 import 'package:academiagrazi/locator.dart';
 import 'package:academiagrazi/models/units/unit_model.dart';
 import 'package:academiagrazi/models/users/user_model.dart';
@@ -219,15 +220,15 @@ class _AdminStudentDetailsViewState extends State<AdminStudentDetailsView> {
                     Text(
                       name,
                       style: GoogleFonts.barlowCondensed(
-                        fontSize: 26,
+                        fontSize: AppFontSize.title,
                         fontWeight: FontWeight.bold,
                         color: AppColors.primaryDark,
                       ),
                     ),
                     Text(
                       student.email,
-                      style: GoogleFonts.inter(
-                        fontSize: 13,
+                      style: GoogleFonts.barlowCondensed(
+                        fontSize: AppFontSize.caption,
                         color: AppColors.slateText,
                       ),
                     ),
@@ -393,8 +394,8 @@ class _ActivityBadge extends StatelessWidget {
               ),
               child: Text(
                 _statusLabel(data.status),
-                style: GoogleFonts.inter(
-                  fontSize: 12,
+                style: GoogleFonts.barlowCondensed(
+                  fontSize: AppFontSize.caption,
                   fontWeight: FontWeight.w700,
                   color: color,
                 ),
@@ -404,8 +405,8 @@ class _ActivityBadge extends StatelessWidget {
               last == null
                   ? 'Nenhum treino finalizado'
                   : 'Último treino em ${formatDateBr(last.toLocal())}',
-              style: GoogleFonts.inter(
-                fontSize: 12,
+              style: GoogleFonts.barlowCondensed(
+                fontSize: AppFontSize.caption,
                 color: AppColors.textSecondary,
               ),
             ),
@@ -439,7 +440,7 @@ class _InstructorPicker extends StatelessWidget {
               Text(
                 'Escolha o novo professor',
                 style: GoogleFonts.barlowCondensed(
-                  fontSize: 24,
+                  fontSize: AppFontSize.title,
                   fontWeight: FontWeight.bold,
                   color: AppColors.primaryDark,
                 ),
@@ -555,8 +556,8 @@ class _Message extends StatelessWidget {
             Text(
               text,
               textAlign: TextAlign.center,
-              style: GoogleFonts.inter(
-                fontSize: 14,
+              style: GoogleFonts.barlowCondensed(
+                fontSize: AppFontSize.small,
                 color: AppColors.textSecondary,
               ),
             ),

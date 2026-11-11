@@ -1,3 +1,4 @@
+import 'package:academiagrazi/theme/app_font_size.dart';
 import 'package:academiagrazi/theme/app_colors.dart';
 import 'package:academiagrazi/view/components/app_bar.dart';
 import 'package:academiagrazi/view/user/aluno_treino_dia_view.dart';
@@ -116,9 +117,9 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
           children: [
             Text(
               'ALUNO: ${widget.data.alunoNome.toUpperCase()}',
-              style: GoogleFonts.inter(
+              style: GoogleFonts.barlowCondensed(
                 color: AppColors.primaryText,
-                fontSize: 11,
+                fontSize: AppFontSize.caption,
                 fontWeight: FontWeight.w700,
                 letterSpacing: 0.55,
               ),
@@ -128,7 +129,7 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
               'MEUS TREINOS',
               style: GoogleFonts.barlowCondensed(
                 color: AppColors.textPrimary,
-                fontSize: 30,
+                fontSize: AppFontSize.headline,
                 fontWeight: FontWeight.w800,
                 letterSpacing: -0.75,
                 height: 1.25,
@@ -158,9 +159,9 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
               const SizedBox(width: 6),
               Text(
                 widget.data.semana,
-                style: GoogleFonts.inter(
+                style: GoogleFonts.barlowCondensed(
                   color: AppColors.primary,
-                  fontSize: 12,
+                  fontSize: AppFontSize.caption,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -198,9 +199,9 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
                   child: Text(
                     'Prescrição ${widget.data.professorNome} '
                     '• ${widget.data.ultimaAtualizacao}',
-                    style: GoogleFonts.inter(
+                    style: GoogleFonts.barlowCondensed(
                       color: AppColors.textSecondary,
-                      fontSize: 12,
+                      fontSize: AppFontSize.caption,
                     ),
                   ),
                 ),
@@ -276,12 +277,12 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
                   titulo,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.inter(
+                  style: GoogleFonts.barlowCondensed(
                     color:
                         selecionado
                             ? AppColors.primary
                             : AppColors.textSecondary,
-                    fontSize: 10,
+                    fontSize: AppFontSize.caption,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 0.25,
                   ),
@@ -322,9 +323,9 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
                   children: [
                     Text(
                       'CICLO ATUAL',
-                      style: GoogleFonts.inter(
+                      style: GoogleFonts.barlowCondensed(
                         color: AppColors.primaryText,
-                        fontSize: 10,
+                        fontSize: AppFontSize.caption,
                         fontWeight: FontWeight.w700,
                         letterSpacing: 0.5,
                       ),
@@ -334,7 +335,7 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
                       widget.data.cicloNome,
                       style: GoogleFonts.barlowCondensed(
                         color: AppColors.textPrimary,
-                        fontSize: 20,
+                        fontSize: AppFontSize.subtitle,
                         fontWeight: FontWeight.w700,
                         letterSpacing: -0.5,
                       ),
@@ -364,9 +365,9 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
                     const SizedBox(width: 4),
                     Text(
                       'Em dia',
-                      style: GoogleFonts.inter(
+                      style: GoogleFonts.barlowCondensed(
                         color: AppColors.success,
-                        fontSize: 11,
+                        fontSize: AppFontSize.caption,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -453,9 +454,9 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
                   titulo,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.inter(
+                  style: GoogleFonts.barlowCondensed(
                     color: AppColors.textSecondary,
-                    fontSize: 9,
+                    fontSize: AppFontSize.caption,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -469,7 +470,7 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
             overflow: TextOverflow.ellipsis,
             style: GoogleFonts.barlowCondensed(
               color: AppColors.textPrimary,
-              fontSize: 18,
+              fontSize: AppFontSize.subtitle,
               fontWeight: FontWeight.w700,
             ),
           ),
@@ -477,9 +478,9 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
             legenda,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
-            style: GoogleFonts.inter(
+            style: GoogleFonts.barlowCondensed(
               color: AppColors.textSecondary,
-              fontSize: 9,
+              fontSize: AppFontSize.caption,
               height: 1.2,
             ),
           ),
@@ -497,16 +498,16 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
             'DIVISÃO DE FICHAS',
             style: GoogleFonts.barlowCondensed(
               color: AppColors.textPrimary,
-              fontSize: 23,
+              fontSize: AppFontSize.title,
               fontWeight: FontWeight.w800,
             ),
           ),
         ),
         Text(
           '${widget.data.treinos.length} rotinas prescritas',
-          style: GoogleFonts.inter(
+          style: GoogleFonts.barlowCondensed(
             color: AppColors.textSecondary,
-            fontSize: 10,
+            fontSize: AppFontSize.caption,
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -576,9 +577,9 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
                               treino.statusTexto,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: GoogleFonts.inter(
+                              style: GoogleFonts.barlowCondensed(
                                 color: Colors.white,
-                                fontSize: 9,
+                                fontSize: AppFontSize.caption,
                                 fontWeight: FontWeight.w800,
                                 letterSpacing: 0.25,
                               ),
@@ -601,7 +602,7 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
                           treino.nome,
                           style: GoogleFonts.barlowCondensed(
                             color: AppColors.textPrimary,
-                            fontSize: 24,
+                            fontSize: AppFontSize.title,
                             fontWeight: FontWeight.w800,
                             height: 1.05,
                           ),
@@ -612,9 +613,9 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
                   const SizedBox(height: 8),
                   Text(
                     treino.descricao,
-                    style: GoogleFonts.inter(
+                    style: GoogleFonts.barlowCondensed(
                       color: AppColors.textSecondary,
-                      fontSize: 12,
+                      fontSize: AppFontSize.caption,
                       height: 1.4,
                     ),
                   ),
@@ -670,8 +671,8 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
                         ),
                         child: Text(
                           'INICIAR TREINO ${treino.letra} AGORA',
-                          style: GoogleFonts.inter(
-                            fontSize: 11,
+                          style: GoogleFonts.barlowCondensed(
+                            fontSize: AppFontSize.caption,
                             fontWeight: FontWeight.w800,
                             letterSpacing: 0.2,
                           ),
@@ -695,8 +696,8 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
                       ),
                       child: Text(
                         'VER FICHA DETALHADA',
-                        style: GoogleFonts.inter(
-                          fontSize: 11,
+                        style: GoogleFonts.barlowCondensed(
+                          fontSize: AppFontSize.caption,
                           fontWeight: FontWeight.w800,
                         ),
                       ),
@@ -771,9 +772,9 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
                       treino.statusTexto,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.inter(
+                      style: GoogleFonts.barlowCondensed(
                         color: statusForeground,
-                        fontSize: 9,
+                        fontSize: AppFontSize.caption,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
@@ -798,7 +799,7 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
                       treino.nome,
                       style: GoogleFonts.barlowCondensed(
                         color: AppColors.textPrimary,
-                        fontSize: 21,
+                        fontSize: AppFontSize.subtitle,
                         fontWeight: FontWeight.w800,
                         height: 1.08,
                       ),
@@ -819,9 +820,9 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
           const SizedBox(height: 8),
           Text(
             treino.descricao,
-            style: GoogleFonts.inter(
+            style: GoogleFonts.barlowCondensed(
               color: AppColors.textSecondary,
-              fontSize: 12,
+              fontSize: AppFontSize.caption,
               height: 1.4,
             ),
           ),
@@ -868,16 +869,16 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
           'TREINOS COMPLEMENTARES',
           style: GoogleFonts.barlowCondensed(
             color: AppColors.textPrimary,
-            fontSize: 21,
+            fontSize: AppFontSize.subtitle,
             fontWeight: FontWeight.w700,
           ),
         ),
         const SizedBox(height: 4),
         Text(
           'VÍDEOS GUIADOS',
-          style: GoogleFonts.inter(
+          style: GoogleFonts.barlowCondensed(
             color: AppColors.textSecondary,
-            fontSize: 10,
+            fontSize: AppFontSize.caption,
             fontWeight: FontWeight.w700,
             letterSpacing: 0.5,
           ),
@@ -940,7 +941,7 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
             treino.nome,
             style: GoogleFonts.barlowCondensed(
               color: AppColors.textPrimary,
-              fontSize: 18,
+              fontSize: AppFontSize.subtitle,
               fontWeight: FontWeight.w700,
             ),
           ),
@@ -949,18 +950,18 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
             treino.descricao,
             maxLines: 3,
             overflow: TextOverflow.ellipsis,
-            style: GoogleFonts.inter(
+            style: GoogleFonts.barlowCondensed(
               color: AppColors.textSecondary,
-              fontSize: 10,
+              fontSize: AppFontSize.caption,
               height: 1.3,
             ),
           ),
           const SizedBox(height: 8),
           Text(
             '${treino.duracaoMinutos} min',
-            style: GoogleFonts.inter(
+            style: GoogleFonts.barlowCondensed(
               color: AppColors.primary,
-              fontSize: 11,
+              fontSize: AppFontSize.caption,
               fontWeight: FontWeight.w700,
             ),
           ),
@@ -987,7 +988,10 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
           widget.onHistorico == null
               ? 'VER FICHAS E CICLOS ANTERIORES'
               : 'VER HISTÃ“RICO DE TREINOS',
-          style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w700),
+          style: GoogleFonts.barlowCondensed(
+            fontSize: AppFontSize.caption,
+            fontWeight: FontWeight.w700,
+          ),
         ),
       ),
     );
@@ -1015,10 +1019,10 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
                   destaque ? 'PRINCIPAIS EXERCÍCIOS' : 'RESUMO DA FICHA:',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.inter(
+                  style: GoogleFonts.barlowCondensed(
                     color:
                         destaque ? AppColors.primaryText : AppColors.textMuted,
-                    fontSize: 10,
+                    fontSize: AppFontSize.caption,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 0.5,
                   ),
@@ -1032,9 +1036,9 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     textAlign: TextAlign.right,
-                    style: GoogleFonts.inter(
+                    style: GoogleFonts.barlowCondensed(
                       color: AppColors.textSecondary,
-                      fontSize: 10,
+                      fontSize: AppFontSize.caption,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -1045,9 +1049,9 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
           const SizedBox(height: 5),
           Text(
             treino.principaisExercicios,
-            style: GoogleFonts.inter(
+            style: GoogleFonts.barlowCondensed(
               color: destaque ? AppColors.textPrimary : AppColors.textBody,
-              fontSize: 12,
+              fontSize: AppFontSize.caption,
               fontWeight: FontWeight.w500,
               height: 1.45,
             ),
@@ -1075,9 +1079,9 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
           const SizedBox(width: 4),
           Text(
             '$minutos min',
-            style: GoogleFonts.inter(
+            style: GoogleFonts.barlowCondensed(
               color: AppColors.textSecondary,
-              fontSize: 10,
+              fontSize: AppFontSize.caption,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -1097,7 +1101,12 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
       ),
       child: Text(
         letra,
-        style: GoogleFonts.anton(color: Colors.white, fontSize: 17, height: 1),
+        style: GoogleFonts.barlowCondensed(
+          fontWeight: FontWeight.w700,
+          color: Colors.white,
+          fontSize: AppFontSize.body,
+          height: 1,
+        ),
       ),
     );
   }
@@ -1115,9 +1124,9 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
       ),
       child: Text(
         texto,
-        style: GoogleFonts.inter(
+        style: GoogleFonts.barlowCondensed(
           color: foreground,
-          fontSize: 9,
+          fontSize: AppFontSize.caption,
           fontWeight: FontWeight.w700,
         ),
       ),
@@ -1147,7 +1156,10 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
             texto,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w700),
+            style: GoogleFonts.barlowCondensed(
+              fontSize: AppFontSize.caption,
+              fontWeight: FontWeight.w700,
+            ),
           ),
         ),
       );
@@ -1170,7 +1182,10 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
           texto,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w700),
+          style: GoogleFonts.barlowCondensed(
+            fontSize: AppFontSize.caption,
+            fontWeight: FontWeight.w700,
+          ),
         ),
       ),
     );

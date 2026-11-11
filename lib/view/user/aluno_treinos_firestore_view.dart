@@ -1,3 +1,4 @@
+import 'package:academiagrazi/theme/app_font_size.dart';
 import 'package:academiagrazi/locator.dart';
 import 'package:academiagrazi/models/training/training_session.dart';
 import 'package:academiagrazi/models/training/home_workout_plan.dart';
@@ -338,7 +339,7 @@ class _AlunoTreinosFirestoreViewState extends State<AlunoTreinosFirestoreView> {
                   title,
                   textAlign: TextAlign.center,
                   style: const TextStyle(
-                    fontSize: 21,
+                    fontSize: AppFontSize.subtitle,
                     fontWeight: FontWeight.w700,
                     color: AppColors.textPrimary,
                   ),
@@ -348,7 +349,7 @@ class _AlunoTreinosFirestoreViewState extends State<AlunoTreinosFirestoreView> {
                   message,
                   textAlign: TextAlign.center,
                   style: const TextStyle(
-                    fontSize: 14,
+                    fontSize: AppFontSize.small,
                     color: AppColors.textSecondary,
                   ),
                 ),

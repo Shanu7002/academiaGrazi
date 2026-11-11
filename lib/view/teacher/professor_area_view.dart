@@ -33,7 +33,7 @@ class _ProfessorAreaViewState extends State<ProfessorAreaView> {
   @override
   Widget build(BuildContext context) {
     return ColoredBox(
-      color: const Color(0xFFE5E5E5),
+      color: AppColors.background,
       child: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 430),

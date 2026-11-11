@@ -1,3 +1,4 @@
+import 'package:academiagrazi/theme/app_font_size.dart';
 import 'package:academiagrazi/locator.dart';
 import 'package:academiagrazi/service/admin/admin_alerts.dart';
 import 'package:academiagrazi/service/admin/admin_dashboard.dart';
@@ -72,7 +73,7 @@ class _AdminHomeViewState extends State<AdminHomeView> {
                 Text(
                   'Visão Geral',
                   style: GoogleFonts.barlowCondensed(
-                    fontSize: 30,
+                    fontSize: AppFontSize.headline,
                     fontWeight: FontWeight.bold,
                     color: AppColors.primaryDark,
                   ),
@@ -80,8 +81,8 @@ class _AdminHomeViewState extends State<AdminHomeView> {
                 const SizedBox(height: 4),
                 Text(
                   'Resumo operacional de hoje',
-                  style: GoogleFonts.inter(
-                    fontSize: 14,
+                  style: GoogleFonts.barlowCondensed(
+                    fontSize: AppFontSize.small,
                     color: AppColors.slateText,
                   ),
                 ),
@@ -142,7 +143,7 @@ class _AdminHomeViewState extends State<AdminHomeView> {
                 Text(
                   'Acesso Rápido',
                   style: GoogleFonts.barlowCondensed(
-                    fontSize: 22,
+                    fontSize: AppFontSize.title,
                     fontWeight: FontWeight.bold,
                     color: AppColors.primaryDark,
                   ),
@@ -281,8 +282,8 @@ class _StatCard extends StatelessWidget {
                     child: Text(
                       badge!,
                       overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.inter(
-                        fontSize: 12,
+                      style: GoogleFonts.barlowCondensed(
+                        fontSize: AppFontSize.caption,
                         fontWeight: FontWeight.w600,
                         color: AppColors.primaryDark,
                       ),
@@ -294,8 +295,8 @@ class _StatCard extends StatelessWidget {
           const SizedBox(height: 12),
           Text(
             label.toUpperCase(),
-            style: GoogleFonts.inter(
-              fontSize: 11,
+            style: GoogleFonts.barlowCondensed(
+              fontSize: AppFontSize.caption,
               fontWeight: FontWeight.w600,
               letterSpacing: 0.5,
               color: AppColors.slateText,
@@ -305,7 +306,7 @@ class _StatCard extends StatelessWidget {
           Text(
             value,
             style: GoogleFonts.barlowCondensed(
-              fontSize: 32,
+              fontSize: AppFontSize.headline,
               fontWeight: FontWeight.bold,
               color: AppColors.primaryDark,
             ),
@@ -338,8 +339,8 @@ class _InactiveCard extends StatelessWidget {
           const SizedBox(height: 12),
           Text(
             'INATIVOS (30D+)',
-            style: GoogleFonts.inter(
-              fontSize: 11,
+            style: GoogleFonts.barlowCondensed(
+              fontSize: AppFontSize.caption,
               fontWeight: FontWeight.w600,
               letterSpacing: 0.5,
               color: AppColors.slateText,
@@ -349,7 +350,7 @@ class _InactiveCard extends StatelessWidget {
           Text(
             value,
             style: GoogleFonts.barlowCondensed(
-              fontSize: 32,
+              fontSize: AppFontSize.headline,
               fontWeight: FontWeight.bold,
               color: AppColors.danger,
             ),
@@ -386,8 +387,8 @@ class _QuickAccessButton extends StatelessWidget {
         icon: Icon(icon, size: 20, color: foreground),
         label: Text(
           label,
-          style: GoogleFonts.inter(
-            fontSize: 15,
+          style: GoogleFonts.barlowCondensed(
+            fontSize: AppFontSize.small,
             fontWeight: FontWeight.w600,
             color: foreground,
           ),
@@ -462,7 +463,7 @@ class _MovementCard extends StatelessWidget {
                     child: Text(
                       'Movimentação por Horário',
                       style: GoogleFonts.barlowCondensed(
-                        fontSize: 22,
+                        fontSize: AppFontSize.title,
                         fontWeight: FontWeight.bold,
                         height: 1.2,
                         color: AppColors.primaryDark,
@@ -491,8 +492,8 @@ class _MovementCard extends StatelessWidget {
                           const SizedBox(width: 4),
                           Text(
                             'Pico ${peakHour}h',
-                            style: GoogleFonts.inter(
-                              fontSize: 12,
+                            style: GoogleFonts.barlowCondensed(
+                              fontSize: AppFontSize.caption,
                               fontWeight: FontWeight.w600,
                               color: AppColors.accentText,
                             ),
@@ -506,8 +507,8 @@ class _MovementCard extends StatelessWidget {
               const SizedBox(height: 4),
               Text(
                 'Treinos finalizados nos últimos 30 dias',
-                style: GoogleFonts.inter(
-                  fontSize: 12,
+                style: GoogleFonts.barlowCondensed(
+                  fontSize: AppFontSize.caption,
                   color: AppColors.textSecondary,
                 ),
               ),
@@ -573,8 +574,8 @@ class _MovementCard extends StatelessWidget {
             for (final hour in labels)
               Text(
                 _hourLabel(hour),
-                style: GoogleFonts.inter(
-                  fontSize: 12,
+                style: GoogleFonts.barlowCondensed(
+                  fontSize: AppFontSize.caption,
                   color: AppColors.textSecondary,
                 ),
               ),
@@ -615,7 +616,7 @@ class _AlertsCard extends StatelessWidget {
                 child: Text(
                   'Alertas Operacionais',
                   style: GoogleFonts.barlowCondensed(
-                    fontSize: 22,
+                    fontSize: AppFontSize.title,
                     fontWeight: FontWeight.bold,
                     color: AppColors.primaryDark,
                   ),
@@ -723,8 +724,8 @@ class _AlertTile extends StatelessWidget {
                   children: [
                     Text(
                       alert.title,
-                      style: GoogleFonts.inter(
-                        fontSize: 14,
+                      style: GoogleFonts.barlowCondensed(
+                        fontSize: AppFontSize.small,
                         fontWeight: FontWeight.w600,
                         color: textColor,
                       ),
@@ -732,8 +733,8 @@ class _AlertTile extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       alert.description,
-                      style: GoogleFonts.inter(
-                        fontSize: 13,
+                      style: GoogleFonts.barlowCondensed(
+                        fontSize: AppFontSize.caption,
                         height: 1.4,
                         color: _isWarning ? textColor : AppColors.textBody,
                       ),
@@ -767,8 +768,8 @@ class _MovementMessage extends StatelessWidget {
           Text(
             text,
             textAlign: TextAlign.center,
-            style: GoogleFonts.inter(
-              fontSize: 13,
+            style: GoogleFonts.barlowCondensed(
+              fontSize: AppFontSize.caption,
               color: AppColors.textSecondary,
             ),
           ),

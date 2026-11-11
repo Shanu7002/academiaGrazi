@@ -1,3 +1,4 @@
+import 'package:academiagrazi/theme/app_colors.dart';
 import 'package:academiagrazi/view/admin/admin_home_view.dart';
 import 'package:academiagrazi/view/admin/admin_students_view.dart';
 import 'package:academiagrazi/view/admin/admin_team_view.dart';
@@ -59,7 +60,7 @@ class _MainShellState extends State<MainShell> {
   @override
   Widget build(BuildContext context) {
     return ColoredBox(
-      color: const Color(0xFFE5E5E5),
+      color: AppColors.background,
       child: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 430),

@@ -1,3 +1,4 @@
+import 'package:academiagrazi/theme/app_font_size.dart';
 import 'package:academiagrazi/models/training/training_session.dart';
 import 'package:academiagrazi/models/training/home_workout_plan.dart';
 import 'package:academiagrazi/service/training/student_weekly_progress.dart';
@@ -116,13 +117,13 @@ class AlunoPainelSemanalView extends StatelessWidget {
       borderRadius: BorderRadius.circular(100),
     ),
     child: Text(label, style: TextStyle(
-      fontSize: 11, fontWeight: FontWeight.w700,
+      fontSize: AppFontSize.caption, fontWeight: FontWeight.w700,
       color: foreground ?? AppColors.primary,
     )),
   );
 
   TextStyle get _sectionStyle => GoogleFonts.barlowCondensed(
-    fontSize: 24, fontWeight: FontWeight.w800, color: AppColors.textPrimary,
+    fontSize: AppFontSize.title, fontWeight: FontWeight.w800, color: AppColors.textPrimary,
   );
 
   @override
@@ -152,11 +153,11 @@ class AlunoPainelSemanalView extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(16, 20, 16, 36),
               children: [
                 Text('SEUS TREINOS', style: GoogleFonts.barlowCondensed(
-                  fontSize: 32, fontWeight: FontWeight.w800,
+                  fontSize: AppFontSize.headline, fontWeight: FontWeight.w800,
                   color: AppColors.textPrimary)),
                 const SizedBox(height: 3),
                 Text('Ficha de ${data.professorNome}  •  ${data.ultimaAtualizacao}',
-                  style: const TextStyle(color: AppColors.textSecondary, fontSize: 12)),
+                  style: const TextStyle(color: AppColors.textSecondary, fontSize: AppFontSize.caption)),
                 const SizedBox(height: 20),
                 _panel(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   Row(children: [
@@ -166,7 +167,7 @@ class AlunoPainelSemanalView extends StatelessWidget {
                   const SizedBox(height: 6),
                   Text('${thisWeek.length} treino(s) registrado(s) nesta semana',
                     key: const Key('aluno_total_treinos_semana'),
-                    style: const TextStyle(color: AppColors.textSecondary, fontSize: 13)),
+                    style: const TextStyle(color: AppColors.textSecondary, fontSize: AppFontSize.caption)),
                   const SizedBox(height: 13),
                   for (var i = 0; i < 7; i++)
                     _dia(context, start.add(Duration(days: i)), today),
@@ -193,7 +194,7 @@ class AlunoPainelSemanalView extends StatelessWidget {
                     if (todayRoutine == null) ...[
                       const Text('Hoje é seu dia de descanso! 🌿',
                         key: Key('aluno_dia_descanso'),
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700,
+                        style: TextStyle(fontSize: AppFontSize.body, fontWeight: FontWeight.w700,
                           color: AppColors.primary)),
                       const SizedBox(height: 5),
                       const Text('Sem treino programado para hoje. Aproveite para se recuperar.',
@@ -206,7 +207,7 @@ class AlunoPainelSemanalView extends StatelessWidget {
                       ],
                     ] else if (activeToday) ...[
                       Text(emAndamento!.routineName,
-                        style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 19)),
+                        style: const TextStyle(fontWeight: FontWeight.w800, fontSize: AppFontSize.subtitle)),
                       const SizedBox(height: 6),
                       Text('${emAndamento!.completedSets}/${emAndamento!.totalSets} séries feitas. Continue de onde parou.',
                         style: const TextStyle(color: AppColors.textSecondary)),
@@ -220,7 +221,7 @@ class AlunoPainelSemanalView extends StatelessWidget {
                       )),
                     ] else if (completedToday != null) ...[
                       Text(todayRoutine.nome,
-                        style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 19)),
+                        style: const TextStyle(fontWeight: FontWeight.w800, fontSize: AppFontSize.subtitle)),
                       const SizedBox(height: 6),
                       Text('Você concluiu ${completedToday.completedSets} de ${completedToday.totalSets} séries e o registro está no seu histórico.',
                         key: const Key('aluno_treino_concluido_hoje'),
@@ -233,14 +234,14 @@ class AlunoPainelSemanalView extends StatelessWidget {
                       )),
                     ] else ...[
                       Text(todayRoutine.nome,
-                        style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 19)),
+                        style: const TextStyle(fontWeight: FontWeight.w800, fontSize: AppFontSize.subtitle)),
                       const SizedBox(height: 5),
                       Text('${todayRoutine.quantidadeExercicios} exercícios  •  ${todayRoutine.duracaoMinutos} min previstos',
                         style: const TextStyle(color: AppColors.textSecondary)),
                       if (emAndamento != null) ...[
                         const SizedBox(height: 7),
                         const Text('Existe uma sessão anterior não finalizada. Ao iniciar, você poderá retomá-la.',
-                          style: TextStyle(color: AppColors.textSecondary, fontSize: 12)),
+                          style: TextStyle(color: AppColors.textSecondary, fontSize: AppFontSize.caption)),
                       ],
                       const SizedBox(height: 12),
                       Row(children: [
@@ -266,7 +267,7 @@ class AlunoPainelSemanalView extends StatelessWidget {
                   const Padding(
                     padding: EdgeInsets.only(top: 4, bottom: 9),
                     child: Text('Apenas para consulta. Hoje não há treino a iniciar.',
-                      style: TextStyle(color: AppColors.textSecondary, fontSize: 12)),
+                      style: TextStyle(color: AppColors.textSecondary, fontSize: AppFontSize.caption)),
                   ),
                 const SizedBox(height: 10),
                 for (final treino in ordered) ...[
@@ -340,19 +341,19 @@ class AlunoPainelSemanalView extends StatelessWidget {
                 ),
                 child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
                   Text(_dias[day.weekday - 1].substring(0, 3).toUpperCase(),
-                    style: const TextStyle(fontSize: 10, color: AppColors.textSecondary)),
+                    style: const TextStyle(fontSize: AppFontSize.caption, color: AppColors.textSecondary)),
                   Text('${day.day}', style: const TextStyle(fontWeight: FontWeight.w800)),
                 ]),
               ),
               const SizedBox(width: 10),
               Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 Text(label, maxLines: 1, overflow: TextOverflow.ellipsis,
-                  style: TextStyle(fontSize: 13, fontWeight: isToday ? FontWeight.w800 : FontWeight.w600)),
+                  style: TextStyle(fontSize: AppFontSize.caption, fontWeight: isToday ? FontWeight.w800 : FontWeight.w600)),
                 if (didTrain)
                   Text(finished.first.routineName == label ? 'Registrado no histórico'
                       : 'Fez ${finished.first.routineName}',
                     maxLines: 1, overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontSize: 11, color: AppColors.textSecondary)),
+                    style: const TextStyle(fontSize: AppFontSize.caption, color: AppColors.textSecondary)),
               ])),
               const SizedBox(width: 7),
               _chip(status, foreground: completed ? AppColors.success : AppColors.textBody,
@@ -373,20 +374,20 @@ class AlunoPainelSemanalView extends StatelessWidget {
           StudentExercisePhoto(url: preview, size: 74),
           const SizedBox(width: 12),
           Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(treino.nome, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 17)),
+            Text(treino.nome, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: AppFontSize.body)),
             const SizedBox(height: 4),
             Text('${treino.quantidadeExercicios} exercícios  •  ${treino.duracaoMinutos} min',
-              style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+              style: const TextStyle(fontSize: AppFontSize.caption, color: AppColors.textSecondary)),
             if (treino.descricao.trim().isNotEmpty)
               Text(treino.descricao, maxLines: 1, overflow: TextOverflow.ellipsis,
-                style: const TextStyle(fontSize: 12, color: AppColors.textBody)),
+                style: const TextStyle(fontSize: AppFontSize.caption, color: AppColors.textBody)),
           ])),
           _chip('Treino ${treino.letra}'),
         ]),
         const SizedBox(height: 10),
         Text(treino.exercicios.take(3).map((e) => e.nome).join(' • '),
           maxLines: 2, overflow: TextOverflow.ellipsis,
-          style: const TextStyle(color: AppColors.textSecondary, fontSize: 12)),
+          style: const TextStyle(color: AppColors.textSecondary, fontSize: AppFontSize.caption)),
         const SizedBox(height: 10),
         SizedBox(width: double.infinity, child: OutlinedButton.icon(
           key: Key('aluno_ver_ficha_${treino.id}'),
@@ -410,7 +411,7 @@ class AlunoPainelSemanalView extends StatelessWidget {
         Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text(session.routineName, style: const TextStyle(fontWeight: FontWeight.w700)),
           Text('$day às $time  •  ${session.completedSets}/${session.totalSets} séries',
-            style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+            style: const TextStyle(fontSize: AppFontSize.caption, color: AppColors.textSecondary)),
         ])),
         TextButton(onPressed: onHistorico, child: const Text('Detalhes')),
       ])),

@@ -1,3 +1,5 @@
+import 'package:academiagrazi/theme/app_font_size.dart';
+import 'package:academiagrazi/theme/app_colors.dart';
 import 'dart:async';
 import 'dart:math' as math;
 
@@ -240,7 +242,7 @@ class _WelcomeViewState extends State<WelcomeView>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF02594F),
+      backgroundColor: AppColors.primary,
 
       body: GestureDetector(
         behavior: HitTestBehavior.opaque,
@@ -321,7 +323,7 @@ class _WelcomeViewState extends State<WelcomeView>
                                 style: GoogleFonts.barlowCondensed(
                                   color: Colors.white,
 
-                                  fontSize: compact ? 20 : 23,
+                                  fontSize: compact ? AppFontSize.subtitle : AppFontSize.title,
 
                                   fontWeight: FontWeight.w300,
 

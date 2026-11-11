@@ -1,3 +1,4 @@
+import 'package:academiagrazi/theme/app_font_size.dart';
 import 'package:academiagrazi/models/users/registration_profile.dart';
 import 'package:academiagrazi/models/users/user_model.dart';
 import 'package:academiagrazi/theme/app_colors.dart';
@@ -55,8 +56,8 @@ List<String> healthAlerts(RegistrationProfile? profile) {
 }
 
 /// Rótulo em caixa alta das fichas do admin.
-TextStyle get adminLabelStyle => GoogleFonts.inter(
-  fontSize: 12,
+TextStyle get adminLabelStyle => GoogleFonts.barlowCondensed(
+  fontSize: AppFontSize.caption,
   fontWeight: FontWeight.w600,
   letterSpacing: .5,
   color: AppColors.slateText,
@@ -89,8 +90,8 @@ class AdminInfoRow extends StatelessWidget {
               const SizedBox(height: 2),
               Text(
                 value,
-                style: GoogleFonts.inter(
-                  fontSize: 15,
+                style: GoogleFonts.barlowCondensed(
+                  fontSize: AppFontSize.small,
                   fontWeight: FontWeight.w500,
                   color: AppColors.textPrimary,
                 ),
@@ -127,7 +128,10 @@ class StudentRegistrationDetails extends StatelessWidget {
         if (profile == null)
           Text(
             'Este aluno ainda não completou a ficha de cadastro.',
-            style: GoogleFonts.inter(fontSize: 14, color: AppColors.slateText),
+            style: GoogleFonts.barlowCondensed(
+              fontSize: AppFontSize.small,
+              color: AppColors.slateText,
+            ),
           )
         else ...[
           AdminInfoRow(
@@ -158,7 +162,10 @@ class StudentRegistrationDetails extends StatelessWidget {
           if (alerts.isEmpty)
             Text(
               'Sem condições ou restrições informadas.',
-              style: GoogleFonts.inter(fontSize: 14, color: AppColors.textBody),
+              style: GoogleFonts.barlowCondensed(
+                fontSize: AppFontSize.small,
+                color: AppColors.textBody,
+              ),
             )
           else
             Wrap(
@@ -178,8 +185,8 @@ class StudentRegistrationDetails extends StatelessWidget {
                     ),
                     child: Text(
                       alert,
-                      style: GoogleFonts.inter(
-                        fontSize: 13,
+                      style: GoogleFonts.barlowCondensed(
+                        fontSize: AppFontSize.caption,
                         fontWeight: FontWeight.w600,
                         color: AppColors.accentText,
                       ),
@@ -191,8 +198,8 @@ class StudentRegistrationDetails extends StatelessWidget {
             const SizedBox(height: 10),
             Text(
               notes,
-              style: GoogleFonts.inter(
-                fontSize: 14,
+              style: GoogleFonts.barlowCondensed(
+                fontSize: AppFontSize.small,
                 height: 1.4,
                 color: AppColors.textBody,
               ),

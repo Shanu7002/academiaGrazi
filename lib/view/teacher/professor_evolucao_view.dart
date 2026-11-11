@@ -1,3 +1,4 @@
+import 'package:academiagrazi/theme/app_font_size.dart';
 import 'package:academiagrazi/controller/teachers/teacher_user_searcher.dart';
 import 'package:academiagrazi/locator.dart';
 import 'package:academiagrazi/models/evaluations/physical_evaluation.dart';
@@ -117,7 +118,7 @@ class _ProfessorEvolucaoViewState extends State<ProfessorEvolucaoView> {
                 Text(
                   'Avaliações',
                   style: GoogleFonts.barlowCondensed(
-                    fontSize: 27,
+                    fontSize: AppFontSize.headline,
                     fontWeight: FontWeight.bold,
                     color: AppColors.navy,
                   ),

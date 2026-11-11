@@ -126,6 +126,7 @@ lib/
 | Keys de widget para teste | `Key('snake_case_em_portugues')`, ex.: `Key('botao_iniciar_treino')`, `Key('campo_busca_aluno')`. Prefixo pelo tipo: `botao_`, `campo_`, `card_`, `aba_`/`<perfil>_tab_`. |
 | Números mágicos de negócio | Proibidos nas telas. Use `lib/config/business_rules.dart`. |
 | Cores | Somente `AppColors.*`. Nada de `Color(0x…)` fora de `lib/theme/`. Use `withValues(alpha:)`, não `withOpacity`. |
+| Tamanho de fonte | Somente `AppFontSize.*` (`lib/theme/app_font_size.dart`). Nada de `fontSize: 14` com número solto. |
 | Log | `debugPrint` ou `dart:developer log`. Nunca `print`. |
 | Formatação | `dart format` (largura 80, `analysis_options.yaml`). `flutter analyze` sem warnings. |
 | Datas | Ver §5.1. |
@@ -281,8 +282,7 @@ As regras do Firestore (`firestore.rules`) são a **barreira real**; checagens n
 
 - O layout segue o **protótipo final**. Na dúvida sobre uma tela, pergunte ao time; não invente fluxo.
 - Largura máxima de 430 px centralizada (padrão de `MainShell`/`ProfessorAreaView`).
-- **Cores**: `lib/theme/app_colors.dart`. Primária `#005A4F`, destaque `#FF7943`, texto `#092837`, fundo `#F4F7FA`. Faltou um tom? Crie o token em `AppColors`.
-- **Tipografia**: Barlow Condensed (tema padrão, títulos em caixa alta/negrito), Inter para texto corrido e rótulos, Anton para números grandes de métrica (já usada nos dashboards).
+- **Marca**: toda tela segue o manual de marca (§7.1). Cores só por `AppColors`, fonte só Barlow Condensed, tema em `AppTheme`.
 - **Cabeçalho**: sempre `CustomAppBar` (avatar do usuário + título + sino). Telas raiz de aba usam `showBackButton: false`.
 - **Navegação inferior**: `AppBottomNavigation`. Abas finais por perfil:
   - Aluno: Início · Treinos · Evolução · Perfil
@@ -292,6 +292,90 @@ As regras do Firestore (`firestore.rules`) são a **barreira real**; checagens n
 - Recursos fora do escopo **não aparecem** na UI. Exceção: o card de IA desabilitado com "Recurso futuro".
 - Nenhum botão sem ação (`onPressed: () {}`). Se a função ainda não existe, o botão não aparece.
 
+
+### 7.1 Manual de marca (obrigatório em toda tela e texto)
+
+Manual completo: [`docs/MANUAL_DE_MARCA.md`](docs/MANUAL_DE_MARCA.md). Em conflito com preferências genéricas de design, o manual prevalece. Abaixo, as regras já traduzidas para o app.
+
+**Identidade.** Nome **GRAZI BRAZ** (sempre em caixa alta no logo), tagline *conexão e movimento*, descritor *Treino personalizado*. Verbos da marca: **CONECTAR** (vínculo, empatia) e **MOVIMENTAR** (bem-estar, disciplina, propósito).
+
+**Tom de voz.**
+- Próximo, humano, motivador e acolhedor; nada de "academia hardcore".
+- Frases curtas e claras, em segunda pessoa ("você", "sua energia de treino"). Perguntas para engajar são bem-vindas.
+- Humor leve só em opções e enquetes. Temas: disciplina, propósito, constância, bem-estar, comunidade, saúde.
+- pt-BR; frases de impacto em inglês só pontualmente.
+- Mensagens de erro e estados vazios também seguem o tom: dizem o que aconteceu e o que fazer, sem culpar o usuário. Textos legais (termos, LGPD) não são reescritos.
+
+**Tipografia.** Fonte única **Barlow Condensed** (`GoogleFonts.barlowCondensed`; o `AppTheme` já define o padrão). Não use Inter, Anton nem outra família.
+- Títulos: SemiBold/Bold, **CAIXA ALTA**, tracking levemente aberto (`letterSpacing` ~0,6–1).
+- Subtítulo e tagline: *itálico*, Light/Regular, caixa baixa ou de título.
+- Corpo: Regular, tracking levemente aberto (~0,2).
+- Números de métrica: Barlow Condensed Bold, grande.
+- **Tamanhos: escala única `AppFontSize`** (nunca número solto em `fontSize`). Escolha pelo papel do texto, não pelo espaço disponível; se não couber, ajuste o layout (`Expanded`, `Wrap`, `maxLines`/`ellipsis`), não a fonte.
+
+| Token | px | Uso |
+|---|---|---|
+| `caption` | 13 | rótulos pequenos, sobretítulos em caixa alta, selos (mínimo do app) |
+| `small` | 15 | legendas, texto secundário |
+| `body` | 17 | texto corrido, nomes em listas, campos, botões |
+| `subtitle` | 20 | título de cartão ou item de destaque |
+| `title` | 24 | título de seção |
+| `headline` | 30 | título da página |
+| `display` | 44 | números grandes de métrica |
+- Título de seção no padrão `PALAVRA EM CAIXA ALTA / Complemento em itálico` (ex.: `EVOLUÇÃO / Suas medidas`).
+- Destaque no corpo: a palavra-chave em CAIXA ALTA e/ou negrito na cor de impacto.
+
+**Cores** (`lib/theme/app_colors.dart`; nunca `Color(0x…)` fora de `lib/theme/`):
+
+| Papel | Cor | Token |
+|---|---|---|
+| Impacto: CTA principal, número/palavra em destaque | Laranja `#E37747` | `AppColors.accent` (`onAccent` = branco por cima) |
+| Institucional: logo, títulos, ícones, fundos de marca | Verde `#02594F` | `AppColors.primary` / `textPrimary` |
+| Ponto de luz: brilho, detalhes | Amarelo `#F2BE48` | `AppColors.highlight` |
+| Atenção e respiro: perguntas ao aluno, avisos | Azul `#2A327B` | `AppColors.info` (com moderação) |
+| Texto corrido | Cinza `#707070` | `AppColors.textBody` |
+| Fundo | Off-white `#EBE8E6`, cartões brancos | `AppColors.background` / `surface` |
+
+Predominância: laranja > verde > amarelo > azul. Superfícies e bordas usam nuances claras dessas cores (tokens `*Surface`, `*Border`).
+
+**Ajustes de leitura (decisão do time, valem sobre o manual):**
+- Cinza `#707070` só sobre cartões **brancos**. Legendas que ficam sobre o fundo off-white usam `textSecondary` (`#5C5C5C`).
+- Amarelo nunca como texto sobre fundo claro (contraste 1,7:1): só sobre o verde ou como detalhe gráfico.
+- Laranja como **texto** só em tamanho grande ou negrito (títulos, números, botões). Texto pequeno em alerta laranja usa `accentText`.
+- Branco sobre laranja (contraste 3:1): só em negrito ou ≥ 18 px, como nos botões do tema.
+- Erro e ação destrutiva usam `AppColors.danger` (vermelho), única cor fora da paleta, para não se confundir com o laranja dos CTAs.
+
+**Componentes.**
+- Botão principal: `FilledButton`/`ElevatedButton` do tema (laranja, texto branco em negrito).
+- Secundário: `OutlinedButton` (contorno verde). Terciário: `TextButton` verde.
+- Um CTA laranja por bloco de tela; o resto em verde.
+- Avisos (`SnackBar`) em verde. Diálogos com título em Barlow Condensed verde.
+
+**Gradiente, símbolo e logo.**
+- O gradiente da marca (laranja, amarelo, azul e verde, desfocado e com grão) vale para capas, faixas laterais e destaques. Use os assets prontos (`assets/linhaGradiente.png`, `assets/welcometela/faixa_gradiente.png`); não recrie gradientes "parecidos".
+- Símbolo: flor de 8 pétalas (`assets/welcometela/flor.png`, `flor_contorno.svg`, `petala_0..7.svg`). Pode ser usado grande e recortado na borda ou como marca d'água em linha branca ou verde.
+- Logo só nas versões aprovadas (horizontal, vertical, empilhada, reduzida) e numa cor única da paleta, de preferência verde, ou branco sobre verde/laranja/gradiente. Assets: `logoLogin.png`, `logoGraziBranca.png`, `ICONE.svg`. Não distorcer, girar, recolorir em várias cores, trocar a fonte nem aplicar sem contraste.
+
+**Ícones.** Estilo linha (outline), traço uniforme, cantos levemente arredondados, sem preenchimento, em verde `#02594F`. No Material, prefira as variantes `_outlined`/`_rounded`.
+
+**Fotografia.**
+- Pessoas reais treinando ou em momentos de conexão, com diversidade de corpos e foco em mulheres ativas.
+- Luz natural, cores quentes, leve grão.
+- Nada de estúdio frio, pose artificial ou estética bodybuilding.
+
+**Layout.**
+- Muito respiro e composição limpa.
+- Títulos grandes em caixa alta; texto pequeno alinhado à esquerda.
+- Navegação e "sobretítulos" discretos em caixa alta e tamanho pequeno.
+
+**Checklist de marca** (entra na DoD, §10):
+- [ ] Só Barlow Condensed, com tamanhos da escala `AppFontSize`
+- [ ] Só cores da paleta via `AppColors` (+ cinza de texto e off-white), com os ajustes de leitura acima
+- [ ] Laranja no destaque principal; verde institucional; azul com moderação
+- [ ] Títulos em caixa alta; subtítulo/tagline em itálico
+- [ ] Logo e símbolo só nas versões aprovadas, em cor única
+- [ ] Texto claro, curto, humano e motivador (inclusive erros e estados vazios)
+- [ ] Espaço em branco suficiente
 ---
 
 ## 8. Testes
@@ -323,6 +407,7 @@ Um card só está pronto quando:
 - [ ] Critérios de aceite do card em `docs/BACKLOG.md` atendidos.
 - [ ] Sem dados mockados ou textos fixos de exemplo em `lib/` para a funcionalidade entregue.
 - [ ] Estados de carregando, vazio e erro tratados; textos em pt-BR.
+- [ ] Checklist de marca (§7.1) atendido.
 - [ ] `firestore.rules` e `firestore.indexes.json` atualizados quando houver coleção ou consulta nova.
 - [ ] Model novo ou alterado com `*_model_changelog.xml` atualizado.
 - [ ] Testes novos passando; `flutter test` e `flutter analyze` limpos.

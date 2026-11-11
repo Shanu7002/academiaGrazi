@@ -1,3 +1,4 @@
+import 'package:academiagrazi/theme/app_font_size.dart';
 import 'dart:typed_data';
 
 import 'package:academiagrazi/controller/teachers/teacher_user_searcher.dart';
@@ -534,7 +535,7 @@ class _ProfessorFichaTreinosViewState extends State<ProfessorFichaTreinosView> {
             height: (MediaQuery.sizeOf(sheetContext).height -
                     MediaQuery.viewInsetsOf(sheetContext).bottom) * .70,
             child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-              Text('Adicionar exercicio', style: _titleStyle(24)),
+              Text('Adicionar exercicio', style: _titleStyle(AppFontSize.title)),
               const SizedBox(height: 5),
               const Text('Escolha na biblioteca de exercicios com fotos. O cadastro manual fica como alternativa.',
                 style: TextStyle(color: AppColors.textSecondary)),
@@ -607,7 +608,7 @@ class _ProfessorFichaTreinosViewState extends State<ProfessorFichaTreinosView> {
               ),
               const SizedBox(height: 5),
               const Text('Ilustracoes da biblioteca: RepDB (repdb.co)',
-                style: TextStyle(fontSize: 11, color: AppColors.textSecondary)),
+                style: TextStyle(fontSize: AppFontSize.caption, color: AppColors.textSecondary)),
             ]),
           ),
         ),
@@ -777,7 +778,7 @@ class _ProfessorFichaTreinosViewState extends State<ProfessorFichaTreinosView> {
                 if (translationPending) ...[
                   const SizedBox(height: 6),
                   const Text('Texto sugerido automaticamente. Revise antes de publicar.',
-                    style: TextStyle(color: AppColors.textSecondary, fontSize: 12)),
+                    style: TextStyle(color: AppColors.textSecondary, fontSize: AppFontSize.caption)),
                 ],
                 if (errorText != null) ...[
                   const SizedBox(height: 10),
@@ -1102,10 +1103,10 @@ class _ProfessorFichaTreinosViewState extends State<ProfessorFichaTreinosView> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: _titleStyle(28)),
+                  Text(title, style: _titleStyle(AppFontSize.headline)),
                   if (description != null)
                     Text(description, style: const TextStyle(
-                        color: AppColors.textSecondary, fontSize: 13)),
+                        color: AppColors.textSecondary, fontSize: AppFontSize.caption)),
                 ],
               ),
             ),
@@ -1117,7 +1118,7 @@ class _ProfessorFichaTreinosViewState extends State<ProfessorFichaTreinosView> {
       Color foreground = AppColors.primary}) => Container(
     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
     decoration: BoxDecoration(color: background, borderRadius: BorderRadius.circular(30)),
-    child: Text(text, style: TextStyle(fontSize: 12,
+    child: Text(text, style: TextStyle(fontSize: AppFontSize.caption,
         fontWeight: FontWeight.w700, color: foreground)),
   );
 
@@ -1171,10 +1172,10 @@ class _ProfessorFichaTreinosViewState extends State<ProfessorFichaTreinosView> {
                 iconColor: AppColors.primary,
               ),
               title: Text(student.name, style: const TextStyle(
-                  fontSize: 15, fontWeight: FontWeight.w700,
+                  fontSize: AppFontSize.small, fontWeight: FontWeight.w700,
                   color: AppColors.textPrimary)),
               subtitle: const Text('Ver ficha e treinos', style: TextStyle(
-                  color: AppColors.textSecondary, fontSize: 12)),
+                  color: AppColors.textSecondary, fontSize: AppFontSize.caption)),
               trailing: const Icon(Icons.chevron_right, color: AppColors.primary),
               onTap: () => _openStudent(student.id),
             ),
@@ -1225,12 +1226,12 @@ class _ProfessorFichaTreinosViewState extends State<ProfessorFichaTreinosView> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(children: [
-                  Expanded(child: Text('Ficha atual', style: _titleStyle(21))),
+                  Expanded(child: Text('Ficha atual', style: _titleStyle(AppFontSize.subtitle))),
                   _tag('Publicada'),
                 ]),
                 const SizedBox(height: 8),
                 Text(published.name, style: const TextStyle(
-                    fontSize: 16, fontWeight: FontWeight.w700,
+                    fontSize: AppFontSize.body, fontWeight: FontWeight.w700,
                     color: AppColors.textPrimary)),
                 const SizedBox(height: 8),
                 Text('${published.routines.length} treino(s) • '
@@ -1239,7 +1240,7 @@ class _ProfessorFichaTreinosViewState extends State<ProfessorFichaTreinosView> {
                 if (draft != null) ...[
                   const SizedBox(height: 8),
                   const Text('Existem alteracoes ainda nao publicadas.',
-                      style: TextStyle(color: AppColors.textSecondary, fontSize: 12)),
+                      style: TextStyle(color: AppColors.textSecondary, fontSize: AppFontSize.caption)),
                 ],
                 const SizedBox(height: 16),
                 SizedBox(width: double.infinity, child: OutlinedButton.icon(
@@ -1264,7 +1265,7 @@ class _ProfessorFichaTreinosViewState extends State<ProfessorFichaTreinosView> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(draft == null ? 'Nenhuma ficha publicada' : 'Ficha em montagem',
-                    style: _titleStyle(21)),
+                    style: _titleStyle(AppFontSize.subtitle)),
                 const SizedBox(height: 8),
                 Text(draft == null
                     ? 'O aluno ainda nao possui uma ficha ativa.'
@@ -1291,11 +1292,11 @@ class _ProfessorFichaTreinosViewState extends State<ProfessorFichaTreinosView> {
           ],
           const SizedBox(height: 14),
           _panel(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text('Treinar em casa', style: _titleStyle(20)),
+            Text('Treinar em casa', style: _titleStyle(AppFontSize.subtitle)),
             const SizedBox(height: 5),
             const Text('Opcional: publique exercícios para este aluno fazer em casa. '
                 'Se não houver prescrição, nada aparecerá para ele.',
-              style: TextStyle(color: AppColors.textSecondary, fontSize: 12)),
+              style: TextStyle(color: AppColors.textSecondary, fontSize: AppFontSize.caption)),
             const SizedBox(height: 12),
             SizedBox(width: double.infinity, child: OutlinedButton.icon(
               key: const Key('professor_gerenciar_treino_casa'),
@@ -1388,7 +1389,7 @@ class _ProfessorFichaTreinosViewState extends State<ProfessorFichaTreinosView> {
         _heading('Ficha atual', description: _student?.name, onBack: _back),
         _panel(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Row(children: [
-            Expanded(child: Text(plan.name, style: _titleStyle(24))),
+            Expanded(child: Text(plan.name, style: _titleStyle(AppFontSize.title))),
             _tag('Publicada'),
           ]),
           const SizedBox(height: 8),
@@ -1401,7 +1402,7 @@ class _ProfessorFichaTreinosViewState extends State<ProfessorFichaTreinosView> {
         if (selected != null) ...[
           const SizedBox(height: 12),
           _panel(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(selected.name, style: _titleStyle(22)),
+            Text(selected.name, style: _titleStyle(AppFontSize.title)),
             if (selected.focus.isNotEmpty)
               Text(selected.focus, style: const TextStyle(color: AppColors.textSecondary)),
             const SizedBox(height: 8),
@@ -1472,10 +1473,10 @@ class _ProfessorFichaTreinosViewState extends State<ProfessorFichaTreinosView> {
                 style: const TextStyle(color: AppColors.textPrimary,
                     fontWeight: FontWeight.w700)),
             Text('${item.sets} séries • ${item.repetitions} reps • ${item.restSeconds}s',
-                style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+                style: const TextStyle(fontSize: AppFontSize.caption, color: AppColors.textSecondary)),
             if (item.targetLoadKg != null)
               Text('Carga sugerida: ${item.targetLoadKg} kg', style: const TextStyle(
-                  fontSize: 12, color: AppColors.textSecondary)),
+                  fontSize: AppFontSize.caption, color: AppColors.textSecondary)),
           ])),
         ]),
       )),
@@ -1495,12 +1496,12 @@ class _ProfessorFichaTreinosViewState extends State<ProfessorFichaTreinosView> {
   Widget _weeklyCard(List<TrainingRoutine> routines, Map<int, String?> schedule, {
     required bool editable,
   }) => _panel(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-    Text('Programação semanal', style: _titleStyle(22)),
+    Text('Programação semanal', style: _titleStyle(AppFontSize.title)),
     const SizedBox(height: 5),
     Text(editable
         ? 'Escolha qual treino o aluno fará em cada dia.'
         : 'Dias programados para o aluno.',
-        style: const TextStyle(color: AppColors.textSecondary, fontSize: 12)),
+        style: const TextStyle(color: AppColors.textSecondary, fontSize: AppFontSize.caption)),
     const SizedBox(height: 12),
     for (var day = 1; day <= 7; day++) ...[
       Row(children: [
@@ -1554,7 +1555,7 @@ class _ProfessorFichaTreinosViewState extends State<ProfessorFichaTreinosView> {
         _heading('Montar ficha',
           description: 'Aluno: ${_student?.name ?? ''}', onBack: _back),
         _panel(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text('1. Identificação da ficha', style: _titleStyle(20)),
+          Text('1. Identificação da ficha', style: _titleStyle(AppFontSize.subtitle)),
           const SizedBox(height: 8),
           TextFormField(
             key: ValueKey('nome-ficha-$_studentId'),
@@ -1566,7 +1567,7 @@ class _ProfessorFichaTreinosViewState extends State<ProfessorFichaTreinosView> {
           ),
           const SizedBox(height: 8),
           const Text('Os treinos A/B/C/D/E fazem parte da mesma ficha semanal.',
-              style: TextStyle(color: AppColors.textSecondary, fontSize: 12)),
+              style: TextStyle(color: AppColors.textSecondary, fontSize: AppFontSize.caption)),
         ])),
         const SizedBox(height: 12),
         if (_activePlan != null) ...[
@@ -1576,13 +1577,13 @@ class _ProfessorFichaTreinosViewState extends State<ProfessorFichaTreinosView> {
             const Expanded(child: Text(
               'Você está editando uma nova versão. O aluno ainda vê a ficha antiga. '
               'Para aplicar alterações ou remoções, toque em Publicar ficha.',
-              style: TextStyle(color: AppColors.textBody, fontSize: 12),
+              style: TextStyle(color: AppColors.textBody, fontSize: AppFontSize.caption),
             )),
           ])),
           const SizedBox(height: 12),
         ],
         _panel(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text('2. Escolha o treino', style: _titleStyle(20)),
+          Text('2. Escolha o treino', style: _titleStyle(AppFontSize.subtitle)),
           const SizedBox(height: 10),
           _routineSelector(composer.routines, routine?.id,
               allowAdd: !_saving,
@@ -1595,19 +1596,19 @@ class _ProfessorFichaTreinosViewState extends State<ProfessorFichaTreinosView> {
               }),
           const SizedBox(height: 9),
           const Text('Toque na letra para abrir, criar ou configurar o aquecimento de um treino.',
-              style: TextStyle(color: AppColors.textSecondary, fontSize: 12)),
+              style: TextStyle(color: AppColors.textSecondary, fontSize: AppFontSize.caption)),
         ])),
         if (routine != null) ...[
           const SizedBox(height: 12),
           _panel(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Row(children: [
               Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text(routine.name, style: _titleStyle(23)),
+                Text(routine.name, style: _titleStyle(AppFontSize.title)),
                 if (routine.focus.isNotEmpty)
                   Text(routine.focus, style: const TextStyle(
                       color: AppColors.textSecondary)),
                 Text('${routine.estimatedMinutes} min estimados',
-                    style: const TextStyle(fontSize: 12,
+                    style: const TextStyle(fontSize: AppFontSize.caption,
                         color: AppColors.textSecondary)),
                 if (routine.warmupInstructions.trim().isNotEmpty) ...[
                   const SizedBox(height: 9),
@@ -1615,7 +1616,7 @@ class _ProfessorFichaTreinosViewState extends State<ProfessorFichaTreinosView> {
                     style: TextStyle(fontWeight: FontWeight.w700, color: AppColors.primary)),
                   const SizedBox(height: 3),
                   Text(routine.warmupInstructions,
-                    style: const TextStyle(color: AppColors.textBody, fontSize: 13)),
+                    style: const TextStyle(color: AppColors.textBody, fontSize: AppFontSize.caption)),
                 ],
               ])),
               IconButton(
@@ -1628,7 +1629,7 @@ class _ProfessorFichaTreinosViewState extends State<ProfessorFichaTreinosView> {
             const Divider(height: 22),
             Row(children: [
               Expanded(child: Text('3. Exercícios do Treino ${routine.letter}',
-                  style: _titleStyle(20))),
+                  style: _titleStyle(AppFontSize.subtitle))),
               _tag('${routine.exercises.length} itens'),
             ]),
             const SizedBox(height: 10),
@@ -1724,7 +1725,7 @@ class _ProfessorFichaTreinosViewState extends State<ProfessorFichaTreinosView> {
         const SizedBox(height: 8),
         const Text('As alterações substituem a ficha do aluno somente depois de publicar. A versão anterior fica preservada no histórico.',
             textAlign: TextAlign.center, style: TextStyle(
-                fontSize: 12, color: AppColors.textSecondary)),
+                fontSize: AppFontSize.caption, color: AppColors.textSecondary)),
       ],
     );
   }
