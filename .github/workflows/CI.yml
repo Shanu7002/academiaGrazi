@@ -20,6 +20,11 @@ jobs:
         uses: subosito/flutter-action@44ac965b96f18d999802d4b807e3256d5a3f9fa1
         with:
           channel: "stable"
+          # Versao fixa: cada versao do Flutter fixa versoes proprias de
+          # pacotes do SDK (clock, test_api...), e o --enforce-lockfile
+          # quebra quando sai uma stable nova. Atualize junto com o
+          # pubspec.lock, em um PR proprio.
+          flutter-version: "3.47.9"
           cache: true
 
       - name: Install Dependencies
