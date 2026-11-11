@@ -1,7 +1,9 @@
 import 'package:academiagrazi/locator.dart';
 import 'package:academiagrazi/service/admin/admin_dashboard.dart';
 import 'package:academiagrazi/service/admin/hourly_movement.dart';
+import 'package:academiagrazi/service/units/unit_service.dart';
 import 'package:academiagrazi/view/admin/admin_home_view.dart';
+import 'package:academiagrazi/view/admin/units_view.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -145,6 +147,22 @@ void main() {
 
     // Ativos, remotos e inativos.
     expect(find.text('--'), findsNWidgets(3));
+  });
+
+  testWidgets('atalho Blocos abre a tela de blocos', (tester) async {
+    locator.registerSingleton<UnitService>(
+      UnitService(db: FakeFirebaseFirestore()),
+    );
+    registerService(umAluno);
+
+    await tester.pumpWidget(const MaterialApp(home: AdminHomeView()));
+    await tester.pumpAndSettle();
+
+    await tester.ensureVisible(find.byKey(const Key('botao_blocos')));
+    await tester.tap(find.byKey(const Key('botao_blocos')));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(UnitsView), findsOneWidget);
   });
 
   testWidgets('atalhos ainda não implementados avisam com SnackBar', (

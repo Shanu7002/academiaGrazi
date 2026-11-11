@@ -4,6 +4,7 @@ import 'package:academiagrazi/service/admin/hourly_movement.dart';
 import 'package:academiagrazi/theme/app_colors.dart';
 import 'package:academiagrazi/view/admin/mocks/admin_home_mock_data.dart';
 import 'package:academiagrazi/view/admin/register_instructor_view.dart';
+import 'package:academiagrazi/view/admin/units_view.dart';
 import 'package:academiagrazi/view/components/app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -146,9 +147,14 @@ class _AdminHomeViewState extends State<AdminHomeView> {
                 ),
                 const SizedBox(height: 12),
                 _QuickAccessButton(
+                  key: const Key('botao_blocos'),
                   icon: Icons.grid_view_rounded,
                   label: 'Blocos',
-                  onPressed: () => _showSoon('Blocos'),
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const UnitsView()),
+                    );
+                  },
                 ),
                 const SizedBox(height: 12),
                 _QuickAccessButton(
