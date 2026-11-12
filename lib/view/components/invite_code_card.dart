@@ -97,7 +97,7 @@ class _InviteCodeCardState extends State<InviteCodeCard> {
           Widget content;
           if (snapshot.hasError) {
             content = Text(
-              'Não foi possível carregar o código.',
+              'Não conseguimos carregar o código agora.',
               style: GoogleFonts.barlowCondensed(
                 fontSize: AppFontSize.small,
                 color: AppColors.slateText,

@@ -1,4 +1,4 @@
-import 'package:academiagrazi/theme/app_font_size.dart';
+import 'package:academiagrazi/view/components/brand_heading.dart';
 import 'package:academiagrazi/controller/teachers/teacher_user_searcher.dart';
 import 'package:academiagrazi/locator.dart';
 import 'package:academiagrazi/models/evaluations/physical_evaluation.dart';
@@ -9,7 +9,6 @@ import 'package:academiagrazi/view/teacher/nova_avaliacao_view.dart';
 import 'package:academiagrazi/view/user/aluno_evolucao_view.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 /// Aba Evolução do professor: escolhe um aluno vinculado, acompanha as
 /// avaliações dele e registra novas.
@@ -76,7 +75,7 @@ class _ProfessorEvolucaoViewState extends State<ProfessorEvolucaoView> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Não foi possível excluir a avaliação.'),
+            content: Text('Não conseguimos excluir a avaliação agora.'),
           ),
         );
       }
@@ -93,7 +92,7 @@ class _ProfessorEvolucaoViewState extends State<ProfessorEvolucaoView> {
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return const Center(
-              child: Text('Erro de conexão ao carregar os alunos.'),
+              child: Text('Sem conexão para carregar os alunos. Tente novamente.'),
             );
           }
           if (!snapshot.hasData) {
@@ -115,14 +114,7 @@ class _ProfessorEvolucaoViewState extends State<ProfessorEvolucaoView> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Text(
-                  'Avaliações',
-                  style: GoogleFonts.barlowCondensed(
-                    fontSize: AppFontSize.headline,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.navy,
-                  ),
-                ),
+                BrandHeading('Avaliações', complement: 'Evolução dos alunos'),
                 const SizedBox(height: 8),
                 DropdownButtonFormField<String>(
                   key: ValueKey(aluno.id),

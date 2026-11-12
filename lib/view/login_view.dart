@@ -66,7 +66,7 @@ class _LandingPageState extends State<LoginView> {
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Falha ao entrar. Tente novamente.')),
+        const SnackBar(content: Text('Não conseguimos entrar agora. Tente novamente.')),
       );
     }
   }
@@ -99,7 +99,7 @@ class _LandingPageState extends State<LoginView> {
         content: Text(
           success
               ? 'Um link de recuperação foi enviado para seu e-mail.'
-              : 'Não foi possível processar a solicitação. Verifique o e-mail.',
+              : 'Não conseguimos processar a solicitação agora. Verifique o e-mail.',
         ),
       ),
     );
@@ -178,16 +178,21 @@ class _LandingPageState extends State<LoginView> {
     );
   }
 
+  /// Logo vertical da marca (símbolo + GRAZI BRAZ) em cor única verde,
+  /// versão aprovada no manual. O arquivo é amarelo; sobre fundo claro o
+  /// amarelo fica ilegível, então é recolorido.
   Widget _buildHeader() {
-    return const Align(
+    return Align(
       alignment: Alignment.centerLeft,
-      child: Text(
-        'GRAZI BRAZ',
-        style: TextStyle(
-          fontSize: AppFontSize.title,
-          fontWeight: FontWeight.w900,
-          color: _primaryDarkGreen,
-          letterSpacing: -0.5,
+      child: Semantics(
+        label: 'Grazi Braz',
+        image: true,
+        child: Image.asset(
+          'assets/logoLogin.png',
+          key: const Key('logo_login'),
+          height: 56,
+          color: AppColors.primary,
+          colorBlendMode: BlendMode.srcIn,
         ),
       ),
     );

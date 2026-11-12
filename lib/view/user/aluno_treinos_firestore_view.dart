@@ -152,7 +152,7 @@ class _AlunoTreinosFirestoreViewState extends State<AlunoTreinosFirestoreView> {
         ),
       );
     } catch (_) {
-      _avisar('Não foi possível abrir o treino. Tente novamente.');
+      _avisar('Não conseguimos abrir o treino agora. Tente novamente.');
     } finally {
       if (mounted) {
         setState(() => _opening = false);
@@ -200,7 +200,7 @@ class _AlunoTreinosFirestoreViewState extends State<AlunoTreinosFirestoreView> {
           existingSessionId: sessionId, service: _sessions),
       ));
     } catch (_) {
-      _avisar('Não foi possível abrir o treino em casa. Confira a conexão.');
+      _avisar('Não conseguimos abrir o treino em casa agora. Confira a conexão.');
     } finally {
       if (mounted) { setState(() => _opening = false); _refreshPending(); }
     }
@@ -252,7 +252,7 @@ class _AlunoTreinosFirestoreViewState extends State<AlunoTreinosFirestoreView> {
         if (snapshot.hasError) {
           return _estado(
             icon: Icons.cloud_off_outlined,
-            title: 'Não foi possível carregar os treinos',
+            title: 'Não conseguimos carregar os treinos agora',
             message:
                 'Verifique a conexão e as permissões da sua ficha no Firebase.',
           );

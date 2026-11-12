@@ -28,7 +28,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(
-      find.text('Não foi possível carregar seu histórico.'),
+      find.text('Não conseguimos carregar seu histórico agora.'),
       findsOneWidget,
     );
     expect(find.text('Tentar novamente'), findsOneWidget);

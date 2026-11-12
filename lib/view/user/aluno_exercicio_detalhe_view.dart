@@ -1,3 +1,4 @@
+import 'package:academiagrazi/view/components/brand_heading.dart';
 import 'package:academiagrazi/theme/app_font_size.dart';
 import 'package:academiagrazi/theme/app_colors.dart';
 import 'package:academiagrazi/view/components/exercise_details_sheet.dart';
@@ -380,14 +381,7 @@ class _AlunoExercicioDetalheViewState extends State<AlunoExercicioDetalheView> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Orientações',
-          style: GoogleFonts.barlowCondensed(
-            color: AppColors.textPrimary,
-            fontSize: AppFontSize.title,
-            fontWeight: FontWeight.w800,
-          ),
-        ),
+        BrandHeading('Orientações', level: BrandHeadingLevel.section),
         const SizedBox(height: 10),
         Container(
           width: double.infinity,
@@ -414,14 +408,7 @@ class _AlunoExercicioDetalheViewState extends State<AlunoExercicioDetalheView> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Séries',
-          style: GoogleFonts.barlowCondensed(
-            color: AppColors.textPrimary,
-            fontSize: AppFontSize.title,
-            fontWeight: FontWeight.w800,
-          ),
-        ),
+        BrandHeading('Séries', level: BrandHeadingLevel.section),
         const SizedBox(height: 10),
         Container(
           width: double.infinity,

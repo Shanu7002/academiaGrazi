@@ -1,3 +1,4 @@
+import 'package:academiagrazi/view/components/brand_heading.dart';
 import 'package:academiagrazi/theme/app_font_size.dart';
 import 'package:academiagrazi/models/training/training_session.dart';
 import 'package:academiagrazi/service/training/exercise_catalog_service.dart';
@@ -100,7 +101,7 @@ class _AlunoSessaoTreinoViewState extends State<AlunoSessaoTreinoView> {
       if (!mounted) return;
       setState(() {
         _erro =
-            'Não foi possível abrir este treino. '
+            'Não conseguimos abrir este treino agora. '
             'Verifique sua conexão ou retome a sessão anterior.';
         _carregando = false;
       });
@@ -199,7 +200,7 @@ class _AlunoSessaoTreinoViewState extends State<AlunoSessaoTreinoView> {
       if (!mounted) return;
       setState(() => _session = updated);
     } catch (_) {
-      _avisar('Não foi possível salvar esta série. Tente novamente.');
+      _avisar('Não conseguimos salvar esta série agora. Tente novamente.');
     } finally {
       if (mounted) setState(() => _salvando = false);
     }
@@ -218,7 +219,7 @@ class _AlunoSessaoTreinoViewState extends State<AlunoSessaoTreinoView> {
       if (!mounted) return;
       setState(() => _session = updated);
     } catch (_) {
-      _avisar('Não foi possível atualizar o aquecimento.');
+      _avisar('Não conseguimos atualizar o aquecimento agora.');
     } finally {
       if (mounted) setState(() => _salvando = false);
     }
@@ -268,7 +269,7 @@ class _AlunoSessaoTreinoViewState extends State<AlunoSessaoTreinoView> {
       if (!mounted) return;
       Navigator.of(context).pop(true);
     } catch (_) {
-      _avisar('Não foi possível finalizar o treino. Tente novamente.');
+      _avisar('Não conseguimos finalizar o treino agora. Tente novamente.');
     } finally {
       if (mounted) setState(() => _salvando = false);
     }
@@ -320,9 +321,7 @@ class _AlunoSessaoTreinoViewState extends State<AlunoSessaoTreinoView> {
                 border: Border.all(color: AppColors.border)),
               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 Row(children: [
-                  Expanded(child: Text('SEU PROGRESSO', style:
-                      GoogleFonts.barlowCondensed(fontSize: AppFontSize.title,
-                        fontWeight: FontWeight.w800, color: AppColors.textPrimary))),
+                  Expanded(child: BrandHeading('Seu progresso', level: BrandHeadingLevel.section)),
                   Container(padding: const EdgeInsets.all(9),
                     decoration: const BoxDecoration(color: AppColors.primaryActionSurface,
                       shape: BoxShape.circle),
@@ -363,9 +362,7 @@ class _AlunoSessaoTreinoViewState extends State<AlunoSessaoTreinoView> {
               ]),
             ),
             const SizedBox(height: 22),
-            Text('EXERCÍCIOS', style: GoogleFonts.barlowCondensed(
-              fontSize: AppFontSize.title, fontWeight: FontWeight.w800,
-              color: AppColors.textPrimary)),
+            BrandHeading('Exercícios', level: BrandHeadingLevel.section),
             const SizedBox(height: 10),
             for (var i = 0; i < session.exercises.length; i++)
               _exercicio(session.exercises[i], i + 1),

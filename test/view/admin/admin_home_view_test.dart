@@ -118,7 +118,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(
-        noCard(find.text('Não foi possível carregar os alertas.')),
+        noCard(find.text('Não conseguimos carregar os alertas agora.')),
         findsOneWidget,
       );
 
@@ -183,7 +183,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(
-        noCard(find.text('Não foi possível carregar a movimentação.')),
+        noCard(find.text('Não conseguimos carregar a movimentação agora.')),
         findsOneWidget,
       );
 
@@ -213,7 +213,7 @@ void main() {
     await tester.pumpWidget(const MaterialApp(home: AdminHomeView()));
     await tester.pumpAndSettle();
 
-    expect(find.text('Visão Geral'), findsOneWidget);
+    expect(find.text('VISÃO GERAL / Hoje'), findsOneWidget);
     Finder valor(String card, String texto) =>
         find.descendant(of: find.byKey(Key(card)), matching: find.text(texto));
     // Ativos = total − inativos.
@@ -221,8 +221,8 @@ void main() {
     expect(valor('card_alunos_remotos', '24'), findsOneWidget);
     expect(valor('card_alunos_inativos', '8'), findsOneWidget);
     expect(find.text('+4%'), findsOneWidget);
-    expect(find.text('Acesso Rápido'), findsOneWidget);
-    expect(find.text('Alertas Operacionais'), findsOneWidget);
+    expect(find.text('ACESSO RÁPIDO'), findsOneWidget);
+    expect(find.text('ALERTAS / Operação'), findsOneWidget);
   });
 
   testWidgets('mostra -- quando a busca de alunos falha', (tester) async {

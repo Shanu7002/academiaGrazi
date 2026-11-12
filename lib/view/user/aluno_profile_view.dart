@@ -1,3 +1,4 @@
+import 'package:academiagrazi/view/components/brand_heading.dart';
 import 'package:academiagrazi/theme/app_font_size.dart';
 import 'package:academiagrazi/theme/app_colors.dart';
 import 'package:academiagrazi/view/preferences_service.dart';
@@ -195,7 +196,7 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Não foi possível atualizar a foto. Tente novamente.'),
+          content: Text('Não conseguimos atualizar a foto agora. Tente novamente.'),
         ),
       );
     } finally {
@@ -253,14 +254,7 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text(
-                    'Meu Perfil',
-                    style: GoogleFonts.barlowCondensed(
-                      fontSize: AppFontSize.headline,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.primaryDark,
-                    ),
-                  ),
+                  BrandHeading('Perfil', complement: 'Seus dados'),
                   const SizedBox(height: 4),
                   Text(
                     user.type == UserType.admin
@@ -629,9 +623,10 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
                                                 ).showSnackBar(
                                                   const SnackBar(
                                                     content: Text(
-                                                      'Falha ao salvar. Tente novamente.',
+                                                      'Não conseguimos salvar agora. Tente novamente.',
                                                     ),
-                                                    backgroundColor: AppColors.danger,
+                                                    backgroundColor:
+                                                        AppColors.danger,
                                                   ),
                                                 );
                                               }
@@ -852,9 +847,10 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
                                                 ).showSnackBar(
                                                   const SnackBar(
                                                     content: Text(
-                                                      'Falha ao salvar contato. Tente novamente.',
+                                                      'Não conseguimos salvar o contato agora. Tente novamente.',
                                                     ),
-                                                    backgroundColor: AppColors.danger,
+                                                    backgroundColor:
+                                                        AppColors.danger,
                                                   ),
                                                 );
                                               }
@@ -960,7 +956,7 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
                         const Divider(height: 1, color: AppColors.border),
                         _PreferenceSwitch(
                           icon: Icons.notifications_active_outlined,
-                          title: 'Avisos do Prof. Marcos',
+                          title: 'Avisos do seu professor',
                           type: PreferenceType.professorNotices,
                         ),
                         const Divider(height: 1, color: AppColors.border),
@@ -1518,8 +1514,10 @@ abstract final class _ProfileText {
     fontWeight: FontWeight.w700,
   );
 
-  static TextStyle get input =>
-      GoogleFonts.barlowCondensed(color: AppColors.textPrimary, fontSize: AppFontSize.small);
+  static TextStyle get input => GoogleFonts.barlowCondensed(
+    color: AppColors.textPrimary,
+    fontSize: AppFontSize.small,
+  );
 
   static TextStyle get listTitle => GoogleFonts.barlowCondensed(
     color: AppColors.textPrimary,

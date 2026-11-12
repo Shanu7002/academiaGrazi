@@ -1,3 +1,4 @@
+import 'package:academiagrazi/view/components/brand_heading.dart';
 import 'package:academiagrazi/theme/app_font_size.dart';
 import 'package:academiagrazi/controller/users/register_instructor.dart';
 import 'package:academiagrazi/locator.dart';
@@ -67,7 +68,7 @@ class _RegisterInstructorViewState extends State<RegisterInstructorView> {
 
     if (admin == null) {
       setState(() => _isLoading = false);
-      _showMessage('Não foi possível carregar os dados do administrador.');
+      _showMessage('Não conseguimos carregar os dados do administrador agora.');
       return;
     }
 
@@ -112,7 +113,7 @@ class _RegisterInstructorViewState extends State<RegisterInstructorView> {
             'Verifique se as regras do Firestore foram publicadas.';
       case InstructorRegistrationResult.success:
       case InstructorRegistrationResult.unknown:
-        return 'Não foi possível cadastrar o professor. Tente novamente.';
+        return 'Não conseguimos cadastrar o professor agora. Tente novamente.';
     }
   }
 
@@ -252,15 +253,7 @@ class _RegisterInstructorViewState extends State<RegisterInstructorView> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text(
-                      'CADASTRAR PROFESSOR',
-                      style: GoogleFonts.barlowCondensed(
-                        fontWeight: FontWeight.w700,
-                        fontSize: AppFontSize.headline,
-                        color: AppColors.primary,
-                        letterSpacing: .4,
-                      ),
-                    ),
+                    BrandHeading('Cadastrar', complement: 'Novo professor'),
                     const SizedBox(height: 6),
                     Text(
                       'Crie o acesso de um novo professor da academia. Ele vai '

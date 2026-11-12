@@ -1,3 +1,4 @@
+import 'package:academiagrazi/view/components/brand_heading.dart';
 import 'package:academiagrazi/theme/app_font_size.dart';
 import 'package:academiagrazi/models/training/home_workout_plan.dart';
 import 'package:academiagrazi/service/training/exercise_catalog_service.dart';
@@ -50,8 +51,7 @@ class _AlunoTreinoEmCasaViewState extends State<AlunoTreinoEmCasaView> {
       backgroundColor: Colors.white, foregroundColor: AppColors.primary),
     body: Center(child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 480),
       child: ListView(padding: const EdgeInsets.fromLTRB(16, 16, 16, 40), children: [
-        const Text('Sua ficha para treinar em casa', style: TextStyle(
-          fontSize: AppFontSize.title, fontWeight: FontWeight.w800, color: AppColors.textPrimary)),
+        BrandHeading('Treino em casa', complement: 'Sua ficha'),
         const SizedBox(height: 7),
         const Text('Exercícios prescritos pelo seu professor. '
           'Você pode realizá-los nos dias adequados à sua rotina.'),

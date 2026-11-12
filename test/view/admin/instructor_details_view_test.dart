@@ -126,7 +126,7 @@ void main() {
     expect(find.text('Marcos Silva'), findsOneWidget);
     expect(find.text('marcos@grazi.com'), findsOneWidget);
     expect(find.text('4821'), findsOneWidget);
-    expect(find.text('Alunos (2)'), findsOneWidget);
+    expect(find.text('ALUNOS (2)'), findsOneWidget);
     expect(find.text('2/30'), findsOneWidget);
     expect(find.text('Ana Souza'), findsOneWidget);
     expect(
@@ -184,7 +184,7 @@ void main() {
       () async => InstructorDetails(instructor: instructor, students: const []),
     );
 
-    expect(find.text('Alunos (0)'), findsOneWidget);
+    expect(find.text('ALUNOS (0)'), findsOneWidget);
     expect(find.textContaining('Nenhum aluno vinculado'), findsOneWidget);
     expect(find.byKey(const Key('campo_busca_aluno')), findsNothing);
   });

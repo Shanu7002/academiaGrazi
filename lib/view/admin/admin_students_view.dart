@@ -77,7 +77,7 @@ class _AdminStudentsViewState extends State<AdminStudentsView> {
                     debugPrint('Erro ao carregar alunos: ${snapshot.error}');
                     return _Message(
                       icon: Icons.cloud_off_outlined,
-                      text: 'Não foi possível carregar os alunos.',
+                      text: 'Não conseguimos carregar os alunos agora.',
                       action: TextButton(
                         key: const Key('botao_tentar_alunos'),
                         onPressed: _reload,

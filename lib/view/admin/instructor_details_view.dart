@@ -1,3 +1,4 @@
+import 'package:academiagrazi/view/components/brand_heading.dart';
 import 'package:academiagrazi/theme/app_font_size.dart';
 import 'package:academiagrazi/locator.dart';
 import 'package:academiagrazi/service/admin/admin_dashboard.dart';
@@ -81,7 +82,7 @@ class _InstructorDetailsViewState extends State<InstructorDetailsView> {
                 return _CenteredMessage(
                   icon: Icons.cloud_off_outlined,
                   message:
-                      'Não foi possível carregar o professor. '
+                      'Não conseguimos carregar o professor agora. '
                       'Tente novamente.',
                   actionLabel: 'Tentar novamente',
                   onAction: _reload,
@@ -372,13 +373,10 @@ class _WorkloadCard extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: Text(
-                  'Carga de Trabalho',
-                  style: GoogleFonts.barlowCondensed(
-                    fontSize: AppFontSize.title,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.primaryDark,
-                  ),
+                child: BrandHeading(
+                  'Carga',
+                  complement: 'De trabalho',
+                  level: BrandHeadingLevel.section,
                 ),
               ),
               Container(
@@ -524,14 +522,7 @@ class _SectionTitle extends StatelessWidget {
       decoration: const BoxDecoration(
         border: Border(bottom: BorderSide(color: AppColors.border)),
       ),
-      child: Text(
-        text,
-        style: GoogleFonts.barlowCondensed(
-          fontSize: AppFontSize.title,
-          fontWeight: FontWeight.bold,
-          color: AppColors.primaryDark,
-        ),
-      ),
+      child: BrandHeading(text, level: BrandHeadingLevel.section),
     );
   }
 }

@@ -1,3 +1,4 @@
+import 'package:academiagrazi/view/components/brand_heading.dart';
 import 'package:academiagrazi/theme/app_font_size.dart';
 import 'package:academiagrazi/theme/app_colors.dart';
 import 'package:academiagrazi/view/user/aluno_exercicio_detalhe_view.dart';
@@ -323,14 +324,7 @@ class _AlunoTreinoDiaViewState extends State<AlunoTreinoDiaView> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Seu Progresso',
-                  style: GoogleFonts.barlowCondensed(
-                    color: AppColors.textPrimary,
-                    fontSize: AppFontSize.title,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
+                BrandHeading('Seu progresso', level: BrandHeadingLevel.section),
                 const SizedBox(height: 4),
                 Text(
                   '$_quantidadeConcluida de $_totalExercicios '

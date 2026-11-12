@@ -144,7 +144,7 @@ void main() {
     await pumpLoginView(tester);
     await submitLogin(tester);
 
-    expect(find.text('Falha ao entrar. Tente novamente.'), findsOneWidget);
+    expect(find.text('Não conseguimos entrar agora. Tente novamente.'), findsOneWidget);
   });
 
   testWidgets(
@@ -279,7 +279,7 @@ void main() {
 
     expect(
       find.text(
-        'Não foi possível processar a solicitação. Verifique o e-mail.',
+        'Não conseguimos processar a solicitação agora. Verifique o e-mail.',
       ),
       findsOneWidget,
     );

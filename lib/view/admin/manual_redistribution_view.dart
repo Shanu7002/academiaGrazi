@@ -119,7 +119,7 @@ class _ManualRedistributionViewState extends State<ManualRedistributionView> {
     } catch (error) {
       debugPrint('Erro ao mover alunos: $error');
       if (!mounted) return;
-      _showMessage('Não foi possível mover os alunos. Tente novamente.');
+      _showMessage('Não conseguimos mover os alunos agora. Tente novamente.');
     } finally {
       if (mounted) setState(() => _saving = false);
     }
@@ -144,7 +144,7 @@ class _ManualRedistributionViewState extends State<ManualRedistributionView> {
                   if (error != null) {
                     debugPrint('Erro ao carregar redistribuição: $error');
                     return _Message(
-                      text: 'Não foi possível carregar alunos e professores.',
+                      text: 'Não conseguimos carregar alunos e professores agora.',
                       action: TextButton(
                         key: const Key('botao_tentar_redistribuicao_manual'),
                         onPressed: _reload,

@@ -74,7 +74,7 @@ class _GymClassesViewState extends State<GymClassesView> {
     } catch (error) {
       debugPrint('Erro ao salvar aula: $error');
       if (!mounted) return;
-      _showMessage('Não foi possível salvar a aula. Tente novamente.');
+      _showMessage('Não conseguimos salvar a aula agora. Tente novamente.');
     }
   }
 
@@ -137,7 +137,7 @@ class _GymClassesViewState extends State<GymClassesView> {
   Widget _error() {
     return _CenteredMessage(
       icon: Icons.cloud_off_outlined,
-      text: 'Não foi possível carregar a grade de aulas.',
+      text: 'Não conseguimos carregar a grade de aulas agora.',
       action: TextButton(
         key: const Key('botao_tentar_aulas'),
         onPressed: _reload,

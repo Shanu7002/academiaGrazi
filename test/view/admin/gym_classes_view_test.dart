@@ -179,7 +179,7 @@ void main() {
     await abrir(tester);
 
     expect(
-      find.text('Não foi possível carregar a grade de aulas.'),
+      find.text('Não conseguimos carregar a grade de aulas agora.'),
       findsOneWidget,
     );
 

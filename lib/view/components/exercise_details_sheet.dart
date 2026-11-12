@@ -1,3 +1,4 @@
+import 'package:academiagrazi/view/components/brand_heading.dart';
 import 'package:academiagrazi/theme/app_font_size.dart';
 import 'package:academiagrazi/service/training/student_exercise_presentation.dart';
 import 'package:academiagrazi/theme/app_colors.dart';
@@ -114,14 +115,7 @@ class ExerciseDetailsSheet extends StatelessWidget {
                 ),
               ],
               const SizedBox(height: 18),
-              Text(
-                'Orientações',
-                style: GoogleFonts.barlowCondensed(
-                  color: AppColors.textPrimary,
-                  fontSize: AppFontSize.title,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
+              BrandHeading('Orientações', level: BrandHeadingLevel.section),
               const SizedBox(height: 6),
               Text(
                 guidance.isEmpty

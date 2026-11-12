@@ -305,6 +305,8 @@ Manual completo: [`docs/MANUAL_DE_MARCA.md`](docs/MANUAL_DE_MARCA.md). Em confli
 - Humor leve só em opções e enquetes. Temas: disciplina, propósito, constância, bem-estar, comunidade, saúde.
 - pt-BR; frases de impacto em inglês só pontualmente.
 - Mensagens de erro e estados vazios também seguem o tom: dizem o que aconteceu e o que fazer, sem culpar o usuário. Textos legais (termos, LGPD) não são reescritos.
+- Padrão de falha: `Não conseguimos <ação> agora. <o que fazer>` (ex.: "Não conseguimos salvar o bloco agora. Tente novamente."). O erro técnico vai só para o `debugPrint`; **nunca** aparece na tela (`$error`, `Bad state:`…).
+- Todo texto visível com acentuação correta.
 
 **Tipografia.** Fonte única **Barlow Condensed** (`GoogleFonts.barlowCondensed`; o `AppTheme` já define o padrão). Não use Inter, Anton nem outra família.
 - Títulos: SemiBold/Bold, **CAIXA ALTA**, tracking levemente aberto (`letterSpacing` ~0,6–1).
@@ -324,6 +326,8 @@ Manual completo: [`docs/MANUAL_DE_MARCA.md`](docs/MANUAL_DE_MARCA.md). Em confli
 | `display` | 44 | números grandes de métrica |
 - Título de seção no padrão `PALAVRA EM CAIXA ALTA / Complemento em itálico` (ex.: `EVOLUÇÃO / Suas medidas`).
 - Destaque no corpo: a palavra-chave em CAIXA ALTA e/ou negrito na cor de impacto.
+- **Títulos: use sempre `BrandHeading`** (`lib/view/components/brand_heading.dart`). Ele aplica o padrão sozinho: o título em caixa alta e, depois da barra, o complemento em itálico. Use `level: BrandHeadingLevel.page` no topo da tela e `level: BrandHeadingLevel.section` nas seções. Não monte título com `Text` e estilo próprio.
+- Saudação dos painéis: `UserGreeting` (`OLÁ / Primeiro nome` de quem está logado). Nunca coloque nome fixo.
 
 **Cores** (`lib/theme/app_colors.dart`; nunca `Color(0x…)` fora de `lib/theme/`):
 

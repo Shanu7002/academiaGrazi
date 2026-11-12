@@ -56,7 +56,7 @@ void main() {
 
     await pumpView(tester);
 
-    expect(find.text('Carga da Equipe'), findsOneWidget);
+    expect(find.text('EQUIPE / Carga dos professores'), findsOneWidget);
     expect(find.text('Juliana Lima'), findsWidgets);
     expect(find.text('JL'), findsOneWidget);
     expect(find.text('Sobrecarga'), findsOneWidget);
@@ -85,7 +85,7 @@ void main() {
     });
 
     await pumpView(tester);
-    expect(find.textContaining('Não foi possível carregar'), findsOneWidget);
+    expect(find.textContaining('Não conseguimos carregar a equipe'), findsOneWidget);
 
     await tester.ensureVisible(find.text('Tentar novamente'));
     await tester.tap(find.text('Tentar novamente'));
@@ -105,7 +105,7 @@ void main() {
 
       await tester.tap(find.byKey(const Key('botao_redistribuir_alunos')));
       await tester.pumpAndSettle();
-      expect(find.text('Como redistribuir?'), findsOneWidget);
+      expect(find.text('REDISTRIBUIR / Automática ou manual'), findsOneWidget);
 
       await tester.tap(find.byKey(opcao));
       await tester.pumpAndSettle();

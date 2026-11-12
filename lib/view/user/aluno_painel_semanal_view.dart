@@ -1,3 +1,4 @@
+import 'package:academiagrazi/view/components/brand_heading.dart';
 import 'package:academiagrazi/theme/app_font_size.dart';
 import 'package:academiagrazi/models/training/training_session.dart';
 import 'package:academiagrazi/models/training/home_workout_plan.dart';
@@ -152,9 +153,7 @@ class AlunoPainelSemanalView extends StatelessWidget {
               key: const Key('aluno_painel_semanal'),
               padding: const EdgeInsets.fromLTRB(16, 20, 16, 36),
               children: [
-                Text('SEUS TREINOS', style: GoogleFonts.barlowCondensed(
-                  fontSize: AppFontSize.headline, fontWeight: FontWeight.w800,
-                  color: AppColors.textPrimary)),
+                BrandHeading('Seus treinos', complement: 'Sua semana'),
                 const SizedBox(height: 3),
                 Text('Ficha de ${data.professorNome}  •  ${data.ultimaAtualizacao}',
                   style: const TextStyle(color: AppColors.textSecondary, fontSize: AppFontSize.caption)),
