@@ -10,9 +10,8 @@ import 'package:academiagrazi/service/training/training_plan_service.dart';
 import 'package:academiagrazi/service/training/training_session_service.dart';
 import 'package:academiagrazi/theme/app_colors.dart';
 import 'package:academiagrazi/view/components/app_bar.dart';
-import 'package:academiagrazi/view/user/aluno_historico_sessoes_view.dart';
-import 'package:academiagrazi/view/user/aluno_sessao_treino_view.dart';
 import 'package:academiagrazi/view/user/aluno_painel_semanal_view.dart';
+import 'package:academiagrazi/view/user/student_workout_launcher.dart';
 import 'package:academiagrazi/view/user/ui_data/aluno_treinos_ui_data.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -84,75 +83,17 @@ class _AlunoTreinosFirestoreViewState extends State<AlunoTreinosFirestoreView> {
     setState(() => _pendingFuture = _sessions.getInProgress(id));
   }
 
-  void _avisar(String message) {
-    if (!mounted) return;
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(message)));
-  }
+  StudentWorkoutLauncher get _launcher =>
+      StudentWorkoutLauncher(plans: _plans, sessions: _sessions, homes: _homes);
 
-  Future<void> _iniciarTreino(String routineId) async {
+  /// Bloqueia toques duplicados enquanto a execucao abre e, na volta,
+  /// atualiza a sessao em andamento.
+  Future<void> _abrindo(Future<void> Function(String studentId) abrir) async {
     final studentId = _studentId;
     if (_opening || studentId == null || studentId.isEmpty) return;
     setState(() => _opening = true);
     try {
-      final pending = await _sessions.getInProgress(studentId);
-      final plan = await _plans.getActivePlan(studentId);
-      if (pending?.routineId != routineId &&
-          (plan == null || !plan.routines.any((item) => item.id == routineId))) {
-        throw StateError('A ficha publicada não está mais disponível.');
-      }
-      if (!mounted) return;
-
-      var planId = pending?.routineId == routineId ? pending!.planId : plan!.id;
-      var selectedRoutine = routineId;
-      String? existingSessionId = pending?.routineId == routineId ? pending!.id : null;
-
-      if (pending != null &&
-          (plan == null || pending.planId != plan.id || pending.routineId != routineId) &&
-          pending.routineId != routineId) {
-        final retomar = await showDialog<bool>(
-          context: context,
-          builder:
-              (dialogContext) => AlertDialog(
-                title: const Text('Você já tem um treino em andamento'),
-                content: Text(
-                  'O treino "${pending.routineName}" ainda não foi finalizado. '
-                  'Deseja continuar de onde parou?',
-                ),
-                actions: [
-                  TextButton(
-                    onPressed: () => Navigator.of(dialogContext).pop(false),
-                    child: const Text('Agora não'),
-                  ),
-                  FilledButton(
-                    onPressed: () => Navigator.of(dialogContext).pop(true),
-                    child: const Text('Continuar treino'),
-                  ),
-                ],
-              ),
-        );
-        if (!mounted || retomar != true) return;
-        planId = pending.planId;
-        selectedRoutine = pending.routineId;
-        existingSessionId = pending.id;
-      }
-
-      if (!mounted) return;
-      await Navigator.of(context).push<bool>(
-        MaterialPageRoute(
-          builder:
-              (_) => AlunoSessaoTreinoView(
-                studentId: studentId,
-                planId: planId,
-                routineId: selectedRoutine,
-                existingSessionId: existingSessionId,
-                service: _sessions,
-              ),
-        ),
-      );
-    } catch (_) {
-      _avisar('Não conseguimos abrir o treino agora. Tente novamente.');
+      await abrir(studentId);
     } finally {
       if (mounted) {
         setState(() => _opening = false);
@@ -161,67 +102,37 @@ class _AlunoTreinosFirestoreViewState extends State<AlunoTreinosFirestoreView> {
     }
   }
 
-  Future<void> _iniciarHome(String routineId) async {
-    final studentId = _studentId;
-    if (_opening || studentId == null || studentId.isEmpty) return;
-    setState(() => _opening = true);
-    try {
-      final home = await _homes.getCurrent(studentId);
-      if (home == null || !home.routines.any((r) => r.id == routineId)) {
-        throw StateError('Treino em casa indisponível.');
-      }
-      final pending = await _sessions.getInProgress(studentId);
-      var planId = 'home';
-      var selectedRoutine = routineId;
-      String? sessionId;
-      if (pending != null) {
-        if (pending.planId == 'home' && pending.routineId == routineId) {
-          sessionId = pending.id;
-        } else {
-          if (!mounted) return;
-          final resume = await showDialog<bool>(context: context, builder: (ctx) => AlertDialog(
-            title: const Text('Já existe um treino em andamento'),
-            content: Text('Deseja retomar "${pending.routineName}" antes de iniciar outro?'),
-            actions: [
-              TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Agora não')),
-              FilledButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Retomar')),
-            ],
-          ));
-          if (resume != true || !mounted) return;
-          planId = pending.planId;
-          selectedRoutine = pending.routineId;
-          sessionId = pending.id;
-        }
-      }
-      if (!mounted) return;
-      await Navigator.of(context).push(MaterialPageRoute<void>(
-        builder: (_) => AlunoSessaoTreinoView(studentId: studentId,
-          planId: planId, routineId: selectedRoutine,
-          existingSessionId: sessionId, service: _sessions),
-      ));
-    } catch (_) {
-      _avisar('Não conseguimos abrir o treino em casa agora. Confira a conexão.');
-    } finally {
-      if (mounted) { setState(() => _opening = false); _refreshPending(); }
-    }
-  }
+  Future<void> _iniciarTreino(String routineId) => _abrindo(
+    (studentId) => _launcher.startRoutine(
+      context,
+      studentId: studentId,
+      routineId: routineId,
+    ),
+  );
+
+  Future<void> _iniciarHome(String routineId) => _abrindo(
+    (studentId) => _launcher.startHomeRoutine(
+      context,
+      studentId: studentId,
+      routineId: routineId,
+    ),
+  );
 
   void _abrirHome(HomeWorkoutPlan plan) {
-    Navigator.of(context).push(MaterialPageRoute<void>(
-      builder: (_) => AlunoTreinoEmCasaView(plan: plan,
-        onStart: _iniciarHome, onHistory: _abrirHistorico),
-    ));
+    final id = _studentId;
+    if (id == null || id.isEmpty) return;
+    _launcher.openHome(
+      context,
+      studentId: id,
+      plan: plan,
+      onStart: _iniciarHome,
+    );
   }
 
   void _abrirHistorico() {
     final id = _studentId;
     if (id == null || id.isEmpty) return;
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder:
-            (_) => AlunoHistoricoSessoesView(studentId: id, service: _sessions),
-      ),
-    );
+    _launcher.openHistory(context, studentId: id);
   }
 
   @override

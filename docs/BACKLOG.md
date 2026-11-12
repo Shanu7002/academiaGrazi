@@ -32,7 +32,7 @@ O arquivo `docs/backlog-jira.csv` é gerado a partir deste documento para import
 | Treinos / execução / detalhe do exercício (aluno) | 🔴 Mock | Tudo vem de `TreinosMockData`; nada é persistido |
 | Evolução (aluno) | 🔴 Mock | Valores fixos; botões de período sem ação |
 | Evolução (professor) | 🔴 Placeholder | "Tela em desenvolvimento" |
-| Home do aluno | 🔴 Mock | Todos os botões com `onPressed: () {}` |
+| Home do aluno | ✅ Real (GB-090 a GB-093) | Treino do dia, professor, sequência, variação de peso e próxima aula vêm do Firestore. Atalho "Aulas" oculto até o GB-101; a próxima avaliação entra quando houver agendamento (GB-061) |
 | Aba Treinos do admin | 🔴 Errada | Mostra a tela de treinos do aluno com mock |
 | Notificações | 🔴 Inexistente | Sino sem ação em todas as telas |
 | Unidades (blocos), aulas, avaliações, sessões | 🔴 Inexistente no banco | — |
@@ -55,6 +55,7 @@ O arquivo `docs/backlog-jira.csv` é gerado a partir deste documento para import
 | Treinar em casa | **Mantido** (aba/ficha "Treinar em casa", treinos complementares, card "Remotos"). Sem vídeo, pela decisão acima. |
 | **Sai** do app | Card "Plano e Mensalidade", atalho "Finanças", botão "Mensagem", "Redistribuir alunos". |
 | IA | Continua como card desabilitado "Recurso futuro" (restrição 7). Nenhuma tarefa. |
+| Home do aluno (GB-090 a GB-093) | Entregue num único PR. "Iniciar treino" abre a execução direto, com o mesmo fluxo da aba Treinos (`StudentWorkoutLauncher`). O treino em destaque é o da programação semanal de hoje. O resumo de evolução mostra a variação de **peso** entre as duas últimas avaliações. O atalho "Aulas" fica **oculto** até existir a grade do aluno (GB-101). |
 
 ### Pendências de definição (confirmar com o time antes de implementar o card)
 

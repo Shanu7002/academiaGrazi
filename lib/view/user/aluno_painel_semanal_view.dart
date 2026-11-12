@@ -58,20 +58,12 @@ class AlunoPainelSemanalView extends StatelessWidget {
     TreinoUi? treinoDoDia,
     DateTime dia,
     TrainingSession? finalizadoHoje,
-  ) {
-    final pendente = emAndamento;
-    if (treinoDoDia == null ||
-        pendente == null ||
-        pendente.status != TrainingSessionStatus.inProgress ||
-        pendente.routineId != treinoDoDia.id ||
-        !StudentWeeklyProgress.sameDay(pendente.startedAt.toLocal(), dia)) {
-      return false;
-    }
-    // Se uma sessao desse treino ja foi finalizada depois da pendencia,
-    // nao volte a anunciar a tentativa antiga como treino em andamento.
-    final fim = finalizadoHoje?.finishedAt;
-    return fim == null || fim.isBefore(pendente.startedAt);
-  }
+  ) => StudentWeeklyProgress.isOpenToday(
+    pending: emAndamento,
+    routineId: treinoDoDia?.id,
+    day: dia,
+    finishedToday: finalizadoHoje,
+  );
 
   bool _podeIniciarHoje(TreinoUi treino) {
     final dia = _hoje;

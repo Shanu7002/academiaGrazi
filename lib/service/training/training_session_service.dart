@@ -125,6 +125,25 @@ class TrainingSessionService {
     return sessions.first;
   }
 
+  /// Sessao em andamento mais recente, atualizada em tempo real (ex.: a home
+  /// do aluno continua montada enquanto ele treina pela aba Treinos).
+  Stream<TrainingSession?> watchInProgress(String studentId) {
+    _requireId(studentId, 'studentId');
+    return _sessions(studentId)
+        .where('status', isEqualTo: TrainingSessionStatus.inProgress.name)
+        .snapshots()
+        .map((snapshot) {
+          TrainingSession? latest;
+          for (final doc in snapshot.docs) {
+            final session = TrainingSession.fromMap(doc.data(), doc.id);
+            if (latest == null || session.startedAt.isAfter(latest.startedAt)) {
+              latest = session;
+            }
+          }
+          return latest;
+        });
+  }
+
   Future<TrainingSession?> getSession(
     String studentId,
     String sessionId,
