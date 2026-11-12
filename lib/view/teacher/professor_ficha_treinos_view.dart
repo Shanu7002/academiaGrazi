@@ -45,7 +45,7 @@ class ProfessorFichaTreinosView extends StatefulWidget {
   final TrainingSessionService? sessionService;
   final VoidCallback? onVoltarInicio;
 
-  /// Pedidos de outras abas (ex.: prioridades do painel) para abrir um aluno.
+  /// Pedidos de outras telas (painel, lista de alunos) para abrir um aluno.
   final StudentOpenRequest? openRequest;
 
   const ProfessorFichaTreinosView({
@@ -149,23 +149,24 @@ class _ProfessorFichaTreinosViewState extends State<ProfessorFichaTreinosView> {
     super.dispose();
   }
 
-  /// Abre o aluno pedido por outra aba, ou volta para a lista.
-  void _onOpenRequest() {
-    if (!mounted) return;
+  /// Abre o aluno pedido por outra tela; com `edit`, já abre a montagem.
+  Future<void> _onOpenRequest() async {
+    final request = widget.openRequest;
+    final studentId = request?.studentId;
+    if (!mounted || request == null || studentId == null) return;
+    final edit = request.edit;
     FocusManager.instance.primaryFocus?.unfocus();
-    final studentId = widget.openRequest?.studentId;
-    if (studentId == null) {
-      setState(() {
-        _selectionToken++;
-        _studentId = null;
-        _screen = _TelaProfessorTreinos.alunos;
-        _error = null;
-      });
-      return;
-    }
     // Aluno vinculado depois do carregamento: atualiza a lista também.
     if (!_students.any((student) => student.id == studentId)) _loadStudents();
-    _openStudent(studentId);
+    await _openStudent(studentId);
+    if (!mounted || !edit || _studentId != studentId || _error != null) {
+      return;
+    }
+    if (_composer != null) {
+      _openDraft();
+    } else {
+      await _newDraft(fromPublished: _activePlan != null);
+    }
   }
 
   Future<void> _loadStudents() async {

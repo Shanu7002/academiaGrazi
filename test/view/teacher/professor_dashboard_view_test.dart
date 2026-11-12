@@ -2,6 +2,7 @@ import 'package:academiagrazi/locator.dart';
 import 'package:academiagrazi/service/teachers/teacher_dashboard.dart';
 import 'package:academiagrazi/service/units/instructor_shift_service.dart';
 import 'package:academiagrazi/service/units/unit_service.dart';
+import 'package:academiagrazi/view/teacher/lista_alunos.dart';
 import 'package:academiagrazi/view/teacher/professor_dashboard_view.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
@@ -84,7 +85,7 @@ void main() {
 
   Future<void> pumpDashboard(
     WidgetTester tester, {
-    VoidCallback? onOpenStudents,
+    ValueChanged<String>? onEditStudentTraining,
     ValueChanged<String>? onOpenStudentTraining,
     ValueChanged<String>? onOpenStudentAssessments,
   }) async {
@@ -94,7 +95,7 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         home: ProfessorDashboardView(
-          onOpenStudents: onOpenStudents,
+          onEditStudentTraining: onEditStudentTraining,
           onOpenStudentTraining: onOpenStudentTraining,
           onOpenStudentAssessments: onOpenStudentAssessments,
         ),
@@ -173,20 +174,18 @@ void main() {
     await addStudent('risco', trainedDaysAgo: 15);
     await addStudent('sem-ficha', trainedDaysAgo: 1, hasPlan: false);
     await addStudent('avaliar', trainedDaysAgo: 1, assessedDaysAgo: 100);
-    var studentsOpened = 0;
     final training = <String>[];
+    final edits = <String>[];
     final assessments = <String>[];
 
     await pumpDashboard(
       tester,
-      onOpenStudents: () => studentsOpened++,
       onOpenStudentTraining: training.add,
+      onEditStudentTraining: edits.add,
       onOpenStudentAssessments: assessments.add,
     );
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byKey(const Key('card_alunos_ativos')));
-    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('card_prioridade_noPlan_sem-ficha')));
     await tester.pumpAndSettle();
     await tester.tap(
@@ -195,19 +194,31 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('card_prioridade_atRisk_risco')));
     await tester.pumpAndSettle();
+    expect(training, ['sem-ficha', 'risco']);
+    expect(assessments, ['avaliar']);
 
-    // O card de risco abre a lista dos alunos em risco.
+    // O card Alunos abre a lista completa.
+    await tester.tap(find.byKey(const Key('card_alunos_ativos')));
+    await tester.pumpAndSettle();
+    expect(find.byType(ListaAlunosView), findsOneWidget);
+    expect(find.byType(CardAluno), findsNWidgets(3));
+    await tester.tap(find.byKey(const Key('botao_editar_treino_sem-ficha')));
+    await tester.pumpAndSettle();
+    expect(find.byType(ListaAlunosView), findsNothing);
+    expect(edits, ['sem-ficha']);
+
+    // O card de risco abre a lista já filtrada.
     await tester.tap(find.byKey(const Key('card_risco_evasao')));
     await tester.pumpAndSettle();
-    expect(find.byKey(const Key('lista_alunos_risco')), findsOneWidget);
-    expect(find.text('15 dias sem treinar'), findsOneWidget);
-    await tester.tap(find.byKey(const Key('item_risco_risco')));
+    expect(
+      tester.widget<ChoiceChip>(find.byKey(const Key('filtro_risco'))).selected,
+      isTrue,
+    );
+    expect(find.byType(CardAluno), findsOneWidget);
+    await tester.tap(find.byKey(const Key('botao_ver_perfil_risco')));
     await tester.pumpAndSettle();
-    expect(find.byKey(const Key('lista_alunos_risco')), findsNothing);
-
-    expect(studentsOpened, 1);
+    expect(find.byType(ListaAlunosView), findsNothing);
     expect(training, ['sem-ficha', 'risco', 'risco']);
-    expect(assessments, ['avaliar']);
   });
 
   testWidgets('mostra até 5 prioridades e expande em "Ver todas"', (

@@ -27,7 +27,7 @@ O arquivo `docs/backlog-jira.csv` é gerado a partir deste documento para import
 | Home do admin | 🟡 Parcial | Só "alunos ativos" é real; o resto é `AdminHomeMockData` |
 | Equipe / detalhes do professor | 🟡 Parcial | Capacidade 30, cargo e avaliações pendentes vêm de `AdminTeamMockData` |
 | Dashboard do professor | ✅ Real (GB-070 a GB-072) | Ativos, presenças de hoje, risco de evasão e prioridades vêm do Firestore (`TeacherDashboardService`). A avaliação atrasada segue a P9 até existir agendamento (GB-060/061) |
-| Lista de alunos do professor | 🔴 Mock e sem rota | `ListaAlunosView` não é aberta por nenhuma tela |
+| Lista de alunos do professor | ✅ Real (GB-050, GB-052) | Aberta pelos cards Alunos e Risco do painel, com busca e filtros. "Editar/Montar treino" abre a montagem do aluno; "Ver perfil" abre o resumo na aba Treinos até existir o GB-051 |
 | Montagem de treino | 🟡 UI pronta | Catálogo fixo no código; "Salvar modelo" e "Atribuir" não gravam |
 | Treinos / execução / detalhe do exercício (aluno) | 🔴 Mock | Tudo vem de `TreinosMockData`; nada é persistido |
 | Evolução (aluno) | 🔴 Mock | Valores fixos; botões de período sem ação |
@@ -57,6 +57,7 @@ O arquivo `docs/backlog-jira.csv` é gerado a partir deste documento para import
 | IA | Continua como card desabilitado "Recurso futuro" (restrição 7). Nenhuma tarefa. |
 | Home do aluno (GB-090 a GB-093) | Entregue num único PR. "Iniciar treino" abre a execução direto, com o mesmo fluxo da aba Treinos (`StudentWorkoutLauncher`). O treino em destaque é o da programação semanal de hoje. O resumo de evolução mostra a variação de **peso** entre as duas últimas avaliações. O atalho "Aulas" fica **oculto** até existir a grade do aluno (GB-101). |
 | Dashboard do professor (GB-070 a GB-072) | Entregue num único PR. "Alunos ativos" conta só o status `active`. Os toques usam as telas reais: card Alunos → aba Treinos; card Risco → painel com os alunos em risco; "Ver perfil" e "Montar" → aba Treinos com o aluno aberto; "Revisar" → aba Evolução com o aluno selecionado. Sem agendamento de avaliação, "Revisar" usa a avaliação atrasada (P9). Sem validade de ficha no modelo atual, "Montar" cobre só o aluno sem ficha nem treino em casa. |
+| Lista de alunos do professor (GB-050 + GB-052) | Entregue num único PR, porque os botões da lista dependem do GB-052. O card Risco do painel abre a lista filtrada (no lugar do painel lateral). Filtros: Todos, Risco de evasão, Inativos, Avaliação pendente (P9) e uma opção por unidade dos alunos. O status mostra Ativo, Risco, Inativo ou Novo. |
 
 ### Pendências de definição (confirmar com o time antes de implementar o card)
 

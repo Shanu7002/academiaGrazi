@@ -3,6 +3,8 @@ import 'package:academiagrazi/view/components/brand_heading.dart';
 import 'package:academiagrazi/theme/app_font_size.dart';
 import 'package:academiagrazi/theme/app_colors.dart';
 import 'package:academiagrazi/service/teachers/teacher_dashboard.dart';
+import 'package:academiagrazi/service/teachers/teacher_students.dart';
+import 'package:academiagrazi/view/teacher/lista_alunos.dart';
 import 'package:academiagrazi/locator.dart';
 import 'package:academiagrazi/view/components/app_bar.dart';
 import 'package:academiagrazi/view/components/instructor_schedule_builder.dart';
@@ -12,19 +14,19 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class ProfessorDashboardView extends StatefulWidget {
-  /// Abre a lista de alunos (aba Treinos).
-  final VoidCallback? onOpenStudents;
-
   /// Abre o aluno na aba Treinos (ficha e treinos realizados).
   final ValueChanged<String>? onOpenStudentTraining;
+
+  /// Abre a montagem da ficha do aluno na aba Treinos.
+  final ValueChanged<String>? onEditStudentTraining;
 
   /// Abre o aluno na aba Evolução (avaliações físicas).
   final ValueChanged<String>? onOpenStudentAssessments;
 
   const ProfessorDashboardView({
     super.key,
-    this.onOpenStudents,
     this.onOpenStudentTraining,
+    this.onEditStudentTraining,
     this.onOpenStudentAssessments,
   });
 
@@ -81,44 +83,22 @@ class _ProfessorDashboardViewState extends State<ProfessorDashboardView> {
     _reload();
   }
 
-  void _showAtRisk(List<TeacherPriority> atRisk) {
-    showModalBottomSheet<void>(
-      context: context,
-      showDragHandle: true,
-      builder:
-          (sheetContext) => SafeArea(
-            child: ListView(
-              key: const Key('lista_alunos_risco'),
-              shrinkWrap: true,
-              padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-              children: [
-                BrandHeading(
-                  'Risco de evasão',
-                  complement: _count(atRisk.length, 'aluno', 'alunos'),
-                  level: BrandHeadingLevel.section,
-                ),
-                const SizedBox(height: 8),
-                for (final item in atRisk)
-                  ListTile(
-                    key: Key('item_risco_${item.student.id}'),
-                    contentPadding: EdgeInsets.zero,
-                    title: Text(item.student.name),
-                    subtitle: Text(
-                      '${_count(item.days ?? 0, 'dia', 'dias')} sem treinar',
-                    ),
-                    trailing: const Icon(Icons.chevron_right_rounded),
-                    onTap:
-                        widget.onOpenStudentTraining == null
-                            ? null
-                            : () {
-                              Navigator.of(sheetContext).pop();
-                              _openTraining(item.student.id);
-                            },
-                  ),
-              ],
+  /// Abre a lista de alunos (já filtrada, se for o caso) e atualiza o
+  /// painel ao voltar.
+  Future<void> _openStudents([
+    TeacherStudentFilter filter = TeacherStudentFilter.all,
+  ]) async {
+    await Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder:
+            (_) => ListaAlunosView(
+              initialFilter: filter,
+              onOpenStudent: widget.onOpenStudentTraining,
+              onEditTraining: widget.onEditStudentTraining,
             ),
-          ),
+      ),
     );
+    if (mounted) _reload();
   }
 
   static String _count(int value, String singular, String plural) =>
@@ -178,7 +158,8 @@ class _ProfessorDashboardViewState extends State<ProfessorDashboardView> {
                                 title: 'Alunos',
                                 value: _metric(loading, data?.activeStudents),
                                 description: 'Ativos',
-                                onTap: widget.onOpenStudents,
+                                onTap:
+                                    _teacherId == null ? null : _openStudents,
                               ),
                             ),
                             const SizedBox(width: 15),
@@ -206,7 +187,9 @@ class _ProfessorDashboardViewState extends State<ProfessorDashboardView> {
                           onTap:
                               data == null || data.atRisk.isEmpty
                                   ? null
-                                  : () => _showAtRisk(data.atRisk),
+                                  : () => _openStudents(
+                                    TeacherStudentFilter.atRisk,
+                                  ),
                         ),
                         const SizedBox(height: 15),
                         _DashboardMetricCard(
