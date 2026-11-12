@@ -84,7 +84,11 @@ class _MainShellState extends State<MainShell> {
                             (_) =>
                                 widget.isAdmin
                                     ? const AdminHomeView()
-                                    : const AlunoHomeView(),
+                                    : AlunoHomeView(
+                                      onOpenTrainings: () => _selecionarAba(1),
+                                      onOpenEvolution: () => _selecionarAba(2),
+                                      onOpenProfile: () => _selecionarAba(3),
+                                    ),
                       );
                     },
                   ),

@@ -37,4 +37,86 @@ void main() {
     expect(StudentWeeklyProgress.completedRoutineOnDay(
       sessions, DateTime(2026, 11, 5), 'treino-b')?.id, 'b');
   });
+
+  group('streakWeeks', () {
+    // Quinta, 12/11/2026. Semanas: 09/11 (atual), 02/11, 26/10, 19/10.
+    final now = DateTime(2026, 11, 12, 10);
+
+    test('sem treinos finalizados a sequencia e zero', () {
+      expect(StudentWeeklyProgress.streakWeeks(const [], now), 0);
+      expect(
+        StudentWeeklyProgress.streakWeeks([
+          session('aberto', DateTime(2026, 11, 10, 8),
+            status: TrainingSessionStatus.inProgress),
+        ], now),
+        0,
+      );
+    });
+
+    test('conta as semanas consecutivas ate a atual', () {
+      final sessions = [
+        session('atual', DateTime(2026, 11, 9, 7)),
+        session('anterior-1', DateTime(2026, 11, 3, 18)),
+        session('anterior-2', DateTime(2026, 11, 7, 18)),
+        session('duas-atras', DateTime(2026, 10, 26, 18)),
+        // A semana de 19/10 ficou sem treino: quebra a sequencia.
+        session('antiga', DateTime(2026, 10, 12, 18)),
+      ];
+      expect(StudentWeeklyProgress.streakWeeks(sessions, now), 3);
+    });
+
+    test('semana atual sem treino ainda nao quebra a sequencia', () {
+      final sessions = [
+        session('anterior', DateTime(2026, 11, 8, 20)), // domingo
+        session('duas-atras', DateTime(2026, 10, 27, 18)),
+      ];
+      expect(StudentWeeklyProgress.streakWeeks(sessions, now), 2);
+    });
+
+    test('uma semana inteira sem treino zera a sequencia', () {
+      final sessions = [session('velha', DateTime(2026, 10, 28, 18))];
+      expect(StudentWeeklyProgress.streakWeeks(sessions, now), 0);
+    });
+
+    test('sequencia atravessa a virada do ano', () {
+      final sessions = [
+        session('janeiro', DateTime(2027, 1, 1, 9)), // sexta
+        session('dezembro', DateTime(2026, 12, 22, 9)),
+      ];
+      expect(
+        StudentWeeklyProgress.streakWeeks(sessions, DateTime(2027, 1, 2)),
+        2,
+      );
+    });
+  });
+
+  group('isOpenToday', () {
+    final day = DateTime(2026, 11, 2, 12);
+    final pending = session('aberta', DateTime(2026, 11, 2, 10),
+      status: TrainingSessionStatus.inProgress);
+
+    test('sessao aberta hoje da mesma rotina esta em andamento', () {
+      expect(StudentWeeklyProgress.isOpenToday(
+        pending: pending, routineId: 'treino-a', day: day), isTrue);
+    });
+
+    test('sessao de outro dia, outra rotina ou sem sessao nao conta', () {
+      expect(StudentWeeklyProgress.isOpenToday(
+        pending: pending, routineId: 'treino-b', day: day), isFalse);
+      expect(StudentWeeklyProgress.isOpenToday(
+        pending: pending, routineId: 'treino-a',
+        day: DateTime(2026, 11, 3)), isFalse);
+      expect(StudentWeeklyProgress.isOpenToday(
+        pending: null, routineId: 'treino-a', day: day), isFalse);
+      expect(StudentWeeklyProgress.isOpenToday(
+        pending: pending, routineId: null, day: day), isFalse);
+    });
+
+    test('sessao superada por um treino finalizado depois dela nao conta', () {
+      final finished = session('feita', DateTime(2026, 11, 2, 11));
+      expect(StudentWeeklyProgress.isOpenToday(
+        pending: pending, routineId: 'treino-a', day: day,
+        finishedToday: finished), isFalse);
+    });
+  });
 }

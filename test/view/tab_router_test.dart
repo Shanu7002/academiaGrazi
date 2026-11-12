@@ -15,6 +15,15 @@ import 'package:academiagrazi/service/admin/admin_dashboard.dart';
 import 'package:academiagrazi/service/admin/admin_student_service.dart';
 import 'package:academiagrazi/service/evaluations/physical_evaluation_service.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
+import 'package:academiagrazi/models/training/training_exercise.dart';
+import 'package:academiagrazi/models/training/training_plan.dart';
+import 'package:academiagrazi/models/training/training_routine.dart';
+import 'package:academiagrazi/service/training/home_workout_service.dart';
+import 'package:academiagrazi/service/training/student_training_view_data_service.dart';
+import 'package:academiagrazi/service/training/training_plan_service.dart';
+import 'package:academiagrazi/service/training/training_session_service.dart';
+import 'package:academiagrazi/service/units/gym_class_service.dart';
+import 'package:academiagrazi/view/user/aluno_sessao_treino_view.dart';
 
 @GenerateMocks([
   RegisterUserService,
@@ -33,8 +42,72 @@ void main() {
   late MockUser mockFirebaseUser;
   late void Function(FlutterErrorDetails)? previousFlutterError;
 
-  setUp(() {
-    locator.reset();
+  /// Ficha com o Treino A em todos os dias, para a Home sempre ter o treino
+  /// do dia, qualquer que seja a data em que o teste roda.
+  Future<void> registerTrainingServices() async {
+    final db = FakeFirebaseFirestore();
+    await db.collection('users').doc('uid_test').set({
+      'type': 'user',
+      'name': 'Test User',
+      'email': 'test@bigtech.com',
+      'responsable': 'prof-1',
+    });
+    final plan = TrainingPlan(
+      id: 'ficha-1',
+      studentId: 'uid_test',
+      instructorId: 'prof-1',
+      name: 'Ficha semanal',
+      version: 1,
+      status: TrainingPlanStatus.published,
+      weeklySchedule: {
+        for (var day = DateTime.monday; day <= DateTime.sunday; day++)
+          day: 'treino-a',
+      },
+      routines: [
+        TrainingRoutine(
+          id: 'treino-a',
+          letter: 'A',
+          name: 'Treino A',
+          focus: 'Pernas',
+          estimatedMinutes: 40,
+          exercises: const [
+            TrainingExercise(
+              id: 'item-1',
+              catalogExerciseId: 'exercicio-1',
+              name: 'Agachamento',
+              muscleGroup: 'Pernas',
+              sets: 3,
+              repetitions: 12,
+              restSeconds: 60,
+            ),
+          ],
+        ),
+      ],
+    );
+    final student = db.collection('users').doc('uid_test');
+    await student.collection('trainingPlans').doc(plan.id).set(plan.toMap());
+    await student.collection('trainingState').doc('current').set({
+      'activePlanId': plan.id,
+      'instructorId': plan.instructorId,
+    });
+
+    final plans = TrainingPlanService(db: db);
+    locator.registerSingleton<TrainingPlanService>(plans);
+    locator.registerSingleton<TrainingSessionService>(
+      TrainingSessionService(db: db, planService: plans),
+    );
+    locator.registerSingleton<HomeWorkoutService>(HomeWorkoutService(db: db));
+    locator.registerSingleton<StudentTrainingViewDataService>(
+      StudentTrainingViewDataService(
+        planService: plans,
+        userService: RegisterUserService(db: db),
+      ),
+    );
+    locator.registerSingleton<GymClassService>(GymClassService(db: db));
+  }
+
+  setUp(() async {
+    await locator.reset();
     locator.allowReassignment = true;
 
     mockUserService = MockRegisterUserService();
@@ -58,6 +131,18 @@ void main() {
     when(mockAuth.currentUser).thenReturn(mockFirebaseUser);
     when(mockPreferencesService.dailyReminder).thenReturn(false);
     when(mockPreferencesService.professorNotices).thenReturn(true);
+
+    await registerTrainingServices();
+    when(mockUserService.watchUserById(any)).thenAnswer(
+      (_) => Stream.value(
+        UserModel(
+          id: 'uid_test',
+          name: 'Test User',
+          email: 'test@bigtech.com',
+          responsable: 'prof-1',
+        ),
+      ),
+    );
 
     when(mockUserService.getUserById(any)).thenAnswer(
       (_) async => UserModel(
@@ -89,6 +174,7 @@ void main() {
     ignorePlaceholderImageError();
 
     await tester.pumpWidget(const MaterialApp(home: MainShell()));
+    await tester.pumpAndSettle();
 
     expect(find.text('GRAZI BRAZ'), findsOneWidget);
     expect(find.byType(NavigationBar), findsOneWidget);
@@ -99,7 +185,7 @@ void main() {
 
     await tester.pumpAndSettle();
 
-    expect(find.text('Treino do dia'), findsOneWidget);
+    expect(find.byType(AlunoSessaoTreinoView), findsOneWidget);
     expect(find.byType(NavigationBar), findsOneWidget);
   });
 
@@ -109,21 +195,21 @@ void main() {
     ignorePlaceholderImageError();
 
     await tester.pumpWidget(MaterialApp(home: MainShell()));
+    await tester.pumpAndSettle();
 
     await tester.ensureVisible(find.byKey(const Key('botao_iniciar_treino')));
 
     await tester.tap(find.byKey(const Key('botao_iniciar_treino')));
 
     await tester.pumpAndSettle();
-
-    await tester.binding.handlePopRoute();
-    await tester.pumpAndSettle();
+    expect(find.byType(AlunoSessaoTreinoView), findsOneWidget);
 
     await tester.tap(find.text('Início'));
     await tester.pumpAndSettle();
 
+    expect(find.byType(AlunoSessaoTreinoView), findsNothing);
     expect(find.text('GRAZI BRAZ'), findsOneWidget);
-    expect(find.text('Treino do dia'), findsOneWidget);
+    expect(find.text('TREINO DO DIA'), findsOneWidget);
     expect(find.byType(NavigationBar), findsOneWidget);
   });
 

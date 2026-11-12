@@ -3,6 +3,11 @@ import 'package:academiagrazi/controller/users/update_data.dart';
 import 'package:academiagrazi/service/admin/admin_dashboard.dart';
 import 'package:academiagrazi/service/admin/admin_student_service.dart';
 import 'package:academiagrazi/service/evaluations/physical_evaluation_service.dart';
+import 'package:academiagrazi/service/training/exercise_catalog_service.dart';
+import 'package:academiagrazi/service/training/home_workout_service.dart';
+import 'package:academiagrazi/service/training/student_training_view_data_service.dart';
+import 'package:academiagrazi/service/training/training_plan_service.dart';
+import 'package:academiagrazi/service/training/training_session_service.dart';
 import 'package:academiagrazi/service/units/gym_class_service.dart';
 import 'package:academiagrazi/service/units/instructor_shift_service.dart';
 import 'package:academiagrazi/service/units/unit_service.dart';
@@ -53,6 +58,25 @@ Future<void> setupLocator() async {
   // Physical evaluations
   locator.registerLazySingleton<PhysicalEvaluationService>(
     () => PhysicalEvaluationService(),
+  );
+
+  // Training (fichas, sessões e treino em casa do aluno)
+  locator.registerLazySingleton<ExerciseCatalogService>(
+    () => ExerciseCatalogService(),
+  );
+  locator.registerLazySingleton<TrainingPlanService>(
+    () => TrainingPlanService(),
+  );
+  locator.registerLazySingleton<TrainingSessionService>(
+    () => TrainingSessionService(planService: locator<TrainingPlanService>()),
+  );
+  locator.registerLazySingleton<HomeWorkoutService>(() => HomeWorkoutService());
+  locator.registerLazySingleton<StudentTrainingViewDataService>(
+    () => StudentTrainingViewDataService(
+      planService: locator<TrainingPlanService>(),
+      userService: locator<RegisterUserService>(),
+      catalogService: locator<ExerciseCatalogService>(),
+    ),
   );
 
   // Units and instructor schedule
