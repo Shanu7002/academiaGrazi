@@ -1,3 +1,4 @@
+import 'package:academiagrazi/view/components/brand_heading.dart';
 import 'package:academiagrazi/theme/app_font_size.dart';
 import 'package:academiagrazi/models/training/training_session.dart';
 import 'package:academiagrazi/service/training/training_session_service.dart';
@@ -70,7 +71,7 @@ class _AlunoHistoricoSessoesViewState extends State<AlunoHistoricoSessoesView> {
           return Center(child: Padding(
           padding: const EdgeInsets.all(24),
           child: Column(mainAxisSize: MainAxisSize.min, children: [
-            const Text('Não foi possível carregar seu histórico.',
+            const Text('Não conseguimos carregar seu histórico agora.',
                 textAlign: TextAlign.center),
             TextButton(onPressed: () => setState(() =>
                 _history = _service.watchHistory(widget.studentId)),
@@ -93,9 +94,7 @@ class _AlunoHistoricoSessoesViewState extends State<AlunoHistoricoSessoesView> {
           child: ListView(
             padding: const EdgeInsets.fromLTRB(16, 20, 16, 32),
             children: [
-              Text('TREINOS REALIZADOS',
-                style: GoogleFonts.barlowCondensed(fontWeight: FontWeight.w800,
-                  fontSize: AppFontSize.headline, color: AppColors.textPrimary)),
+              const BrandHeading('Histórico', complement: 'Treinos realizados'),
               const SizedBox(height: 5),
               Text('${sessions.length} sessão(ões) finalizada(s) no total',
                 style: const TextStyle(color: AppColors.textSecondary)),

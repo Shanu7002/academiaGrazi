@@ -167,7 +167,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Evolução'), findsNothing);
-    expect(find.text('Visão Geral'), findsOneWidget);
+    expect(find.text('VISÃO GERAL / Hoje'), findsOneWidget);
 
     await tester.tap(find.text('Equipe').last);
     await tester.pumpAndSettle();
@@ -176,7 +176,7 @@ void main() {
       tester.widget<NavigationBar>(find.byType(NavigationBar)).selectedIndex,
       2,
     );
-    expect(find.text('Carga da Equipe'), findsOneWidget);
+    expect(find.text('EQUIPE / Carga dos professores'), findsOneWidget);
   });
 
   testWidgets('admin vê Alunos no lugar de Treinos', (tester) async {

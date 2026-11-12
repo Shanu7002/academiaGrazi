@@ -1,3 +1,4 @@
+import 'package:academiagrazi/view/components/brand_heading.dart';
 import 'package:academiagrazi/theme/app_font_size.dart';
 import 'package:academiagrazi/locator.dart';
 import 'package:academiagrazi/models/units/instructor_shift_model.dart';
@@ -101,7 +102,7 @@ class _InstructorScheduleSectionState extends State<InstructorScheduleSection> {
     } catch (error) {
       debugPrint('Erro ao adicionar turno: $error');
       if (!mounted) return;
-      _showMessage('Não foi possível adicionar o turno. Tente novamente.');
+      _showMessage('Não conseguimos adicionar o turno agora. Tente novamente.');
     } finally {
       if (mounted) setState(() => _saving = false);
     }
@@ -137,7 +138,7 @@ class _InstructorScheduleSectionState extends State<InstructorScheduleSection> {
     } catch (error) {
       debugPrint('Erro ao remover turno: $error');
       if (!mounted) return;
-      _showMessage('Não foi possível remover o turno. Tente novamente.');
+      _showMessage('Não conseguimos remover o turno agora. Tente novamente.');
     } finally {
       if (mounted) setState(() => _saving = false);
     }
@@ -169,13 +170,10 @@ class _InstructorScheduleSectionState extends State<InstructorScheduleSection> {
                   Row(
                     children: [
                       Expanded(
-                        child: Text(
+                        child: BrandHeading(
                           'Escala',
-                          style: GoogleFonts.barlowCondensed(
-                            fontSize: AppFontSize.title,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.primaryDark,
-                          ),
+                          complement: 'Turnos',
+                          level: BrandHeadingLevel.section,
                         ),
                       ),
                       if (units != null && shifts != null)
@@ -239,7 +237,7 @@ class _InstructorScheduleSectionState extends State<InstructorScheduleSection> {
     return Column(
       children: [
         Text(
-          'Não foi possível carregar a escala.',
+          'Não conseguimos carregar a escala agora.',
           style: GoogleFonts.barlowCondensed(
             fontSize: AppFontSize.small,
             color: AppColors.textSecondary,

@@ -87,7 +87,7 @@ void main() {
   testWidgets('abre primeiro a lista de alunos vinculados', (tester) async {
     final setup = await createTestServices();
     await loadEditor(tester, setup.db, setup.service);
-    expect(find.text('Meus alunos'), findsOneWidget);
+    expect(find.text('MEUS ALUNOS'), findsOneWidget);
     expect(find.text('Ana Lima'), findsOneWidget);
     expect(find.text('Aluno de outro professor'), findsNothing);
     expect(find.byKey(const Key('professor_editor_ficha')), findsNothing);
@@ -154,7 +154,7 @@ void main() {
       findsOneWidget,
     );
     expect(
-      find.descendant(of: detalhes, matching: find.text('Orientações')),
+      find.descendant(of: detalhes, matching: find.text('ORIENTAÇÕES')),
       findsOneWidget,
     );
 

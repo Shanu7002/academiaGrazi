@@ -94,7 +94,7 @@ class _ProfessorHistoricoAlunoViewState
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return _message(
-              'Não foi possível consultar os treinos deste aluno. '
+              'Não conseguimos consultar os treinos deste aluno agora. '
               'Verifique a conexão ou as permissões.',
               action: TextButton(
                 key: const Key('professor_tentar_novamente_historico'),

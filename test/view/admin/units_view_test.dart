@@ -140,7 +140,7 @@ void main() {
     await service.createUnit(name: 'Bloco A');
     await abrir(tester);
 
-    expect(find.text('Não foi possível carregar os blocos.'), findsOneWidget);
+    expect(find.text('Não conseguimos carregar os blocos agora.'), findsOneWidget);
 
     await tester.tap(find.byKey(const Key('botao_tentar_blocos')));
     await tester.pumpAndSettle();

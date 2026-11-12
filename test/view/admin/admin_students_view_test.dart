@@ -154,7 +154,7 @@ void main() {
     await addStudent('a1', 'Ana Lima');
     await abrir(tester);
 
-    expect(find.text('Não foi possível carregar os alunos.'), findsOneWidget);
+    expect(find.text('Não conseguimos carregar os alunos agora.'), findsOneWidget);
 
     await tester.tap(find.byKey(const Key('botao_tentar_alunos')));
     await tester.pumpAndSettle();

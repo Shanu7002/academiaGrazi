@@ -138,7 +138,7 @@ class _SelfRegisterViewState extends State<SelfRegisterView> {
       _nextStep();
     } on Exception {
       if (mounted) {
-        _showMessage('Não foi possível validar o código. Tente novamente.');
+        _showMessage('Não conseguimos validar o código agora. Tente novamente.');
       }
     } finally {
       if (mounted) setState(() => _loading = false);
@@ -217,7 +217,7 @@ class _SelfRegisterViewState extends State<SelfRegisterView> {
       case SelfRegistrationStatus.invalidData:
         return 'Revise os dados informados.';
       case SelfRegistrationStatus.persistenceError:
-        return 'Não foi possível concluir o cadastro.';
+        return 'Não conseguimos concluir o cadastro agora.';
       case SelfRegistrationStatus.success:
         return '';
     }

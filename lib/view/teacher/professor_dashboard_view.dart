@@ -1,3 +1,5 @@
+import 'package:academiagrazi/view/components/user_greeting.dart';
+import 'package:academiagrazi/view/components/brand_heading.dart';
 import 'package:academiagrazi/theme/app_font_size.dart';
 import 'package:academiagrazi/theme/app_colors.dart';
 import 'package:academiagrazi/controller/teachers/teacher_user_searcher.dart';
@@ -54,7 +56,7 @@ class _ProfessorDashboardViewState extends State<ProfessorDashboardView> {
           _userQuantity = '-';
           _isLoading = false;
         });
-        _mostrarAviso('Erro de conexão ao carregar os dados.');
+        _mostrarAviso('Sem conexão para carregar os dados. Tente novamente.');
       }
     }
   }
@@ -80,14 +82,7 @@ class _ProfessorDashboardViewState extends State<ProfessorDashboardView> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          'Olá, Marcos',
-                          style: GoogleFonts.barlowCondensed(
-                            fontWeight: FontWeight.bold,
-                            color: navy,
-                            fontSize: AppFontSize.headline,
-                          ),
-                        ),
+                        const UserGreeting(),
                         const SizedBox(height: 10),
                         Text(
                           schedule.currentLabel,
@@ -154,13 +149,9 @@ class _ProfessorDashboardViewState extends State<ProfessorDashboardView> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
+                        BrandHeading(
                           'Prioridades',
-                          style: GoogleFonts.barlowCondensed(
-                            fontWeight: FontWeight.w700,
-                            fontSize: AppFontSize.headline,
-                            color: navy,
-                          ),
+                          level: BrandHeadingLevel.section,
                         ),
                         Container(
                           padding: const EdgeInsets.symmetric(

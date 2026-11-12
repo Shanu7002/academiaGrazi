@@ -53,7 +53,7 @@ class _ProfessorTreinoEmCasaViewState extends State<ProfessorTreinoEmCasaView> {
     } catch (_) {
       if (mounted) {
         setState(() {
-          _error = 'Não foi possível consultar os treinos em casa. Confira as permissões.';
+          _error = 'Não conseguimos consultar os treinos em casa agora. Confira as permissões.';
           _loading = false;
         });
       }
@@ -137,7 +137,7 @@ class _ProfessorTreinoEmCasaViewState extends State<ProfessorTreinoEmCasaView> {
             const SizedBox(height: 10),
             Expanded(child: FutureBuilder<List<ExerciseCatalogEntry>>(
               future: results, builder: (ctx, snapshot) {
-                if (snapshot.hasError) return const Center(child: Text('Não foi possível consultar a biblioteca.'));
+                if (snapshot.hasError) return const Center(child: Text('Não conseguimos consultar a biblioteca agora.'));
                 if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
                 if (snapshot.data!.isEmpty) return const Center(child: Text('Nenhum exercício encontrado.'));
                 return ListView.builder(itemCount: snapshot.data!.length,
@@ -259,7 +259,8 @@ class _ProfessorTreinoEmCasaViewState extends State<ProfessorTreinoEmCasaView> {
       setState(() => _published = true);
       _notice('Treinos em casa publicados para ${widget.studentName}.');
     } catch (error) {
-      _notice('Não foi possível publicar: $error');
+      debugPrint('Erro ao publicar treino em casa: $error');
+      _notice('Não conseguimos publicar os treinos em casa agora. Tente novamente.');
     } finally { if (mounted) setState(() => _saving = false); }
   }
 
@@ -278,7 +279,10 @@ class _ProfessorTreinoEmCasaViewState extends State<ProfessorTreinoEmCasaView> {
       if (!mounted) return;
       setState(() { _routines.clear(); _published = false; });
       _notice('Treinos em casa retirados. Histórico preservado.');
-    } catch (error) { _notice('Não foi possível retirar: $error'); }
+    } catch (error) {
+      debugPrint('Erro ao retirar treino em casa: $error');
+      _notice('Não conseguimos retirar os treinos em casa agora. Tente novamente.');
+    }
     finally { if (mounted) setState(() => _saving = false); }
   }
 

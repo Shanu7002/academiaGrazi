@@ -187,7 +187,7 @@ class _NovaAvaliacaoViewState extends State<NovaAvaliacaoView> {
       if (mounted) {
         setState(() => _salvando = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Não foi possível salvar a avaliação.')),
+          const SnackBar(content: Text('Não conseguimos salvar a avaliação agora.')),
         );
       }
     }

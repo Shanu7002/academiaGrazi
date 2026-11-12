@@ -1,3 +1,4 @@
+import 'package:academiagrazi/view/components/brand_heading.dart';
 import 'package:academiagrazi/theme/app_font_size.dart';
 import 'package:academiagrazi/locator.dart';
 import 'package:academiagrazi/service/admin/admin_alerts.dart';
@@ -70,14 +71,7 @@ class _AdminHomeViewState extends State<AdminHomeView> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Visão Geral',
-                  style: GoogleFonts.barlowCondensed(
-                    fontSize: AppFontSize.headline,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.primaryDark,
-                  ),
-                ),
+                BrandHeading('Visão geral', complement: 'Hoje'),
                 const SizedBox(height: 4),
                 Text(
                   'Resumo operacional de hoje',
@@ -140,14 +134,7 @@ class _AdminHomeViewState extends State<AdminHomeView> {
                   },
                 ),
                 const SizedBox(height: 32),
-                Text(
-                  'Acesso Rápido',
-                  style: GoogleFonts.barlowCondensed(
-                    fontSize: AppFontSize.title,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.primaryDark,
-                  ),
-                ),
+                BrandHeading('Acesso rápido', level: BrandHeadingLevel.section),
                 const SizedBox(height: 16),
                 _QuickAccessButton(
                   key: const Key('botao_equipe'),
@@ -431,7 +418,7 @@ class _MovementCard extends StatelessWidget {
           Widget body;
           if (snapshot.hasError) {
             body = _MovementMessage(
-              text: 'Não foi possível carregar a movimentação.',
+              text: 'Não conseguimos carregar a movimentação agora.',
               action: TextButton(
                 key: const Key('botao_tentar_movimentacao'),
                 onPressed: onRetry,
@@ -460,14 +447,10 @@ class _MovementCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Expanded(
-                    child: Text(
-                      'Movimentação por Horário',
-                      style: GoogleFonts.barlowCondensed(
-                        fontSize: AppFontSize.title,
-                        fontWeight: FontWeight.bold,
-                        height: 1.2,
-                        color: AppColors.primaryDark,
-                      ),
+                    child: BrandHeading(
+                      'Movimento',
+                      complement: 'Por horário',
+                      level: BrandHeadingLevel.section,
                     ),
                   ),
                   if (peakHour != null) ...[
@@ -613,13 +596,10 @@ class _AlertsCard extends StatelessWidget {
               const Icon(Icons.warning_rounded, color: AppColors.accent),
               const SizedBox(width: 8),
               Expanded(
-                child: Text(
-                  'Alertas Operacionais',
-                  style: GoogleFonts.barlowCondensed(
-                    fontSize: AppFontSize.title,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.primaryDark,
-                  ),
+                child: BrandHeading(
+                  'Alertas',
+                  complement: 'Operação',
+                  level: BrandHeadingLevel.section,
                 ),
               ),
             ],
@@ -631,7 +611,7 @@ class _AlertsCard extends StatelessWidget {
               if (snapshot.hasError) {
                 debugPrint('Erro ao calcular alertas: ${snapshot.error}');
                 return _MovementMessage(
-                  text: 'Não foi possível carregar os alertas.',
+                  text: 'Não conseguimos carregar os alertas agora.',
                   action: TextButton(
                     key: const Key('botao_tentar_alertas'),
                     onPressed: onRetry,

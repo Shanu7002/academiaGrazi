@@ -1,3 +1,4 @@
+import 'package:academiagrazi/view/components/brand_heading.dart';
 import 'package:academiagrazi/theme/app_font_size.dart';
 import 'package:academiagrazi/locator.dart';
 import 'package:academiagrazi/models/units/unit_model.dart';
@@ -66,7 +67,7 @@ class _AdminStudentDetailsViewState extends State<AdminStudentDetailsView> {
     } catch (error) {
       debugPrint('Erro ao salvar aluno: $error');
       if (!mounted) return;
-      _showMessage('Não foi possível salvar a alteração. Tente novamente.');
+      _showMessage('Não conseguimos salvar a alteração agora. Tente novamente.');
     } finally {
       if (mounted) setState(() => _saving = false);
     }
@@ -154,7 +155,7 @@ class _AdminStudentDetailsViewState extends State<AdminStudentDetailsView> {
               if (snapshot.hasError) {
                 debugPrint('Erro ao carregar aluno: ${snapshot.error}');
                 return _Message(
-                  text: 'Não foi possível carregar o aluno.',
+                  text: 'Não conseguimos carregar o aluno agora.',
                   action: TextButton(
                     key: const Key('botao_tentar_aluno'),
                     onPressed: _reload,
@@ -437,14 +438,7 @@ class _InstructorPicker extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Escolha o novo professor',
-                style: GoogleFonts.barlowCondensed(
-                  fontSize: AppFontSize.title,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.primaryDark,
-                ),
-              ),
+              BrandHeading('Novo professor', complement: 'Escolha', level: BrandHeadingLevel.section),
               const SizedBox(height: 8),
               Flexible(
                 child: FutureBuilder<List<InstructorWorkload>>(
@@ -455,7 +449,7 @@ class _InstructorPicker extends StatelessWidget {
                         'Erro ao listar professores: ${snapshot.error}',
                       );
                       return const _Message(
-                        text: 'Não foi possível carregar os professores.',
+                        text: 'Não conseguimos carregar os professores agora.',
                       );
                     }
                     final instructors = snapshot.data;
@@ -597,7 +591,7 @@ class _UnitPicker extends StatelessWidget {
           return const AdminInfoRow(
             icon: Icons.grid_view_rounded,
             label: 'Bloco',
-            value: 'Não foi possível carregar os blocos.',
+            value: 'Não conseguimos carregar os blocos agora.',
           );
         }
         final all = snapshot.data;

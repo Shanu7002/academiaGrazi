@@ -55,7 +55,7 @@ class _CadastrarExercicioDialogState extends State<CadastrarExercicioDialog> {
     } catch (_) {
       if (!mounted) return;
       setState(() {
-        _erroImagem = 'Não foi possível usar essa imagem.';
+        _erroImagem = 'Não conseguimos usar essa imagem. Escolha outra.';
       });
     } finally {
       if (mounted) {

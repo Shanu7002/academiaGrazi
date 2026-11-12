@@ -1,3 +1,4 @@
+import 'package:academiagrazi/view/components/brand_heading.dart';
 import 'package:academiagrazi/theme/app_font_size.dart';
 import 'package:academiagrazi/theme/app_colors.dart';
 import 'package:academiagrazi/view/components/app_bar.dart';
@@ -125,16 +126,7 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
               ),
             ),
             const SizedBox(height: 1),
-            Text(
-              'MEUS TREINOS',
-              style: GoogleFonts.barlowCondensed(
-                color: AppColors.textPrimary,
-                fontSize: AppFontSize.headline,
-                fontWeight: FontWeight.w800,
-                letterSpacing: -0.75,
-                height: 1.25,
-              ),
-            ),
+            BrandHeading('Meus treinos', complement: 'Sua ficha'),
           ],
         );
 
@@ -494,13 +486,10 @@ class _AlunoTreinosViewState extends State<AlunoTreinosView> {
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         Expanded(
-          child: Text(
-            'DIVISÃO DE FICHAS',
-            style: GoogleFonts.barlowCondensed(
-              color: AppColors.textPrimary,
-              fontSize: AppFontSize.title,
-              fontWeight: FontWeight.w800,
-            ),
+          child: BrandHeading(
+            'Divisão',
+            complement: 'Fichas',
+            level: BrandHeadingLevel.section,
           ),
         ),
         Text(

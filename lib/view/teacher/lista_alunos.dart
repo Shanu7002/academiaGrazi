@@ -1,3 +1,4 @@
+import 'package:academiagrazi/view/components/user_greeting.dart';
 import 'package:academiagrazi/theme/app_font_size.dart';
 import 'package:academiagrazi/locator.dart';
 import 'package:academiagrazi/theme/app_colors.dart';
@@ -32,14 +33,7 @@ class _ListaAlunosViewState extends State<ListaAlunosView> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(
-                'Olá, Marcos',
-                style: GoogleFonts.barlowCondensed(
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.navy,
-                  fontSize: AppFontSize.headline,
-                ),
-              ),
+              const UserGreeting(),
               const SizedBox(height: 10),
               InstructorScheduleBuilder(
                 instructorId: _instructorId,

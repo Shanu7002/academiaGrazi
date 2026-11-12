@@ -376,7 +376,7 @@ void main() {
       await tester.tap(find.text('SALVAR ALTERAÇÕES'));
       await tester.pumpAndSettle();
 
-      expect(find.text('Falha ao salvar. Tente novamente.'), findsOneWidget);
+      expect(find.text('Não conseguimos salvar agora. Tente novamente.'), findsOneWidget);
     });
 
     testWidgets('salva o contato de emergência e confirma', (tester) async {
@@ -427,7 +427,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(
-        find.text('Falha ao salvar contato. Tente novamente.'),
+        find.text('Não conseguimos salvar o contato agora. Tente novamente.'),
         findsOneWidget,
       );
     });

@@ -51,7 +51,7 @@ class _UnitsViewState extends State<UnitsView> {
     } catch (error) {
       debugPrint('Erro ao salvar bloco: $error');
       if (!mounted) return false;
-      _showMessage('Não foi possível salvar o bloco. Tente novamente.');
+      _showMessage('Não conseguimos salvar o bloco agora. Tente novamente.');
       return false;
     }
   }
@@ -137,7 +137,7 @@ class _UnitsViewState extends State<UnitsView> {
                 debugPrint('Erro ao carregar blocos: ${snapshot.error}');
                 return _CenteredMessage(
                   icon: Icons.cloud_off_outlined,
-                  text: 'Não foi possível carregar os blocos.',
+                  text: 'Não conseguimos carregar os blocos agora.',
                   action: TextButton(
                     key: const Key('botao_tentar_blocos'),
                     onPressed: _reload,

@@ -37,7 +37,7 @@ class AuthWrapper extends StatelessWidget {
               if (roleSnapshot.hasError) {
                 return const Scaffold(
                   body: Center(
-                    child: Text('Não foi possível carregar seu perfil'),
+                    child: Text('Não conseguimos carregar seu perfil agora'),
                   ),
                 );
               }
@@ -53,7 +53,7 @@ class AuthWrapper extends StatelessWidget {
               } else {
                 return const Scaffold(
                   body: Center(
-                    child: Text('Não foi possível carregar seu perfil.'),
+                    child: Text('Não conseguimos carregar seu perfil agora.'),
                   ),
                 );
               }

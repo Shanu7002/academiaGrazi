@@ -1,3 +1,4 @@
+import 'package:academiagrazi/view/components/brand_heading.dart';
 import 'package:academiagrazi/theme/app_font_size.dart';
 import 'dart:typed_data';
 
@@ -160,7 +161,8 @@ class _ProfessorFichaTreinosViewState extends State<ProfessorFichaTreinosView> {
     } catch (error) {
       if (!mounted) return;
       setState(() {
-        _error = 'Não foi possível carregar os alunos: $error';
+        debugPrint('Erro ao carregar alunos da montagem: $error');
+        _error = 'Não conseguimos carregar seus alunos agora. Tente novamente.';
         _loadingStudents = false;
       });
     }
@@ -203,7 +205,8 @@ class _ProfessorFichaTreinosViewState extends State<ProfessorFichaTreinosView> {
       if (!mounted || token != _selectionToken) return;
       setState(() {
         _loadingStudent = false;
-        _error = 'Não foi possível consultar as fichas: $error';
+        debugPrint('Erro ao consultar fichas: $error');
+        _error = 'Não conseguimos abrir as fichas deste aluno agora. Tente novamente.';
       });
     }
   }
@@ -293,7 +296,8 @@ class _ProfessorFichaTreinosViewState extends State<ProfessorFichaTreinosView> {
         }
       } catch (error) {
         if (!mounted) return;
-        _notice('A ficha foi aberta, mas não foi possível atualizar nomes do catálogo: $error');
+        debugPrint('Erro ao atualizar nomes do catálogo: $error');
+        _notice('A ficha abriu, mas não conseguimos atualizar os nomes dos exercícios.');
       }
     }
     if (!mounted) return;
@@ -340,7 +344,7 @@ class _ProfessorFichaTreinosViewState extends State<ProfessorFichaTreinosView> {
       try {
         draft.validateForPublication();
       } catch (error) {
-        final message = 'Revise a ficha antes de publicar: $error';
+        final message = 'Revise a ficha antes de publicar. ${_publicationHint(error)}';
         setState(() => _validationMessage = message);
         _notice(message);
         return;
@@ -410,7 +414,8 @@ class _ProfessorFichaTreinosViewState extends State<ProfessorFichaTreinosView> {
         _notice('Alterações salvas no Firebase.');
       }
     } catch (error) {
-      _notice('Erro ao ${publish ? 'publicar' : 'salvar'} ficha: $error');
+      debugPrint('Erro ao ${publish ? 'publicar' : 'salvar'} ficha: $error');
+      _notice('Não conseguimos ${publish ? 'publicar' : 'salvar'} a ficha agora. Tente novamente.');
     } finally {
       if (mounted) setState(() => _saving = false);
     }
@@ -432,14 +437,15 @@ class _ProfessorFichaTreinosViewState extends State<ProfessorFichaTreinosView> {
         routine: routine,
       );
     } catch (error) {
-      _notice('A ficha permanece na tela, mas o modelo reutilizavel nao foi salvo: $error');
+      debugPrint('Erro ao salvar modelo de treino: $error');
+      _notice('A ficha continua aqui, mas não conseguimos salvar o modelo reutilizável.');
     }
   }
 
   Future<String> _uploadPhoto(Uint8List bytes, String kind) async {
     final teacherId = _instructorId;
     if (teacherId == null || teacherId.isEmpty) {
-      throw StateError('Professor nao identificado.');
+      throw StateError('Não identificamos seu acesso. Entre novamente.');
     }
     return _mediaService.upload(
       bytes: bytes,
@@ -535,9 +541,9 @@ class _ProfessorFichaTreinosViewState extends State<ProfessorFichaTreinosView> {
             height: (MediaQuery.sizeOf(sheetContext).height -
                     MediaQuery.viewInsetsOf(sheetContext).bottom) * .70,
             child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-              Text('Adicionar exercicio', style: _titleStyle(AppFontSize.title)),
+              const BrandHeading('Adicionar exercício', level: BrandHeadingLevel.section),
               const SizedBox(height: 5),
-              const Text('Escolha na biblioteca de exercicios com fotos. O cadastro manual fica como alternativa.',
+              const Text('Escolha na biblioteca de exercícios com fotos. Se não encontrar, cadastre um novo.',
                 style: TextStyle(color: AppColors.textSecondary)),
               const SizedBox(height: 13),
               TextField(
@@ -573,8 +579,8 @@ class _ProfessorFichaTreinosViewState extends State<ProfessorFichaTreinosView> {
                   }
                   if (items.isEmpty) {
                     return Center(child: Text(snapshot.hasError
-                      ? 'Nao foi possivel consultar a biblioteca: ${snapshot.error}'
-                      : 'Nenhum exercicio encontrado. Cadastre um novo abaixo.'));
+                      ? 'Não conseguimos abrir a biblioteca agora. Tente novamente.'
+                      : 'Nenhum exercício encontrado. Cadastre um novo abaixo.'));
                   }
                   return ListView.separated(
                     itemCount: items.length,
@@ -629,7 +635,7 @@ class _ProfessorFichaTreinosViewState extends State<ProfessorFichaTreinosView> {
     try {
       String? imageUrl;
       if (manual.imagemBytes != null) {
-        _notice('Enviando foto do exercicio...');
+        _notice('Enviando foto do exercício...');
         imageUrl = await _uploadPhoto(manual.imagemBytes!, 'exercicio');
       }
       final saved = await _catalogService.createCustom(
@@ -644,7 +650,8 @@ class _ProfessorFichaTreinosViewState extends State<ProfessorFichaTreinosView> {
         _notice('Exercicio e foto salvos para reutilizar futuramente.');
       }
     } catch (error) {
-      _notice('Nao foi possivel salvar o exercicio: $error');
+      debugPrint('Erro ao salvar exercício: $error');
+      _notice('Não conseguimos salvar o exercício agora. Tente novamente.');
     }
   }
 
@@ -739,7 +746,7 @@ class _ProfessorFichaTreinosViewState extends State<ProfessorFichaTreinosView> {
                   },
                 ),
                 const SizedBox(height: 14),
-                const Text('Foto do exercicio',
+                const Text('Foto do exercício',
                     style: TextStyle(fontWeight: FontWeight.w600)),
                 const SizedBox(height: 8),
                 if (selectedImageBytes != null)
@@ -756,8 +763,11 @@ class _ProfessorFichaTreinosViewState extends State<ProfessorFichaTreinosView> {
                         updateDialog(() => selectedImageBytes = bytes);
                       }
                     } catch (error) {
+                      debugPrint('Erro ao escolher foto do exercício: $error');
                       if (dialogContext.mounted) {
-                        updateDialog(() => errorText = 'Foto invalida: $error');
+                        updateDialog(
+                          () => errorText = 'Não conseguimos usar essa foto. Escolha outra.',
+                        );
                       }
                     }
                   },
@@ -838,7 +848,7 @@ class _ProfessorFichaTreinosViewState extends State<ProfessorFichaTreinosView> {
     var resolved = updated.exercise;
     if (updated.bytes != null) {
       try {
-        _notice('Enviando foto do exercicio...');
+        _notice('Enviando foto do exercício...');
         final link = await _uploadPhoto(updated.bytes!, 'exercicio');
         resolved = TrainingExercise(
           id: resolved.id,
@@ -854,7 +864,8 @@ class _ProfessorFichaTreinosViewState extends State<ProfessorFichaTreinosView> {
           targetLoadKg: resolved.targetLoadKg,
         );
       } catch (error) {
-        _notice('Nao foi possivel enviar a foto: $error');
+        debugPrint('Erro ao enviar foto do exercício: $error');
+        _notice('Não conseguimos enviar a foto agora. Tente novamente.');
         return;
       }
     }
@@ -1046,7 +1057,8 @@ class _ProfessorFichaTreinosViewState extends State<ProfessorFichaTreinosView> {
       await _loadStudentDetails(studentId, _selectionToken);
       _notice('Ficha retirada do aluno. Histórico preservado.');
     } catch (error) {
-      _notice('Não foi possível excluir a ficha: $error');
+      debugPrint('Erro ao excluir ficha: $error');
+      _notice('Não conseguimos excluir a ficha agora. Tente novamente.');
     } finally {
       if (mounted) setState(() => _saving = false);
     }
@@ -1085,6 +1097,15 @@ class _ProfessorFichaTreinosViewState extends State<ProfessorFichaTreinosView> {
         child: Padding(padding: padding, child: child),
       );
 
+  /// O que falta na ficha, sem mostrar o erro técnico da validação.
+  static String _publicationHint(Object error) {
+    final text = error is StateError ? error.message.toString() : '';
+    if (text.contains('programacao semanal')) {
+      return 'Defina em quais dias o aluno treina.';
+    }
+    return 'Confira se cada treino tem nome e pelo menos um exercício.';
+  }
+
   Widget _heading(String title, {String? description, VoidCallback? onBack}) =>
       Padding(
         padding: const EdgeInsets.only(bottom: 18),
@@ -1103,7 +1124,7 @@ class _ProfessorFichaTreinosViewState extends State<ProfessorFichaTreinosView> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: _titleStyle(AppFontSize.headline)),
+                  BrandHeading(title),
                   if (description != null)
                     Text(description, style: const TextStyle(
                         color: AppColors.textSecondary, fontSize: AppFontSize.caption)),
@@ -1239,7 +1260,7 @@ class _ProfessorFichaTreinosViewState extends State<ProfessorFichaTreinosView> {
                     style: const TextStyle(color: AppColors.textBody)),
                 if (draft != null) ...[
                   const SizedBox(height: 8),
-                  const Text('Existem alteracoes ainda nao publicadas.',
+                  const Text('Há alterações ainda não publicadas.',
                       style: TextStyle(color: AppColors.textSecondary, fontSize: AppFontSize.caption)),
                 ],
                 const SizedBox(height: 16),
@@ -1268,8 +1289,8 @@ class _ProfessorFichaTreinosViewState extends State<ProfessorFichaTreinosView> {
                     style: _titleStyle(AppFontSize.subtitle)),
                 const SizedBox(height: 8),
                 Text(draft == null
-                    ? 'O aluno ainda nao possui uma ficha ativa.'
-                    : 'Continue a configuracao e publique quando estiver pronta.',
+                    ? 'Este aluno ainda não tem uma ficha ativa.'
+                    : 'Continue a montagem e publique quando estiver pronta.',
                     style: const TextStyle(color: AppColors.textSecondary)),
                 const SizedBox(height: 14),
                 SizedBox(width: double.infinity, child: FilledButton.icon(
@@ -1496,7 +1517,7 @@ class _ProfessorFichaTreinosViewState extends State<ProfessorFichaTreinosView> {
   Widget _weeklyCard(List<TrainingRoutine> routines, Map<int, String?> schedule, {
     required bool editable,
   }) => _panel(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-    Text('Programação semanal', style: _titleStyle(AppFontSize.title)),
+    const BrandHeading('Programação', complement: 'Semanal', level: BrandHeadingLevel.section),
     const SizedBox(height: 5),
     Text(editable
         ? 'Escolha qual treino o aluno fará em cada dia.'

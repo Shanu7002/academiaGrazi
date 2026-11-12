@@ -1,3 +1,4 @@
+import 'package:academiagrazi/view/components/brand_heading.dart';
 import 'package:academiagrazi/theme/app_font_size.dart';
 import 'package:academiagrazi/locator.dart';
 import 'package:academiagrazi/service/admin/admin_student_service.dart';
@@ -48,7 +49,7 @@ class _AutoRedistributionViewState extends State<AutoRedistributionView> {
         ..showSnackBar(
           const SnackBar(
             content: Text(
-              'Não foi possível aplicar a redistribuição. Revise a prévia e '
+              'Não conseguimos aplicar a redistribuição agora. Revise a prévia e '
               'tente novamente.',
             ),
           ),
@@ -74,7 +75,7 @@ class _AutoRedistributionViewState extends State<AutoRedistributionView> {
                   'Erro ao calcular redistribuição: ${snapshot.error}',
                 );
                 return _Message(
-                  text: 'Não foi possível calcular a redistribuição.',
+                  text: 'Não conseguimos calcular a redistribuição agora.',
                   action: TextButton(
                     key: const Key('botao_tentar_redistribuicao'),
                     onPressed: _reload,
@@ -119,14 +120,7 @@ class _AutoRedistributionViewState extends State<AutoRedistributionView> {
           child: ListView(
             padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
             children: [
-              Text(
-                'Prévia',
-                style: GoogleFonts.barlowCondensed(
-                  fontSize: AppFontSize.headline,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.primaryDark,
-                ),
-              ),
+              BrandHeading('Prévia', complement: 'Redistribuição'),
               const SizedBox(height: 4),
               Text(
                 'Cada professor recebe alunos na proporção da sua '

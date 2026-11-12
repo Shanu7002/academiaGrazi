@@ -97,7 +97,7 @@ class _ProfessorMontagemTreinoViewState
       debugPrint('Erro ao buscar dados do Firebase: $e');
       if (mounted) {
         setState(() => _isLoading = false);
-        _mostrarAviso('Erro de conexão ao carregar os dados.');
+        _mostrarAviso('Sem conexão para carregar os dados. Tente novamente.');
       }
     }
   }

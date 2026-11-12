@@ -41,7 +41,7 @@ class TrainingPlanUiMapper {
         duracaoMinutos: routine.estimatedMinutes,
         quantidadeExercicios: routine.exercises.length,
         nivel: 'Personalizado',
-        estrategia: 'Orientacao do professor',
+        estrategia: 'Orientação do professor',
         principaisExercicios: items.map((e) => e.nome).join(', '),
         // A rotina nao tem mais foto de capa; manter apenas imagens dos exercicios.
         // imageUrl legado permanece no Firestore, sem alterar fichas publicadas.
@@ -139,7 +139,7 @@ class TrainingPlanUiMapper {
   }
 
   static String _seriesResumo(List<TrainingExercise> exercises) {
-    if (exercises.isEmpty) return 'Sem exercicios';
+    if (exercises.isEmpty) return 'Sem exercícios';
     final uniqueSets = exercises.map((exercise) => exercise.sets).toSet();
     return uniqueSets.length == 1
         ? '${uniqueSets.single} series'

@@ -1,3 +1,4 @@
+import 'package:academiagrazi/view/components/brand_heading.dart';
 import 'package:academiagrazi/theme/app_font_size.dart';
 import 'package:academiagrazi/locator.dart';
 import 'package:academiagrazi/service/admin/admin_dashboard.dart';
@@ -52,14 +53,7 @@ class _AdminTeamViewState extends State<AdminTeamView> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Como redistribuir?',
-                    style: GoogleFonts.barlowCondensed(
-                      fontSize: AppFontSize.title,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.primaryDark,
-                    ),
-                  ),
+                  BrandHeading('Redistribuir', complement: 'Automática ou manual', level: BrandHeadingLevel.section),
                   const SizedBox(height: 8),
                   ListTile(
                     key: const Key('opcao_redistribuir_automatico'),
@@ -154,14 +148,7 @@ class _AdminTeamViewState extends State<AdminTeamView> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text(
-                    'Carga da Equipe',
-                    style: GoogleFonts.barlowCondensed(
-                      fontSize: AppFontSize.headline,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.primaryDark,
-                    ),
-                  ),
+                  BrandHeading('Equipe', complement: 'Carga dos professores'),
                   const SizedBox(height: 4),
                   Text(
                     'Volume de alunos por professor e alertas de '
@@ -212,7 +199,7 @@ class _AdminTeamViewState extends State<AdminTeamView> {
                         return _MessageCard(
                           icon: Icons.cloud_off_outlined,
                           message:
-                              'Não foi possível carregar a equipe. '
+                              'Não conseguimos carregar a equipe agora. '
                               'Tente novamente.',
                           actionLabel: 'Tentar novamente',
                           onAction: _reload,

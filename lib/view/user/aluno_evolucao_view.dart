@@ -1,3 +1,4 @@
+import 'package:academiagrazi/view/components/brand_heading.dart';
 import 'package:academiagrazi/theme/app_font_size.dart';
 import 'package:academiagrazi/theme/app_colors.dart';
 import 'dart:math' as math;
@@ -58,14 +59,7 @@ class AlunoEvolutionView extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Evolução',
-              style: GoogleFonts.barlowCondensed(
-                fontSize: AppFontSize.headline,
-                fontWeight: FontWeight.bold,
-                color: _navy,
-              ),
-            ),
+            BrandHeading('Evolução', complement: 'Suas medidas'),
             const SizedBox(height: 8),
             EvolucaoAlunoConteudo(alunoId: alunoId),
           ],
@@ -131,7 +125,7 @@ class _EvolucaoAlunoConteudoState extends State<EvolucaoAlunoConteudo> {
           debugPrint(
             'Erro ao carregar avaliações de ${widget.alunoId}: ${snapshot.error}',
           );
-          return const _Aviso('Não foi possível carregar as avaliações.');
+          return const _Aviso('Não conseguimos carregar as avaliações agora.');
         }
         if (!snapshot.hasData) {
           return const Padding(
@@ -201,13 +195,10 @@ class _EvolucaoAlunoConteudoState extends State<EvolucaoAlunoConteudo> {
               ],
             ),
             const SizedBox(height: 15),
-            Text(
-              'Histórico de Avaliações',
-              style: GoogleFonts.barlowCondensed(
-                fontSize: AppFontSize.title,
-                fontWeight: FontWeight.bold,
-                color: _navy,
-              ),
+            BrandHeading(
+              'Histórico',
+              complement: 'Avaliações',
+              level: BrandHeadingLevel.section,
             ),
             const SizedBox(height: 15),
             for (final avaliacao in avaliacoes.reversed) ...[

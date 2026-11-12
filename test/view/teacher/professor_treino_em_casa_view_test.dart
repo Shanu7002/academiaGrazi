@@ -32,7 +32,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(
-      find.textContaining('Não foi possível consultar os treinos em casa'),
+      find.textContaining('Não conseguimos consultar os treinos em casa agora'),
       findsOneWidget,
     );
   });
