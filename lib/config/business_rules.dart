@@ -20,6 +20,15 @@ abstract final class BusinessRules {
   /// "vence em X dias".
   static const int assessmentDueSoonDays = 3;
 
+  /// P9 · Enquanto não há agendamento de avaliação (GB-060/061), a
+  /// avaliação física fica atrasada quando a última foi feita há este número
+  /// de dias ou mais. Gera a prioridade "Revisar" no painel do professor.
+  static const int assessmentOverdueDays = 90;
+
+  /// P9 · Dias de cadastro sem nenhuma avaliação física até ela ser cobrada
+  /// como atrasada.
+  static const int firstAssessmentGraceDays = 30;
+
   /// P5 · Duração estimada da ficha:
   /// Σ(séries × (repetições × [secondsPerRep] + descanso)) +
   /// [warmupMinutes] de aquecimento.

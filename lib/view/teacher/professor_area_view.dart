@@ -4,6 +4,7 @@ import 'package:academiagrazi/view/user/aluno_profile_view.dart';
 import 'package:academiagrazi/view/teacher/professor_dashboard_view.dart';
 import 'package:academiagrazi/view/teacher/professor_evolucao_view.dart';
 import 'package:academiagrazi/view/teacher/professor_ficha_treinos_view.dart';
+import 'package:academiagrazi/view/teacher/student_open_request.dart';
 import 'package:flutter/material.dart';
 
 /// Controla as quatro abas da área do professor.
@@ -19,6 +20,17 @@ class ProfessorAreaView extends StatefulWidget {
 
 class _ProfessorAreaViewState extends State<ProfessorAreaView> {
   int _abaSelecionada = 0;
+
+  // O painel pede às abas Treinos e Evolução que abram um aluno.
+  final _treinosRequest = StudentOpenRequest();
+  final _evolucaoRequest = StudentOpenRequest();
+
+  @override
+  void dispose() {
+    _treinosRequest.dispose();
+    _evolucaoRequest.dispose();
+    super.dispose();
+  }
 
   void _selecionarAba(int indice) {
     if (indice == _abaSelecionada) return;
@@ -46,16 +58,30 @@ class _ProfessorAreaViewState extends State<ProfessorAreaView> {
             body: IndexedStack(
               index: _abaSelecionada,
               children: [
-                // Aba 0 - Dashboard do outro desenvolvedor.
-                const ProfessorDashboardView(),
+                // Aba 0 - Painel: números, prioridades e atalhos.
+                ProfessorDashboardView(
+                  onOpenStudents: () {
+                    _treinosRequest.showList();
+                    _selecionarAba(1);
+                  },
+                  onOpenStudentTraining: (studentId) {
+                    _treinosRequest.open(studentId);
+                    _selecionarAba(1);
+                  },
+                  onOpenStudentAssessments: (studentId) {
+                    _evolucaoRequest.open(studentId);
+                    _selecionarAba(2);
+                  },
+                ),
 
                 // Aba 1 - Fluxo real: alunos vinculados -> ficha -> edição.
                 ProfessorFichaTreinosView(
                   onVoltarInicio: () => _selecionarAba(0),
+                  openRequest: _treinosRequest,
                 ),
 
                 // Aba 2 - Avaliações físicas dos alunos.
-                const ProfessorEvolucaoView(),
+                ProfessorEvolucaoView(openRequest: _evolucaoRequest),
 
                 // Aba 3 - Perfil compartilhado com aluno e admin.
                 const AlunoProfileView(),

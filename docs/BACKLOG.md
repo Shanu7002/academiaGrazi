@@ -26,7 +26,7 @@ O arquivo `docs/backlog-jira.csv` é gerado a partir deste documento para import
 | Perfil (foto, ficha de saúde, contato de emergência) | ✅ Real | Plano/mensalidade, bloco e "Prof. Marcos" fixos |
 | Home do admin | 🟡 Parcial | Só "alunos ativos" é real; o resto é `AdminHomeMockData` |
 | Equipe / detalhes do professor | 🟡 Parcial | Capacidade 30, cargo e avaliações pendentes vêm de `AdminTeamMockData` |
-| Dashboard do professor | 🟡 Parcial | Só a contagem de alunos é real; nome, bloco, presenças e prioridades são fixos |
+| Dashboard do professor | ✅ Real (GB-070 a GB-072) | Ativos, presenças de hoje, risco de evasão e prioridades vêm do Firestore (`TeacherDashboardService`). A avaliação atrasada segue a P9 até existir agendamento (GB-060/061) |
 | Lista de alunos do professor | 🔴 Mock e sem rota | `ListaAlunosView` não é aberta por nenhuma tela |
 | Montagem de treino | 🟡 UI pronta | Catálogo fixo no código; "Salvar modelo" e "Atribuir" não gravam |
 | Treinos / execução / detalhe do exercício (aluno) | 🔴 Mock | Tudo vem de `TreinosMockData`; nada é persistido |
@@ -56,6 +56,7 @@ O arquivo `docs/backlog-jira.csv` é gerado a partir deste documento para import
 | **Sai** do app | Card "Plano e Mensalidade", atalho "Finanças", botão "Mensagem", "Redistribuir alunos". |
 | IA | Continua como card desabilitado "Recurso futuro" (restrição 7). Nenhuma tarefa. |
 | Home do aluno (GB-090 a GB-093) | Entregue num único PR. "Iniciar treino" abre a execução direto, com o mesmo fluxo da aba Treinos (`StudentWorkoutLauncher`). O treino em destaque é o da programação semanal de hoje. O resumo de evolução mostra a variação de **peso** entre as duas últimas avaliações. O atalho "Aulas" fica **oculto** até existir a grade do aluno (GB-101). |
+| Dashboard do professor (GB-070 a GB-072) | Entregue num único PR. "Alunos ativos" conta só o status `active`. Os toques usam as telas reais: card Alunos → aba Treinos; card Risco → painel com os alunos em risco; "Ver perfil" e "Montar" → aba Treinos com o aluno aberto; "Revisar" → aba Evolução com o aluno selecionado. Sem agendamento de avaliação, "Revisar" usa a avaliação atrasada (P9). Sem validade de ficha no modelo atual, "Montar" cobre só o aluno sem ficha nem treino em casa. |
 
 ### Pendências de definição (confirmar com o time antes de implementar o card)
 
@@ -71,6 +72,7 @@ Cada item traz uma **proposta padrão**. Se ninguém se opuser até o início do
 | P6 | Limiar do alerta automático de inativos no admin | > 10% dos alunos ativos | GB-083 |
 | P7 | O toggle "Lembrete diário de treino" do perfil não dispara nada (não há push). Remover ou manter? | Remover o toggle | GB-123 |
 | P8 | O aluno pode ter mais de uma ficha ativa (A/B/C)? | Sim: o "ciclo" agrupa várias fichas (A, B, C) com a mesma validade | GB-020 |
+| P9 | Enquanto não há agendamento, quando a avaliação física vira prioridade "Revisar"? | Última avaliação há 90 dias ou mais, ou nenhuma avaliação após 30 dias de cadastro | GB-072 |
 
 ---
 

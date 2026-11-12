@@ -8,6 +8,7 @@ import 'package:academiagrazi/service/training/home_workout_service.dart';
 import 'package:academiagrazi/service/training/student_training_view_data_service.dart';
 import 'package:academiagrazi/service/training/training_plan_service.dart';
 import 'package:academiagrazi/service/training/training_session_service.dart';
+import 'package:academiagrazi/service/teachers/teacher_dashboard.dart';
 import 'package:academiagrazi/service/units/gym_class_service.dart';
 import 'package:academiagrazi/service/units/instructor_shift_service.dart';
 import 'package:academiagrazi/service/units/unit_service.dart';
@@ -53,6 +54,11 @@ Future<void> setupLocator() async {
   // Teacher
   locator.registerLazySingleton<TeacherUserSearcher>(
     () => TeacherUserSearcher(),
+  );
+
+  // Teacher dashboard
+  locator.registerLazySingleton<TeacherDashboardService>(
+    () => TeacherDashboardService(),
   );
 
   // Physical evaluations

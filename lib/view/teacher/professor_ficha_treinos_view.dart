@@ -25,6 +25,7 @@ import 'package:academiagrazi/view/teacher/professor_resumo_treinos_aluno.dart';
 import 'package:academiagrazi/view/teacher/services/seletor_imagem_exercicio.dart';
 import 'package:academiagrazi/view/teacher/ui_models/montagem_treino_ui_models.dart';
 import 'package:academiagrazi/view/teacher/widgets/cadastrar_exercicio_dialog.dart';
+import 'package:academiagrazi/view/teacher/student_open_request.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -44,6 +45,9 @@ class ProfessorFichaTreinosView extends StatefulWidget {
   final TrainingSessionService? sessionService;
   final VoidCallback? onVoltarInicio;
 
+  /// Pedidos de outras abas (ex.: prioridades do painel) para abrir um aluno.
+  final StudentOpenRequest? openRequest;
+
   const ProfessorFichaTreinosView({
     super.key,
     this.instructorId,
@@ -54,6 +58,7 @@ class ProfessorFichaTreinosView extends StatefulWidget {
     this.mediaService,
     this.sessionService,
     this.onVoltarInicio,
+    this.openRequest,
   });
 
   @override
@@ -135,6 +140,32 @@ class _ProfessorFichaTreinosViewState extends State<ProfessorFichaTreinosView> {
     _sessionService = widget.sessionService ?? TrainingSessionService(
       db: _service.firestore, planService: _service);
     _loadStudents();
+    widget.openRequest?.addListener(_onOpenRequest);
+  }
+
+  @override
+  void dispose() {
+    widget.openRequest?.removeListener(_onOpenRequest);
+    super.dispose();
+  }
+
+  /// Abre o aluno pedido por outra aba, ou volta para a lista.
+  void _onOpenRequest() {
+    if (!mounted) return;
+    FocusManager.instance.primaryFocus?.unfocus();
+    final studentId = widget.openRequest?.studentId;
+    if (studentId == null) {
+      setState(() {
+        _selectionToken++;
+        _studentId = null;
+        _screen = _TelaProfessorTreinos.alunos;
+        _error = null;
+      });
+      return;
+    }
+    // Aluno vinculado depois do carregamento: atualiza a lista também.
+    if (!_students.any((student) => student.id == studentId)) _loadStudents();
+    _openStudent(studentId);
   }
 
   Future<void> _loadStudents() async {

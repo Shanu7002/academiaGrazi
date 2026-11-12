@@ -1,3 +1,4 @@
+import 'package:academiagrazi/view/teacher/student_open_request.dart';
 import 'package:academiagrazi/view/components/brand_heading.dart';
 import 'package:academiagrazi/controller/teachers/teacher_user_searcher.dart';
 import 'package:academiagrazi/locator.dart';
@@ -13,7 +14,11 @@ import 'package:flutter/material.dart';
 /// Aba Evolução do professor: escolhe um aluno vinculado, acompanha as
 /// avaliações dele e registra novas.
 class ProfessorEvolucaoView extends StatefulWidget {
-  const ProfessorEvolucaoView({super.key});
+  /// Pedidos de outras abas (ex.: prioridades do painel) para selecionar um
+  /// aluno.
+  final StudentOpenRequest? openRequest;
+
+  const ProfessorEvolucaoView({super.key, this.openRequest});
 
   @override
   State<ProfessorEvolucaoView> createState() => _ProfessorEvolucaoViewState();
@@ -28,6 +33,18 @@ class _ProfessorEvolucaoViewState extends State<ProfessorEvolucaoView> {
     super.initState();
     final professorId = locator<FirebaseAuth>().currentUser!.uid;
     _alunos = locator<TeacherUserSearcher>().streamLinkedUsers(professorId);
+    widget.openRequest?.addListener(_onOpenRequest);
+  }
+
+  @override
+  void dispose() {
+    widget.openRequest?.removeListener(_onOpenRequest);
+    super.dispose();
+  }
+
+  void _onOpenRequest() {
+    final alunoId = widget.openRequest?.studentId;
+    if (mounted && alunoId != null) setState(() => _alunoId = alunoId);
   }
 
   Future<void> _novaAvaliacao(UserSummary aluno) async {

@@ -18,6 +18,14 @@ void main() {
       );
     });
 
+    test('a primeira avaliação é cobrada antes do prazo de reavaliação', () {
+      expect(BusinessRules.firstAssessmentGraceDays, greaterThan(0));
+      expect(
+        BusinessRules.firstAssessmentGraceDays,
+        lessThan(BusinessRules.assessmentOverdueDays),
+      );
+    });
+
     test('o alerta de inativos é uma fração entre 0 e 1', () {
       expect(BusinessRules.inactiveStudentsAlertRatio, inExclusiveRange(0, 1));
     });
