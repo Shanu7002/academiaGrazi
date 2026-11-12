@@ -122,9 +122,7 @@ void main() {
     expect(find.byKey(const Key('criar-ficha-aluno')), findsOneWidget);
   });
 
-  testWidgets('abre o aluno pedido pelo painel e volta para a lista', (
-    tester,
-  ) async {
+  testWidgets('abre o aluno pedido por outra tela', (tester) async {
     final setup = await createTestServices();
     final request = StudentOpenRequest();
     addTearDown(request.dispose);
@@ -141,11 +139,27 @@ void main() {
     request.open('aluno-1');
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('professor_resumo_aluno')), findsOneWidget);
+    expect(find.byKey(const Key('professor_editor_ficha')), findsNothing);
+  });
 
-    request.showList();
+  testWidgets('"Montar treino" abre direto a montagem do aluno', (tester) async {
+    final setup = await createTestServices();
+    final request = StudentOpenRequest();
+    addTearDown(request.dispose);
+    await tester.pumpWidget(MaterialApp(
+      home: ProfessorFichaTreinosView(
+        instructorId: 'prof-1',
+        searcher: TeacherUserSearcher(db: setup.db),
+        service: setup.service,
+        openRequest: request,
+      ),
+    ));
     await tester.pumpAndSettle();
-    expect(find.byKey(const Key('professor_resumo_aluno')), findsNothing);
-    expect(find.text('MEUS ALUNOS'), findsOneWidget);
+
+    request.open('aluno-1', edit: true);
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('professor_editor_ficha')), findsOneWidget);
+    expect(find.byKey(const Key('treino-A')), findsOneWidget);
   });
 
   testWidgets('edicao sem publicar nao altera a ficha do aluno',

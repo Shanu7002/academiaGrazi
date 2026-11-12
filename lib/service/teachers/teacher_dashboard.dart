@@ -13,6 +13,13 @@ class TeacherStudentSnapshot {
   /// Tem ficha publicada ou treino em casa vigente.
   final bool hasActivePlan;
 
+  /// Tem treino em casa vigente.
+  final bool hasHomeWorkout;
+
+  /// Programação semanal da ficha publicada (1 = segunda … 7 = domingo →
+  /// id do treino, ou null no descanso); null sem ficha presencial.
+  final Map<int, String?>? weeklySchedule;
+
   /// Data da última avaliação física; null se nunca foi avaliado.
   final DateTime? lastAssessmentAt;
 
@@ -20,6 +27,8 @@ class TeacherStudentSnapshot {
     required this.student,
     this.lastFinishedAt,
     this.hasActivePlan = false,
+    this.hasHomeWorkout = false,
+    this.weeklySchedule,
     this.lastAssessmentAt,
   });
 }
@@ -129,7 +138,7 @@ TeacherDashboardData buildTeacherDashboard(
       );
     }
 
-    final assessmentDays = _assessmentOverdueDays(item, now);
+    final assessmentDays = assessmentOverdueDays(item, now);
     if (assessmentDays != null) {
       priorities.add(
         TeacherPriority(
@@ -166,8 +175,8 @@ TeacherDashboardData buildTeacherDashboard(
 ///
 /// Sem avaliação, o aluno é cobrado depois de
 /// [BusinessRules.firstAssessmentGraceDays] dias de cadastro (sem data de
-/// cadastro, já é cobrado).
-int? _assessmentOverdueDays(TeacherStudentSnapshot item, DateTime now) {
+/// cadastro, já é cobrado); nesse caso devolve os dias de cadastro.
+int? assessmentOverdueDays(TeacherStudentSnapshot item, DateTime now) {
   final last = item.lastAssessmentAt;
   if (last != null) {
     final days = daysSince(last, now);
@@ -195,7 +204,15 @@ class TeacherDashboardService {
   CollectionReference<Map<String, dynamic>> get _users =>
       _db.collection('users');
 
-  Future<TeacherDashboardData> load(String teacherId) async {
+  /// Data e hora de referência dos cálculos (injetável nos testes).
+  DateTime get now => _clock();
+
+  /// Painel do professor: números e prioridades.
+  Future<TeacherDashboardData> load(String teacherId) async =>
+      buildTeacherDashboard(await loadStudents(teacherId), _clock());
+
+  /// Alunos do professor com o que o painel e a lista precisam de cada um.
+  Future<List<TeacherStudentSnapshot>> loadStudents(String teacherId) async {
     if (teacherId.trim().isEmpty) {
       throw ArgumentError.value(teacherId, 'teacherId');
     }
@@ -207,9 +224,8 @@ class TeacherDashboardService {
     final students = snapshot.docs.map(
       (doc) => UserModel.fromJson(doc.data(), doc.id),
     );
-    // Quatro leituras pequenas por aluno, em paralelo.
-    final snapshots = await Future.wait(students.map(_snapshotOf));
-    return buildTeacherDashboard(snapshots, _clock());
+    // Quatro leituras pequenas por aluno, em paralelo (mais a ficha ativa).
+    return Future.wait(students.map(_snapshotOf));
   }
 
   Future<TeacherStudentSnapshot> _snapshotOf(UserModel student) async {
@@ -239,13 +255,34 @@ class TeacherDashboardService {
     final evaluations = results[3] as QuerySnapshot<Map<String, dynamic>>;
     final rawDate =
         evaluations.docs.isEmpty ? null : evaluations.docs.first.data()['date'];
+    final activePlanId = plan.data()?['activePlanId'];
 
     return TeacherStudentSnapshot(
       student: student,
       lastFinishedAt:
           rawFinished is String ? DateTime.tryParse(rawFinished) : null,
       hasActivePlan: plan.exists || home.exists,
+      hasHomeWorkout: home.exists,
+      weeklySchedule:
+          activePlanId is String && activePlanId.isNotEmpty
+              ? await _scheduleOf(ref, activePlanId)
+              : null,
       lastAssessmentAt: rawDate is Timestamp ? rawDate.toDate() : null,
     );
+  }
+
+  /// Programação semanal da ficha ativa (`weeklySchedule` com dias "1".."7").
+  Future<Map<int, String?>?> _scheduleOf(
+    DocumentReference<Map<String, dynamic>> student,
+    String planId,
+  ) async {
+    final plan = await student.collection('trainingPlans').doc(planId).get();
+    final raw = plan.data()?['weeklySchedule'];
+    if (raw is! Map) return null;
+    return {
+      for (final entry in raw.entries)
+        if (int.tryParse('${entry.key}') case final day?)
+          day: entry.value is String ? entry.value as String : null,
+    };
   }
 }

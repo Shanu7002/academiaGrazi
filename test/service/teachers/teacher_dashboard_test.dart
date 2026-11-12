@@ -207,8 +207,37 @@ void main() {
       ]);
     });
 
+    test('lê a programação da ficha ativa e o treino em casa', () async {
+      await addStudent('presencial');
+      await db.doc('users/presencial/trainingState/current').set({
+        'activePlanId': 'ficha-1',
+        'instructorId': 'prof-1',
+      });
+      await db.doc('users/presencial/trainingPlans/ficha-1').set({
+        'weeklySchedule': {'1': 'treino-a', '2': null, '4': 'treino-b'},
+      });
+      await addStudent('remoto');
+      await db.doc('users/remoto/homeWorkouts/current').set({'version': 1});
+
+      final students = {
+        for (final s in await service.loadStudents('prof-1')) s.student.id: s,
+      };
+
+      expect(students['presencial']!.weeklySchedule, {
+        1: 'treino-a',
+        2: null,
+        4: 'treino-b',
+      });
+      expect(students['presencial']!.hasHomeWorkout, isFalse);
+      expect(students['remoto']!.weeklySchedule, isNull);
+      expect(students['remoto']!.hasHomeWorkout, isTrue);
+      expect(students['remoto']!.hasActivePlan, isTrue);
+      expect(service.now, _now);
+    });
+
     test('recusa professor vazio', () {
       expect(() => service.load(' '), throwsArgumentError);
+      expect(() => service.loadStudents(''), throwsArgumentError);
     });
   });
 }

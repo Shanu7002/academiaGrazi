@@ -60,12 +60,12 @@ class _ProfessorAreaViewState extends State<ProfessorAreaView> {
               children: [
                 // Aba 0 - Painel: números, prioridades e atalhos.
                 ProfessorDashboardView(
-                  onOpenStudents: () {
-                    _treinosRequest.showList();
-                    _selecionarAba(1);
-                  },
                   onOpenStudentTraining: (studentId) {
                     _treinosRequest.open(studentId);
+                    _selecionarAba(1);
+                  },
+                  onEditStudentTraining: (studentId) {
+                    _treinosRequest.open(studentId, edit: true);
                     _selecionarAba(1);
                   },
                   onOpenStudentAssessments: (studentId) {
