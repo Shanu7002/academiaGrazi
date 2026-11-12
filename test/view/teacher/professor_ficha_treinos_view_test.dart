@@ -3,6 +3,7 @@ import 'package:academiagrazi/models/training/training_plan.dart';
 import 'package:academiagrazi/service/training/training_plan_service.dart';
 import 'package:academiagrazi/view/components/user_avatar.dart';
 import 'package:academiagrazi/view/teacher/professor_ficha_treinos_view.dart';
+import 'package:academiagrazi/view/teacher/student_open_request.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -119,6 +120,32 @@ void main() {
     await openStudent(tester);
     expect(find.text('Nenhuma ficha publicada'), findsOneWidget);
     expect(find.byKey(const Key('criar-ficha-aluno')), findsOneWidget);
+  });
+
+  testWidgets('abre o aluno pedido pelo painel e volta para a lista', (
+    tester,
+  ) async {
+    final setup = await createTestServices();
+    final request = StudentOpenRequest();
+    addTearDown(request.dispose);
+    await tester.pumpWidget(MaterialApp(
+      home: ProfessorFichaTreinosView(
+        instructorId: 'prof-1',
+        searcher: TeacherUserSearcher(db: setup.db),
+        service: setup.service,
+        openRequest: request,
+      ),
+    ));
+    await tester.pumpAndSettle();
+
+    request.open('aluno-1');
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('professor_resumo_aluno')), findsOneWidget);
+
+    request.showList();
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('professor_resumo_aluno')), findsNothing);
+    expect(find.text('MEUS ALUNOS'), findsOneWidget);
   });
 
   testWidgets('edicao sem publicar nao altera a ficha do aluno',
