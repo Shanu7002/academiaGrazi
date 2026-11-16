@@ -57,7 +57,7 @@ class _AdminStudentsViewState extends State<AdminStudentsView> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: const CustomAppBar(title: 'Alunos', showBackButton: false),
+      appBar: const CustomAppBar(title: 'Alunos'),
       body: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 430),
