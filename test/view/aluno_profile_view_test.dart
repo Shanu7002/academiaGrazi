@@ -12,6 +12,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:academiagrazi/controller/users/update_data.dart';
 
 import 'package:academiagrazi/models/users/user_model.dart';
+import 'package:academiagrazi/service/users/register_instructor.dart';
 import 'package:academiagrazi/service/users/register_user.dart';
 import 'package:academiagrazi/view/user/aluno_profile_view.dart';
 import 'package:academiagrazi/view/preferences_service.dart';
@@ -24,6 +25,7 @@ import 'package:academiagrazi/view/preferences_service.dart';
   User,
 ])
 import 'aluno_profile_view_test.mocks.dart';
+import 'self_register_view_test.mocks.dart' show MockRegisterInstructorService;
 
 void main() {
   late MockUpdateDataController mockUpdateDataController;
@@ -324,6 +326,41 @@ void main() {
     expect(find.text('Sair'), findsOneWidget);
   });
 
+  testWidgets(
+    'professor não vê professor responsável, saúde, emergência nem plano',
+    (WidgetTester tester) async {
+      final instructorService = MockRegisterInstructorService();
+      when(instructorService.getCurrentInviteCode('prof_1')).thenAnswer(
+        (_) async => InstructorInviteCode(
+          code: '1234',
+          expiresAt: DateTime.now().add(const Duration(minutes: 15)),
+        ),
+      );
+      locator.registerSingleton<RegisterInstructorService>(instructorService);
+
+      await pumpProfileFor(
+        tester,
+        UserModel(
+          id: 'prof_1',
+          name: 'Professor',
+          email: 'prof@grazi.com',
+          type: UserType.instructor,
+        ),
+      );
+
+      expect(find.text('SEU CÓDIGO DE CONVITE'), findsOneWidget);
+      expect(find.text('1234'), findsOneWidget);
+      expect(find.text('ACOMPANHAMENTO PROFISSIONAL'), findsOneWidget);
+      expect(find.text('BLOCO / TURNO'), findsOneWidget);
+      expect(find.text('PROFESSOR RESPONSÁVEL'), findsNothing);
+      expect(find.text('SAÚDE E FICHA CLÍNICA'), findsNothing);
+      expect(find.text('CONTATO DE EMERGÊNCIA'), findsNothing);
+      expect(find.text('PLANO E MENSALIDADE'), findsNothing);
+      expect(find.text('Plano Presencial + App'), findsNothing);
+      expect(find.text('Seus dados e preferências'), findsOneWidget);
+    },
+  );
+
   testWidgets('aluno continua vendo as seções de acompanhamento', (
     WidgetTester tester,
   ) async {
@@ -376,7 +413,10 @@ void main() {
       await tester.tap(find.text('SALVAR ALTERAÇÕES'));
       await tester.pumpAndSettle();
 
-      expect(find.text('Não conseguimos salvar agora. Tente novamente.'), findsOneWidget);
+      expect(
+        find.text('Não conseguimos salvar agora. Tente novamente.'),
+        findsOneWidget,
+      );
     });
 
     testWidgets('salva o contato de emergência e confirma', (tester) async {
