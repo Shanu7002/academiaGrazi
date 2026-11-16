@@ -107,7 +107,7 @@ class _ProfessorDashboardViewState extends State<ProfessorDashboardView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(title: 'Grazi Braz', showBackButton: false),
+      appBar: const CustomAppBar(title: 'Grazi Braz'),
       body: FutureBuilder<TeacherDashboardData>(
         future: _data,
         builder: (context, snapshot) {

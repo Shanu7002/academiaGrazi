@@ -62,7 +62,7 @@ class _AdminHomeViewState extends State<AdminHomeView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(title: 'Grazi Braz', showBackButton: false),
+      appBar: const CustomAppBar(title: 'Grazi Braz'),
       body: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 430),

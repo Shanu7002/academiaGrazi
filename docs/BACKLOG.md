@@ -555,7 +555,7 @@ Cada item traz uma **proposta padrão**. Se ninguém se opuser até o início do
 - **Perfil:** Professor
 - **Depende de:** GB-044
 - **Remove mock:** "Olá, Marcos" fixo
-- **Descrição:** A saudação usa o nome do professor logado. O card "Alunos ativos" abre a lista (GB-050). A raiz da aba não mostra a seta de voltar (`showBackButton: false`).
+- **Descrição:** A saudação usa o nome do professor logado. O card "Alunos ativos" abre a lista (GB-050). A raiz da aba não mostra a seta de voltar (o `CustomAppBar` só a exibe quando a tela pode voltar).
 - **Critérios de aceite:**
   - Teste de widget com nome vindo do service.
 
@@ -805,7 +805,7 @@ Cada item traz uma **proposta padrão**. Se ninguém se opuser até o início do
 - **Requisito:** RF14, RNF02
 - **Perfil:** Todos
 - **Depende de:** GB-012, GB-062
-- **Descrição:** Abas finais: **Aluno**: Início, Treinos, Evolução, Perfil. **Professor**: Início, Treinos (montagem), Evolução, Perfil, com a lista de alunos aberta pelo Início. **Admin**: Início, Exercícios, Equipe, Perfil. Telas raiz de aba usam `showBackButton: false` (hoje várias mostram uma seta que não volta para lugar nenhum). Tocar de novo na aba do professor volta à raiz, como já acontece no `MainShell`.
+- **Descrição:** Abas finais: **Aluno**: Início, Treinos, Evolução, Perfil. **Professor**: Início, Treinos (montagem), Evolução, Perfil, com a lista de alunos aberta pelo Início. **Admin**: Início, Exercícios, Equipe, Perfil. Telas raiz de aba não mostram a seta de voltar: o `CustomAppBar` só a exibe quando a tela pode voltar. Tocar de novo na aba do professor volta à raiz, como já acontece no `MainShell`.
 - **Critérios de aceite:**
   - `tab_router_test.dart` cobre as abas dos 3 perfis.
 

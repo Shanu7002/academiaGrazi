@@ -283,7 +283,7 @@ As regras do Firestore (`firestore.rules`) são a **barreira real**; checagens n
 - O layout segue o **protótipo final**. Na dúvida sobre uma tela, pergunte ao time; não invente fluxo.
 - Largura máxima de 430 px centralizada (padrão de `MainShell`/`ProfessorAreaView`).
 - **Marca**: toda tela segue o manual de marca (§7.1). Cores só por `AppColors`, fonte só Barlow Condensed, tema em `AppTheme`.
-- **Cabeçalho**: sempre `CustomAppBar` (avatar do usuário + título + sino). Telas raiz de aba usam `showBackButton: false`.
+- **Cabeçalho**: sempre `CustomAppBar` (avatar do usuário + título + sino). A seta de voltar é automática: aparece só quando a tela foi empilhada e pode voltar (nunca na raiz de uma aba).
 - **Navegação inferior**: `AppBottomNavigation`. Abas finais por perfil:
   - Aluno: Início · Treinos · Evolução · Perfil
   - Professor: Início · Treinos (montagem) · Evolução (avaliações) · Perfil; a lista de alunos abre pelo Início

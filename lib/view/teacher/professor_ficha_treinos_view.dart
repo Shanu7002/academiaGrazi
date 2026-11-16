@@ -1787,7 +1787,7 @@ class _ProfessorFichaTreinosViewState extends State<ProfessorFichaTreinosView> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: const CustomAppBar(title: 'Grazi Braz', showBackButton: false),
+      appBar: const CustomAppBar(title: 'Grazi Braz'),
       body: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 430),

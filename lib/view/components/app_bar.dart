@@ -12,23 +12,26 @@ import 'package:flutter/material.dart';
 /// Cabeçalho compartilhado entre aluno e professor.
 ///
 /// Centraliza a identidade visual (fundo branco) e permite que cada tela
-/// configure seu título e suas ações.
+/// configure seu título e suas ações. A seta de voltar aparece sozinha
+/// quando a rota atual pode voltar (tela empilhada); na raiz de uma aba ela
+/// não aparece.
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final List<Widget>? actions;
   final VoidCallback? onNotificationPressed;
-  final bool showBackButton;
 
   const CustomAppBar({
     super.key,
     required this.title,
     this.actions,
-    this.showBackButton = true,
     this.onNotificationPressed,
   });
 
   @override
   Widget build(BuildContext context) {
+    // Mesmo critério que o AppBar do Flutter usa para a seta automática.
+    final canGoBack = ModalRoute.of(context)?.impliesAppBarDismissal ?? false;
+
     return AppBar(
       // A seta de voltar é desenhada no título; sem isso o Flutter
       // adiciona uma segunda seta quando a tela pode voltar.
@@ -39,11 +42,13 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
       title: Row(
         children: [
-          if (showBackButton) ...[
+          if (canGoBack) ...[
             SizedBox(
               width: 40,
               height: 40,
               child: IconButton(
+                key: const Key('appbar_botao_voltar'),
+                tooltip: 'Voltar',
                 padding: EdgeInsets.zero,
                 onPressed: () => Navigator.maybePop(context),
                 icon: const Icon(
