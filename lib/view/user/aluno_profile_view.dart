@@ -196,7 +196,9 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Não conseguimos atualizar a foto agora. Tente novamente.'),
+          content: Text(
+            'Não conseguimos atualizar a foto agora. Tente novamente.',
+          ),
         ),
       );
     } finally {
@@ -257,9 +259,9 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
                   BrandHeading('Perfil', complement: 'Seus dados'),
                   const SizedBox(height: 4),
                   Text(
-                    user.type == UserType.admin
-                        ? 'Seus dados e preferências'
-                        : 'Seus dados, saúde e preferências',
+                    user.type == UserType.user
+                        ? 'Seus dados, saúde e preferências'
+                        : 'Seus dados e preferências',
                     style: GoogleFonts.barlowCondensed(
                       fontSize: AppFontSize.small,
                       color: AppColors.slateText,
@@ -283,9 +285,7 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
                       ),
                     ),
                   ],
-                  // O admin não tem professor, ficha clínica, contato de
-                  // emergência nem plano; essas seções são só de alunos e
-                  // professores.
+                  // O admin não tem professor responsável nem bloco/turno.
                   if (user.type != UserType.admin) ...[
                     const SizedBox(height: 20),
 
@@ -298,24 +298,32 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
                             title: 'ACOMPANHAMENTO PROFISSIONAL',
                           ),
                           const SizedBox(height: 16),
-                          _ProfessionalInfoCard(
-                            avatar: UserAvatar(
-                              key: const Key('responsable_avatar'),
-                              photoUrl: responsable?.photoUrl,
-                              backgroundColor: AppColors.avatarBackground,
-                              iconColor: AppColors.primary,
+                          // Só o aluno tem professor responsável; o
+                          // professor vê aqui apenas o bloco/turno.
+                          if (user.type == UserType.user) ...[
+                            _ProfessionalInfoCard(
+                              avatar: UserAvatar(
+                                key: const Key('responsable_avatar'),
+                                photoUrl: responsable?.photoUrl,
+                                backgroundColor: AppColors.avatarBackground,
+                                iconColor: AppColors.primary,
+                              ),
+                              label: 'PROFESSOR RESPONSÁVEL',
+                              title:
+                                  responsable?.name ??
+                                  'Professor não encontrado',
+                              subtitle: 'Especialista',
+                              subtitleColor: AppColors.primaryText,
                             ),
-                            label: 'PROFESSOR RESPONSÁVEL',
-                            title:
-                                responsable?.name ?? 'Professor não encontrado',
-                            subtitle: 'Especialista',
-                            subtitleColor: AppColors.primaryText,
-                          ),
-                          const SizedBox(height: 12),
+                            const SizedBox(height: 12),
+                          ],
                           _UnitShiftCard(user: user),
                         ],
                       ),
                     ),
+                  ],
+                  // Saúde, contato de emergência e plano são dados do aluno.
+                  if (user.type == UserType.user) ...[
                     const SizedBox(height: 20),
 
                     _SectionCard(
@@ -1063,7 +1071,7 @@ class _ProfileSummary extends StatelessWidget {
                     fontSize: AppFontSize.small,
                   ),
                 ),
-                if (user.type != UserType.admin) ...[
+                if (user.type == UserType.user) ...[
                   const SizedBox(height: 10),
                   Container(
                     padding: const EdgeInsets.symmetric(
