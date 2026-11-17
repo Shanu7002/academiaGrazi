@@ -896,3 +896,15 @@ Cada item traz uma **proposta padrão**. Se ninguém se opuser até o início do
 - **Descrição:** Configure o Firebase Emulator e uma suíte `@firebase/rules-unit-testing` em `firestore-tests/` cobrindo os cenários de permissão de cada coleção (aluno x aluno, professor x aluno de outro professor, admin). Opcionalmente, rode no CI.
 - **Critérios de aceite:**
   - `npm test` em `firestore-tests/` passa localmente.
+
+---
+
+## AGB-205 · Redesign do login com cenários alternáveis
+
+- **Tipo:** Melhoria visual e de experiência.
+- **Requisitos:** RF01 e RNF02.
+- **Escopo:** substituir o layout de `LoginView`; preservar autenticação, autocadastro, recuperação de senha, abertura animada, perfis e controle de mensalidades.
+- **Implementação:** fotos locais de Presencial/Treino em casa, texto contextual, seletor manual, rotação automática, pausa automática ao digitar (sem botão de pausa), cenários renovados e acessibilidade.
+- **Sem:** nova modalidade de cadastro, gateway de pagamento, alteração de coleções, deploy, dependências novas ou imagens de telefone incorporadas à interface.
+- **Documentação e aceite:** `docs/AGB-205_LOGIN.md`.
+- **Estado:** código entregue para aplicação e validação local; conclusão depende de `flutter analyze`, suíte de testes e homologação visual na branch do card.
