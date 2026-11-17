@@ -361,7 +361,7 @@ void main() {
     },
   );
 
-  testWidgets('aluno continua vendo as seções de acompanhamento', (
+  testWidgets('aluno mantém acompanhamento sem dados de planos', (
     WidgetTester tester,
   ) async {
     await pumpProfileFor(
@@ -372,8 +372,12 @@ void main() {
     expect(find.text('ACOMPANHAMENTO PROFISSIONAL'), findsOneWidget);
     expect(find.text('SAÚDE E FICHA CLÍNICA'), findsOneWidget);
     expect(find.text('CONTATO DE EMERGÊNCIA'), findsOneWidget);
-    expect(find.text('PLANO E MENSALIDADE'), findsOneWidget);
-    expect(find.text('Plano Presencial + App'), findsOneWidget);
+    expect(find.text('PLANO E MENSALIDADE'), findsNothing);
+    expect(find.text('Plano Presencial + App'), findsNothing);
+    expect(find.text('Plano Conexão Semestral'), findsNothing);
+    expect(find.text('Renovação em 10/11/2023'), findsNothing);
+    expect(find.text('Musculação + Pilates'), findsNothing);
+    expect(find.text('#GB-2023-0482'), findsNothing);
     expect(find.text('Seus dados, saúde e preferências'), findsOneWidget);
   });
 

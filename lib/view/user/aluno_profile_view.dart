@@ -893,54 +893,6 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
                         },
                       ),
                     ),
-                    const SizedBox(height: 20),
-
-                    _SectionCard(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const _SectionHeader(
-                            icon: Icons.credit_card,
-                            title: 'PLANO E MENSALIDADE',
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            'Plano Conexão Semestral',
-                            style: GoogleFonts.barlowCondensed(
-                              color: AppColors.textPrimary,
-                              fontSize: AppFontSize.body,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Renovação em 10/11/2023',
-                            style: GoogleFonts.barlowCondensed(
-                              color: AppColors.textSecondary,
-                              fontSize: AppFontSize.caption,
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          const Row(
-                            children: [
-                              Expanded(
-                                child: _InfoCardString(
-                                  label: 'Modalidades',
-                                  value: 'Musculação + Pilates',
-                                ),
-                              ),
-                              SizedBox(width: 12),
-                              Expanded(
-                                child: _InfoCardString(
-                                  label: 'Matrícula',
-                                  value: '#GB-2023-0482',
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
                   ],
                   const SizedBox(height: 20),
 
@@ -1071,41 +1023,6 @@ class _ProfileSummary extends StatelessWidget {
                     fontSize: AppFontSize.small,
                   ),
                 ),
-                if (user.type == UserType.user) ...[
-                  const SizedBox(height: 10),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: AppColors.avatarBackground,
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(
-                          Icons.fitness_center,
-                          color: AppColors.primary,
-                          size: 16,
-                        ),
-                        const SizedBox(width: 6),
-                        Flexible(
-                          child: Text(
-                            'Plano Presencial + App',
-                            overflow: TextOverflow.ellipsis,
-                            style: GoogleFonts.barlowCondensed(
-                              color: AppColors.primary,
-                              fontSize: AppFontSize.caption,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
               ],
             ),
           ),
