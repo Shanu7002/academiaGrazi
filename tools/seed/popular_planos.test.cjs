@@ -19,11 +19,11 @@ const parse = (value) => {
   return new Date(y, m - 1, d);
 };
 
-/** Mesma regra do app: vencida em aberto antes de hoje; vence em breve até 5 dias. */
+/** Mesma regra do app: vencida em aberto antes de hoje; vence em breve até 10 dias (BusinessRules.membershipFeeDueSoonDays). */
 function standing({ startDate, durationMonths, payments }) {
   const start = parse(startDate);
   const paid = new Set(payments.map((p) => p.installment));
-  const soon = new Date(2026, 10, 21);
+  const soon = new Date(2026, 10, 26);
   let overdue = 0;
   let nextOpen = null;
   for (let i = 0; i < durationMonths; i++) {

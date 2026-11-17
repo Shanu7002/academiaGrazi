@@ -76,7 +76,7 @@ Cada item traz uma **proposta padrão**. Se ninguém se opuser até o início do
 | P7 | O toggle "Lembrete diário de treino" do perfil não dispara nada (não há push). Remover ou manter? | Remover o toggle | GB-123 |
 | P8 | O aluno pode ter mais de uma ficha ativa (A/B/C)? | Sim: o "ciclo" agrupa várias fichas (A, B, C) com a mesma validade | GB-020 |
 | P9 | Enquanto não há agendamento, quando a avaliação física vira prioridade "Revisar"? | Última avaliação há 90 dias ou mais, ou nenhuma avaliação após 30 dias de cadastro | GB-072 |
-| P10 | Com quantos dias de antecedência a mensalidade em aberto vira "vence em breve"? | 5 dias | Planos e mensalidades |
+| P10 | Com quantos dias de antecedência a mensalidade em aberto vira "vence em breve"? | 10 dias (alterado de 5 em 2026-11-16) | Planos e mensalidades |
 | P11 | Depois de quantos dias de atraso o aluno fica com o app bloqueado? | Mais de 5 dias após o vencimento (decidido em 2026-11-16) | Planos e mensalidades |
 
 ---

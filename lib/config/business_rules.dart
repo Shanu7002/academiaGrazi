@@ -53,7 +53,7 @@ abstract final class BusinessRules {
 
   /// P10 · Dias de antecedência para uma mensalidade em aberto virar
   /// "vence em breve" (aluno e admin).
-  static const int membershipFeeDueSoonDays = 5;
+  static const int membershipFeeDueSoonDays = 10;
 
   /// P11 · Dias de tolerância depois do vencimento: com uma mensalidade
   /// vencida há mais que isso, o aluno fica com o acesso ao app bloqueado
