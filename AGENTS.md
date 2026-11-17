@@ -472,3 +472,20 @@ Para o agente: **se a regra de negócio não estiver neste arquivo nem no card, 
 - `CustomAppBar` assina o documento do usuário logado para a foto; em teste isolado ele exibe o ícone padrão se os services não estiverem no `locator`.
 - O seletor "Presencial / Treino em casa" da tela de login é **apenas visual** (troca o fundo). A modalidade real do aluno é `users.modality`.
 - Teste que monta o `AuthWrapper` como aluno precisa de `MembershipService` no `locator`: o `StudentAccessGate` confere as mensalidades antes de abrir o `MainShell`.
+
+---
+
+## AGB-205 · Login interativo
+
+Implementação: `lib/view/login_view.dart`, componentes em `lib/view/login/`.
+Detalhes e aceite: `docs/AGB-205_LOGIN.md`.
+
+- Esta tarefa modifica o **login**, não a abertura animada `WelcomeView`.
+- Os cenários Presencial/Treino em casa são exclusivamente visuais; não gravam modalidade, perfil ou plano no banco.
+- Troca automática a cada 5 s; intervenção manual adia a próxima troca por 8 s. Com foco em qualquer campo, requisição pendente, cadastro aberto ou aplicativo em segundo plano, a rotação para. Retoma após 8 s quando permitido.
+- O controle visível de pausa foi removido (AGB-205 V2); a rotação pausa automaticamente com foco/interação. `MediaQuery.disableAnimations` ou `accessibleNavigation` desliga a rotação e as transições não essenciais; a seleção manual continua disponível.
+- O formulário permanece montado durante a troca, preservando posição, controladores e texto.
+- O login continua usando `LoginController` e retorna ao `AuthWrapper`. **Não remover ou contornar `StudentAccessGate`, Planos e Mensalidades, nem regras do Firestore.**
+- Exceção visual local aprovada pelo conceito do AGB-205: headline “Seu corpo. Seu ritmo.” em caixa de frase e CTA verde, como no login anterior; não altera o tema global nem os padrões das demais telas. Fonte e cores continuam as do tema Grazi Braz.
+- A aparência usa o logo já versionado e os novos assets `agb205_presencial.webp` / `agb205_casa.webp`, incluídos no pacote; não baixar imagens em tempo de execução nem usar a imagem dos dois celulares como fundo.
+- `LoginView(autoRotate: false)` está disponível para testes que validam somente autenticação. Os testes da rotação ficam em `test/view/login/login_interactive_view_test.dart`.
