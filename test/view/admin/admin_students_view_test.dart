@@ -1,3 +1,4 @@
+import 'package:academiagrazi/service/memberships/membership_service.dart';
 import 'package:academiagrazi/locator.dart';
 import 'package:academiagrazi/models/users/user_model.dart';
 import 'package:academiagrazi/service/admin/admin_dashboard.dart';
@@ -35,6 +36,7 @@ void main() {
       AdminDashboardService(db: db),
     );
     locator.registerSingleton<UnitService>(UnitService(db: db));
+    locator.registerSingleton<MembershipService>(MembershipService(db: db));
     await db.collection('users').doc('p1').set({
       'name': 'Prof. Lucas',
       'type': 'instructor',
@@ -154,7 +156,10 @@ void main() {
     await addStudent('a1', 'Ana Lima');
     await abrir(tester);
 
-    expect(find.text('Não conseguimos carregar os alunos agora.'), findsOneWidget);
+    expect(
+      find.text('Não conseguimos carregar os alunos agora.'),
+      findsOneWidget,
+    );
 
     await tester.tap(find.byKey(const Key('botao_tentar_alunos')));
     await tester.pumpAndSettle();

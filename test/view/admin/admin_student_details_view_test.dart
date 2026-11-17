@@ -1,3 +1,4 @@
+import 'package:academiagrazi/service/memberships/membership_service.dart';
 import 'package:academiagrazi/locator.dart';
 import 'package:academiagrazi/service/admin/admin_dashboard.dart';
 import 'package:academiagrazi/service/admin/admin_student_service.dart';
@@ -20,6 +21,7 @@ void main() {
       AdminDashboardService(db: db),
     );
     locator.registerSingleton<UnitService>(UnitService(db: db));
+    locator.registerSingleton<MembershipService>(MembershipService(db: db));
     await db.collection('users').doc('p1').set({
       'name': 'Prof. Lucas',
       'type': 'instructor',

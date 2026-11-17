@@ -1,3 +1,4 @@
+import 'package:academiagrazi/service/memberships/membership_service.dart';
 import 'package:academiagrazi/locator.dart';
 import 'package:academiagrazi/service/users/profile_photo.dart';
 import 'package:academiagrazi/view/preferences_service.dart';
@@ -248,6 +249,9 @@ void main() {
     locator.registerSingleton<AdminStudentService>(
       AdminStudentService(db: FakeFirebaseFirestore()),
     );
+    locator.registerSingleton<MembershipService>(
+      MembershipService(db: FakeFirebaseFirestore()),
+    );
 
     await tester.pumpWidget(const MaterialApp(home: MainShell(isAdmin: true)));
     await tester.pumpAndSettle();
@@ -276,6 +280,7 @@ void main() {
       AdminDashboardService(db: db),
     );
     locator.registerSingleton<AdminStudentService>(AdminStudentService(db: db));
+    locator.registerSingleton<MembershipService>(MembershipService(db: db));
 
     await tester.pumpWidget(const MaterialApp(home: MainShell(isAdmin: true)));
     await tester.pumpAndSettle();

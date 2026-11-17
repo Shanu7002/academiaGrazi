@@ -12,9 +12,9 @@ Aplicativo mobile (Flutter) da Academia Grazi Braz, **em português do Brasil**,
 
 | Perfil | `UserType` | Faz o quê |
 |---|---|---|
-| Administrador | `admin` | Visão da operação, gestão dos alunos (professor responsável e modalidade), redistribuição de alunos entre professores (automática, proporcional à capacidade, ou manual), equipe (carga dos professores), cadastro de professores, unidades e escala, grade de aulas, biblioteca de exercícios, ocorrências |
+| Administrador | `admin` | Visão da operação, gestão dos alunos (professor responsável e modalidade), redistribuição de alunos entre professores (automática, proporcional à capacidade, ou manual), equipe (carga dos professores), cadastro de professores, unidades e escala, grade de aulas, biblioteca de exercícios, ocorrências, catálogo de planos e controle manual das mensalidades |
 | Professor | `instructor` | Painel com unidade atual/próxima e pendências, lista de alunos, montagem e prescrição de treinos, avaliações físicas |
-| Aluno | `user` | Treino em destaque, execução do treino com registro de carga, evolução e avaliações, perfil e ficha de saúde |
+| Aluno | `user` | Treino em destaque, execução do treino com registro de carga, evolução e avaliações, perfil e ficha de saúde, plano e situação das mensalidades |
 
 O aluno se cadastra sozinho usando o **código de convite do professor** (4 dígitos, renovado a cada 15 min). O vínculo aluno → professor é o campo `users.responsable`.
 
@@ -23,7 +23,7 @@ O aluno se cadastra sozinho usando o **código de convite do professor** (4 díg
 **Dentro:** RF01–RF14 e RNF01–RNF02 (ver `docs/BACKLOG.md`).
 
 **Fora desta versão: não implemente, mesmo que pareça útil:**
-- Pagamentos, mensalidade, planos, finanças, vendas digitais.
+- Pagamento online: gateway, cobrança automática, Pix ou cartão integrados, boletos, finanças e vendas digitais. **Planos e mensalidades existem só como controle manual**: o admin cadastra os planos, atribui ao aluno e registra cada pagamento recebido fora do app (`membershipPlans`, `memberships`, §5.3). Decisão de 2026-11-16, que substitui o GB-120 (AGB-138).
 - Reserva de aulas e controle de lotação (a grade de aulas é **somente leitura**).
 - Mensagens/chat entre professor e aluno.
 - **Vídeos de exercício** (upload e player). O campo `exercises.videoUrl` existe, mas fica sempre `null`. Onde o protótipo mostra vídeo, exiba a imagem do exercício.
@@ -46,6 +46,8 @@ O aluno se cadastra sozinho usando o **código de convite do professor** (4 díg
 | Avaliação física | Agendada pelo professor e depois registrada (peso, gordura, massa magra, observações) | `assessments` |
 | Modalidade do aluno | Presencial ou remoto (treino em casa), definida pelo professor/admin | `users.modality` |
 | Ocorrência | Problema operacional registrado (ex.: equipamento quebrado) | `occurrences` |
+| Plano (catálogo) | Plano oferecido pela academia: valor da mensalidade, duração em meses, modalidades | `membershipPlans` |
+| Plano do aluno / Mensalidade | Plano atribuído ao aluno; uma mensalidade por mês a partir do início, paga ou em aberto | `memberships`; mensalidades calculadas por `membershipFees()` |
 
 ---
 
@@ -249,6 +251,24 @@ Pendente = `scheduled` com data futura · vencida = `scheduled` com `scheduledAt
 
 **✅ `gym_classes/{id}`**: `GymClassModel` (`lib/models/units/gym_class_model.dart`), `GymClassService`; cadastro pelo admin em `GymClassesView`. Grade de aulas, somente leitura para o aluno, sem reserva e sem lotação. `{ name, unitId, instructorId?, weekday, startTime: 'HH:mm', durationMinutes, capacity? (informativo), active, createdAt }`. Nunca apagada: retire da grade com `active: false`.
 
+**✅ `membershipPlans/{id}`**: `MembershipPlanModel` (`lib/models/memberships/membership_plan_model.dart`), `MembershipService`; catálogo do admin em `MembershipPlansView`. `{ name, monthlyPriceCents: int (> 0), durationMonths: int (1..36), modalities?, active, createdAt }`. Dinheiro sempre em **centavos (int)**. Nunca apagado: retire do catálogo com `active: false`.
+
+**✅ `memberships/{id}`**: `MembershipModel` (`lib/models/memberships/membership_model.dart`), `MembershipService`. Plano atribuído ao aluno, com cópia dos dados do catálogo (mudar o catálogo não altera planos já contratados).
+```
+studentId, planId: string
+planName: string; modalities?: string       # cópia do catálogo
+monthlyPriceCents, durationMonths: int      # cópia do catálogo
+startDate: 'YYYY-MM-DD'                     # vencimento da 1ª mensalidade
+status: 'active' | 'closed'                 # um 'active' por aluno; atribuir outro encerra o anterior
+payments: [ { installment: int (1 = primeira), paidOn: 'YYYY-MM-DD',
+              method: 'pix'|'cash'|'card'|'transfer', amountCents: int,
+              recordedBy: uid, recordedAt: string ISO UTC } ]
+createdAt: string ISO UTC; createdBy: uid; closedAt?: string ISO UTC
+```
+As mensalidades **não são documentos**: `membershipFees(membership, now)` e `summarizeMembership(membership, now)` (`lib/service/memberships/membership_schedule.dart`) calculam vencimentos (mesmo dia nos meses seguintes, limitado ao fim do mês), situação (paga, em atraso, vence em breve, a vencer) e o resumo do plano (em dia, vence em breve, em atraso, encerrado). "Vence em breve" usa `BusinessRules.membershipFeeDueSoonDays`. Depois de criado, só mudam `status`, `closedAt` e `payments`.
+
+**Bloqueio por atraso:** com mensalidade vencida há mais de `BusinessRules.membershipBlockGraceDays` dias (`isAccessBlocked`), o `AuthWrapper` mostra ao aluno a tela de acesso pausado (`StudentAccessGate`/`OverdueBlockedView`), com o nome do professor responsável e o botão Sair. A tela escuta o plano e libera sozinha quando o pagamento é registrado. Sem plano, ou sem conseguir ler o plano, o acesso fica liberado. O bloqueio é só no app: as regras do Firestore não comparam datas com as mensalidades.
+
 ---
 
 ## 6. Segurança e permissões (RNF01)
@@ -269,8 +289,12 @@ As regras do Firestore (`firestore.rules`) são a **barreira real**; checagens n
 | `units`, `instructorShifts`, `gym_classes` | lê | lê | CRUD |
 | `notifications` | lê as próprias; altera só `read` | lê as próprias; cria para seus alunos | lê as próprias; cria para qualquer um |
 | `occurrences` | ❌ | cria; lê as que criou | tudo |
+| `membershipPlans` | ❌ | ❌ | lê, cria, edita (não apaga) |
+| `memberships` | lê o próprio | ❌ | lê; cria; altera só `status`, `closedAt` e `payments` |
 
 **Troca de professor responsável:** a sessão de treino registra o professor autor da ficha ativa, não o responsável atual. Depois de uma troca, o aluno segue treinando a ficha vigente até o novo professor publicar outra, e o novo responsável pode substituir ou retirar a ficha ativa e o treino em casa deixados pelo anterior.
+
+**Dados financeiros** (`memberships`) só aparecem para o próprio aluno e para o admin; o professor não os vê.
 
 **Dados de saúde** (`registrationProfile.health`, `assessments`) e **contato de emergência** são sensíveis (LGPD): nunca exiba para outro aluno, nunca grave em log, nunca envie para serviço externo.
 
@@ -447,3 +471,4 @@ Para o agente: **se a regra de negócio não estiver neste arquivo nem no card, 
 - O código de convite não tem backend de renovação: ele é renovado sob demanda em uma transação (`RegisterInstructorService._issueCode`). Não crie timers que gravem no banco.
 - `CustomAppBar` assina o documento do usuário logado para a foto; em teste isolado ele exibe o ícone padrão se os services não estiverem no `locator`.
 - O seletor "Presencial / Treino em casa" da tela de login é **apenas visual** (troca o fundo). A modalidade real do aluno é `users.modality`.
+- Teste que monta o `AuthWrapper` como aluno precisa de `MembershipService` no `locator`: o `StudentAccessGate` confere as mensalidades antes de abrir o `MainShell`.

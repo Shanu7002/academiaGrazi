@@ -50,6 +50,17 @@ Tudo tem ID com prefixo `demo-`. Rodar de novo **substitui** os dados `demo-*` (
 
 Se algum e-mail `@demo.com` já existir com outra conta (por exemplo, um `admin@demo.com` criado à mão no Console), o script para antes de gravar e lista os e-mails. Apague essas contas em Authentication e rode de novo.
 
+## Planos e mensalidades
+
+`popular_planos.cjs` cuida só de `membershipPlans` e `memberships`. Ele **apaga todos os planos do catálogo e todos os planos dos alunos** que existirem (não só os `demo-*`), cria 6 planos (um deles fora do catálogo) e atribui um plano a quase todos os alunos, com situações variadas: em dia, vence em breve, uma ou duas mensalidades em atraso, novo, encerrado e sem plano. Alunos remotos recebem o "Plano Treino em Casa". Os alunos com atraso de 8 ou 20 dias ficam com o **app bloqueado** (tolerância de 5 dias); `aluno@demo.com` fica sempre em dia. Não cria contas, então não precisa de `SENHA_DEMO`.
+
+```bash
+GOOGLE_APPLICATION_CREDENTIALS=/caminho/fora/do/repo/chave.json node popular_planos.cjs           # simula
+GOOGLE_APPLICATION_CREDENTIALS=/caminho/fora/do/repo/chave.json node popular_planos.cjs --apply   # grava
+```
+
+Rode depois do `popular:dev`: as datas são calculadas a partir de hoje. O `limpar:dev` também remove os planos `demo-*`.
+
 ## Como remover tudo
 
 ```bash

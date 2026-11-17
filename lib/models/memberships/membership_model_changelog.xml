@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<changelog>
+    <model>
+        <version>1.0</version>
+        <owner>Bayer-07</owner>
+        <description>Criacao do plano do aluno (matricula) com controle manual de mensalidades, sem gateway de pagamento. Copia os dados do plano do catalogo. As mensalidades sao calculadas a partir de startDate e durationMonths; payments guarda as pagas. Um plano active por aluno; ao atribuir outro, o anterior vira closed. Aluno le o proprio; so o admin grava.</description>
+        <actualModel>
+            membership = {
+                id: --gerado automaticamente 20-character strings (Base62)
+                studentId: string --uid do aluno
+                planId: string --id do plano em membershipPlans
+                planName: string --copia do nome do plano
+                modalities: string (optional) --copia das modalidades do plano
+                monthlyPriceCents: int --copia do valor da mensalidade, em centavos
+                durationMonths: int --copia da vigencia em meses
+                startDate: string (YYYY-MM-DD) --vencimento da 1a mensalidade e inicio da vigencia
+                status: 'active' | 'closed'
+                payments: [ {
+                    installment: int --numero da mensalidade (1 = primeira)
+                    paidOn: string (YYYY-MM-DD)
+                    method: 'pix' | 'cash' | 'card' | 'transfer'
+                    amountCents: int
+                    recordedBy: string --uid do admin
+                    recordedAt: string (iso8601, UTC)
+                } ]
+                createdAt: string (iso8601, UTC) --gravado uma unica vez, na criacao
+                createdBy: string --uid do admin que atribuiu o plano
+                closedAt: string (iso8601, UTC) (optional) --quando foi encerrado
+            }
+        </actualModel>
+    </model>
+</changelog>

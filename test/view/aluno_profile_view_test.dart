@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:academiagrazi/locator.dart';
 import 'package:academiagrazi/service/users/profile_photo.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
+import 'package:academiagrazi/service/memberships/membership_service.dart';
 import 'package:academiagrazi/service/units/unit_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -361,24 +362,56 @@ void main() {
     },
   );
 
-  testWidgets('aluno mantém acompanhamento sem dados de planos', (
+  testWidgets(
+    'aluno mantém acompanhamento e o cartão de plano, sem dados fictícios',
+    (WidgetTester tester) async {
+      await pumpProfileFor(
+        tester,
+        UserModel(id: 'aluno_1', name: 'Aluno', email: 'aluno@grazi.com'),
+      );
+
+      expect(find.text('ACOMPANHAMENTO PROFISSIONAL'), findsOneWidget);
+      expect(find.text('SAÚDE E FICHA CLÍNICA'), findsOneWidget);
+      expect(find.text('CONTATO DE EMERGÊNCIA'), findsOneWidget);
+      expect(find.text('PLANO E MENSALIDADE'), findsOneWidget);
+      expect(find.text('Plano Presencial + App'), findsNothing);
+      expect(find.text('Plano Conexão Semestral'), findsNothing);
+      expect(find.text('Renovação em 10/11/2023'), findsNothing);
+      expect(find.text('Musculação + Pilates'), findsNothing);
+      expect(find.text('#GB-2023-0482'), findsNothing);
+      expect(find.text('Seus dados, saúde e preferências'), findsOneWidget);
+    },
+  );
+
+  testWidgets('aluno vê o plano real, sem os textos fixos antigos', (
     WidgetTester tester,
   ) async {
+    final membershipService = MembershipService(db: FakeFirebaseFirestore());
+    locator.registerSingleton<MembershipService>(membershipService);
+    final planId = await membershipService.createPlan(
+      name: 'Plano Conexão Anual',
+      monthlyPriceCents: 9990,
+      durationMonths: 12,
+    );
+    final plan = (await membershipService.streamPlans().first).firstWhere(
+      (plan) => plan.id == planId,
+    );
+    await membershipService.assignPlan(
+      studentId: 'aluno_1',
+      plan: plan,
+      startDate: DateTime(2026, 11, 20),
+      adminId: 'admin_1',
+    );
+
     await pumpProfileFor(
       tester,
       UserModel(id: 'aluno_1', name: 'Aluno', email: 'aluno@grazi.com'),
     );
 
-    expect(find.text('ACOMPANHAMENTO PROFISSIONAL'), findsOneWidget);
-    expect(find.text('SAÚDE E FICHA CLÍNICA'), findsOneWidget);
-    expect(find.text('CONTATO DE EMERGÊNCIA'), findsOneWidget);
-    expect(find.text('PLANO E MENSALIDADE'), findsNothing);
-    expect(find.text('Plano Presencial + App'), findsNothing);
+    expect(find.text('Plano Conexão Anual'), findsOneWidget);
+    expect(find.text(r'R$ 99,90'), findsOneWidget);
     expect(find.text('Plano Conexão Semestral'), findsNothing);
-    expect(find.text('Renovação em 10/11/2023'), findsNothing);
-    expect(find.text('Musculação + Pilates'), findsNothing);
     expect(find.text('#GB-2023-0482'), findsNothing);
-    expect(find.text('Seus dados, saúde e preferências'), findsOneWidget);
   });
 
   group('falhas e contato de emergência |', () {

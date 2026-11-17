@@ -8,14 +8,15 @@ import 'package:academiagrazi/service/admin/admin_student_service.dart';
 import 'package:academiagrazi/service/students/student_status.dart';
 import 'package:academiagrazi/service/units/unit_service.dart';
 import 'package:academiagrazi/theme/app_colors.dart';
+import 'package:academiagrazi/view/admin/widgets/student_membership_section.dart';
 import 'package:academiagrazi/view/admin/widgets/student_registration_details.dart';
 import 'package:academiagrazi/view/components/app_bar.dart';
 import 'package:academiagrazi/view/components/user_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-/// Dados do aluno para o admin, com a troca do professor responsável e da
-/// modalidade. Mostra a ficha de saúde: dado sensível, só para o admin.
+/// Dados do aluno para o admin, com a troca do professor responsável, da
+/// modalidade e do plano (com as mensalidades). Mostra a ficha de saúde: dado sensível, só para o admin.
 class AdminStudentDetailsView extends StatefulWidget {
   final String studentId;
 
@@ -317,6 +318,8 @@ class _AdminStudentDetailsViewState extends State<AdminStudentDetailsView> {
             ],
           ),
         ),
+        const SizedBox(height: 16),
+        _Card(child: StudentMembershipSection(studentId: student.id)),
         const SizedBox(height: 16),
         _Card(
           child: Column(

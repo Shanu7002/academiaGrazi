@@ -50,4 +50,13 @@ abstract final class BusinessRules {
   /// GB-085 · Capacidade de alunos de um professor sem `studentCapacity`
   /// cadastrada. Acima dela, o admin recebe o alerta de sobrecarga.
   static const int defaultStudentCapacity = 30;
+
+  /// P10 · Dias de antecedência para uma mensalidade em aberto virar
+  /// "vence em breve" (aluno e admin).
+  static const int membershipFeeDueSoonDays = 5;
+
+  /// P11 · Dias de tolerância depois do vencimento: com uma mensalidade
+  /// vencida há mais que isso, o aluno fica com o acesso ao app bloqueado
+  /// até o admin registrar o pagamento.
+  static const int membershipBlockGraceDays = 5;
 }
