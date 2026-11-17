@@ -584,7 +584,11 @@ function summarize(writes) {
 
 // ── Execucao ─────────────────────────────────────────────────────────────
 
-const DEMO_COLLECTIONS = ['users', 'units', 'instructorShifts', 'gym_classes'];
+const DEMO_COLLECTIONS = [
+  'users', 'units', 'instructorShifts', 'gym_classes',
+  // Criados pelo popular_planos.cjs.
+  'membershipPlans', 'memberships',
+];
 
 /** Documentos raiz com ID `demo-*` (as subcolecoes vao junto no recursiveDelete). */
 async function findDemoDocs(db, admin) {

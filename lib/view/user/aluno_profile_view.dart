@@ -16,6 +16,7 @@ import 'package:academiagrazi/view/components/app_bar.dart';
 import 'package:academiagrazi/view/components/instructor_schedule_builder.dart';
 import 'package:academiagrazi/view/components/invite_code_card.dart';
 import 'package:academiagrazi/view/components/user_avatar.dart';
+import 'package:academiagrazi/view/user/widgets/student_membership_summary.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -891,6 +892,21 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
                             ],
                           );
                         },
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+
+                    _SectionCard(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const _SectionHeader(
+                            icon: Icons.credit_card,
+                            title: 'PLANO E MENSALIDADE',
+                          ),
+                          const SizedBox(height: 16),
+                          StudentMembershipSummary(studentId: user.id),
+                        ],
                       ),
                     ),
                   ],

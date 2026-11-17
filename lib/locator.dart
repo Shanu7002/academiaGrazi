@@ -12,6 +12,7 @@ import 'package:academiagrazi/service/teachers/teacher_dashboard.dart';
 import 'package:academiagrazi/service/units/gym_class_service.dart';
 import 'package:academiagrazi/service/units/instructor_shift_service.dart';
 import 'package:academiagrazi/service/units/unit_service.dart';
+import 'package:academiagrazi/service/memberships/membership_service.dart';
 import 'package:academiagrazi/service/users/register_instructor.dart';
 import 'package:academiagrazi/view/preferences_service.dart';
 import 'package:get_it/get_it.dart';
@@ -87,6 +88,7 @@ Future<void> setupLocator() async {
 
   // Units and instructor schedule
   locator.registerLazySingleton<UnitService>(() => UnitService());
+  locator.registerLazySingleton<MembershipService>(() => MembershipService());
   locator.registerLazySingleton<InstructorShiftService>(
     () => InstructorShiftService(),
   );

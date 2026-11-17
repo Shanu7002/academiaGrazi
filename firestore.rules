@@ -349,6 +349,93 @@ service cloud.firestore {
       allow delete: if false;
     }
 
+    function isDateOnly(value) {
+      return value is string && value.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$');
+    }
+
+    // Catalogo de planos da academia. So o admin le e grava; sem gateway
+    // de pagamento. Exclusao logica (active). Valores em centavos.
+    match /membershipPlans/{planId} {
+      function validMembershipPlan(data) {
+        return data.keys().hasOnly([
+            'name', 'monthlyPriceCents', 'durationMonths', 'modalities',
+            'active', 'createdAt'
+          ])
+          && data.keys().hasAll([
+            'name', 'monthlyPriceCents', 'durationMonths', 'active',
+            'createdAt'
+          ])
+          && data.name is string
+          && data.name.size() > 0
+          && data.name.size() <= 80
+          && data.monthlyPriceCents is int
+          && data.monthlyPriceCents > 0
+          && data.durationMonths is int
+          && data.durationMonths >= 1 && data.durationMonths <= 36
+          && (!('modalities' in data)
+            || (data.modalities is string && data.modalities.size() <= 120))
+          && data.active is bool
+          && data.createdAt is string;
+      }
+
+      allow read: if isAdmin();
+      allow create: if isAdmin() && validMembershipPlan(request.resource.data);
+      allow update: if isAdmin()
+        && validMembershipPlan(request.resource.data)
+        && request.resource.data.createdAt == resource.data.createdAt;
+      allow delete: if false;
+    }
+
+    // Plano de cada aluno, com as mensalidades pagas registradas pelo admin.
+    // O aluno le so o proprio; professor nao ve dado financeiro. Depois de
+    // criado, so mudam status, closedAt e payments.
+    match /memberships/{membershipId} {
+      function validMembership(data) {
+        return data.keys().hasOnly([
+            'studentId', 'planId', 'planName', 'modalities',
+            'monthlyPriceCents', 'durationMonths', 'startDate', 'status',
+            'payments', 'createdAt', 'createdBy', 'closedAt'
+          ])
+          && data.keys().hasAll([
+            'studentId', 'planId', 'planName', 'monthlyPriceCents',
+            'durationMonths', 'startDate', 'status', 'payments', 'createdAt',
+            'createdBy'
+          ])
+          && data.studentId is string
+          && data.planId is string
+          && data.planName is string
+          && data.planName.size() > 0
+          && data.planName.size() <= 80
+          && (!('modalities' in data) || data.modalities is string)
+          && data.monthlyPriceCents is int
+          && data.monthlyPriceCents > 0
+          && data.durationMonths is int
+          && data.durationMonths >= 1 && data.durationMonths <= 36
+          && isDateOnly(data.startDate)
+          && data.status in ['active', 'closed']
+          && data.payments is list
+          && data.payments.size() <= data.durationMonths
+          && data.createdAt is string
+          && data.createdBy is string
+          && (!('closedAt' in data) || data.closedAt is string);
+      }
+
+      allow read: if isAdmin()
+        || (signedIn() && resource.data.studentId == request.auth.uid);
+      allow create: if isAdmin()
+        && validMembership(request.resource.data)
+        && request.resource.data.status == 'active'
+        && request.resource.data.createdBy == request.auth.uid
+        && exists(userPath(request.resource.data.studentId))
+        && get(userPath(request.resource.data.studentId)).data.type == 'user'
+        && exists(/databases/$(database)/documents/membershipPlans/$(request.resource.data.planId));
+      allow update: if isAdmin()
+        && validMembership(request.resource.data)
+        && request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['status', 'closedAt', 'payments']);
+      allow delete: if false;
+    }
+
     function validNewTrainingPlan(studentId, planId) {
       return linkedInstructor(studentId)
         && request.resource.data.keys().hasOnly([

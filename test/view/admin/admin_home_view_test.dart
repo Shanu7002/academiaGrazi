@@ -1,3 +1,4 @@
+import 'package:academiagrazi/service/memberships/membership_service.dart';
 import 'package:academiagrazi/locator.dart';
 import 'package:academiagrazi/service/admin/admin_dashboard.dart';
 import 'package:academiagrazi/service/admin/hourly_movement.dart';
@@ -51,6 +52,9 @@ void main() {
   }) {
     locator.registerSingleton<AdminDashboardService>(
       _FakeDashboardService(onGetStats, onGetMovement, onGetTeam),
+    );
+    locator.registerSingleton<MembershipService>(
+      MembershipService(db: FakeFirebaseFirestore()),
     );
   }
 

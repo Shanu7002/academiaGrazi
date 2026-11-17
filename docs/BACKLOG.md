@@ -23,7 +23,8 @@ O arquivo `docs/backlog-jira.csv` é gerado a partir deste documento para import
 | Login, recuperação de senha, perfis | ✅ Real (Firebase Auth + `users`) | Fallback inseguro para admin (GB-002) |
 | Autocadastro do aluno com código do professor | ✅ Real | Código de 4 dígitos, renova a cada 15 min |
 | Cadastro de professor pelo admin | ✅ Real | Sem especialidade nem capacidade |
-| Perfil (foto, ficha de saúde, contato de emergência) | ✅ Real | Plano/mensalidade, bloco e "Prof. Marcos" fixos |
+| Perfil (foto, ficha de saúde, contato de emergência) | ✅ Real | Bloco e "Prof. Marcos" fixos. O plano do aluno é real (`memberships`) |
+| Planos e mensalidades | ✅ Real (controle manual) | Catálogo e mensalidades pelo admin; o aluno vê o próprio plano. Sem pagamento online |
 | Home do admin | 🟡 Parcial | Só "alunos ativos" é real; o resto é `AdminHomeMockData` |
 | Equipe / detalhes do professor | 🟡 Parcial | Capacidade 30, cargo e avaliações pendentes vêm de `AdminTeamMockData` |
 | Dashboard do professor | ✅ Real (GB-070 a GB-072) | Ativos, presenças de hoje, risco de evasão e prioridades vêm do Firestore (`TeacherDashboardService`). A avaliação atrasada segue a P9 até existir agendamento (GB-060/061) |
@@ -53,7 +54,8 @@ O arquivo `docs/backlog-jira.csv` é gerado a partir deste documento para import
 | Modalidade do aluno (presencial/remoto) | Definida **pelo professor ou admin**. O seletor do login continua apenas visual. |
 | Capacidade e especialidade | **Campos por professor**, definidos pelo admin. |
 | Treinar em casa | **Mantido** (aba/ficha "Treinar em casa", treinos complementares, card "Remotos"). Sem vídeo, pela decisão acima. |
-| **Sai** do app | Card "Plano e Mensalidade", atalho "Finanças", botão "Mensagem", "Redistribuir alunos". |
+| **Sai** do app | Atalho "Finanças", botão "Mensagem", "Redistribuir alunos". |
+| Planos e mensalidades (2026-11-16) | **Entram como controle manual**, sem gateway: o admin mantém o catálogo (`membershipPlans`), atribui o plano ao aluno e registra cada pagamento (`memberships`). O aluno vê plano, validade e situação no perfil; o professor não vê dado financeiro. Atraso gera aviso (aluno e lista do admin); **com mensalidade vencida há mais de 5 dias (P11) o aluno fica com o app bloqueado** e vê o aviso para falar com o professor responsável (decisão de 2026-11-16). Substitui o GB-120 (AGB-138). |
 | IA | Continua como card desabilitado "Recurso futuro" (restrição 7). Nenhuma tarefa. |
 | Home do aluno (GB-090 a GB-093) | Entregue num único PR. "Iniciar treino" abre a execução direto, com o mesmo fluxo da aba Treinos (`StudentWorkoutLauncher`). O treino em destaque é o da programação semanal de hoje. O resumo de evolução mostra a variação de **peso** entre as duas últimas avaliações. O atalho "Aulas" fica **oculto** até existir a grade do aluno (GB-101). |
 | Dashboard do professor (GB-070 a GB-072) | Entregue num único PR. "Alunos ativos" conta só o status `active`. Os toques usam as telas reais: card Alunos → aba Treinos; card Risco → painel com os alunos em risco; "Ver perfil" e "Montar" → aba Treinos com o aluno aberto; "Revisar" → aba Evolução com o aluno selecionado. Sem agendamento de avaliação, "Revisar" usa a avaliação atrasada (P9). Sem validade de ficha no modelo atual, "Montar" cobre só o aluno sem ficha nem treino em casa. |
@@ -74,6 +76,8 @@ Cada item traz uma **proposta padrão**. Se ninguém se opuser até o início do
 | P7 | O toggle "Lembrete diário de treino" do perfil não dispara nada (não há push). Remover ou manter? | Remover o toggle | GB-123 |
 | P8 | O aluno pode ter mais de uma ficha ativa (A/B/C)? | Sim: o "ciclo" agrupa várias fichas (A, B, C) com a mesma validade | GB-020 |
 | P9 | Enquanto não há agendamento, quando a avaliação física vira prioridade "Revisar"? | Última avaliação há 90 dias ou mais, ou nenhuma avaliação após 30 dias de cadastro | GB-072 |
+| P10 | Com quantos dias de antecedência a mensalidade em aberto vira "vence em breve"? | 10 dias (alterado de 5 em 2026-11-16) | Planos e mensalidades |
+| P11 | Depois de quantos dias de atraso o aluno fica com o app bloqueado? | Mais de 5 dias após o vencimento (decidido em 2026-11-16) | Planos e mensalidades |
 
 ---
 
@@ -821,7 +825,7 @@ Cada item traz uma **proposta padrão**. Se ninguém se opuser até o início do
 - **Perfil:** Aluno, Professor
 - **Depende de:** —
 - **Remove mock:** "Plano Conexão Semestral", "Renovação em 10/11/2023", "#GB-2023-0482", "Musculação + Pilates" e "Plano Presencial + App" (`aluno_profile_view.dart`)
-- **Descrição:** Remova o card "Plano e Mensalidade" e o selo de plano do resumo do perfil. Pagamentos estão fora do escopo.
+- **Descrição:** ~~Remova o card "Plano e Mensalidade" e o selo de plano do resumo do perfil.~~ **Substituído em 2026-11-16:** os textos fixos saíram, mas o card passou a mostrar o plano real do aluno (controle manual de planos e mensalidades, sem gateway). O selo fixo abaixo do nome foi removido.
 - **Critérios de aceite:**
   - `aluno_profile_view_test.dart` atualizado.
 

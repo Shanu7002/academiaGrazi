@@ -136,6 +136,37 @@ async function main() {
     await test('admin retira aula da grade',()=>assertSucceeds(updateDoc(doc(admin,'gym_classes/spinning'),{active:false})));
     await test('admin nao reescreve createdAt da aula',()=>assertFails(updateDoc(doc(admin,'gym_classes/spinning'),{createdAt:'2020-01-01T00:00:00.000Z'})));
     await test('aula nao e apagada, nem pelo admin',()=>assertFails(deleteDoc(doc(admin,'gym_classes/spinning'))));
+    // Planos e mensalidades: admin grava; aluno le so o proprio; professor nao ve.
+    const planoCatalogo=(extra={})=>({name:'Semestral',monthlyPriceCents:12990,durationMonths:6,active:true,createdAt:'2026-11-16T12:00:00.000Z',...extra});
+    const matricula=(extra={})=>({studentId:'aluno1',planId:'semestral',planName:'Semestral',monthlyPriceCents:12990,durationMonths:6,startDate:'2026-11-20',status:'active',payments:[],createdAt:'2026-11-16T12:00:00.000Z',createdBy:'admin1',...extra});
+    const pagamento={installment:1,paidOn:'2026-11-20',method:'pix',amountCents:12990,recordedBy:'admin1',recordedAt:'2026-11-20T12:00:00.000Z'};
+    await test('admin cria plano no catalogo',()=>assertSucceeds(setDoc(doc(admin,'membershipPlans/semestral'),planoCatalogo({modalities:'Musculacao'}))));
+    await test('aluno nao le o catalogo de planos',()=>assertFails(getDoc(doc(aluno1,'membershipPlans/semestral'))));
+    await test('professor nao cria plano',()=>assertFails(setDoc(doc(prof1,'membershipPlans/anual'),planoCatalogo())));
+    await test('plano com valor zero e recusado',()=>assertFails(setDoc(doc(admin,'membershipPlans/gratis'),planoCatalogo({monthlyPriceCents:0}))));
+    await test('plano com valor decimal e recusado',()=>assertFails(setDoc(doc(admin,'membershipPlans/decimal'),planoCatalogo({monthlyPriceCents:129.9}))));
+    await test('plano acima de 36 meses e recusado',()=>assertFails(setDoc(doc(admin,'membershipPlans/longo'),planoCatalogo({durationMonths:37}))));
+    await test('admin retira plano do catalogo',()=>assertSucceeds(updateDoc(doc(admin,'membershipPlans/semestral'),{active:false})));
+    await test('admin nao reescreve createdAt do plano',()=>assertFails(updateDoc(doc(admin,'membershipPlans/semestral'),{createdAt:'2020-01-01T00:00:00.000Z'})));
+    await test('plano do catalogo nao e apagado',()=>assertFails(deleteDoc(doc(admin,'membershipPlans/semestral'))));
+    await test('admin atribui plano ao aluno',()=>assertSucceeds(setDoc(doc(admin,'memberships/m1'),matricula())));
+    await test('plano para quem nao e aluno e recusado',()=>assertFails(setDoc(doc(admin,'memberships/m2'),matricula({studentId:'prof1'}))));
+    await test('plano com plano do catalogo inexistente e recusado',()=>assertFails(setDoc(doc(admin,'memberships/m3'),matricula({planId:'naoExiste'}))));
+    await test('plano criado em nome de outro admin e recusado',()=>assertFails(setDoc(doc(admin,'memberships/m4'),matricula({createdBy:'outro'}))));
+    await test('plano com data invalida e recusado',()=>assertFails(setDoc(doc(admin,'memberships/m5'),matricula({startDate:'20/11/2026'}))));
+    await test('professor nao atribui plano',()=>assertFails(setDoc(doc(prof1,'memberships/m6'),matricula({createdBy:'prof1'}))));
+    await test('aluno le o proprio plano',()=>assertSucceeds(getDoc(doc(aluno1,'memberships/m1'))));
+    await test('aluno lista o proprio plano ativo',()=>assertSucceeds(getDocs(query(collection(aluno1,'memberships'),where('studentId','==','aluno1'),where('status','==','active')))));
+    await test('outro aluno nao le o plano',()=>assertFails(getDoc(doc(aluno2,'memberships/m1'))));
+    await test('professor responsavel nao le o plano do aluno',()=>assertFails(getDoc(doc(prof1,'memberships/m1'))));
+    await test('aluno nao registra o proprio pagamento',()=>assertFails(updateDoc(doc(aluno1,'memberships/m1'),{payments:[pagamento]})));
+    await test('admin registra pagamento',()=>assertSucceeds(updateDoc(doc(admin,'memberships/m1'),{payments:[pagamento]})));
+    await test('admin nao troca o aluno do plano',()=>assertFails(updateDoc(doc(admin,'memberships/m1'),{studentId:'aluno2'})));
+    await test('admin nao altera o valor contratado',()=>assertFails(updateDoc(doc(admin,'memberships/m1'),{monthlyPriceCents:100})));
+    await test('mais pagamentos que mensalidades e recusado',()=>assertFails(updateDoc(doc(admin,'memberships/m1'),{payments:Array(7).fill(pagamento)})));
+    await test('admin encerra o plano',()=>assertSucceeds(updateDoc(doc(admin,'memberships/m1'),{status:'closed',closedAt:'2026-12-01T12:00:00.000Z'})));
+    await test('status desconhecido e recusado',()=>assertFails(updateDoc(doc(admin,'memberships/m1'),{status:'paused'})));
+    await test('plano do aluno nao e apagado',()=>assertFails(deleteDoc(doc(admin,'memberships/m1'))));
 
     await test('professor vinculado cria rascunho',()=>assertSucceeds(setDoc(plan(prof1),draft())));
     await test('professor alheio nao cria rascunho',()=>assertFails(setDoc(plan(prof2,'outra'),draft('outra'))));

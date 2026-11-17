@@ -1,6 +1,11 @@
 import 'package:academiagrazi/view/components/brand_heading.dart';
 import 'package:academiagrazi/theme/app_font_size.dart';
 import 'package:academiagrazi/locator.dart';
+import 'package:academiagrazi/models/memberships/membership_model.dart';
+import 'package:academiagrazi/service/memberships/membership_schedule.dart';
+import 'package:academiagrazi/service/memberships/membership_service.dart';
+import 'package:academiagrazi/view/admin/membership_plans_view.dart';
+import 'package:academiagrazi/view/admin/overdue_memberships_view.dart';
 import 'package:academiagrazi/service/admin/admin_alerts.dart';
 import 'package:academiagrazi/service/admin/admin_dashboard.dart';
 import 'package:academiagrazi/service/admin/hourly_movement.dart';
@@ -26,6 +31,8 @@ class _AdminHomeViewState extends State<AdminHomeView> {
   late final Future<StudentStats> _studentStats;
   late Future<HourlyMovement> _movement;
   late Future<List<AdminAlert>> _alerts;
+  final Stream<List<MembershipModel>> _memberships =
+      locator<MembershipService>().streamActiveMemberships();
 
   @override
   void initState() {
@@ -168,6 +175,53 @@ class _AdminHomeViewState extends State<AdminHomeView> {
                   onPressed: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(builder: (_) => const GymClassesView()),
+                    );
+                  },
+                ),
+                const SizedBox(height: 12),
+                _QuickAccessButton(
+                  key: const Key('botao_planos'),
+                  icon: Icons.card_membership_outlined,
+                  label: 'Planos',
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const MembershipPlansView(),
+                      ),
+                    );
+                  },
+                ),
+                const SizedBox(height: 12),
+                StreamBuilder<List<MembershipModel>>(
+                  stream: _memberships,
+                  builder: (context, snapshot) {
+                    if (snapshot.hasError) {
+                      debugPrint(
+                        'Erro ao contar mensalidades: ${snapshot.error}',
+                      );
+                    }
+                    final memberships = snapshot.data;
+                    final overdue =
+                        memberships == null
+                            ? null
+                            : overdueMemberships(
+                              memberships,
+                              DateTime.now(),
+                            ).length;
+                    return _QuickAccessButton(
+                      key: const Key('botao_mensalidades_atraso'),
+                      icon: Icons.receipt_long_outlined,
+                      label:
+                          overdue == null || overdue == 0
+                              ? 'Mensalidades em atraso'
+                              : 'Mensalidades em atraso ($overdue)',
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const OverdueMembershipsView(),
+                          ),
+                        );
+                      },
                     );
                   },
                 ),
