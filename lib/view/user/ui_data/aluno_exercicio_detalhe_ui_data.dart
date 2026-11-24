@@ -4,12 +4,10 @@ class AlunoExercicioDetalheUiData {
   final ExercicioTreinoUi exercicio;
   final String descanso;
   final String orientacoes;
-  final String tempoVideo;
 
   const AlunoExercicioDetalheUiData({
     required this.exercicio,
     required this.descanso,
     required this.orientacoes,
-    required this.tempoVideo,
   });
 }

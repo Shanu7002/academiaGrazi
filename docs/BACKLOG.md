@@ -23,16 +23,17 @@ O arquivo `docs/backlog-jira.csv` é gerado a partir deste documento para import
 | Login, recuperação de senha, perfis | ✅ Real (Firebase Auth + `users`) | Fallback inseguro para admin (GB-002) |
 | Autocadastro do aluno com código do professor | ✅ Real | Código de 4 dígitos, renova a cada 15 min |
 | Cadastro de professor pelo admin | ✅ Real | Sem especialidade nem capacidade |
-| Perfil (foto, ficha de saúde, contato de emergência) | ✅ Real | Plano/mensalidade, bloco e "Prof. Marcos" fixos |
+| Perfil (foto, ficha de saúde, contato de emergência) | ✅ Real | Bloco e "Prof. Marcos" fixos. O plano do aluno é real (`memberships`) |
+| Planos e mensalidades | ✅ Real (controle manual) | Catálogo e mensalidades pelo admin; o aluno vê o próprio plano. Sem pagamento online |
 | Home do admin | 🟡 Parcial | Só "alunos ativos" é real; o resto é `AdminHomeMockData` |
 | Equipe / detalhes do professor | 🟡 Parcial | Capacidade 30, cargo e avaliações pendentes vêm de `AdminTeamMockData` |
-| Dashboard do professor | 🟡 Parcial | Só a contagem de alunos é real; nome, bloco, presenças e prioridades são fixos |
-| Lista de alunos do professor | 🔴 Mock e sem rota | `ListaAlunosView` não é aberta por nenhuma tela |
+| Dashboard do professor | ✅ Real (GB-070 a GB-072) | Ativos, presenças de hoje, risco de evasão e prioridades vêm do Firestore (`TeacherDashboardService`). A avaliação atrasada segue a P9 até existir agendamento (GB-060/061) |
+| Lista de alunos do professor | ✅ Real (GB-050, GB-052) | Aberta pelos cards Alunos e Risco do painel, com busca e filtros. "Editar/Montar treino" abre a montagem do aluno; "Ver perfil" abre o resumo na aba Treinos até existir o GB-051 |
 | Montagem de treino | 🟡 UI pronta | Catálogo fixo no código; "Salvar modelo" e "Atribuir" não gravam |
 | Treinos / execução / detalhe do exercício (aluno) | 🔴 Mock | Tudo vem de `TreinosMockData`; nada é persistido |
 | Evolução (aluno) | 🔴 Mock | Valores fixos; botões de período sem ação |
 | Evolução (professor) | 🔴 Placeholder | "Tela em desenvolvimento" |
-| Home do aluno | 🔴 Mock | Todos os botões com `onPressed: () {}` |
+| Home do aluno | ✅ Real (GB-090 a GB-093) | Treino do dia, professor, sequência, variação de peso e próxima aula vêm do Firestore. Atalho "Aulas" oculto até o GB-101; a próxima avaliação entra quando houver agendamento (GB-061) |
 | Aba Treinos do admin | 🔴 Errada | Mostra a tela de treinos do aluno com mock |
 | Notificações | 🔴 Inexistente | Sino sem ação em todas as telas |
 | Unidades (blocos), aulas, avaliações, sessões | 🔴 Inexistente no banco | — |
@@ -53,8 +54,12 @@ O arquivo `docs/backlog-jira.csv` é gerado a partir deste documento para import
 | Modalidade do aluno (presencial/remoto) | Definida **pelo professor ou admin**. O seletor do login continua apenas visual. |
 | Capacidade e especialidade | **Campos por professor**, definidos pelo admin. |
 | Treinar em casa | **Mantido** (aba/ficha "Treinar em casa", treinos complementares, card "Remotos"). Sem vídeo, pela decisão acima. |
-| **Sai** do app | Card "Plano e Mensalidade", atalho "Finanças", botão "Mensagem", "Redistribuir alunos". |
+| **Sai** do app | Atalho "Finanças", botão "Mensagem", "Redistribuir alunos". |
+| Planos e mensalidades (2026-11-16) | **Entram como controle manual**, sem gateway: o admin mantém o catálogo (`membershipPlans`), atribui o plano ao aluno e registra cada pagamento (`memberships`). O aluno vê plano, validade e situação no perfil; o professor não vê dado financeiro. Atraso gera aviso (aluno e lista do admin); **com mensalidade vencida há mais de 5 dias (P11) o aluno fica com o app bloqueado** e vê o aviso para falar com o professor responsável (decisão de 2026-11-16). Substitui o GB-120 (AGB-138). |
 | IA | Continua como card desabilitado "Recurso futuro" (restrição 7). Nenhuma tarefa. |
+| Home do aluno (GB-090 a GB-093) | Entregue num único PR. "Iniciar treino" abre a execução direto, com o mesmo fluxo da aba Treinos (`StudentWorkoutLauncher`). O treino em destaque é o da programação semanal de hoje. O resumo de evolução mostra a variação de **peso** entre as duas últimas avaliações. O atalho "Aulas" fica **oculto** até existir a grade do aluno (GB-101). |
+| Dashboard do professor (GB-070 a GB-072) | Entregue num único PR. "Alunos ativos" conta só o status `active`. Os toques usam as telas reais: card Alunos → aba Treinos; card Risco → painel com os alunos em risco; "Ver perfil" e "Montar" → aba Treinos com o aluno aberto; "Revisar" → aba Evolução com o aluno selecionado. Sem agendamento de avaliação, "Revisar" usa a avaliação atrasada (P9). Sem validade de ficha no modelo atual, "Montar" cobre só o aluno sem ficha nem treino em casa. |
+| Lista de alunos do professor (GB-050 + GB-052) | Entregue num único PR, porque os botões da lista dependem do GB-052. O card Risco do painel abre a lista filtrada (no lugar do painel lateral). Filtros: Todos, Risco de evasão, Inativos, Avaliação pendente (P9) e uma opção por unidade dos alunos. O status mostra Ativo, Risco, Inativo ou Novo. |
 
 ### Pendências de definição (confirmar com o time antes de implementar o card)
 
@@ -70,6 +75,9 @@ Cada item traz uma **proposta padrão**. Se ninguém se opuser até o início do
 | P6 | Limiar do alerta automático de inativos no admin | > 10% dos alunos ativos | GB-083 |
 | P7 | O toggle "Lembrete diário de treino" do perfil não dispara nada (não há push). Remover ou manter? | Remover o toggle | GB-123 |
 | P8 | O aluno pode ter mais de uma ficha ativa (A/B/C)? | Sim: o "ciclo" agrupa várias fichas (A, B, C) com a mesma validade | GB-020 |
+| P9 | Enquanto não há agendamento, quando a avaliação física vira prioridade "Revisar"? | Última avaliação há 90 dias ou mais, ou nenhuma avaliação após 30 dias de cadastro | GB-072 |
+| P10 | Com quantos dias de antecedência a mensalidade em aberto vira "vence em breve"? | 10 dias (alterado de 5 em 2026-11-16) | Planos e mensalidades |
+| P11 | Depois de quantos dias de atraso o aluno fica com o app bloqueado? | Mais de 5 dias após o vencimento (decidido em 2026-11-16) | Planos e mensalidades |
 
 ---
 
@@ -551,7 +559,7 @@ Cada item traz uma **proposta padrão**. Se ninguém se opuser até o início do
 - **Perfil:** Professor
 - **Depende de:** GB-044
 - **Remove mock:** "Olá, Marcos" fixo
-- **Descrição:** A saudação usa o nome do professor logado. O card "Alunos ativos" abre a lista (GB-050). A raiz da aba não mostra a seta de voltar (`showBackButton: false`).
+- **Descrição:** A saudação usa o nome do professor logado. O card "Alunos ativos" abre a lista (GB-050). A raiz da aba não mostra a seta de voltar (o `CustomAppBar` só a exibe quando a tela pode voltar).
 - **Critérios de aceite:**
   - Teste de widget com nome vindo do service.
 
@@ -801,7 +809,7 @@ Cada item traz uma **proposta padrão**. Se ninguém se opuser até o início do
 - **Requisito:** RF14, RNF02
 - **Perfil:** Todos
 - **Depende de:** GB-012, GB-062
-- **Descrição:** Abas finais: **Aluno**: Início, Treinos, Evolução, Perfil. **Professor**: Início, Treinos (montagem), Evolução, Perfil, com a lista de alunos aberta pelo Início. **Admin**: Início, Exercícios, Equipe, Perfil. Telas raiz de aba usam `showBackButton: false` (hoje várias mostram uma seta que não volta para lugar nenhum). Tocar de novo na aba do professor volta à raiz, como já acontece no `MainShell`.
+- **Descrição:** Abas finais: **Aluno**: Início, Treinos, Evolução, Perfil. **Professor**: Início, Treinos (montagem), Evolução, Perfil, com a lista de alunos aberta pelo Início. **Admin**: Início, Exercícios, Equipe, Perfil. Telas raiz de aba não mostram a seta de voltar: o `CustomAppBar` só a exibe quando a tela pode voltar. Tocar de novo na aba do professor volta à raiz, como já acontece no `MainShell`.
 - **Critérios de aceite:**
   - `tab_router_test.dart` cobre as abas dos 3 perfis.
 
@@ -817,7 +825,7 @@ Cada item traz uma **proposta padrão**. Se ninguém se opuser até o início do
 - **Perfil:** Aluno, Professor
 - **Depende de:** —
 - **Remove mock:** "Plano Conexão Semestral", "Renovação em 10/11/2023", "#GB-2023-0482", "Musculação + Pilates" e "Plano Presencial + App" (`aluno_profile_view.dart`)
-- **Descrição:** Remova o card "Plano e Mensalidade" e o selo de plano do resumo do perfil. Pagamentos estão fora do escopo.
+- **Descrição:** ~~Remova o card "Plano e Mensalidade" e o selo de plano do resumo do perfil.~~ **Substituído em 2026-11-16:** os textos fixos saíram, mas o card passou a mostrar o plano real do aluno (controle manual de planos e mensalidades, sem gateway). O selo fixo abaixo do nome foi removido.
 - **Critérios de aceite:**
   - `aluno_profile_view_test.dart` atualizado.
 
@@ -888,3 +896,15 @@ Cada item traz uma **proposta padrão**. Se ninguém se opuser até o início do
 - **Descrição:** Configure o Firebase Emulator e uma suíte `@firebase/rules-unit-testing` em `firestore-tests/` cobrindo os cenários de permissão de cada coleção (aluno x aluno, professor x aluno de outro professor, admin). Opcionalmente, rode no CI.
 - **Critérios de aceite:**
   - `npm test` em `firestore-tests/` passa localmente.
+
+---
+
+## AGB-205 · Redesign do login com cenários alternáveis
+
+- **Tipo:** Melhoria visual e de experiência.
+- **Requisitos:** RF01 e RNF02.
+- **Escopo:** substituir o layout de `LoginView`; preservar autenticação, autocadastro, recuperação de senha, abertura animada, perfis e controle de mensalidades.
+- **Implementação:** fotos locais de Presencial/Treino em casa, texto contextual, seletor manual, rotação automática, pausa automática ao digitar (sem botão de pausa), cenários renovados e acessibilidade.
+- **Sem:** nova modalidade de cadastro, gateway de pagamento, alteração de coleções, deploy, dependências novas ou imagens de telefone incorporadas à interface.
+- **Documentação e aceite:** `docs/AGB-205_LOGIN.md`.
+- **Estado:** código entregue para aplicação e validação local; conclusão depende de `flutter analyze`, suíte de testes e homologação visual na branch do card.

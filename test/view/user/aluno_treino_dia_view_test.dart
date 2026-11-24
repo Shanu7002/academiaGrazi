@@ -28,7 +28,6 @@ void main() {
 
     expect(view.data.exercicio.id, 'agachamento');
     expect(view.data.descanso, '75s');
-    expect(view.data.tempoVideo, '01:45');
   });
 
   testWidgets('continuar treino abre o primeiro exercício pendente', (

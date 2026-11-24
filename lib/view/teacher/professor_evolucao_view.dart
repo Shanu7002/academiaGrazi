@@ -1,3 +1,5 @@
+import 'package:academiagrazi/view/teacher/student_open_request.dart';
+import 'package:academiagrazi/view/components/brand_heading.dart';
 import 'package:academiagrazi/controller/teachers/teacher_user_searcher.dart';
 import 'package:academiagrazi/locator.dart';
 import 'package:academiagrazi/models/evaluations/physical_evaluation.dart';
@@ -8,12 +10,15 @@ import 'package:academiagrazi/view/teacher/nova_avaliacao_view.dart';
 import 'package:academiagrazi/view/user/aluno_evolucao_view.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 /// Aba Evolução do professor: escolhe um aluno vinculado, acompanha as
 /// avaliações dele e registra novas.
 class ProfessorEvolucaoView extends StatefulWidget {
-  const ProfessorEvolucaoView({super.key});
+  /// Pedidos de outras abas (ex.: prioridades do painel) para selecionar um
+  /// aluno.
+  final StudentOpenRequest? openRequest;
+
+  const ProfessorEvolucaoView({super.key, this.openRequest});
 
   @override
   State<ProfessorEvolucaoView> createState() => _ProfessorEvolucaoViewState();
@@ -28,6 +33,18 @@ class _ProfessorEvolucaoViewState extends State<ProfessorEvolucaoView> {
     super.initState();
     final professorId = locator<FirebaseAuth>().currentUser!.uid;
     _alunos = locator<TeacherUserSearcher>().streamLinkedUsers(professorId);
+    widget.openRequest?.addListener(_onOpenRequest);
+  }
+
+  @override
+  void dispose() {
+    widget.openRequest?.removeListener(_onOpenRequest);
+    super.dispose();
+  }
+
+  void _onOpenRequest() {
+    final alunoId = widget.openRequest?.studentId;
+    if (mounted && alunoId != null) setState(() => _alunoId = alunoId);
   }
 
   Future<void> _novaAvaliacao(UserSummary aluno) async {
@@ -75,7 +92,7 @@ class _ProfessorEvolucaoViewState extends State<ProfessorEvolucaoView> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Não foi possível excluir a avaliação.'),
+            content: Text('Não conseguimos excluir a avaliação agora.'),
           ),
         );
       }
@@ -92,7 +109,7 @@ class _ProfessorEvolucaoViewState extends State<ProfessorEvolucaoView> {
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return const Center(
-              child: Text('Erro de conexão ao carregar os alunos.'),
+              child: Text('Sem conexão para carregar os alunos. Tente novamente.'),
             );
           }
           if (!snapshot.hasData) {
@@ -114,14 +131,7 @@ class _ProfessorEvolucaoViewState extends State<ProfessorEvolucaoView> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Text(
-                  'Avaliações',
-                  style: GoogleFonts.barlowCondensed(
-                    fontSize: 27,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.navy,
-                  ),
-                ),
+                BrandHeading('Avaliações', complement: 'Evolução dos alunos'),
                 const SizedBox(height: 8),
                 DropdownButtonFormField<String>(
                   key: ValueKey(aluno.id),

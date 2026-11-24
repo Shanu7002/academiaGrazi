@@ -1,8 +1,13 @@
+import 'package:academiagrazi/view/components/brand_heading.dart';
+import 'package:academiagrazi/theme/app_font_size.dart';
 import 'package:academiagrazi/locator.dart';
-import 'package:academiagrazi/models/users/registration_profile.dart';
 import 'package:academiagrazi/service/admin/admin_dashboard.dart';
 import 'package:academiagrazi/theme/app_colors.dart';
+import 'package:academiagrazi/view/admin/admin_student_details_view.dart';
+import 'package:academiagrazi/view/admin/manual_redistribution_view.dart';
 import 'package:academiagrazi/view/admin/mocks/admin_team_mock_data.dart';
+import 'package:academiagrazi/view/admin/widgets/instructor_schedule_section.dart';
+import 'package:academiagrazi/view/admin/widgets/student_registration_details.dart';
 import 'package:academiagrazi/view/components/app_bar.dart';
 import 'package:academiagrazi/view/components/invite_code_card.dart';
 import 'package:flutter/material.dart';
@@ -43,10 +48,17 @@ class _InstructorDetailsViewState extends State<InstructorDetailsView> {
     });
   }
 
-  void _showMessage(String message) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(message)));
+  /// Redistribuição manual com este professor como origem.
+  Future<void> _openManualRedistribution() async {
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder:
+            (_) => ManualRedistributionView(
+              initialFromInstructorId: widget.instructorId,
+            ),
+      ),
+    );
+    if (mounted) _reload();
   }
 
   @override
@@ -70,7 +82,7 @@ class _InstructorDetailsViewState extends State<InstructorDetailsView> {
                 return _CenteredMessage(
                   icon: Icons.cloud_off_outlined,
                   message:
-                      'Não foi possível carregar o professor. '
+                      'Não conseguimos carregar o professor agora. '
                       'Tente novamente.',
                   actionLabel: 'Tentar novamente',
                   onAction: _reload,
@@ -126,15 +138,12 @@ class _InstructorDetailsViewState extends State<InstructorDetailsView> {
             height: 52,
             child: OutlinedButton.icon(
               key: const Key('botao_redistribuir_professor'),
-              onPressed:
-                  () => _showMessage(
-                    'Redistribuir alunos estará disponível em breve.',
-                  ),
+              onPressed: _openManualRedistribution,
               icon: const Icon(Icons.sync, size: 20),
               label: Text(
                 'Redistribuir Alunos',
-                style: GoogleFonts.inter(
-                  fontSize: 15,
+                style: GoogleFonts.barlowCondensed(
+                  fontSize: AppFontSize.small,
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -148,6 +157,8 @@ class _InstructorDetailsViewState extends State<InstructorDetailsView> {
               ),
             ),
           ),
+          const SizedBox(height: 16),
+          InstructorScheduleSection(instructorId: widget.instructorId),
           const SizedBox(height: 28),
           _SectionTitle('Alunos (${details.students.length})'),
           const SizedBox(height: 16),
@@ -158,14 +169,14 @@ class _InstructorDetailsViewState extends State<InstructorDetailsView> {
               key: const Key('campo_busca_aluno'),
               controller: _searchController,
               onChanged: (value) => setState(() => _search = value),
-              style: GoogleFonts.inter(
-                fontSize: 15,
+              style: GoogleFonts.barlowCondensed(
+                fontSize: AppFontSize.small,
                 color: AppColors.textPrimary,
               ),
               decoration: InputDecoration(
                 hintText: 'Buscar aluno por nome ou e-mail',
-                hintStyle: GoogleFonts.inter(
-                  fontSize: 14,
+                hintStyle: GoogleFonts.barlowCondensed(
+                  fontSize: AppFontSize.small,
                   color: AppColors.textMuted,
                 ),
                 prefixIcon: const Icon(Icons.search, color: AppColors.primary),
@@ -195,8 +206,8 @@ class _InstructorDetailsViewState extends State<InstructorDetailsView> {
                 child: Text(
                   'Nenhum aluno encontrado para "$_search".',
                   textAlign: TextAlign.center,
-                  style: GoogleFonts.inter(
-                    fontSize: 14,
+                  style: GoogleFonts.barlowCondensed(
+                    fontSize: AppFontSize.small,
                     color: AppColors.slateText,
                   ),
                 ),
@@ -240,50 +251,6 @@ String _initials(String name) {
   return (parts.first[0] + parts.last[0]).toUpperCase();
 }
 
-String _formatDate(DateTime date) {
-  String two(int value) => value.toString().padLeft(2, '0');
-  return '${two(date.day)}/${two(date.month)}/${date.year}';
-}
-
-String _formatPhone(String phone) {
-  final digits = phone.replaceAll(RegExp(r'\D'), '');
-  if (digits.length == 11) {
-    return '(${digits.substring(0, 2)}) ${digits.substring(2, 7)}-'
-        '${digits.substring(7)}';
-  }
-  if (digits.length == 10) {
-    return '(${digits.substring(0, 2)}) ${digits.substring(2, 6)}-'
-        '${digits.substring(6)}';
-  }
-  return phone;
-}
-
-String _goalLabel(PrimaryGoal goal) {
-  switch (goal) {
-    case PrimaryGoal.weightLoss:
-      return 'Emagrecimento & Definição';
-    case PrimaryGoal.muscleGain:
-      return 'Ganho de Massa Muscular';
-    case PrimaryGoal.conditioning:
-      return 'Condicionamento & Saúde';
-    case PrimaryGoal.strengthening:
-      return 'Fortalecimento & Postura';
-    case PrimaryGoal.mobility:
-      return 'Mobilidade & Flexibilidade';
-  }
-}
-
-const _noneOptions = {'Nenhuma dor', 'Não possuo'};
-
-/// Condições e restrições relevantes, sem as opções de "nenhuma".
-List<String> _healthAlerts(RegistrationProfile? profile) {
-  if (profile == null) return const [];
-  return [
-    ...profile.health.conditions,
-    ...profile.health.restrictions,
-  ].where((item) => !_noneOptions.contains(item)).toList();
-}
-
 BoxDecoration _cardDecoration({
   Color borderColor = AppColors.borderTranslucent,
 }) {
@@ -300,13 +267,6 @@ BoxDecoration _cardDecoration({
     ],
   );
 }
-
-TextStyle get _labelStyle => GoogleFonts.inter(
-  fontSize: 12,
-  fontWeight: FontWeight.w600,
-  letterSpacing: .5,
-  color: AppColors.slateText,
-);
 
 // ---------------------------------------------------------------------------
 // Widgets
@@ -339,7 +299,7 @@ class _ProfileCard extends StatelessWidget {
                 child: Text(
                   _initials(name),
                   style: GoogleFonts.barlowCondensed(
-                    fontSize: 26,
+                    fontSize: AppFontSize.title,
                     fontWeight: FontWeight.bold,
                     color: overloaded ? AppColors.danger : AppColors.primary,
                   ),
@@ -355,7 +315,7 @@ class _ProfileCard extends StatelessWidget {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: GoogleFonts.barlowCondensed(
-                        fontSize: 28,
+                        fontSize: AppFontSize.headline,
                         fontWeight: FontWeight.bold,
                         height: 1.1,
                         color: AppColors.primaryDark,
@@ -364,7 +324,7 @@ class _ProfileCard extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       AdminTeamMockData.instructorRole.toUpperCase(),
-                      style: _labelStyle,
+                      style: adminLabelStyle,
                     ),
                   ],
                 ),
@@ -372,7 +332,7 @@ class _ProfileCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
-          _InfoRow(
+          AdminInfoRow(
             icon: Icons.mail_outline,
             label: 'E-mail',
             value:
@@ -386,46 +346,6 @@ class _ProfileCard extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-class _InfoRow extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final String value;
-
-  const _InfoRow({
-    required this.icon,
-    required this.label,
-    required this.value,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Icon(icon, size: 20, color: AppColors.primary),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(label.toUpperCase(), style: _labelStyle),
-              const SizedBox(height: 2),
-              Text(
-                value,
-                style: GoogleFonts.inter(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w500,
-                  color: AppColors.textPrimary,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
     );
   }
 }
@@ -453,13 +373,10 @@ class _WorkloadCard extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: Text(
-                  'Carga de Trabalho',
-                  style: GoogleFonts.barlowCondensed(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.primaryDark,
-                  ),
+                child: BrandHeading(
+                  'Carga',
+                  complement: 'De trabalho',
+                  level: BrandHeadingLevel.section,
                 ),
               ),
               Container(
@@ -476,8 +393,8 @@ class _WorkloadCard extends StatelessWidget {
                 ),
                 child: Text(
                   overloaded ? 'Sobrecarga' : 'Carga equilibrada',
-                  style: GoogleFonts.inter(
-                    fontSize: 12,
+                  style: GoogleFonts.barlowCondensed(
+                    fontSize: AppFontSize.caption,
                     fontWeight: FontWeight.w600,
                     color: overloaded ? AppColors.danger : AppColors.primary,
                   ),
@@ -514,8 +431,8 @@ class _WorkloadCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   'Capacidade (${(load * 100).round()}%)',
-                  style: GoogleFonts.inter(
-                    fontSize: 13,
+                  style: GoogleFonts.barlowCondensed(
+                    fontSize: AppFontSize.caption,
                     fontWeight: FontWeight.w600,
                     color: AppColors.slateText,
                   ),
@@ -523,8 +440,8 @@ class _WorkloadCard extends StatelessWidget {
               ),
               Text(
                 '$total/$_capacity',
-                style: GoogleFonts.inter(
-                  fontSize: 13,
+                style: GoogleFonts.barlowCondensed(
+                  fontSize: AppFontSize.caption,
                   fontWeight: FontWeight.w700,
                   color: overloaded ? AppColors.danger : AppColors.slateText,
                 ),
@@ -572,7 +489,7 @@ class _StatTile extends StatelessWidget {
           Text(
             value,
             style: GoogleFonts.barlowCondensed(
-              fontSize: 30,
+              fontSize: AppFontSize.headline,
               fontWeight: FontWeight.bold,
               height: 1,
               color: valueColor,
@@ -581,8 +498,8 @@ class _StatTile extends StatelessWidget {
           const SizedBox(height: 6),
           Text(
             label,
-            style: GoogleFonts.inter(
-              fontSize: 12,
+            style: GoogleFonts.barlowCondensed(
+              fontSize: AppFontSize.caption,
               height: 1.3,
               color: AppColors.slateText,
             ),
@@ -605,14 +522,7 @@ class _SectionTitle extends StatelessWidget {
       decoration: const BoxDecoration(
         border: Border(bottom: BorderSide(color: AppColors.border)),
       ),
-      child: Text(
-        text,
-        style: GoogleFonts.barlowCondensed(
-          fontSize: 22,
-          fontWeight: FontWeight.bold,
-          color: AppColors.primaryDark,
-        ),
-      ),
+      child: BrandHeading(text, level: BrandHeadingLevel.section),
     );
   }
 }
@@ -628,10 +538,10 @@ class _StudentTile extends StatelessWidget {
     final user = student.user;
     final name = user.name.trim().isEmpty ? 'Sem nome' : user.name;
     final profile = user.registrationProfile;
-    final alerts = _healthAlerts(profile);
+    final alerts = healthAlerts(profile);
     final subtitle = [
-      if (profile != null) _goalLabel(profile.primaryGoal),
-      if (student.joinedAt != null) 'Desde ${_formatDate(student.joinedAt!)}',
+      if (profile != null) goalLabel(profile.primaryGoal),
+      if (student.joinedAt != null) 'Desde ${formatDateBr(student.joinedAt!)}',
     ].join(' • ');
 
     return Material(
@@ -655,7 +565,7 @@ class _StudentTile extends StatelessWidget {
                 child: Text(
                   _initials(name),
                   style: GoogleFonts.barlowCondensed(
-                    fontSize: 18,
+                    fontSize: AppFontSize.subtitle,
                     fontWeight: FontWeight.bold,
                     color: AppColors.primaryDark,
                   ),
@@ -670,8 +580,8 @@ class _StudentTile extends StatelessWidget {
                       name,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.inter(
-                        fontSize: 15,
+                      style: GoogleFonts.barlowCondensed(
+                        fontSize: AppFontSize.small,
                         fontWeight: FontWeight.w700,
                         color: AppColors.textPrimary,
                       ),
@@ -682,8 +592,8 @@ class _StudentTile extends StatelessWidget {
                         subtitle,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: GoogleFonts.inter(
-                          fontSize: 13,
+                        style: GoogleFonts.barlowCondensed(
+                          fontSize: AppFontSize.caption,
                           color: AppColors.slateText,
                         ),
                       ),
@@ -701,8 +611,8 @@ class _StudentTile extends StatelessWidget {
                           Flexible(
                             child: Text(
                               'Atenção à saúde',
-                              style: GoogleFonts.inter(
-                                fontSize: 12,
+                              style: GoogleFonts.barlowCondensed(
+                                fontSize: AppFontSize.caption,
                                 fontWeight: FontWeight.w600,
                                 color: AppColors.accentDark,
                               ),
@@ -731,11 +641,6 @@ class _StudentSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final user = student.user;
-    final profile = user.registrationProfile;
-    final alerts = _healthAlerts(profile);
-    final notes = profile?.health.notes.trim() ?? '';
-    final emergency = profile?.emergencyContact;
-
     return SafeArea(
       child: ConstrainedBox(
         constraints: BoxConstraints(
@@ -761,116 +666,39 @@ class _StudentSheet extends StatelessWidget {
               Text(
                 user.name.trim().isEmpty ? 'Sem nome' : user.name,
                 style: GoogleFonts.barlowCondensed(
-                  fontSize: 28,
+                  fontSize: AppFontSize.headline,
                   fontWeight: FontWeight.bold,
                   color: AppColors.primaryDark,
                 ),
               ),
               Text(
                 user.email,
-                style: GoogleFonts.inter(
-                  fontSize: 14,
+                style: GoogleFonts.barlowCondensed(
+                  fontSize: AppFontSize.small,
                   color: AppColors.slateText,
                 ),
               ),
               const SizedBox(height: 20),
-              if (profile == null)
-                Text(
-                  'Este aluno ainda não completou a ficha de cadastro.',
-                  style: GoogleFonts.inter(
-                    fontSize: 14,
-                    color: AppColors.slateText,
-                  ),
-                )
-              else ...[
-                _InfoRow(
-                  icon: Icons.flag_outlined,
-                  label: 'Objetivo',
-                  value: _goalLabel(profile.primaryGoal),
-                ),
-                const SizedBox(height: 14),
-                _InfoRow(
-                  icon: Icons.straighten,
-                  label: 'Medidas',
-                  value:
-                      '${profile.measurements.age} anos • '
-                      '${profile.measurements.heightCm} cm • '
-                      '${profile.measurements.weightKg.toStringAsFixed(1)} kg',
-                ),
-                if (student.joinedAt != null) ...[
-                  const SizedBox(height: 14),
-                  _InfoRow(
-                    icon: Icons.event_outlined,
-                    label: 'Aluno desde',
-                    value: _formatDate(student.joinedAt!),
-                  ),
-                ],
-                const SizedBox(height: 20),
-                Text('SAÚDE', style: _labelStyle),
-                const SizedBox(height: 8),
-                if (alerts.isEmpty)
-                  Text(
-                    'Sem condições ou restrições informadas.',
-                    style: GoogleFonts.inter(
-                      fontSize: 14,
-                      color: AppColors.textBody,
-                    ),
-                  )
-                else
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: [
-                      for (final alert in alerts)
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 6,
-                          ),
-                          decoration: BoxDecoration(
-                            color: AppColors.accentAlertSurface,
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(
-                              color: AppColors.accentAlertBorder,
-                            ),
-                          ),
-                          child: Text(
-                            alert,
-                            style: GoogleFonts.inter(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.accentText,
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
-                if (notes.isNotEmpty) ...[
-                  const SizedBox(height: 10),
-                  Text(
-                    notes,
-                    style: GoogleFonts.inter(
-                      fontSize: 14,
-                      height: 1.4,
-                      color: AppColors.textBody,
-                    ),
-                  ),
-                ],
-                if (emergency != null && emergency.name.trim().isNotEmpty) ...[
-                  const SizedBox(height: 20),
-                  _InfoRow(
-                    icon: Icons.contact_phone_outlined,
-                    label: 'Contato de emergência',
-                    value: [
-                      emergency.name,
-                      if (emergency.relationship.isNotEmpty)
-                        emergency.relationship,
-                      if (emergency.phone.isNotEmpty)
-                        _formatPhone(emergency.phone),
-                    ].join(' • '),
-                  ),
-                ],
-              ],
+              StudentRegistrationDetails(
+                user: user,
+                joinedAt: student.joinedAt,
+              ),
+              const SizedBox(height: 20),
+              OutlinedButton.icon(
+                key: const Key('botao_abrir_cadastro_aluno'),
+                onPressed: () {
+                  Navigator.of(context)
+                    ..pop()
+                    ..push(
+                      MaterialPageRoute(
+                        builder:
+                            (_) => AdminStudentDetailsView(studentId: user.id),
+                      ),
+                    );
+                },
+                icon: const Icon(Icons.edit_outlined),
+                label: const Text('Editar professor, bloco e modalidade'),
+              ),
             ],
           ),
         ),
@@ -899,8 +727,8 @@ class _EmptyStudents extends StatelessWidget {
             'Nenhum aluno vinculado a este professor ainda. Os alunos se '
             'vinculam usando o código de convite.',
             textAlign: TextAlign.center,
-            style: GoogleFonts.inter(
-              fontSize: 14,
+            style: GoogleFonts.barlowCondensed(
+              fontSize: AppFontSize.small,
               height: 1.4,
               color: AppColors.slateText,
             ),
@@ -937,8 +765,8 @@ class _CenteredMessage extends StatelessWidget {
             Text(
               message,
               textAlign: TextAlign.center,
-              style: GoogleFonts.inter(
-                fontSize: 15,
+              style: GoogleFonts.barlowCondensed(
+                fontSize: AppFontSize.small,
                 color: AppColors.slateText,
               ),
             ),
@@ -948,7 +776,7 @@ class _CenteredMessage extends StatelessWidget {
               style: TextButton.styleFrom(foregroundColor: AppColors.primary),
               child: Text(
                 actionLabel,
-                style: GoogleFonts.inter(fontWeight: FontWeight.w700),
+                style: GoogleFonts.barlowCondensed(fontWeight: FontWeight.w700),
               ),
             ),
           ],

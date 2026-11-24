@@ -6,12 +6,16 @@ import 'package:flutter/material.dart';
 class StudentExercisePhoto extends StatelessWidget {
   final String? url;
   final double size;
+
+  /// Altura própria para faixas largas; sem ela a foto é quadrada ([size]).
+  final double? height;
   final BorderRadius? radius;
 
   const StudentExercisePhoto({
     super.key,
     required this.url,
     this.size = 64,
+    this.height,
     this.radius,
   });
 
@@ -22,7 +26,7 @@ class StudentExercisePhoto extends StatelessWidget {
     final valid = uri != null && uri.scheme == 'https' && uri.host.isNotEmpty;
     Widget fallback() => Container(
       width: size,
-      height: size,
+      height: height ?? size,
       decoration: BoxDecoration(
         color: AppColors.thumbnailStart,
         borderRadius: borderRadius,
@@ -36,7 +40,7 @@ class StudentExercisePhoto extends StatelessWidget {
       child: Image.network(
         url!,
         width: size,
-        height: size,
+        height: height ?? size,
         fit: BoxFit.cover,
         errorBuilder: (_, __, ___) => fallback(),
         loadingBuilder: (context, child, progress) =>

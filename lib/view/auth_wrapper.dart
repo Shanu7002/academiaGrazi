@@ -2,6 +2,7 @@ import 'package:academiagrazi/models/users/user_model.dart';
 import 'package:academiagrazi/service/users/register_user.dart';
 import 'package:academiagrazi/view/tab_router.dart';
 import 'package:academiagrazi/view/teacher/professor_area_view.dart';
+import 'package:academiagrazi/view/user/student_access_gate.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:academiagrazi/locator.dart';
@@ -37,7 +38,7 @@ class AuthWrapper extends StatelessWidget {
               if (roleSnapshot.hasError) {
                 return const Scaffold(
                   body: Center(
-                    child: Text('Não foi possível carregar seu perfil'),
+                    child: Text('Não conseguimos carregar seu perfil agora'),
                   ),
                 );
               }
@@ -45,7 +46,12 @@ class AuthWrapper extends StatelessWidget {
               final type = roleSnapshot.data;
 
               if (type == UserType.user) {
-                return const MainShell();
+                // Mensalidade em atraso além da tolerância bloqueia o app.
+                return StudentAccessGate(
+                  key: ValueKey(currentUid),
+                  studentId: currentUid,
+                  child: const MainShell(),
+                );
               } else if (type == UserType.instructor) {
                 return const ProfessorAreaView();
               } else if (type == UserType.admin) {
@@ -53,7 +59,7 @@ class AuthWrapper extends StatelessWidget {
               } else {
                 return const Scaffold(
                   body: Center(
-                    child: Text('Não foi possível carregar seu perfil.'),
+                    child: Text('Não conseguimos carregar seu perfil agora.'),
                   ),
                 );
               }

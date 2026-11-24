@@ -1,3 +1,5 @@
+import 'package:academiagrazi/view/components/brand_heading.dart';
+import 'package:academiagrazi/theme/app_font_size.dart';
 import 'package:academiagrazi/models/training/training_session.dart';
 import 'package:academiagrazi/service/training/training_session_service.dart';
 import 'package:academiagrazi/theme/app_colors.dart';
@@ -58,39 +60,41 @@ class _AlunoHistoricoSessoesViewState extends State<AlunoHistoricoSessoesView> {
     backgroundColor: AppColors.trainingListBackground,
     appBar: AppBar(
       title: Text('MEU HISTÓRICO', style: GoogleFonts.barlowCondensed(
-        fontSize: 24, fontWeight: FontWeight.w800, color: AppColors.primary)),
+        fontSize: AppFontSize.title, fontWeight: FontWeight.w800, color: AppColors.primary)),
       backgroundColor: Colors.white,
       foregroundColor: AppColors.primary,
     ),
     body: StreamBuilder<List<TrainingSession>>(
       stream: _history,
       builder: (context, snapshot) {
-        if (snapshot.hasError) return Center(child: Padding(
+        if (snapshot.hasError) {
+          return Center(child: Padding(
           padding: const EdgeInsets.all(24),
           child: Column(mainAxisSize: MainAxisSize.min, children: [
-            const Text('Não foi possível carregar seu histórico.',
+            const Text('Não conseguimos carregar seu histórico agora.',
                 textAlign: TextAlign.center),
             TextButton(onPressed: () => setState(() =>
                 _history = _service.watchHistory(widget.studentId)),
                 child: const Text('Tentar novamente')),
           ]),
         ));
+        }
         if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
         final sessions = snapshot.data!;
-        if (sessions.isEmpty) return const Center(child: Padding(
+        if (sessions.isEmpty) {
+          return const Center(child: Padding(
           padding: EdgeInsets.all(28),
           child: Text('Nenhum treino finalizado ainda. Quando você finalizar uma '
               'sessão, ela aparecerá aqui e também para o seu professor.',
               textAlign: TextAlign.center),
         ));
+        }
         return Center(child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 440),
           child: ListView(
             padding: const EdgeInsets.fromLTRB(16, 20, 16, 32),
             children: [
-              Text('TREINOS REALIZADOS',
-                style: GoogleFonts.barlowCondensed(fontWeight: FontWeight.w800,
-                  fontSize: 28, color: AppColors.textPrimary)),
+              const BrandHeading('Histórico', complement: 'Treinos realizados'),
               const SizedBox(height: 5),
               Text('${sessions.length} sessão(ões) finalizada(s) no total',
                 style: const TextStyle(color: AppColors.textSecondary)),
@@ -125,10 +129,10 @@ class _AlunoHistoricoSessoesViewState extends State<AlunoHistoricoSessoesView> {
           style: const TextStyle(fontWeight: FontWeight.w800)),
         subtitle: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text(_date(session.finishedAt ?? session.startedAt),
-            style: const TextStyle(fontSize: 12)),
+            style: const TextStyle(fontSize: AppFontSize.caption)),
           const SizedBox(height: 4),
           Text('${session.completedSets}/${session.totalSets} séries  •  ${_duration(session)}  •  ${full ? 'Completo' : 'Parcial'}',
-            style: TextStyle(fontSize: 12,
+            style: TextStyle(fontSize: AppFontSize.caption,
               color: full ? AppColors.success : AppColors.accentDark)),
         ]),
         children: [
@@ -146,12 +150,12 @@ class _AlunoHistoricoSessoesViewState extends State<AlunoHistoricoSessoesView> {
                     const SizedBox(height: 4),
                     Text('${exercise.sets.where((s) => s.completed).length} de ${exercise.sets.length} séries concluídas',
                       style: const TextStyle(color: AppColors.textSecondary,
-                        fontSize: 12)),
+                        fontSize: AppFontSize.caption)),
                     const SizedBox(height: 4),
                     for (final set in exercise.sets)
                       Text('Série ${set.number}: ${set.completed ? 'Feita' : 'Não feita'} · ${_load(set.loadKg)}',
                         style: const TextStyle(color: AppColors.textBody,
-                          fontSize: 12)),
+                          fontSize: AppFontSize.caption)),
                   ],
                 )),
               ]),

@@ -1,3 +1,6 @@
+import "package:academiagrazi/config/business_rules.dart";
+import "package:academiagrazi/service/admin/hourly_movement.dart";
+import "package:academiagrazi/service/students/student_status.dart";
 import "package:cloud_firestore/cloud_firestore.dart";
 import "../../models/users/user_model.dart";
 
@@ -5,7 +8,21 @@ class StudentStats {
   final int total;
   final int newLast30Days;
 
-  const StudentStats({required this.total, required this.newLast30Days});
+  /// Alunos com `modality == 'remote'`.
+  final int remote;
+
+  /// Alunos com status [StudentStatus.inactive] (ver `student_status.dart`).
+  final int inactive;
+
+  const StudentStats({
+    required this.total,
+    required this.newLast30Days,
+    this.remote = 0,
+    this.inactive = 0,
+  });
+
+  /// Todos os alunos menos os inativos (inclui os novos e os em risco).
+  int get active => total - inactive;
 
   /// Crescimento percentual da base de alunos nos últimos 30 dias.
   /// Retorna null quando não existe base anterior para comparar.
@@ -22,12 +39,18 @@ class InstructorWorkload {
   final String email;
   final int activeStudents;
 
+  /// `studentCapacity` do professor, ou o padrão de [BusinessRules].
+  final int capacity;
+
   const InstructorWorkload({
     required this.id,
     required this.name,
     required this.email,
     required this.activeStudents,
+    this.capacity = BusinessRules.defaultStudentCapacity,
   });
+
+  bool get isOverCapacity => activeStudents > capacity;
 }
 
 class InstructorStudent {
@@ -60,28 +83,100 @@ class AdminDashboardService {
     : _db = db ?? FirebaseFirestore.instance;
   // coverage:ignore-end
 
+  /// Totais da home do admin: alunos, novos dos últimos 30 dias, remotos e
+  /// inativos. A inatividade vem das sessões finalizadas de cada aluno
+  /// (`users/{aluno}/trainingSessions`), lidas numa única consulta de grupo.
   Future<StudentStats> getStudentStats({DateTime? now}) async {
-    final snapshot =
-        await _db
-            .collection("users")
-            .where("type", isEqualTo: UserType.user.name)
-            .get();
+    final today = now ?? DateTime.now();
+    final results = await Future.wait([
+      _db
+          .collection("users")
+          .where("type", isEqualTo: UserType.user.name)
+          .get(),
+      _finishedSessionsSince(
+        // Um dia a mais de folga: o limite exato é decidido por statusFor,
+        // que conta dias de calendário.
+        today.subtract(
+          const Duration(days: BusinessRules.inactiveDaysWithoutTraining + 1),
+        ),
+      ),
+    ]);
+    final students = results[0].docs;
+    final lastFinishedByStudent = _lastFinishedByStudent(results[1].docs);
 
-    final limit = (now ?? DateTime.now()).subtract(const Duration(days: 30));
+    final limit = today.subtract(const Duration(days: 30));
+    var newStudents = 0;
+    var remote = 0;
+    var inactive = 0;
 
-    final newStudents =
-        snapshot.docs.where((doc) {
-          final createdAt = doc.data()["createdAt"];
-          if (createdAt is! String) return false;
-          final date = DateTime.tryParse(createdAt);
-          return date != null && date.isAfter(limit);
-        }).length;
+    for (final doc in students) {
+      final data = doc.data();
+      final createdAt = _parseDate(data["createdAt"]);
+      if (createdAt != null && createdAt.isAfter(limit)) newStudents++;
+      if (data["modality"] == StudentModality.remote.name) remote++;
+      final status = statusFor(
+        lastFinishedAt: lastFinishedByStudent[doc.id],
+        createdAt: createdAt,
+        now: today,
+      );
+      if (status == StudentStatus.inactive) inactive++;
+    }
 
     return StudentStats(
-      total: snapshot.docs.length,
+      total: students.length,
       newLast30Days: newStudents,
+      remote: remote,
+      inactive: inactive,
     );
   }
+
+  /// Treinos finalizados nos últimos 30 dias, agrupados pela hora em que
+  /// começaram (06h às 22h). Sessões abandonadas não contam como movimento.
+  Future<HourlyMovement> getHourlyMovement({DateTime? now}) async {
+    final since = (now ?? DateTime.now()).subtract(const Duration(days: 30));
+    final sessions = await _finishedSessionsSince(since);
+    return hourlyMovement(
+      sessions.docs
+          .map((doc) => _parseDate(doc.data()["startedAt"]))
+          .whereType<DateTime>(),
+    );
+  }
+
+  /// Sessões finalizadas a partir de [since], de todos os alunos.
+  /// Usa o índice de grupo `trainingSessions (status, finishedAt)`.
+  Future<QuerySnapshot<Map<String, dynamic>>> _finishedSessionsSince(
+    DateTime since,
+  ) {
+    return _db
+        .collectionGroup("trainingSessions")
+        .where("status", isEqualTo: "finished")
+        .where(
+          "finishedAt",
+          isGreaterThanOrEqualTo: since.toUtc().toIso8601String(),
+        )
+        .get();
+  }
+
+  /// Último `finishedAt` de cada aluno. O aluno é o dono da subcoleção
+  /// (`users/{aluno}/trainingSessions/{sessao}`).
+  static Map<String, DateTime> _lastFinishedByStudent(
+    List<QueryDocumentSnapshot<Map<String, dynamic>>> sessions,
+  ) {
+    final result = <String, DateTime>{};
+    for (final session in sessions) {
+      final studentId = session.reference.parent.parent?.id;
+      final finishedAt = _parseDate(session.data()["finishedAt"]);
+      if (studentId == null || finishedAt == null) continue;
+      final previous = result[studentId];
+      if (previous == null || finishedAt.isAfter(previous)) {
+        result[studentId] = finishedAt;
+      }
+    }
+    return result;
+  }
+
+  static DateTime? _parseDate(Object? value) =>
+      value is String ? DateTime.tryParse(value) : null;
 
   /// Professores cadastrados e quantos alunos estão vinculados a cada um
   /// (alunos cujo `responsable` é o id do professor), do mais carregado
@@ -113,6 +208,9 @@ class AdminDashboardService {
             name: (data["name"] as String?)?.trim() ?? "",
             email: data["email"] as String? ?? "",
             activeStudents: studentsByInstructor[doc.id] ?? 0,
+            capacity:
+                (data["studentCapacity"] as num?)?.toInt() ??
+                BusinessRules.defaultStudentCapacity,
           );
         }).toList();
 

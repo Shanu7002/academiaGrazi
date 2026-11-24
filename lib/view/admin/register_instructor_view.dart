@@ -1,3 +1,5 @@
+import 'package:academiagrazi/view/components/brand_heading.dart';
+import 'package:academiagrazi/theme/app_font_size.dart';
 import 'package:academiagrazi/controller/users/register_instructor.dart';
 import 'package:academiagrazi/locator.dart';
 import 'package:academiagrazi/service/users/register_user.dart';
@@ -66,7 +68,7 @@ class _RegisterInstructorViewState extends State<RegisterInstructorView> {
 
     if (admin == null) {
       setState(() => _isLoading = false);
-      _showMessage('Não foi possível carregar os dados do administrador.');
+      _showMessage('Não conseguimos carregar os dados do administrador agora.');
       return;
     }
 
@@ -111,7 +113,7 @@ class _RegisterInstructorViewState extends State<RegisterInstructorView> {
             'Verifique se as regras do Firestore foram publicadas.';
       case InstructorRegistrationResult.success:
       case InstructorRegistrationResult.unknown:
-        return 'Não foi possível cadastrar o professor. Tente novamente.';
+        return 'Não conseguimos cadastrar o professor agora. Tente novamente.';
     }
   }
 
@@ -133,7 +135,7 @@ class _RegisterInstructorViewState extends State<RegisterInstructorView> {
             title: Text(
               'Professor cadastrado',
               style: GoogleFonts.barlowCondensed(
-                fontSize: 26,
+                fontSize: AppFontSize.title,
                 fontWeight: FontWeight.bold,
                 color: AppColors.primaryDark,
               ),
@@ -142,8 +144,8 @@ class _RegisterInstructorViewState extends State<RegisterInstructorView> {
               '$name já pode entrar no app com o e-mail $email e a senha '
               'definida por você.',
               textAlign: TextAlign.center,
-              style: GoogleFonts.inter(
-                fontSize: 14,
+              style: GoogleFonts.barlowCondensed(
+                fontSize: AppFontSize.small,
                 height: 1.4,
                 color: AppColors.slateText,
               ),
@@ -234,7 +236,7 @@ class _RegisterInstructorViewState extends State<RegisterInstructorView> {
         title: Text(
           'Equipe',
           style: GoogleFonts.barlowCondensed(
-            fontSize: 22,
+            fontSize: AppFontSize.title,
             fontWeight: FontWeight.bold,
             color: AppColors.primary,
           ),
@@ -251,20 +253,13 @@ class _RegisterInstructorViewState extends State<RegisterInstructorView> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text(
-                      'CADASTRAR PROFESSOR',
-                      style: GoogleFonts.anton(
-                        fontSize: 30,
-                        color: AppColors.primary,
-                        letterSpacing: .4,
-                      ),
-                    ),
+                    BrandHeading('Cadastrar', complement: 'Novo professor'),
                     const SizedBox(height: 6),
                     Text(
                       'Crie o acesso de um novo professor da academia. Ele vai '
                       'entrar no app com o e-mail e a senha definidos aqui.',
-                      style: GoogleFonts.inter(
-                        fontSize: 14,
+                      style: GoogleFonts.barlowCondensed(
+                        fontSize: AppFontSize.small,
                         height: 1.4,
                         color: AppColors.slateText,
                       ),
@@ -358,8 +353,8 @@ class _RegisterInstructorViewState extends State<RegisterInstructorView> {
                                   'Passe a senha inicial para o professor '
                                   'pessoalmente e oriente-o a não '
                                   'compartilhá-la.',
-                                  style: GoogleFonts.inter(
-                                    fontSize: 12,
+                                  style: GoogleFonts.barlowCondensed(
+                                    fontSize: AppFontSize.caption,
                                     height: 1.4,
                                     color: AppColors.textBody,
                                   ),
@@ -397,7 +392,7 @@ class _RegisterInstructorViewState extends State<RegisterInstructorView> {
                         label: Text(
                           _isLoading ? 'CADASTRANDO...' : 'CADASTRAR PROFESSOR',
                           style: GoogleFonts.barlowCondensed(
-                            fontSize: 20,
+                            fontSize: AppFontSize.subtitle,
                             fontWeight: FontWeight.bold,
                             letterSpacing: .6,
                             color: Colors.white,
@@ -454,7 +449,7 @@ class _SectionCard extends StatelessWidget {
                 child: Text(
                   title,
                   style: GoogleFonts.barlowCondensed(
-                    fontSize: 20,
+                    fontSize: AppFontSize.subtitle,
                     fontWeight: FontWeight.bold,
                     color: AppColors.primaryDark,
                   ),
@@ -509,8 +504,8 @@ class _FormField extends StatelessWidget {
         children: [
           Text(
             label,
-            style: GoogleFonts.inter(
-              fontSize: 12,
+            style: GoogleFonts.barlowCondensed(
+              fontSize: AppFontSize.caption,
               fontWeight: FontWeight.w700,
               letterSpacing: .7,
               color: AppColors.slateText,
@@ -526,14 +521,14 @@ class _FormField extends StatelessWidget {
             autocorrect: false,
             validator: validator,
             onFieldSubmitted: onSubmitted,
-            style: GoogleFonts.inter(
-              fontSize: 15,
+            style: GoogleFonts.barlowCondensed(
+              fontSize: AppFontSize.small,
               color: AppColors.textPrimary,
             ),
             decoration: InputDecoration(
               hintText: hint,
-              hintStyle: GoogleFonts.inter(
-                fontSize: 14,
+              hintStyle: GoogleFonts.barlowCondensed(
+                fontSize: AppFontSize.small,
                 color: AppColors.textMuted,
               ),
               prefixIcon: Icon(icon, color: AppColors.primary),

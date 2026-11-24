@@ -1,7 +1,11 @@
+import 'package:academiagrazi/view/components/brand_heading.dart';
+import 'package:academiagrazi/theme/app_font_size.dart';
 import 'package:academiagrazi/locator.dart';
 import 'package:academiagrazi/service/admin/admin_dashboard.dart';
 import 'package:academiagrazi/theme/app_colors.dart';
+import 'package:academiagrazi/view/admin/auto_redistribution_view.dart';
 import 'package:academiagrazi/view/admin/instructor_details_view.dart';
+import 'package:academiagrazi/view/admin/manual_redistribution_view.dart';
 import 'package:academiagrazi/view/admin/mocks/admin_team_mock_data.dart';
 import 'package:academiagrazi/view/admin/register_instructor_view.dart';
 import 'package:academiagrazi/view/components/app_bar.dart';
@@ -33,10 +37,79 @@ class _AdminTeamViewState extends State<AdminTeamView> {
     });
   }
 
-  void _showSoon(String feature) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('$feature estará disponível em breve.')),
+  /// Pergunta se a redistribuição é automática ou manual e abre a tela.
+  Future<void> _openRedistribution() async {
+    final automatic = await showModalBottomSheet<bool>(
+      context: context,
+      backgroundColor: AppColors.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder:
+          (sheetContext) => SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 12),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  BrandHeading('Redistribuir', complement: 'Automática ou manual', level: BrandHeadingLevel.section),
+                  const SizedBox(height: 8),
+                  ListTile(
+                    key: const Key('opcao_redistribuir_automatico'),
+                    contentPadding: EdgeInsets.zero,
+                    leading: const Icon(
+                      Icons.auto_mode,
+                      color: AppColors.primary,
+                    ),
+                    title: const Text('Automática'),
+                    subtitle: const Text(
+                      'Divide os alunos pela capacidade de cada professor. '
+                      'Você vê a prévia antes de aplicar.',
+                    ),
+                    onTap: () => Navigator.pop(sheetContext, true),
+                  ),
+                  ListTile(
+                    key: const Key('opcao_redistribuir_manual'),
+                    contentPadding: EdgeInsets.zero,
+                    leading: const Icon(
+                      Icons.touch_app_outlined,
+                      color: AppColors.primary,
+                    ),
+                    title: const Text('Manual'),
+                    subtitle: const Text(
+                      'Escolha os alunos e o professor de destino.',
+                    ),
+                    onTap: () => Navigator.pop(sheetContext, false),
+                  ),
+                ],
+              ),
+            ),
+          ),
     );
+    if (automatic == null || !mounted) return;
+
+    if (automatic) {
+      final moved = await Navigator.of(context).push<int>(
+        MaterialPageRoute(builder: (_) => const AutoRedistributionView()),
+      );
+      if (!mounted) return;
+      if (moved != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Redistribuição aplicada: $moved aluno(s) mudaram de professor.',
+            ),
+          ),
+        );
+      }
+    } else {
+      await Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => const ManualRedistributionView()),
+      );
+      if (!mounted) return;
+    }
+    _reload();
   }
 
   Future<void> _openDetails(InstructorWorkload instructor) async {
@@ -59,7 +132,7 @@ class _AdminTeamViewState extends State<AdminTeamView> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: const CustomAppBar(title: 'Grazi Braz', showBackButton: false),
+      appBar: const CustomAppBar(title: 'Grazi Braz'),
       body: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 430),
@@ -75,20 +148,13 @@ class _AdminTeamViewState extends State<AdminTeamView> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text(
-                    'Carga da Equipe',
-                    style: GoogleFonts.barlowCondensed(
-                      fontSize: 30,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.primaryDark,
-                    ),
-                  ),
+                  BrandHeading('Equipe', complement: 'Carga dos professores'),
                   const SizedBox(height: 4),
                   Text(
                     'Volume de alunos por professor e alertas de '
                     'capacidade.',
-                    style: GoogleFonts.inter(
-                      fontSize: 14,
+                    style: GoogleFonts.barlowCondensed(
+                      fontSize: AppFontSize.small,
                       height: 1.4,
                       color: AppColors.slateText,
                     ),
@@ -100,7 +166,7 @@ class _AdminTeamViewState extends State<AdminTeamView> {
                     label: 'Redistribuir Alunos',
                     background: AppColors.accent,
                     foreground: AppColors.accentText,
-                    onPressed: () => _showSoon('Redistribuir alunos'),
+                    onPressed: _openRedistribution,
                   ),
                   const SizedBox(height: 12),
                   _ActionButton(
@@ -133,7 +199,7 @@ class _AdminTeamViewState extends State<AdminTeamView> {
                         return _MessageCard(
                           icon: Icons.cloud_off_outlined,
                           message:
-                              'Não foi possível carregar a equipe. '
+                              'Não conseguimos carregar a equipe agora. '
                               'Tente novamente.',
                           actionLabel: 'Tentar novamente',
                           onAction: _reload,
@@ -224,7 +290,7 @@ class _SectionTitle extends StatelessWidget {
       child: Text(
         text,
         style: GoogleFonts.barlowCondensed(
-          fontSize: 22,
+          fontSize: AppFontSize.title,
           fontWeight: FontWeight.bold,
           color: AppColors.primaryDark,
         ),
@@ -260,8 +326,8 @@ class _ActionButton extends StatelessWidget {
         icon: Icon(icon, size: 20, color: foreground),
         label: Text(
           label,
-          style: GoogleFonts.inter(
-            fontSize: 15,
+          style: GoogleFonts.barlowCondensed(
+            fontSize: AppFontSize.small,
             fontWeight: FontWeight.w700,
             color: foreground,
           ),
@@ -301,7 +367,9 @@ class _NoteCard extends StatelessWidget {
                 children: [
                   TextSpan(
                     text: 'Nota: ',
-                    style: GoogleFonts.inter(fontWeight: FontWeight.w700),
+                    style: GoogleFonts.barlowCondensed(
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                   const TextSpan(
                     text:
@@ -311,8 +379,8 @@ class _NoteCard extends StatelessWidget {
                   ),
                 ],
               ),
-              style: GoogleFonts.inter(
-                fontSize: 13,
+              style: GoogleFonts.barlowCondensed(
+                fontSize: AppFontSize.caption,
                 height: 1.5,
                 color: AppColors.textPrimary,
               ),
@@ -366,7 +434,7 @@ class _InstructorCard extends StatelessWidget {
                           child: Text(
                             _initials(name),
                             style: GoogleFonts.barlowCondensed(
-                              fontSize: 20,
+                              fontSize: AppFontSize.subtitle,
                               fontWeight: FontWeight.bold,
                               color:
                                   overloaded
@@ -384,8 +452,8 @@ class _InstructorCard extends StatelessWidget {
                                 name,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
-                                style: GoogleFonts.inter(
-                                  fontSize: 17,
+                                style: GoogleFonts.barlowCondensed(
+                                  fontSize: AppFontSize.body,
                                   fontWeight: FontWeight.w700,
                                   color: AppColors.textPrimary,
                                 ),
@@ -393,8 +461,8 @@ class _InstructorCard extends StatelessWidget {
                               const SizedBox(height: 2),
                               Text(
                                 AdminTeamMockData.instructorRole.toUpperCase(),
-                                style: GoogleFonts.inter(
-                                  fontSize: 11,
+                                style: GoogleFonts.barlowCondensed(
+                                  fontSize: AppFontSize.caption,
                                   fontWeight: FontWeight.w600,
                                   letterSpacing: .5,
                                   color: AppColors.textSecondary,
@@ -439,8 +507,8 @@ class _InstructorCard extends StatelessWidget {
                         Expanded(
                           child: Text(
                             'Capacidade (${(load * 100).round()}%)',
-                            style: GoogleFonts.inter(
-                              fontSize: 13,
+                            style: GoogleFonts.barlowCondensed(
+                              fontSize: AppFontSize.caption,
                               fontWeight: FontWeight.w600,
                               color: AppColors.slateText,
                             ),
@@ -448,8 +516,8 @@ class _InstructorCard extends StatelessWidget {
                         ),
                         Text(
                           '${instructor.activeStudents}/$_capacity',
-                          style: GoogleFonts.inter(
-                            fontSize: 13,
+                          style: GoogleFonts.barlowCondensed(
+                            fontSize: AppFontSize.caption,
                             fontWeight: FontWeight.w700,
                             color:
                                 overloaded
@@ -481,8 +549,8 @@ class _InstructorCard extends StatelessWidget {
                         ),
                         label: Text(
                           overloaded ? 'Ver Pendências' : 'Ver Detalhes',
-                          style: GoogleFonts.inter(
-                            fontSize: 14,
+                          style: GoogleFonts.barlowCondensed(
+                            fontSize: AppFontSize.small,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
@@ -518,8 +586,8 @@ class _StatusChip extends StatelessWidget {
       ),
       child: Text(
         overloaded ? 'Sobrecarga' : 'Carga equilibrada',
-        style: GoogleFonts.inter(
-          fontSize: 12,
+        style: GoogleFonts.barlowCondensed(
+          fontSize: AppFontSize.caption,
           fontWeight: FontWeight.w600,
           color: overloaded ? AppColors.danger : AppColors.primary,
         ),
@@ -555,7 +623,7 @@ class _StatTile extends StatelessWidget {
           Text(
             value,
             style: GoogleFonts.barlowCondensed(
-              fontSize: 34,
+              fontSize: AppFontSize.headline,
               fontWeight: FontWeight.bold,
               height: 1,
               color: valueColor,
@@ -564,7 +632,10 @@ class _StatTile extends StatelessWidget {
           const SizedBox(height: 6),
           Text(
             label,
-            style: GoogleFonts.inter(fontSize: 13, color: AppColors.slateText),
+            style: GoogleFonts.barlowCondensed(
+              fontSize: AppFontSize.caption,
+              color: AppColors.slateText,
+            ),
           ),
         ],
       ),
@@ -591,8 +662,8 @@ class _DistributionCard extends StatelessWidget {
         children: [
           Text(
             'Comparativo de alunos por professor',
-            style: GoogleFonts.inter(
-              fontSize: 15,
+            style: GoogleFonts.barlowCondensed(
+              fontSize: AppFontSize.small,
               fontWeight: FontWeight.w600,
               color: AppColors.textPrimary,
             ),
@@ -638,16 +709,16 @@ class _DistributionBar extends StatelessWidget {
                 name,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: GoogleFonts.inter(
-                  fontSize: 13,
+                style: GoogleFonts.barlowCondensed(
+                  fontSize: AppFontSize.caption,
                   color: AppColors.slateText,
                 ),
               ),
             ),
             Text(
               '${instructor.activeStudents}',
-              style: GoogleFonts.inter(
-                fontSize: 13,
+              style: GoogleFonts.barlowCondensed(
+                fontSize: AppFontSize.caption,
                 fontWeight: FontWeight.w700,
                 color: overloaded ? AppColors.danger : AppColors.textPrimary,
               ),
@@ -717,7 +788,10 @@ class _LegendItem extends StatelessWidget {
         const SizedBox(width: 8),
         Text(
           label,
-          style: GoogleFonts.inter(fontSize: 13, color: AppColors.slateText),
+          style: GoogleFonts.barlowCondensed(
+            fontSize: AppFontSize.caption,
+            color: AppColors.slateText,
+          ),
         ),
       ],
     );
@@ -749,7 +823,10 @@ class _MessageCard extends StatelessWidget {
           Text(
             message,
             textAlign: TextAlign.center,
-            style: GoogleFonts.inter(fontSize: 14, color: AppColors.slateText),
+            style: GoogleFonts.barlowCondensed(
+              fontSize: AppFontSize.small,
+              color: AppColors.slateText,
+            ),
           ),
           const SizedBox(height: 12),
           TextButton(
@@ -757,7 +834,7 @@ class _MessageCard extends StatelessWidget {
             style: TextButton.styleFrom(foregroundColor: AppColors.primary),
             child: Text(
               actionLabel,
-              style: GoogleFonts.inter(fontWeight: FontWeight.w700),
+              style: GoogleFonts.barlowCondensed(fontWeight: FontWeight.w700),
             ),
           ),
         ],

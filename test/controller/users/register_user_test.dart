@@ -85,6 +85,7 @@ void main() {
       expect(savedUser.type, UserType.user);
       expect(savedUser.responsable, 'instructor_uid_456');
       expect(savedUser.onboardingCompleted, isTrue);
+      expect(savedUser.createdAt, isNotNull);
       expect(savedUser.registrationProfile?.gender, Gender.female);
       expect(
         savedUser.registrationProfile?.primaryGoal,

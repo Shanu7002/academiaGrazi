@@ -2,6 +2,9 @@ import 'dart:async';
 
 import 'package:academiagrazi/locator.dart';
 import 'package:academiagrazi/service/users/profile_photo.dart';
+import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
+import 'package:academiagrazi/service/memberships/membership_service.dart';
+import 'package:academiagrazi/service/units/unit_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
@@ -10,6 +13,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:academiagrazi/controller/users/update_data.dart';
 
 import 'package:academiagrazi/models/users/user_model.dart';
+import 'package:academiagrazi/service/users/register_instructor.dart';
 import 'package:academiagrazi/service/users/register_user.dart';
 import 'package:academiagrazi/view/user/aluno_profile_view.dart';
 import 'package:academiagrazi/view/preferences_service.dart';
@@ -22,6 +26,7 @@ import 'package:academiagrazi/view/preferences_service.dart';
   User,
 ])
 import 'aluno_profile_view_test.mocks.dart';
+import 'self_register_view_test.mocks.dart' show MockRegisterInstructorService;
 
 void main() {
   late MockUpdateDataController mockUpdateDataController;
@@ -55,10 +60,11 @@ void main() {
   Future<void> pumpProfileWith(WidgetTester tester, UserModel user) async {
     when(mockFirebaseUser.uid).thenReturn(user.id);
     when(mockAuth.currentUser).thenReturn(mockFirebaseUser);
-    when(mockUserService.getUserById(user.id)).thenAnswer((_) async => user);
-    when(mockUserService.getResponsableData(any)).thenAnswer(
+    // O stub genérico (professor) vem antes: no Mockito o último vence.
+    when(mockUserService.getUserById(any)).thenAnswer(
       (_) async => UserModel(id: 'resp', name: 'Resp', email: 'r@test.com'),
     );
+    when(mockUserService.getUserById(user.id)).thenAnswer((_) async => user);
 
     await tester.pumpWidget(const MaterialApp(home: AlunoProfileView()));
     await tester.pumpAndSettle();
@@ -110,7 +116,7 @@ void main() {
   testWidgets('Card do professor mostra a foto salva do professor', (
     WidgetTester tester,
   ) async {
-    when(mockUserService.getResponsableData('resp_456')).thenAnswer(
+    when(mockUserService.getUserById('resp_456')).thenAnswer(
       (_) async => UserModel(
         id: 'resp_456',
         name: 'Prof. Marcos',
@@ -210,7 +216,7 @@ void main() {
       mockUserService.getUserById("uid_123"),
     ).thenAnswer((_) async => testUserModel);
     when(
-      mockUserService.getResponsableData("resp_456"),
+      mockUserService.getUserById("resp_456"),
     ).thenAnswer((_) async => testResponsableModel);
 
     await tester.pumpWidget(MaterialApp(home: AlunoProfileView()));
@@ -239,13 +245,13 @@ void main() {
         email: 'test@example.com',
       );
 
-      when(
-        mockUserService.getUserById("uid_123"),
-      ).thenAnswer((_) async => testUserModel);
-      when(mockUserService.getResponsableData(any)).thenAnswer(
+      when(mockUserService.getUserById(any)).thenAnswer(
         (_) async =>
             UserModel(id: 'resp', name: 'Resp', email: 'resp@test.com'),
       );
+      when(
+        mockUserService.getUserById("uid_123"),
+      ).thenAnswer((_) async => testUserModel);
 
       when(
         mockUpdateDataController.updateHealthProfile(
@@ -321,19 +327,253 @@ void main() {
     expect(find.text('Sair'), findsOneWidget);
   });
 
-  testWidgets('aluno continua vendo as seções de acompanhamento', (
+  testWidgets(
+    'professor não vê professor responsável, saúde, emergência nem plano',
+    (WidgetTester tester) async {
+      final instructorService = MockRegisterInstructorService();
+      when(instructorService.getCurrentInviteCode('prof_1')).thenAnswer(
+        (_) async => InstructorInviteCode(
+          code: '1234',
+          expiresAt: DateTime.now().add(const Duration(minutes: 15)),
+        ),
+      );
+      locator.registerSingleton<RegisterInstructorService>(instructorService);
+
+      await pumpProfileFor(
+        tester,
+        UserModel(
+          id: 'prof_1',
+          name: 'Professor',
+          email: 'prof@grazi.com',
+          type: UserType.instructor,
+        ),
+      );
+
+      expect(find.text('SEU CÓDIGO DE CONVITE'), findsOneWidget);
+      expect(find.text('1234'), findsOneWidget);
+      expect(find.text('ACOMPANHAMENTO PROFISSIONAL'), findsOneWidget);
+      expect(find.text('BLOCO / TURNO'), findsOneWidget);
+      expect(find.text('PROFESSOR RESPONSÁVEL'), findsNothing);
+      expect(find.text('SAÚDE E FICHA CLÍNICA'), findsNothing);
+      expect(find.text('CONTATO DE EMERGÊNCIA'), findsNothing);
+      expect(find.text('PLANO E MENSALIDADE'), findsNothing);
+      expect(find.text('Plano Presencial + App'), findsNothing);
+      expect(find.text('Seus dados e preferências'), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'aluno mantém acompanhamento e o cartão de plano, sem dados fictícios',
+    (WidgetTester tester) async {
+      await pumpProfileFor(
+        tester,
+        UserModel(id: 'aluno_1', name: 'Aluno', email: 'aluno@grazi.com'),
+      );
+
+      expect(find.text('ACOMPANHAMENTO PROFISSIONAL'), findsOneWidget);
+      expect(find.text('SAÚDE E FICHA CLÍNICA'), findsOneWidget);
+      expect(find.text('CONTATO DE EMERGÊNCIA'), findsOneWidget);
+      expect(find.text('PLANO E MENSALIDADE'), findsOneWidget);
+      expect(find.text('Plano Presencial + App'), findsNothing);
+      expect(find.text('Plano Conexão Semestral'), findsNothing);
+      expect(find.text('Renovação em 10/11/2023'), findsNothing);
+      expect(find.text('Musculação + Pilates'), findsNothing);
+      expect(find.text('#GB-2023-0482'), findsNothing);
+      expect(find.text('Seus dados, saúde e preferências'), findsOneWidget);
+    },
+  );
+
+  testWidgets('aluno vê o plano real, sem os textos fixos antigos', (
     WidgetTester tester,
   ) async {
+    final membershipService = MembershipService(db: FakeFirebaseFirestore());
+    locator.registerSingleton<MembershipService>(membershipService);
+    final planId = await membershipService.createPlan(
+      name: 'Plano Conexão Anual',
+      monthlyPriceCents: 9990,
+      durationMonths: 12,
+    );
+    final plan = (await membershipService.streamPlans().first).firstWhere(
+      (plan) => plan.id == planId,
+    );
+    await membershipService.assignPlan(
+      studentId: 'aluno_1',
+      plan: plan,
+      startDate: DateTime(2026, 11, 20),
+      adminId: 'admin_1',
+    );
+
     await pumpProfileFor(
       tester,
       UserModel(id: 'aluno_1', name: 'Aluno', email: 'aluno@grazi.com'),
     );
 
-    expect(find.text('ACOMPANHAMENTO PROFISSIONAL'), findsOneWidget);
-    expect(find.text('SAÚDE E FICHA CLÍNICA'), findsOneWidget);
-    expect(find.text('CONTATO DE EMERGÊNCIA'), findsOneWidget);
-    expect(find.text('PLANO E MENSALIDADE'), findsOneWidget);
-    expect(find.text('Plano Presencial + App'), findsOneWidget);
-    expect(find.text('Seus dados, saúde e preferências'), findsOneWidget);
+    expect(find.text('Plano Conexão Anual'), findsOneWidget);
+    expect(find.text(r'R$ 99,90'), findsOneWidget);
+    expect(find.text('Plano Conexão Semestral'), findsNothing);
+    expect(find.text('#GB-2023-0482'), findsNothing);
+  });
+
+  group('falhas e contato de emergência |', () {
+    // Com a fonte de teste (Ahem), mais larga que a Inter, os rótulos do
+    // dropdown de parentesco transbordam; com a fonte real não.
+    void ignorarTransbordamentoDaFonteDeTeste() {
+      final anterior = FlutterError.onError;
+      FlutterError.onError = (details) {
+        if (details.exceptionAsString().contains('overflowed')) return;
+        anterior?.call(details);
+      };
+      addTearDown(() => FlutterError.onError = anterior);
+    }
+
+    final aluno = UserModel(
+      id: 'uid_123',
+      name: 'Test',
+      email: 'test@example.com',
+    );
+
+    testWidgets('mostra erro quando salvar a ficha de saúde falha', (
+      tester,
+    ) async {
+      when(
+        mockUpdateDataController.updateHealthProfile(
+          userId: anyNamed('userId'),
+          conditions: anyNamed('conditions'),
+          restrictions: anyNamed('restrictions'),
+          notes: anyNamed('notes'),
+        ),
+      ).thenThrow(Exception('offline'));
+      await pumpProfileFor(tester, aluno);
+
+      await tester.tap(find.text('ATUALIZAR FICHA DE SAÚDE'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('SALVAR ALTERAÇÕES'));
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text('Não conseguimos salvar agora. Tente novamente.'),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('salva o contato de emergência e confirma', (tester) async {
+      ignorarTransbordamentoDaFonteDeTeste();
+      when(
+        mockUpdateDataController.updateEmergencyContact(
+          userId: anyNamed('userId'),
+          name: anyNamed('name'),
+          phone: anyNamed('phone'),
+          relationship: anyNamed('relationship'),
+        ),
+      ).thenAnswer((_) async {});
+      await pumpProfileFor(tester, aluno);
+      // A fonte de teste (Ahem) é mais larga que a real: o formulário de
+      // contato transborda em 430 px só no teste.
+      tester.view.physicalSize = const Size(900, 4000);
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('ATUALIZAR CONTATO'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('SALVAR CONTATO'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Contato salvo com sucesso!'), findsOneWidget);
+    });
+
+    testWidgets('mostra erro quando salvar o contato de emergência falha', (
+      tester,
+    ) async {
+      ignorarTransbordamentoDaFonteDeTeste();
+      when(
+        mockUpdateDataController.updateEmergencyContact(
+          userId: anyNamed('userId'),
+          name: anyNamed('name'),
+          phone: anyNamed('phone'),
+          relationship: anyNamed('relationship'),
+        ),
+      ).thenThrow(Exception('offline'));
+      await pumpProfileFor(tester, aluno);
+      // A fonte de teste (Ahem) é mais larga que a real: o formulário de
+      // contato transborda em 430 px só no teste.
+      tester.view.physicalSize = const Size(900, 4000);
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('ATUALIZAR CONTATO'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('SALVAR CONTATO'));
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text('Não conseguimos salvar o contato agora. Tente novamente.'),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('sair da conta não quebra a tela quando o signOut falha', (
+      tester,
+    ) async {
+      when(mockAuth.signOut()).thenThrow(Exception('offline'));
+      await pumpProfileFor(tester, aluno);
+
+      await tester.tap(find.text('Sair'));
+      await tester.pumpAndSettle();
+
+      verify(mockAuth.signOut()).called(1);
+      expect(tester.takeException(), isNull);
+    });
+  });
+
+  group('card de bloco', () {
+    testWidgets('aluno sem bloco mostra "Sem bloco definido"', (tester) async {
+      await pumpProfileWith(
+        tester,
+        UserModel(
+          id: 'aluno_1',
+          name: 'Aluno',
+          email: 'a@test.com',
+          responsable: 'resp',
+          modality: StudentModality.remote,
+        ),
+      );
+
+      final card = find.byKey(const Key('card_bloco_turno'));
+      expect(
+        find.descendant(of: card, matching: find.text('Sem bloco definido')),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(
+          of: card,
+          matching: find.text('Remoto (treina em casa)'),
+        ),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('aluno com bloco mostra o nome do bloco', (tester) async {
+      final db = FakeFirebaseFirestore();
+      final unidades = UnitService(db: db);
+      locator.registerSingleton<UnitService>(unidades);
+      final bloco = await unidades.createUnit(name: 'Bloco Sul');
+
+      await pumpProfileWith(
+        tester,
+        UserModel(
+          id: 'aluno_1',
+          name: 'Aluno',
+          email: 'a@test.com',
+          responsable: 'resp',
+          unitId: bloco,
+        ),
+      );
+
+      expect(
+        find.descendant(
+          of: find.byKey(const Key('card_bloco_turno')),
+          matching: find.text('Bloco Sul'),
+        ),
+        findsOneWidget,
+      );
+    });
   });
 }

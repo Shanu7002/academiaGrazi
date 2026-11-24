@@ -1,3 +1,4 @@
+import 'package:academiagrazi/theme/app_font_size.dart';
 import 'package:academiagrazi/theme/app_colors.dart';
 import 'package:academiagrazi/view/user/student_exercise_photo.dart';
 import 'package:academiagrazi/view/user/ui_models/treino_ui_models.dart';
@@ -27,7 +28,7 @@ class AlunoFichaRotinaView extends StatelessWidget {
         backgroundColor: Colors.white,
         foregroundColor: AppColors.primary,
         title: Text('FICHA DO TREINO', style: GoogleFonts.barlowCondensed(
-          color: AppColors.primary, fontSize: 23, fontWeight: FontWeight.w800)),
+          color: AppColors.primary, fontSize: AppFontSize.title, fontWeight: FontWeight.w800)),
       ),
       body: SafeArea(child: Center(child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 440),
@@ -36,7 +37,7 @@ class AlunoFichaRotinaView extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(16, 18, 16, 20),
             children: [
               Text(treino.nome,
-                style: GoogleFonts.barlowCondensed(fontSize: 30,
+                style: GoogleFonts.barlowCondensed(fontSize: AppFontSize.headline,
                   fontWeight: FontWeight.w800, color: AppColors.textPrimary)),
               const SizedBox(height: 5),
               Text('Professor: $professorNome  •  ${treino.duracaoMinutos} min previstos',
@@ -64,7 +65,7 @@ class AlunoFichaRotinaView extends StatelessWidget {
                 _exercicio(context, entry.key + 1, entry.value)),
               const SizedBox(height: 8),
               const Text('As fotos são ilustrativas. Use as orientações do professor para executar os movimentos.',
-                style: TextStyle(color: AppColors.textSecondary, fontSize: 12)),
+                style: TextStyle(color: AppColors.textSecondary, fontSize: AppFontSize.caption)),
             ],
           )),
           if (podeIniciar) Padding(
@@ -82,7 +83,7 @@ class AlunoFichaRotinaView extends StatelessWidget {
             padding: EdgeInsets.fromLTRB(16, 6, 16, 16),
             child: Text('Ficha disponível para consulta. Para iniciar, aguarde o dia programado.',
               textAlign: TextAlign.center,
-              style: TextStyle(color: AppColors.textSecondary, fontSize: 12)),
+              style: TextStyle(color: AppColors.textSecondary, fontSize: AppFontSize.caption)),
           ),
         ]),
       ))),
@@ -105,34 +106,34 @@ class AlunoFichaRotinaView extends StatelessWidget {
             const SizedBox(width: 12),
             Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text('$index. ${exercise.nome}',
-                style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15,
+                style: const TextStyle(fontWeight: FontWeight.w800, fontSize: AppFontSize.small,
                   color: AppColors.textPrimary)),
               const SizedBox(height: 4),
               if (exercise.muscleGroup.isNotEmpty)
                 Text(exercise.muscleGroup,
-                  style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+                  style: const TextStyle(fontSize: AppFontSize.caption, color: AppColors.textSecondary)),
               const SizedBox(height: 7),
               Text('${exercise.sets} séries × ${exercise.repetitions} repetições',
-                style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12,
+                style: const TextStyle(fontWeight: FontWeight.w700, fontSize: AppFontSize.caption,
                   color: AppColors.primary)),
               Text('${exercise.restSeconds}s de descanso  •  ${exercise.carga}',
-                style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+                style: const TextStyle(fontSize: AppFontSize.caption, color: AppColors.textSecondary)),
             ])),
           ]),
           const SizedBox(height: 12),
           if (exercise.instructions.trim().isNotEmpty) ...[
             const Text('ORIENTAÇÕES DE EXECUÇÃO', style: TextStyle(
-              color: AppColors.primary, fontSize: 11, fontWeight: FontWeight.w700)),
+              color: AppColors.primary, fontSize: AppFontSize.caption, fontWeight: FontWeight.w700)),
             const SizedBox(height: 5),
             Text(exercise.instructions,
-              style: const TextStyle(fontSize: 13, color: AppColors.textBody)),
+              style: const TextStyle(fontSize: AppFontSize.caption, color: AppColors.textBody)),
           ]
           else
             const Row(children: [
               Icon(Icons.info_outline, size: 17, color: AppColors.textSecondary),
               SizedBox(width: 7),
               Expanded(child: Text('Orientações de execução não cadastradas.',
-                style: TextStyle(fontSize: 12, color: AppColors.textSecondary))),
+                style: TextStyle(fontSize: AppFontSize.caption, color: AppColors.textSecondary))),
             ]),
         ]),
       ),

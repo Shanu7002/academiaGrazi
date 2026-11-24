@@ -1,3 +1,4 @@
+import 'package:academiagrazi/theme/app_font_size.dart';
 import 'package:academiagrazi/models/training/training_exercise.dart';
 import 'package:academiagrazi/models/training/training_routine.dart';
 import 'package:academiagrazi/service/training/exercise_catalog_service.dart';
@@ -50,10 +51,12 @@ class _ProfessorTreinoEmCasaViewState extends State<ProfessorTreinoEmCasaView> {
         _error = null;
       });
     } catch (_) {
-      if (mounted) setState(() {
-        _error = 'Não foi possível consultar os treinos em casa. Confira as permissões.';
-        _loading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _error = 'Não conseguimos consultar os treinos em casa agora. Confira as permissões.';
+          _loading = false;
+        });
+      }
     }
   }
 
@@ -123,7 +126,7 @@ class _ProfessorTreinoEmCasaViewState extends State<ProfessorTreinoEmCasaView> {
       builder: (sheetContext) => StatefulBuilder(builder: (ctx, updateModal) =>
         SizedBox(height: MediaQuery.of(ctx).size.height * .75,
           child: Padding(padding: const EdgeInsets.all(16), child: Column(children: [
-            const Text('Biblioteca de exercícios', style: TextStyle(fontSize: 18,
+            const Text('Biblioteca de exercícios', style: TextStyle(fontSize: AppFontSize.subtitle,
                 fontWeight: FontWeight.bold)),
             const SizedBox(height: 12),
             TextField(controller: search,
@@ -134,7 +137,7 @@ class _ProfessorTreinoEmCasaViewState extends State<ProfessorTreinoEmCasaView> {
             const SizedBox(height: 10),
             Expanded(child: FutureBuilder<List<ExerciseCatalogEntry>>(
               future: results, builder: (ctx, snapshot) {
-                if (snapshot.hasError) return const Center(child: Text('Não foi possível consultar a biblioteca.'));
+                if (snapshot.hasError) return const Center(child: Text('Não conseguimos consultar a biblioteca agora.'));
                 if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
                 if (snapshot.data!.isEmpty) return const Center(child: Text('Nenhum exercício encontrado.'));
                 return ListView.builder(itemCount: snapshot.data!.length,
@@ -256,7 +259,8 @@ class _ProfessorTreinoEmCasaViewState extends State<ProfessorTreinoEmCasaView> {
       setState(() => _published = true);
       _notice('Treinos em casa publicados para ${widget.studentName}.');
     } catch (error) {
-      _notice('Não foi possível publicar: $error');
+      debugPrint('Erro ao publicar treino em casa: $error');
+      _notice('Não conseguimos publicar os treinos em casa agora. Tente novamente.');
     } finally { if (mounted) setState(() => _saving = false); }
   }
 
@@ -275,7 +279,10 @@ class _ProfessorTreinoEmCasaViewState extends State<ProfessorTreinoEmCasaView> {
       if (!mounted) return;
       setState(() { _routines.clear(); _published = false; });
       _notice('Treinos em casa retirados. Histórico preservado.');
-    } catch (error) { _notice('Não foi possível retirar: $error'); }
+    } catch (error) {
+      debugPrint('Erro ao retirar treino em casa: $error');
+      _notice('Não conseguimos retirar os treinos em casa agora. Tente novamente.');
+    }
     finally { if (mounted) setState(() => _saving = false); }
   }
 
@@ -287,16 +294,16 @@ class _ProfessorTreinoEmCasaViewState extends State<ProfessorTreinoEmCasaView> {
       Center(child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 520),
         child: ListView(padding: const EdgeInsets.all(16), children: [
           Text('Aluno: ${widget.studentName}', style: const TextStyle(
-            fontSize: 18, fontWeight: FontWeight.w800)),
+            fontSize: AppFontSize.subtitle, fontWeight: FontWeight.w800)),
           const SizedBox(height: 6),
           const Text('Prescrição opcional e independente da ficha presencial. '
               'Só aparece para o aluno depois de publicar.'),
           const SizedBox(height: 5),
           const Text('Revise tecnicamente as orientações antes de disponibilizar '
-              'uma nova prescrição.', style: TextStyle(fontSize: 12,
+              'uma nova prescrição.', style: TextStyle(fontSize: AppFontSize.caption,
                 color: AppColors.textSecondary)),
           if (_error != null) ...[const SizedBox(height: 8),
-            Text(_error!, style: const TextStyle(color: Colors.red))],
+            Text(_error!, style: const TextStyle(color: AppColors.danger))],
           const SizedBox(height: 12),
           for (final routine in _routines) Card(color: Colors.white, child: ExpansionTile(
             key: Key('casa_routine_${routine.id}'), initiallyExpanded: true,

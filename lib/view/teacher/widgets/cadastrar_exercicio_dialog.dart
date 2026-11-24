@@ -1,3 +1,4 @@
+import 'package:academiagrazi/theme/app_font_size.dart';
 import 'dart:typed_data';
 
 import 'package:academiagrazi/theme/app_colors.dart';
@@ -54,7 +55,7 @@ class _CadastrarExercicioDialogState extends State<CadastrarExercicioDialog> {
     } catch (_) {
       if (!mounted) return;
       setState(() {
-        _erroImagem = 'Não foi possível usar essa imagem.';
+        _erroImagem = 'Não conseguimos usar essa imagem. Escolha outra.';
       });
     } finally {
       if (mounted) {
@@ -162,7 +163,7 @@ class _CadastrarExercicioDialogState extends State<CadastrarExercicioDialog> {
                 const Text(
                   'Foto opcional. Ao salvar, ela será enviada e vinculada ao exercício na biblioteca.',
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: AppFontSize.caption,
                     color: AppColors.textSecondary,
                   ),
                 ),

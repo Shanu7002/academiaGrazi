@@ -1,3 +1,4 @@
+import 'package:academiagrazi/theme/app_font_size.dart';
 import 'package:academiagrazi/models/training/training_session.dart';
 import 'package:academiagrazi/service/training/training_session_service.dart';
 import 'package:academiagrazi/theme/app_colors.dart';
@@ -93,7 +94,7 @@ class _ProfessorHistoricoAlunoViewState
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return _message(
-              'Não foi possível consultar os treinos deste aluno. '
+              'Não conseguimos consultar os treinos deste aluno agora. '
               'Verifique a conexão ou as permissões.',
               action: TextButton(
                 key: const Key('professor_tentar_novamente_historico'),
@@ -217,12 +218,12 @@ class _ProfessorHistoricoAlunoViewState
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(label, style: const TextStyle(fontSize: 11)),
+            Text(label, style: const TextStyle(fontSize: AppFontSize.caption)),
             const SizedBox(height: 4),
             Text(
               value,
               style: const TextStyle(
-                fontSize: 19,
+                fontSize: AppFontSize.subtitle,
                 fontWeight: FontWeight.bold,
                 color: AppColors.primary,
               ),

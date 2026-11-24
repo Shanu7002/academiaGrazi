@@ -208,7 +208,6 @@ abstract final class TreinosMockData {
   agachamentoDetalhe = AlunoExercicioDetalheUiData(
     exercicio: agachamento,
     descanso: '75s',
-    tempoVideo: '01:45',
     orientacoes:
         'Mantenha as costas retas e o core contraído. Posicione os pés '
         'na largura dos ombros, apontando ligeiramente para fora. Desça '
@@ -220,7 +219,6 @@ abstract final class TreinosMockData {
       AlunoExercicioDetalheUiData(
         exercicio: elevacaoPelvica,
         descanso: '—',
-        tempoVideo: '00:00',
         orientacoes: _orientacaoGenerica,
       );
 
@@ -228,7 +226,6 @@ abstract final class TreinosMockData {
       AlunoExercicioDetalheUiData(
         exercicio: afundo,
         descanso: '—',
-        tempoVideo: '00:00',
         orientacoes: _orientacaoGenerica,
       );
 
@@ -236,7 +233,6 @@ abstract final class TreinosMockData {
       AlunoExercicioDetalheUiData(
         exercicio: extensora,
         descanso: '—',
-        tempoVideo: '00:00',
         orientacoes: _orientacaoGenerica,
       );
 
@@ -244,7 +240,6 @@ abstract final class TreinosMockData {
       AlunoExercicioDetalheUiData(
         exercicio: stiff,
         descanso: '—',
-        tempoVideo: '00:00',
         orientacoes: _orientacaoGenerica,
       );
 
@@ -252,7 +247,6 @@ abstract final class TreinosMockData {
       AlunoExercicioDetalheUiData(
         exercicio: flexora,
         descanso: '—',
-        tempoVideo: '00:00',
         orientacoes: _orientacaoGenerica,
       );
 
@@ -260,7 +254,6 @@ abstract final class TreinosMockData {
       AlunoExercicioDetalheUiData(
         exercicio: panturrilha,
         descanso: '—',
-        tempoVideo: '00:00',
         orientacoes: _orientacaoGenerica,
       );
 
@@ -268,7 +261,6 @@ abstract final class TreinosMockData {
       AlunoExercicioDetalheUiData(
         exercicio: abdutora,
         descanso: '—',
-        tempoVideo: '00:00',
         orientacoes: _orientacaoGenerica,
       );
 
@@ -276,7 +268,6 @@ abstract final class TreinosMockData {
       AlunoExercicioDetalheUiData(
         exercicio: puxada,
         descanso: '—',
-        tempoVideo: '00:00',
         orientacoes: _orientacaoGenerica,
       );
 
@@ -284,7 +275,6 @@ abstract final class TreinosMockData {
       AlunoExercicioDetalheUiData(
         exercicio: remada,
         descanso: '—',
-        tempoVideo: '00:00',
         orientacoes: _orientacaoGenerica,
       );
 
@@ -292,7 +282,6 @@ abstract final class TreinosMockData {
       AlunoExercicioDetalheUiData(
         exercicio: roscaDireta,
         descanso: '—',
-        tempoVideo: '00:00',
         orientacoes: _orientacaoGenerica,
       );
 
@@ -300,7 +289,6 @@ abstract final class TreinosMockData {
       AlunoExercicioDetalheUiData(
         exercicio: prancha,
         descanso: '—',
-        tempoVideo: '00:00',
         orientacoes: _orientacaoGenerica,
       );
 
@@ -308,7 +296,6 @@ abstract final class TreinosMockData {
       AlunoExercicioDetalheUiData(
         exercicio: supino,
         descanso: '—',
-        tempoVideo: '00:00',
         orientacoes: _orientacaoGenerica,
       );
 
@@ -316,7 +303,6 @@ abstract final class TreinosMockData {
       AlunoExercicioDetalheUiData(
         exercicio: elevacaoLateral,
         descanso: '—',
-        tempoVideo: '00:00',
         orientacoes: _orientacaoGenerica,
       );
 
@@ -324,7 +310,6 @@ abstract final class TreinosMockData {
       AlunoExercicioDetalheUiData(
         exercicio: tricepsCorda,
         descanso: '—',
-        tempoVideo: '00:00',
         orientacoes: _orientacaoGenerica,
       );
 
@@ -332,7 +317,6 @@ abstract final class TreinosMockData {
       AlunoExercicioDetalheUiData(
         exercicio: rotacaoToracica,
         descanso: '—',
-        tempoVideo: '00:00',
         orientacoes: _orientacaoGenerica,
       );
 

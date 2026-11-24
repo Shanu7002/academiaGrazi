@@ -1,211 +1,389 @@
-import 'package:academiagrazi/controller/teachers/teacher_user_searcher.dart';
+import 'package:academiagrazi/view/components/user_greeting.dart';
+import 'package:academiagrazi/view/components/brand_heading.dart';
+import 'package:academiagrazi/theme/app_font_size.dart';
+import 'package:academiagrazi/theme/app_colors.dart';
+import 'package:academiagrazi/service/teachers/teacher_dashboard.dart';
+import 'package:academiagrazi/service/teachers/teacher_students.dart';
+import 'package:academiagrazi/view/teacher/lista_alunos.dart';
 import 'package:academiagrazi/locator.dart';
 import 'package:academiagrazi/view/components/app_bar.dart';
+import 'package:academiagrazi/view/components/instructor_schedule_builder.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class ProfessorDashboardView extends StatefulWidget {
-  const ProfessorDashboardView({super.key});
+  /// Abre o aluno na aba Treinos (ficha e treinos realizados).
+  final ValueChanged<String>? onOpenStudentTraining;
+
+  /// Abre a montagem da ficha do aluno na aba Treinos.
+  final ValueChanged<String>? onEditStudentTraining;
+
+  /// Abre o aluno na aba Evolução (avaliações físicas).
+  final ValueChanged<String>? onOpenStudentAssessments;
+
+  const ProfessorDashboardView({
+    super.key,
+    this.onOpenStudentTraining,
+    this.onEditStudentTraining,
+    this.onOpenStudentAssessments,
+  });
 
   @override
   State<ProfessorDashboardView> createState() => _ProfessorDashboardViewState();
 }
 
 class _ProfessorDashboardViewState extends State<ProfessorDashboardView> {
-  final FirebaseAuth _authInstance = locator<FirebaseAuth>();
-  bool _isLoading = true;
-  String _userQuantity = '0'; // Variável de estado para a quantidade
+  /// Prioridades exibidas antes de "Ver todas".
+  static const int _collapsedPriorities = 5;
 
-  static const Color navy = Color(0xFF001E2D);
-  static const Color green = Color(0xFF005A4F);
-  static const Color textColor = Color(0xFF3F4946);
-  static const Color red = Color(0xFFBA1A1A);
-  static const Color orange = Color(0xFFA73A03);
+  final String? _teacherId = locator<FirebaseAuth>().currentUser?.uid;
+  Future<TeacherDashboardData>? _data;
+  bool _showAllPriorities = false;
+
+  static const Color navy = AppColors.primaryDark;
+  static const Color green = AppColors.primary;
+  static const Color textColor = AppColors.textSecondary;
+  static const Color red = AppColors.danger;
+  static const Color orange = AppColors.accentDark;
 
   @override
   void initState() {
     super.initState();
-    _loadDashboardData();
+    _data = _load();
   }
 
-  Future<void> _loadDashboardData() async {
+  Future<TeacherDashboardData>? _load() {
+    final id = _teacherId;
+    if (id == null || id.isEmpty) return null;
+    return locator<TeacherDashboardService>().load(id);
+  }
+
+  Future<void> _reload() async {
+    final data = _load();
+    setState(() {
+      _data = data;
+    });
     try {
-      final teacherUID = _authInstance.currentUser!.uid;
-      final searcher = locator<TeacherUserSearcher>();
-
-      // AWAIT aguarda a resposta do Firebase
-      final count = await searcher.userQuantity(teacherUID);
-
-      if (mounted) {
-        setState(() {
-          _userQuantity = count.toString();
-          _isLoading = false;
-        });
-      }
-    } catch (e) {
-      debugPrint('Erro ao buscar dados do Firebase: $e');
-      if (mounted) {
-        setState(() {
-          _userQuantity = '-';
-          _isLoading = false;
-        });
-        _mostrarAviso('Erro de conexão ao carregar os dados.');
-      }
+      await data;
+    } catch (_) {
+      // O FutureBuilder mostra o erro.
     }
   }
 
-  void _mostrarAviso(String texto) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(texto)));
+  /// As ações levam a outras abas; ao voltar, o painel já está atualizado.
+  void _openTraining(String studentId) {
+    widget.onOpenStudentTraining?.call(studentId);
+    _reload();
   }
+
+  void _openAssessments(String studentId) {
+    widget.onOpenStudentAssessments?.call(studentId);
+    _reload();
+  }
+
+  /// Abre a lista de alunos (já filtrada, se for o caso) e atualiza o
+  /// painel ao voltar.
+  Future<void> _openStudents([
+    TeacherStudentFilter filter = TeacherStudentFilter.all,
+  ]) async {
+    await Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder:
+            (_) => ListaAlunosView(
+              initialFilter: filter,
+              onOpenStudent: widget.onOpenStudentTraining,
+              onEditTraining: widget.onEditStudentTraining,
+            ),
+      ),
+    );
+    if (mounted) _reload();
+  }
+
+  static String _count(int value, String singular, String plural) =>
+      '$value ${value == 1 ? singular : plural}';
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(title: 'Grazi Braz'),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // Saudação
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Olá, Marcos',
-                    style: GoogleFonts.barlowCondensed(
-                      fontWeight: FontWeight.bold,
-                      color: navy,
-                      fontSize: 32,
+      appBar: const CustomAppBar(title: 'Grazi Braz'),
+      body: FutureBuilder<TeacherDashboardData>(
+        future: _data,
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            debugPrint(
+              'Erro ao carregar o painel do professor: ${snapshot.error}',
+            );
+          }
+          final loading = snapshot.connectionState == ConnectionState.waiting;
+          final data = snapshot.data;
+          return RefreshIndicator(
+            onRefresh: _reload,
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsets.all(20),
+              child: InstructorScheduleBuilder(
+                instructorId: _teacherId,
+                builder:
+                    (context, schedule) => Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const UserGreeting(),
+                            const SizedBox(height: 10),
+                            Text(
+                              schedule.currentLabel,
+                              key: const Key('texto_turno_atual'),
+                              style: GoogleFonts.barlowCondensed(
+                                color: textColor,
+                                fontSize: AppFontSize.body,
+                              ),
+                            ),
+                          ],
+                        ),
+                        if (snapshot.hasError) ...[
+                          const SizedBox(height: 16),
+                          _LoadError(onRetry: _reload),
+                        ],
+                        const SizedBox(height: 20),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _DashboardMetricCard(
+                                key: const Key('card_alunos_ativos'),
+                                asset: 'assets/tresAlunos.svg',
+                                title: 'Alunos',
+                                value: _metric(loading, data?.activeStudents),
+                                description: 'Ativos',
+                                onTap:
+                                    _teacherId == null ? null : _openStudents,
+                              ),
+                            ),
+                            const SizedBox(width: 15),
+                            Expanded(
+                              child: _DashboardMetricCard(
+                                key: const Key('card_presencas'),
+                                asset: 'assets/presencas.svg',
+                                title: 'Presenças',
+                                value: _metric(loading, data?.presentToday),
+                                description: 'Hoje',
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 20),
+                        _DashboardMetricCard(
+                          key: const Key('card_risco_evasao'),
+                          asset: 'assets/inativo.svg',
+                          title: 'Alunos',
+                          value: _metric(loading, data?.atRisk.length),
+                          description: 'Risco de evasão',
+                          fullWidth: true,
+                          accentColor: red,
+                          shadowColor: red,
+                          onTap:
+                              data == null || data.atRisk.isEmpty
+                                  ? null
+                                  : () => _openStudents(
+                                    TeacherStudentFilter.atRisk,
+                                  ),
+                        ),
+                        const SizedBox(height: 15),
+                        _DashboardMetricCard(
+                          key: const Key('card_proximo_turno'),
+                          asset: 'assets/relogio.svg',
+                          title: 'Próximo Turno',
+                          value: schedule.nextUnitLabel,
+                          description: schedule.nextWhenLabel,
+                          isNextShift: true,
+                          accentColor: AppColors.primary,
+                          shadowColor: navy,
+                        ),
+                        const SizedBox(height: 30),
+                        _priorities(loading, data),
+                      ],
                     ),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    'Bloco atual: Bloco A (Manhã)',
-                    style: GoogleFonts.inter(color: textColor, fontSize: 16),
-                  ),
-                ],
               ),
-
-              const SizedBox(height: 20),
-
-              Row(
-                children: [
-                  Expanded(
-                    child: _DashboardMetricCard(
-                      asset: 'assets/tresAlunos.svg',
-                      title: 'Alunos',
-                      value: _userQuantity,
-                      description: 'Ativos',
-                    ),
-                  ),
-                  const SizedBox(width: 15),
-                  Expanded(
-                    child: _DashboardMetricCard(
-                      asset: 'assets/presencas.svg',
-                      title: 'Presenças',
-                      value: '15',
-                      description: 'Hoje',
-                    ),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 20),
-
-              const _DashboardMetricCard(
-                asset: 'assets/inativo.svg',
-                title: 'Alunos',
-                value: '3',
-                description: 'Risco de evasão',
-                fullWidth: true,
-                accentColor: red,
-                shadowColor: red,
-              ),
-
-              const SizedBox(height: 15),
-
-              const _DashboardMetricCard(
-                asset: 'assets/relogio.svg',
-                title: 'Próximo Turno',
-                value: 'Bloco B',
-                description: '11:00',
-                isNextShift: true,
-                accentColor: Color(0xFF00564B),
-                shadowColor: navy,
-              ),
-
-              const SizedBox(height: 30),
-
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Prioridades',
-                    style: GoogleFonts.anton(fontSize: 32, color: navy),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 8,
-                    ),
-                    decoration: BoxDecoration(
-                      color: green,
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Text(
-                      '3 Alertas',
-                      style: GoogleFonts.inter(
-                        fontSize: 13,
-                        fontWeight: FontWeight.bold,
-                        color: const Color(0xFFA8F0E1),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 15),
-
-              const _PriorityCard(
-                name: 'Ana Lima',
-                description: 'Avaliação vence em dois dias.',
-                asset: 'assets/quadradoAviso.svg',
-                action: 'Revisar',
-                accentColor: orange,
-                iconBackgroundColor: Color(0xFFE6A07D),
-              ),
-
-              const SizedBox(height: 15),
-
-              const _PriorityCard(
-                name: 'Bruno Alves',
-                description: '12 dias sem treinar (inativo).',
-                asset: 'assets/alertaVermelho.svg',
-                action: 'Contatar',
-                accentColor: red,
-                iconBackgroundColor: Color(0xFFE6A07D),
-              ),
-
-              const SizedBox(height: 15),
-
-              const _PriorityCard(
-                name: 'Carla Souza',
-                description: 'Novo treino solicitado.',
-                asset: 'assets/halter.svg',
-                action: 'Montar',
-                accentColor: green,
-                iconBackgroundColor: Color(0xFF84D3CA),
-              ),
-            ],
-          ),
-        ),
+            ),
+          );
+        },
       ),
     );
   }
+
+  static String _metric(bool loading, int? value) =>
+      loading ? '…' : (value?.toString() ?? '—');
+
+  Widget _priorities(bool loading, TeacherDashboardData? data) {
+    final priorities = data?.priorities ?? const <TeacherPriority>[];
+    final visible =
+        _showAllPriorities
+            ? priorities
+            : priorities.take(_collapsedPriorities).toList();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            BrandHeading('Prioridades', level: BrandHeadingLevel.section),
+            if (priorities.isNotEmpty)
+              Container(
+                key: const Key('badge_alertas'),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 8,
+                ),
+                decoration: BoxDecoration(
+                  color: green,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Text(
+                  _count(priorities.length, 'Alerta', 'Alertas'),
+                  style: GoogleFonts.barlowCondensed(
+                    fontSize: AppFontSize.caption,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.primaryChipSurface,
+                  ),
+                ),
+              ),
+          ],
+        ),
+        const SizedBox(height: 15),
+        if (loading)
+          const Padding(
+            padding: EdgeInsets.all(16),
+            child: Center(child: CircularProgressIndicator()),
+          )
+        else if (data == null)
+          const SizedBox.shrink()
+        else if (priorities.isEmpty)
+          Text(
+            'Nenhuma pendência hoje. Seus alunos estão em dia!',
+            key: const Key('texto_sem_pendencias'),
+            style: GoogleFonts.barlowCondensed(
+              fontSize: AppFontSize.body,
+              color: textColor,
+            ),
+          )
+        else ...[
+          for (final priority in visible) ...[
+            _priorityCard(priority),
+            const SizedBox(height: 15),
+          ],
+          if (priorities.length > _collapsedPriorities)
+            TextButton(
+              key: const Key('botao_ver_todas_prioridades'),
+              onPressed:
+                  () =>
+                      setState(() => _showAllPriorities = !_showAllPriorities),
+              child: Text(
+                _showAllPriorities
+                    ? 'Mostrar menos'
+                    : 'Ver todas (${priorities.length})',
+              ),
+            ),
+        ],
+      ],
+    );
+  }
+
+  Widget _priorityCard(TeacherPriority priority) {
+    final student = priority.student;
+    final days = priority.days;
+    final key = Key('card_prioridade_${priority.kind.name}_${student.id}');
+    final openTraining =
+        widget.onOpenStudentTraining == null
+            ? null
+            : () => _openTraining(student.id);
+    return switch (priority.kind) {
+      TeacherPriorityKind.inactive => _PriorityCard(
+        key: key,
+        name: student.name,
+        description:
+            days == null
+                ? 'Ainda não treinou (inativo).'
+                : '${_count(days, 'dia', 'dias')} sem treinar (inativo).',
+        asset: 'assets/alertaVermelho.svg',
+        action: 'Ver perfil',
+        accentColor: red,
+        iconBackgroundColor: AppColors.accentAlertBorder,
+        onTap: openTraining,
+      ),
+      TeacherPriorityKind.atRisk => _PriorityCard(
+        key: key,
+        name: student.name,
+        description: '${_count(days ?? 0, 'dia', 'dias')} sem treinar.',
+        asset: 'assets/alertaVermelho.svg',
+        action: 'Ver perfil',
+        accentColor: orange,
+        iconBackgroundColor: AppColors.accentAlertBorder,
+        onTap: openTraining,
+      ),
+      TeacherPriorityKind.noPlan => _PriorityCard(
+        key: key,
+        name: student.name,
+        description: 'Sem ficha de treino ativa.',
+        asset: 'assets/halter.svg',
+        action: 'Montar',
+        accentColor: green,
+        iconBackgroundColor: AppColors.mintBorderBright,
+        onTap: openTraining,
+      ),
+      TeacherPriorityKind.assessmentOverdue => _PriorityCard(
+        key: key,
+        name: student.name,
+        description:
+            days == null
+                ? 'Ainda sem avaliação física.'
+                : 'Última avaliação há ${_count(days, 'dia', 'dias')}.',
+        asset: 'assets/quadradoAviso.svg',
+        action: 'Revisar',
+        accentColor: orange,
+        iconBackgroundColor: AppColors.accentAlertBorder,
+        onTap:
+            widget.onOpenStudentAssessments == null
+                ? null
+                : () => _openAssessments(student.id),
+      ),
+    };
+  }
+}
+
+class _LoadError extends StatelessWidget {
+  final VoidCallback onRetry;
+
+  const _LoadError({required this.onRetry});
+
+  @override
+  Widget build(BuildContext context) => Container(
+    padding: const EdgeInsets.all(16),
+    decoration: BoxDecoration(
+      color: AppColors.dangerSurface,
+      borderRadius: BorderRadius.circular(16),
+    ),
+    child: Row(
+      children: [
+        const Expanded(
+          child: Text(
+            'Não conseguimos carregar seus alunos agora. Confira a conexão.',
+            style: TextStyle(
+              color: AppColors.textPrimary,
+              fontSize: AppFontSize.small,
+            ),
+          ),
+        ),
+        TextButton(
+          key: const Key('botao_tentar_novamente'),
+          onPressed: onRetry,
+          child: const Text('Tentar novamente'),
+        ),
+      ],
+    ),
+  );
 }
 
 // ============================================================
@@ -221,29 +399,36 @@ class _DashboardMetricCard extends StatelessWidget {
   final bool isNextShift;
   final Color accentColor;
   final Color shadowColor;
+  final VoidCallback? onTap;
 
   const _DashboardMetricCard({
+    super.key,
     required this.asset,
     required this.title,
     required this.value,
     required this.description,
     this.fullWidth = false,
     this.isNextShift = false,
-    this.accentColor = const Color(0xFF005A4F),
-    this.shadowColor = const Color(0xFF02594F),
+    this.accentColor = AppColors.primary,
+    this.shadowColor = AppColors.primary,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
+    return _Tappable(onTap: onTap, child: _card());
+  }
+
+  Widget _card() {
     return Container(
       width: fullWidth ? double.infinity : null,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: shadowColor.withOpacity(0.3),
+            color: shadowColor.withValues(alpha: 0.3),
             blurRadius: 6,
             offset: const Offset(0, 3),
           ),
@@ -263,8 +448,8 @@ class _DashboardMetricCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   title,
-                  style: GoogleFonts.inter(
-                    fontSize: 16,
+                  style: GoogleFonts.barlowCondensed(
+                    fontSize: AppFontSize.body,
                     fontWeight: FontWeight.bold,
                     color: accentColor,
                   ),
@@ -279,16 +464,17 @@ class _DashboardMetricCard extends StatelessWidget {
           if (isNextShift) ...[
             Text(
               value,
-              style: GoogleFonts.anton(
-                fontSize: 32,
-                color: const Color(0xFF001E2D),
+              style: GoogleFonts.barlowCondensed(
+                fontWeight: FontWeight.w700,
+                fontSize: AppFontSize.headline,
+                color: AppColors.primaryDark,
               ),
             ),
             const SizedBox(height: 10),
             Text(
               description,
-              style: GoogleFonts.inter(
-                fontSize: 16,
+              style: GoogleFonts.barlowCondensed(
+                fontSize: AppFontSize.body,
                 fontWeight: FontWeight.bold,
                 color: accentColor,
               ),
@@ -305,12 +491,13 @@ class _DashboardMetricCard extends StatelessWidget {
                     alignment: Alignment.centerLeft,
                     child: Text(
                       value,
-                      style: GoogleFonts.anton(
-                        fontSize: 48,
+                      style: GoogleFonts.barlowCondensed(
+                        fontWeight: FontWeight.w700,
+                        fontSize: AppFontSize.display,
                         color:
                             fullWidth
-                                ? const Color(0xFFBA1A1A)
-                                : const Color(0xFF001E2D),
+                                ? AppColors.danger
+                                : AppColors.primaryDark,
                       ),
                     ),
                   ),
@@ -319,10 +506,10 @@ class _DashboardMetricCard extends StatelessWidget {
                 Expanded(
                   child: Text(
                     description,
-                    style: GoogleFonts.inter(
-                      fontSize: 16,
+                    style: GoogleFonts.barlowCondensed(
+                      fontSize: AppFontSize.body,
                       fontWeight: FontWeight.bold,
-                      color: const Color(0xFF3F4946),
+                      color: AppColors.textSecondary,
                     ),
                   ),
                 ),
@@ -345,26 +532,33 @@ class _PriorityCard extends StatelessWidget {
   final String action;
   final Color accentColor;
   final Color iconBackgroundColor;
+  final VoidCallback? onTap;
 
   const _PriorityCard({
+    super.key,
     required this.name,
     required this.description,
     required this.asset,
     required this.action,
     required this.accentColor,
     required this.iconBackgroundColor,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
+    return _Tappable(onTap: onTap, child: _card());
+  }
+
+  Widget _card() {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF001E2D).withOpacity(0.3),
+            color: AppColors.primaryDark.withValues(alpha: 0.3),
             blurRadius: 6,
             offset: const Offset(0, 3),
           ),
@@ -416,18 +610,18 @@ class _PriorityCard extends StatelessWidget {
                       children: [
                         Text(
                           name,
-                          style: GoogleFonts.inter(
-                            fontSize: 24,
+                          style: GoogleFonts.barlowCondensed(
+                            fontSize: AppFontSize.title,
                             fontWeight: FontWeight.bold,
-                            color: const Color(0xFF001E2D),
+                            color: AppColors.primaryDark,
                           ),
                         ),
                         const SizedBox(height: 4),
                         Text(
                           description,
-                          style: GoogleFonts.inter(
-                            fontSize: 16,
-                            color: const Color(0xFF3F4946),
+                          style: GoogleFonts.barlowCondensed(
+                            fontSize: AppFontSize.body,
+                            color: AppColors.textSecondary,
                           ),
                         ),
                       ],
@@ -438,8 +632,8 @@ class _PriorityCard extends StatelessWidget {
 
                   Text(
                     action,
-                    style: GoogleFonts.inter(
-                      fontSize: 14,
+                    style: GoogleFonts.barlowCondensed(
+                      fontSize: AppFontSize.small,
                       fontWeight: FontWeight.bold,
                       color: accentColor,
                     ),
@@ -449,6 +643,27 @@ class _PriorityCard extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Torna um cartão tocável sem mudar o visual; sem [onTap], só o cartão.
+class _Tappable extends StatelessWidget {
+  final VoidCallback? onTap;
+  final Widget child;
+
+  const _Tappable({required this.onTap, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    if (onTap == null) return child;
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: child,
       ),
     );
   }

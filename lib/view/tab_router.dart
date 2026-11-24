@@ -1,11 +1,11 @@
+import 'package:academiagrazi/theme/app_colors.dart';
 import 'package:academiagrazi/view/admin/admin_home_view.dart';
+import 'package:academiagrazi/view/admin/admin_students_view.dart';
 import 'package:academiagrazi/view/admin/admin_team_view.dart';
 import 'package:academiagrazi/view/components/app_bottom_navigation.dart';
 import 'package:academiagrazi/view/user/aluno_home_view.dart';
 import 'package:academiagrazi/view/user/aluno_profile_view.dart';
-import 'package:academiagrazi/view/user/aluno_treinos_view.dart';
 import 'package:academiagrazi/view/user/aluno_treinos_firestore_view.dart';
-import 'package:academiagrazi/view/user/mocks/treinos_mock_data.dart';
 import 'package:academiagrazi/view/user/aluno_evolucao_view.dart';
 import 'package:flutter/material.dart';
 
@@ -60,7 +60,7 @@ class _MainShellState extends State<MainShell> {
   @override
   Widget build(BuildContext context) {
     return ColoredBox(
-      color: const Color(0xFFE5E5E5),
+      color: AppColors.background,
       child: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 430),
@@ -84,13 +84,17 @@ class _MainShellState extends State<MainShell> {
                             (_) =>
                                 widget.isAdmin
                                     ? const AdminHomeView()
-                                    : const AlunoHomeView(),
+                                    : AlunoHomeView(
+                                      onOpenTrainings: () => _selecionarAba(1),
+                                      onOpenEvolution: () => _selecionarAba(2),
+                                      onOpenProfile: () => _selecionarAba(3),
+                                    ),
                       );
                     },
                   ),
                 ),
 
-                // ABA 1 - TREINOS
+                // ABA 1 - TREINOS (aluno) / ALUNOS (admin)
                 NavigatorPopHandler<Object?>(
                   enabled: _selectedIndex == 1,
                   onPopWithResult: (_) {
@@ -104,9 +108,7 @@ class _MainShellState extends State<MainShell> {
                         builder:
                             (_) =>
                                 widget.isAdmin
-                                    ? const AlunoTreinosView(
-                                      data: TreinosMockData.alunoTreinos,
-                                    )
+                                    ? const AdminStudentsView()
                                     : const AlunoTreinosFirestoreView(),
                       );
                     },
@@ -142,7 +144,7 @@ class _MainShellState extends State<MainShell> {
             // com a área do professor.
             bottomNavigationBar: AppBottomNavigation(
               keyPrefix: widget.isAdmin ? 'admin' : 'aluno',
-              showTeamTab: widget.isAdmin,
+              adminTabs: widget.isAdmin,
               selectedIndex: _selectedIndex,
               onDestinationSelected: _selecionarAba,
             ),

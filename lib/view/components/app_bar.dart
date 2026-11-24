@@ -1,3 +1,4 @@
+import 'package:academiagrazi/theme/app_font_size.dart';
 import 'dart:async';
 
 import 'package:academiagrazi/locator.dart';
@@ -10,26 +11,27 @@ import 'package:flutter/material.dart';
 
 /// Cabeçalho compartilhado entre aluno e professor.
 ///
-/// Centraliza a identidade visual e permite que cada tela
-/// configure seu título, suas ações e sua cor de fundo.
+/// Centraliza a identidade visual (fundo branco) e permite que cada tela
+/// configure seu título e suas ações. A seta de voltar aparece sozinha
+/// quando a rota atual pode voltar (tela empilhada); na raiz de uma aba ela
+/// não aparece.
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final List<Widget>? actions;
-  final Color backgroundColor;
   final VoidCallback? onNotificationPressed;
-  final bool showBackButton;
 
   const CustomAppBar({
     super.key,
     required this.title,
     this.actions,
-    this.showBackButton = true,
-    this.backgroundColor = Colors.blue, // Cor padrão caso nenhuma seja enviada
     this.onNotificationPressed,
   });
 
   @override
   Widget build(BuildContext context) {
+    // Mesmo critério que o AppBar do Flutter usa para a seta automática.
+    final canGoBack = ModalRoute.of(context)?.impliesAppBarDismissal ?? false;
+
     return AppBar(
       // A seta de voltar é desenhada no título; sem isso o Flutter
       // adiciona uma segunda seta quando a tela pode voltar.
@@ -40,11 +42,13 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
       title: Row(
         children: [
-          if (showBackButton) ...[
+          if (canGoBack) ...[
             SizedBox(
               width: 40,
               height: 40,
               child: IconButton(
+                key: const Key('appbar_botao_voltar'),
+                tooltip: 'Voltar',
                 padding: EdgeInsets.zero,
                 onPressed: () => Navigator.maybePop(context),
                 icon: const Icon(
@@ -67,7 +71,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(
                 color: AppColors.primary,
-                fontSize: 22,
+                fontSize: AppFontSize.title,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -148,8 +152,8 @@ class _CurrentUserAvatarState extends State<_CurrentUserAvatar> {
       key: const Key('appbar_user_avatar'),
       photoUrl: _photoUrl,
       size: 40,
-      backgroundColor: const Color(0xFFD6D6D6),
-      iconColor: const Color(0xFF8A8A8A),
+      backgroundColor: AppColors.border,
+      iconColor: AppColors.textMuted,
     );
   }
 }

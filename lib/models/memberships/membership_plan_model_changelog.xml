@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<changelog>
+    <model>
+        <version>1.0</version>
+        <owner>Bayer-07</owner>
+        <description>Criacao do catalogo de planos da academia. So o admin le e grava. Valores em centavos. Exclusao logica com active = false. Sem gateway de pagamento.</description>
+        <actualModel>
+            membershipPlan = {
+                id: --gerado automaticamente 20-character strings (Base62)
+                name: string --ex.: "Plano Conexao Semestral"
+                monthlyPriceCents: int --valor da mensalidade em centavos, maior que zero
+                durationMonths: int --vigencia em meses (1 a 36); uma mensalidade por mes
+                modalities: string (optional) --texto livre, ex.: "Musculacao + Pilates"
+                active: bool --false = plano retirado do catalogo (nao e apagado)
+                createdAt: string (iso8601, UTC) --gravado uma unica vez, na criacao
+            }
+        </actualModel>
+    </model>
+</changelog>

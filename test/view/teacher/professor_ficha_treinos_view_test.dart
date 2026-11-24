@@ -1,7 +1,9 @@
 import 'package:academiagrazi/controller/teachers/teacher_user_searcher.dart';
 import 'package:academiagrazi/models/training/training_plan.dart';
 import 'package:academiagrazi/service/training/training_plan_service.dart';
+import 'package:academiagrazi/view/components/user_avatar.dart';
 import 'package:academiagrazi/view/teacher/professor_ficha_treinos_view.dart';
+import 'package:academiagrazi/view/teacher/student_open_request.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -86,10 +88,24 @@ void main() {
   testWidgets('abre primeiro a lista de alunos vinculados', (tester) async {
     final setup = await createTestServices();
     await loadEditor(tester, setup.db, setup.service);
-    expect(find.text('Meus alunos'), findsOneWidget);
+    expect(find.text('MEUS ALUNOS'), findsOneWidget);
     expect(find.text('Ana Lima'), findsOneWidget);
     expect(find.text('Aluno de outro professor'), findsNothing);
     expect(find.byKey(const Key('professor_editor_ficha')), findsNothing);
+  });
+
+  testWidgets('mostra a foto de perfil do aluno na lista', (tester) async {
+    final setup = await createTestServices();
+    const foto = 'https://res.cloudinary.com/demo/image/upload/ana.jpg';
+    await setup.db.collection('users').doc('aluno-1').update({
+      'photoUrl': foto,
+    });
+    await loadEditor(tester, setup.db, setup.service);
+
+    final avatar = tester.widget<UserAvatar>(
+      find.byKey(const Key('foto_aluno_aluno-1')),
+    );
+    expect(avatar.photoUrl, foto);
   });
 
   testWidgets('mostra estado vazio sem alunos vinculados', (tester) async {
@@ -106,6 +122,46 @@ void main() {
     expect(find.byKey(const Key('criar-ficha-aluno')), findsOneWidget);
   });
 
+  testWidgets('abre o aluno pedido por outra tela', (tester) async {
+    final setup = await createTestServices();
+    final request = StudentOpenRequest();
+    addTearDown(request.dispose);
+    await tester.pumpWidget(MaterialApp(
+      home: ProfessorFichaTreinosView(
+        instructorId: 'prof-1',
+        searcher: TeacherUserSearcher(db: setup.db),
+        service: setup.service,
+        openRequest: request,
+      ),
+    ));
+    await tester.pumpAndSettle();
+
+    request.open('aluno-1');
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('professor_resumo_aluno')), findsOneWidget);
+    expect(find.byKey(const Key('professor_editor_ficha')), findsNothing);
+  });
+
+  testWidgets('"Montar treino" abre direto a montagem do aluno', (tester) async {
+    final setup = await createTestServices();
+    final request = StudentOpenRequest();
+    addTearDown(request.dispose);
+    await tester.pumpWidget(MaterialApp(
+      home: ProfessorFichaTreinosView(
+        instructorId: 'prof-1',
+        searcher: TeacherUserSearcher(db: setup.db),
+        service: setup.service,
+        openRequest: request,
+      ),
+    ));
+    await tester.pumpAndSettle();
+
+    request.open('aluno-1', edit: true);
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('professor_editor_ficha')), findsOneWidget);
+    expect(find.byKey(const Key('treino-A')), findsOneWidget);
+  });
+
   testWidgets('edicao sem publicar nao altera a ficha do aluno',
       (tester) async {
     final setup = await createTestServices();
@@ -119,6 +175,33 @@ void main() {
     );
     expect(drafts, isEmpty);
     expect(await setup.service.getActivePlan('aluno-1'), isNull);
+  });
+
+  testWidgets('tocar no exercicio da ficha abre os detalhes', (tester) async {
+    final setup = await createTestServices();
+    await loadEditor(tester, setup.db, setup.service);
+    await openNewDraft(tester);
+    await addSupino(tester);
+
+    await tester.ensureVisible(find.text('Supino Reto'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Supino Reto'));
+    await tester.pumpAndSettle();
+
+    final detalhes = find.byKey(const Key('detalhes_exercicio'));
+    expect(detalhes, findsOneWidget);
+    expect(
+      find.descendant(of: detalhes, matching: find.text('Supino Reto')),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(of: detalhes, matching: find.text('ORIENTAÇÕES')),
+      findsOneWidget,
+    );
+
+    await tester.tap(find.byKey(const Key('botao_fechar_detalhes_exercicio')));
+    await tester.pumpAndSettle();
+    expect(detalhes, findsNothing);
   });
 
   testWidgets('bloqueia publicacao sem programacao semanal', (tester) async {

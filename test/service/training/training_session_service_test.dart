@@ -240,4 +240,34 @@ void main() {
             .get();
     expect(plan.data()?['status'], 'published');
   });
+
+  test('acompanha a sessao em andamento ate ela ser finalizada', () async {
+    final updates = <String?>[];
+    final subscription = service
+        .watchInProgress('aluno-1')
+        .listen((session) => updates.add(session?.id));
+    await service.startSession(
+      studentId: 'aluno-1',
+      planId: 'ficha-1',
+      routineId: 'treino-a',
+      sessionId: 'sessao-1',
+    );
+    await pumpEventQueue();
+    await service.recordSet(
+      studentId: 'aluno-1',
+      sessionId: 'sessao-1',
+      exerciseItemId: 'item-1',
+      setNumber: 1,
+      completed: true,
+    );
+    currentTime = start.add(const Duration(minutes: 20));
+    await service.finishSession(studentId: 'aluno-1', sessionId: 'sessao-1');
+    await pumpEventQueue();
+    await subscription.cancel();
+
+    expect(updates.first, isNull);
+    expect(updates, contains('sessao-1'));
+    expect(updates.last, isNull);
+    expect(() => service.watchInProgress(''), throwsArgumentError);
+  });
 }

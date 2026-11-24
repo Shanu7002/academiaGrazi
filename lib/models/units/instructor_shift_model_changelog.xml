@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<changelog>
+    <model>
+        <version>1.0</version>
+        <owner>Bayer-07</owner>
+        <description>GB-040: criacao do modelo de turno da escala do professor (professor X na unidade Y no dia D, das HH:mm as HH:mm).</description>
+        <actualModel>
+            instructorShift = {
+                id: --gerado automaticamente 20-character strings (Base62)
+                instructorId: string --id do usuario professor
+                unitId: string --id da unidade (units)
+                weekday: int --1 a 7, padrao DateTime.weekday (1 = segunda, 7 = domingo)
+                startTime: string --'HH:mm', horario local da academia
+                endTime: string --'HH:mm', maior que startTime (o turno nao vira a meia-noite)
+                createdAt: string (iso8601, UTC) --gravado uma unica vez, na criacao
+            }
+        </actualModel>
+    </model>
+</changelog>

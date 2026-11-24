@@ -37,6 +37,7 @@ void main() {
           email: 'test@test.com',
           type: UserType.admin,
           responsable: 'test',
+          createdAt: DateTime.utc(2026, 11, 11),
         );
 
         await registerUserService.registerUser(user);
@@ -48,7 +49,7 @@ void main() {
         expect(data['name'], 'Teste da Silva');
         expect(data['email'], 'test@test.com');
         expect(data['type'], 'admin');
-        expect(data['createdAt'], isNotNull);
+        expect(data['createdAt'], '2026-11-11T00:00:00.000Z');
       },
     );
 

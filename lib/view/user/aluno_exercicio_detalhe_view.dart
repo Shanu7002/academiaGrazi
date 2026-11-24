@@ -1,4 +1,8 @@
+import 'package:academiagrazi/view/components/brand_heading.dart';
+import 'package:academiagrazi/theme/app_font_size.dart';
 import 'package:academiagrazi/theme/app_colors.dart';
+import 'package:academiagrazi/view/components/exercise_details_sheet.dart';
+import 'package:academiagrazi/view/user/student_exercise_photo.dart';
 import 'package:academiagrazi/view/user/ui_data/aluno_exercicio_detalhe_ui_data.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -143,7 +147,7 @@ class _AlunoExercicioDetalheViewState extends State<AlunoExercicioDetalheView> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _buildVideo(),
+                        _buildImagem(),
                         Padding(
                           padding: const EdgeInsets.fromLTRB(16, 18, 16, 0),
                           child: Column(
@@ -202,7 +206,7 @@ class _AlunoExercicioDetalheViewState extends State<AlunoExercicioDetalheView> {
                             ? 'VOLTAR AO TREINO'
                             : 'CONCLUIR SÉRIE ${proximaSerie + 1}',
                         style: GoogleFonts.barlowCondensed(
-                          fontSize: 18,
+                          fontSize: AppFontSize.subtitle,
                           fontWeight: FontWeight.w800,
                           letterSpacing: 0.6,
                         ),
@@ -253,23 +257,13 @@ class _AlunoExercicioDetalheViewState extends State<AlunoExercicioDetalheView> {
                   overflow: TextOverflow.ellipsis,
                   style: GoogleFonts.barlowCondensed(
                     color: AppColors.textPrimary,
-                    fontSize: 21,
+                    fontSize: AppFontSize.subtitle,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
               ),
-              SizedBox(
-                width: 52,
-                height: 52,
-                child: IconButton(
-                  onPressed: () {},
-                  icon: const Icon(
-                    Icons.more_vert_rounded,
-                    color: AppColors.textPrimary,
-                    size: 22,
-                  ),
-                ),
-              ),
+              // Espaço do botão de voltar, para o título ficar centralizado.
+              const SizedBox(width: 52, height: 52),
             ],
           ),
         ),
@@ -277,82 +271,30 @@ class _AlunoExercicioDetalheViewState extends State<AlunoExercicioDetalheView> {
     );
   }
 
-  Widget _buildVideo() {
-    return AspectRatio(
-      aspectRatio: 390 / 219.38,
-      child: Container(
-        width: double.infinity,
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              AppColors.videoGradientStart,
-              AppColors.videoGradientMiddle,
-              AppColors.videoGradientEnd,
-            ],
-          ),
-        ),
-        child: Stack(
-          children: [
-            Positioned.fill(
-              child: Center(
-                child: Container(
-                  width: 68,
-                  height: 68,
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.92),
-                    shape: BoxShape.circle,
-                    boxShadow: const [
-                      BoxShadow(
-                        color: AppColors.shadowBlack20,
-                        blurRadius: 18,
-                        offset: Offset(0, 6),
-                      ),
-                    ],
-                  ),
-                  child: const Icon(
-                    Icons.play_arrow_rounded,
-                    color: AppColors.primaryDark,
-                    size: 40,
-                  ),
-                ),
-              ),
-            ),
-            Positioned(
-              top: 14,
-              right: 14,
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 11,
-                  vertical: 6,
-                ),
-                decoration: BoxDecoration(
-                  color: AppColors.white90,
-                  borderRadius: BorderRadius.circular(999),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(
-                      Icons.timer_outlined,
-                      color: AppColors.textPrimary,
-                      size: 15,
-                    ),
-                    const SizedBox(width: 5),
-                    Text(
-                      widget.data.tempoVideo,
-                      style: GoogleFonts.inter(
-                        color: AppColors.textPrimary,
-                        fontSize: 11,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
+  /// Os vídeos ficaram fora desta versão: a imagem do exercício ocupa o
+  /// lugar do player e abre os detalhes completos.
+  Widget _buildImagem() {
+    final exercicio = widget.data.exercicio;
+
+    return Semantics(
+      button: true,
+      label: 'Ver detalhes de ${exercicio.nome}',
+      child: InkWell(
+        key: const Key('imagem_exercicio_detalhe'),
+        onTap: () {
+          showExerciseDetailsSheet(
+            context,
+            name: exercicio.nome,
+            muscleGroup: exercicio.muscleGroup,
+            instructions: _orientacoes,
+            imageUrl: exercicio.imageUrl,
+          );
+        },
+        child: StudentExercisePhoto(
+          url: exercicio.imageUrl,
+          size: double.infinity,
+          height: 220,
+          radius: BorderRadius.zero,
         ),
       ),
     );
@@ -363,7 +305,7 @@ class _AlunoExercicioDetalheViewState extends State<AlunoExercicioDetalheView> {
       widget.data.exercicio.nome,
       style: GoogleFonts.barlowCondensed(
         color: AppColors.textPrimary,
-        fontSize: 30,
+        fontSize: AppFontSize.headline,
         fontWeight: FontWeight.w800,
         height: 1,
       ),
@@ -415,7 +357,7 @@ class _AlunoExercicioDetalheViewState extends State<AlunoExercicioDetalheView> {
             overflow: TextOverflow.ellipsis,
             style: GoogleFonts.barlowCondensed(
               color: destaque ? AppColors.accent : AppColors.textPrimary,
-              fontSize: 23,
+              fontSize: AppFontSize.title,
               fontWeight: FontWeight.w800,
             ),
           ),
@@ -424,9 +366,9 @@ class _AlunoExercicioDetalheViewState extends State<AlunoExercicioDetalheView> {
             legenda,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: GoogleFonts.inter(
+            style: GoogleFonts.barlowCondensed(
               color: AppColors.textSecondary,
-              fontSize: 10,
+              fontSize: AppFontSize.caption,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -439,14 +381,7 @@ class _AlunoExercicioDetalheViewState extends State<AlunoExercicioDetalheView> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Orientações',
-          style: GoogleFonts.barlowCondensed(
-            color: AppColors.textPrimary,
-            fontSize: 23,
-            fontWeight: FontWeight.w800,
-          ),
-        ),
+        BrandHeading('Orientações', level: BrandHeadingLevel.section),
         const SizedBox(height: 10),
         Container(
           width: double.infinity,
@@ -458,9 +393,9 @@ class _AlunoExercicioDetalheViewState extends State<AlunoExercicioDetalheView> {
           ),
           child: Text(
             _orientacoes,
-            style: GoogleFonts.inter(
+            style: GoogleFonts.barlowCondensed(
               color: AppColors.textBody,
-              fontSize: 13,
+              fontSize: AppFontSize.caption,
               height: 1.55,
             ),
           ),
@@ -473,14 +408,7 @@ class _AlunoExercicioDetalheViewState extends State<AlunoExercicioDetalheView> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Séries',
-          style: GoogleFonts.barlowCondensed(
-            color: AppColors.textPrimary,
-            fontSize: 23,
-            fontWeight: FontWeight.w800,
-          ),
-        ),
+        BrandHeading('Séries', level: BrandHeadingLevel.section),
         const SizedBox(height: 10),
         Container(
           width: double.infinity,
@@ -550,7 +478,7 @@ class _AlunoExercicioDetalheViewState extends State<AlunoExercicioDetalheView> {
               '${indice + 1}',
               style: GoogleFonts.barlowCondensed(
                 color: AppColors.textPrimary,
-                fontSize: 19,
+                fontSize: AppFontSize.subtitle,
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -566,9 +494,9 @@ class _AlunoExercicioDetalheViewState extends State<AlunoExercicioDetalheView> {
                     decimal: true,
                   ),
                   textAlign: TextAlign.center,
-                  style: GoogleFonts.inter(
+                  style: GoogleFonts.barlowCondensed(
                     color: AppColors.textPrimary,
-                    fontSize: 13,
+                    fontSize: AppFontSize.caption,
                     fontWeight: FontWeight.w600,
                   ),
                   decoration: InputDecoration(
@@ -629,9 +557,9 @@ class _AlunoExercicioDetalheViewState extends State<AlunoExercicioDetalheView> {
   }
 
   TextStyle _tableHeaderStyle() {
-    return GoogleFonts.inter(
+    return GoogleFonts.barlowCondensed(
       color: AppColors.textSecondary,
-      fontSize: 10,
+      fontSize: AppFontSize.caption,
       fontWeight: FontWeight.w700,
       letterSpacing: 0.35,
     );

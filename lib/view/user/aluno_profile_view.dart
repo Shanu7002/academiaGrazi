@@ -1,3 +1,5 @@
+import 'package:academiagrazi/view/components/brand_heading.dart';
+import 'package:academiagrazi/theme/app_font_size.dart';
 import 'package:academiagrazi/theme/app_colors.dart';
 import 'package:academiagrazi/view/preferences_service.dart';
 import 'package:academiagrazi/view/user/ui_models/termos_privacidade_view.dart';
@@ -8,9 +10,13 @@ import 'package:academiagrazi/locator.dart';
 import 'package:academiagrazi/models/users/user_model.dart';
 import 'package:academiagrazi/service/users/profile_photo.dart';
 import 'package:academiagrazi/service/users/register_user.dart';
+import 'package:academiagrazi/models/units/unit_model.dart';
+import 'package:academiagrazi/service/units/unit_service.dart';
 import 'package:academiagrazi/view/components/app_bar.dart';
+import 'package:academiagrazi/view/components/instructor_schedule_builder.dart';
 import 'package:academiagrazi/view/components/invite_code_card.dart';
 import 'package:academiagrazi/view/components/user_avatar.dart';
+import 'package:academiagrazi/view/user/widgets/student_membership_summary.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -108,7 +114,7 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
       UserModel? responsable;
 
       if (user?.responsable != null && user!.responsable!.isNotEmpty) {
-        responsable = await _userService.getResponsableData(user.responsable!);
+        responsable = await _userService.getUserById(user.responsable!);
       }
 
       if (!mounted) return;
@@ -191,7 +197,9 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Não foi possível atualizar a foto. Tente novamente.'),
+          content: Text(
+            'Não conseguimos atualizar a foto agora. Tente novamente.',
+          ),
         ),
       );
     } finally {
@@ -201,11 +209,9 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
 
   Future<void> logout() async {
     try {
-      print('Executing sign out...');
       await _authInstance.signOut();
-      print('Sign out successful.');
     } catch (e) {
-      print('Logout Error: $e');
+      debugPrint('Erro ao sair: $e');
     }
   }
 
@@ -241,7 +247,7 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: const CustomAppBar(title: 'GRAZI BRAZ', showBackButton: false),
+      appBar: const CustomAppBar(title: 'GRAZI BRAZ'),
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(
@@ -251,21 +257,14 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text(
-                    'Meu Perfil',
-                    style: GoogleFonts.barlowCondensed(
-                      fontSize: 30,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.primaryDark,
-                    ),
-                  ),
+                  BrandHeading('Perfil', complement: 'Seus dados'),
                   const SizedBox(height: 4),
                   Text(
-                    user.type == UserType.admin
-                        ? 'Seus dados e preferências'
-                        : 'Seus dados, saúde e preferências',
-                    style: GoogleFonts.inter(
-                      fontSize: 14,
+                    user.type == UserType.user
+                        ? 'Seus dados, saúde e preferências'
+                        : 'Seus dados e preferências',
+                    style: GoogleFonts.barlowCondensed(
+                      fontSize: AppFontSize.small,
                       color: AppColors.slateText,
                     ),
                   ),
@@ -287,9 +286,7 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
                       ),
                     ),
                   ],
-                  // O admin não tem professor, ficha clínica, contato de
-                  // emergência nem plano; essas seções são só de alunos e
-                  // professores.
+                  // O admin não tem professor responsável nem bloco/turno.
                   if (user.type != UserType.admin) ...[
                     const SizedBox(height: 20),
 
@@ -302,40 +299,32 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
                             title: 'ACOMPANHAMENTO PROFISSIONAL',
                           ),
                           const SizedBox(height: 16),
-                          _ProfessionalInfoCard(
-                            avatar: UserAvatar(
-                              key: const Key('responsable_avatar'),
-                              photoUrl: responsable?.photoUrl,
-                              backgroundColor: AppColors.avatarBackground,
-                              iconColor: AppColors.primary,
-                            ),
-                            label: 'PROFESSOR RESPONSÁVEL',
-                            title:
-                                responsable?.name ?? 'Professor não encontrado',
-                            subtitle: 'Especialista',
-                            subtitleColor: AppColors.primaryText,
-                          ),
-                          const SizedBox(height: 12),
-                          _ProfessionalInfoCard(
-                            avatar: CircleAvatar(
-                              radius: 22,
-                              backgroundColor: AppColors.primary,
-                              child: Text(
-                                'A',
-                                style: GoogleFonts.barlowCondensed(
-                                  color: Colors.white,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                          // Só o aluno tem professor responsável; o
+                          // professor vê aqui apenas o bloco/turno.
+                          if (user.type == UserType.user) ...[
+                            _ProfessionalInfoCard(
+                              avatar: UserAvatar(
+                                key: const Key('responsable_avatar'),
+                                photoUrl: responsable?.photoUrl,
+                                backgroundColor: AppColors.avatarBackground,
+                                iconColor: AppColors.primary,
                               ),
+                              label: 'PROFESSOR RESPONSÁVEL',
+                              title:
+                                  responsable?.name ??
+                                  'Professor não encontrado',
+                              subtitle: 'Especialista',
+                              subtitleColor: AppColors.primaryText,
                             ),
-                            label: 'BLOCO / TURNO',
-                            title: 'Bloco A',
-                            subtitle: '06:00 - 09:00',
-                          ),
+                            const SizedBox(height: 12),
+                          ],
+                          _UnitShiftCard(user: user),
                         ],
                       ),
                     ),
+                  ],
+                  // Saúde, contato de emergência e plano são dados do aluno.
+                  if (user.type == UserType.user) ...[
                     const SizedBox(height: 20),
 
                     _SectionCard(
@@ -623,7 +612,7 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
                                                 _editingHealth = false;
                                               });
 
-                                              if (mounted) {
+                                              if (context.mounted) {
                                                 ScaffoldMessenger.of(
                                                   context,
                                                 ).showSnackBar(
@@ -637,15 +626,16 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
                                                 );
                                               }
                                             } catch (e) {
-                                              if (mounted) {
+                                              if (context.mounted) {
                                                 ScaffoldMessenger.of(
                                                   context,
                                                 ).showSnackBar(
                                                   const SnackBar(
                                                     content: Text(
-                                                      'Falha ao salvar. Tente novamente.',
+                                                      'Não conseguimos salvar agora. Tente novamente.',
                                                     ),
-                                                    backgroundColor: Colors.red,
+                                                    backgroundColor:
+                                                        AppColors.danger,
                                                   ),
                                                 );
                                               }
@@ -719,7 +709,7 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
                                 ),
                                 const SizedBox(height: 12),
                                 DropdownButtonFormField<String>(
-                                  value:
+                                  initialValue:
                                       relationshipOptions.contains(
                                             _selectedRelationship,
                                           )
@@ -846,7 +836,7 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
                                                 _editingEmergency = false;
                                               });
 
-                                              if (mounted) {
+                                              if (context.mounted) {
                                                 ScaffoldMessenger.of(
                                                   context,
                                                 ).showSnackBar(
@@ -860,15 +850,16 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
                                                 );
                                               }
                                             } catch (e) {
-                                              if (mounted) {
+                                              if (context.mounted) {
                                                 ScaffoldMessenger.of(
                                                   context,
                                                 ).showSnackBar(
                                                   const SnackBar(
                                                     content: Text(
-                                                      'Falha ao salvar contato. Tente novamente.',
+                                                      'Não conseguimos salvar o contato agora. Tente novamente.',
                                                     ),
-                                                    backgroundColor: Colors.red,
+                                                    backgroundColor:
+                                                        AppColors.danger,
                                                   ),
                                                 );
                                               }
@@ -914,40 +905,7 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
                             title: 'PLANO E MENSALIDADE',
                           ),
                           const SizedBox(height: 16),
-                          Text(
-                            'Plano Conexão Semestral',
-                            style: GoogleFonts.inter(
-                              color: AppColors.textPrimary,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Renovação em 10/11/2023',
-                            style: GoogleFonts.inter(
-                              color: AppColors.textSecondary,
-                              fontSize: 13,
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          const Row(
-                            children: [
-                              Expanded(
-                                child: _InfoCardString(
-                                  label: 'Modalidades',
-                                  value: 'Musculação + Pilates',
-                                ),
-                              ),
-                              SizedBox(width: 12),
-                              Expanded(
-                                child: _InfoCardString(
-                                  label: 'Matrícula',
-                                  value: '#GB-2023-0482',
-                                ),
-                              ),
-                            ],
-                          ),
+                          StudentMembershipSummary(studentId: user.id),
                         ],
                       ),
                     ),
@@ -974,7 +932,7 @@ class _AlunoProfileViewState extends State<AlunoProfileView> {
                         const Divider(height: 1, color: AppColors.border),
                         _PreferenceSwitch(
                           icon: Icons.notifications_active_outlined,
-                          title: 'Avisos do Prof. Marcos',
+                          title: 'Avisos do seu professor',
                           type: PreferenceType.professorNotices,
                         ),
                         const Divider(height: 1, color: AppColors.border),
@@ -1068,7 +1026,7 @@ class _ProfileSummary extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: GoogleFonts.barlowCondensed(
                     color: AppColors.primaryDark,
-                    fontSize: 28,
+                    fontSize: AppFontSize.headline,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -1076,46 +1034,11 @@ class _ProfileSummary extends StatelessWidget {
                 Text(
                   user.email,
                   overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.inter(
+                  style: GoogleFonts.barlowCondensed(
                     color: AppColors.slateText,
-                    fontSize: 14,
+                    fontSize: AppFontSize.small,
                   ),
                 ),
-                if (user.type != UserType.admin) ...[
-                  const SizedBox(height: 10),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: AppColors.avatarBackground,
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(
-                          Icons.fitness_center,
-                          color: AppColors.primary,
-                          size: 16,
-                        ),
-                        const SizedBox(width: 6),
-                        Flexible(
-                          child: Text(
-                            'Plano Presencial + App',
-                            overflow: TextOverflow.ellipsis,
-                            style: GoogleFonts.inter(
-                              color: AppColors.primary,
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
               ],
             ),
           ),
@@ -1273,11 +1196,10 @@ enum PreferenceType { dailyReminder, professorNotices }
 
 class _PreferenceSwitch extends StatefulWidget {
   const _PreferenceSwitch({
-    Key? key,
     required this.icon,
     required this.title,
     required this.type,
-  }) : super(key: key);
+  });
 
   final IconData icon;
   final String title;
@@ -1346,7 +1268,7 @@ class _SectionHeader extends StatelessWidget {
             title,
             style: GoogleFonts.barlowCondensed(
               color: AppColors.primaryDark,
-              fontSize: 22,
+              fontSize: AppFontSize.title,
               fontWeight: FontWeight.bold,
               height: 1.1,
             ),
@@ -1359,6 +1281,7 @@ class _SectionHeader extends StatelessWidget {
 
 class _ProfessionalInfoCard extends StatelessWidget {
   const _ProfessionalInfoCard({
+    super.key,
     required this.avatar,
     required this.label,
     required this.title,
@@ -1401,9 +1324,9 @@ class _ProfessionalInfoCard extends StatelessWidget {
                 Text(
                   subtitle,
                   overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.inter(
+                  style: GoogleFonts.barlowCondensed(
                     color: subtitleColor,
-                    fontSize: 13,
+                    fontSize: AppFontSize.caption,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -1436,9 +1359,9 @@ class _PrivacyBanner extends StatelessWidget {
           Expanded(
             child: Text(
               'Proteção de dados: informações visíveis apenas a você e ao seu professor tutor.',
-              style: GoogleFonts.inter(
+              style: GoogleFonts.barlowCondensed(
                 color: AppColors.textBody,
-                fontSize: 13,
+                fontSize: AppFontSize.caption,
                 height: 1.4,
               ),
             ),
@@ -1512,38 +1435,40 @@ class _InfoCardString extends StatelessWidget {
 }
 
 abstract final class _ProfileText {
-  static TextStyle get label => GoogleFonts.inter(
+  static TextStyle get label => GoogleFonts.barlowCondensed(
     color: AppColors.slateText,
-    fontSize: 12,
+    fontSize: AppFontSize.caption,
     fontWeight: FontWeight.w600,
     letterSpacing: .5,
   );
 
-  static TextStyle get value => GoogleFonts.inter(
+  static TextStyle get value => GoogleFonts.barlowCondensed(
     color: AppColors.textPrimary,
-    fontSize: 15,
+    fontSize: AppFontSize.small,
     fontWeight: FontWeight.w600,
     height: 1.4,
   );
 
-  static TextStyle get fieldTitle => GoogleFonts.inter(
+  static TextStyle get fieldTitle => GoogleFonts.barlowCondensed(
     color: AppColors.textPrimary,
-    fontSize: 14,
+    fontSize: AppFontSize.small,
     fontWeight: FontWeight.w700,
   );
 
-  static TextStyle get input =>
-      GoogleFonts.inter(color: AppColors.textPrimary, fontSize: 15);
-
-  static TextStyle get listTitle => GoogleFonts.inter(
+  static TextStyle get input => GoogleFonts.barlowCondensed(
     color: AppColors.textPrimary,
-    fontSize: 15,
+    fontSize: AppFontSize.small,
+  );
+
+  static TextStyle get listTitle => GoogleFonts.barlowCondensed(
+    color: AppColors.textPrimary,
+    fontSize: AppFontSize.small,
     fontWeight: FontWeight.w500,
   );
 
-  static TextStyle chip(bool selected) => GoogleFonts.inter(
+  static TextStyle chip(bool selected) => GoogleFonts.barlowCondensed(
     color: selected ? AppColors.primary : AppColors.textBody,
-    fontSize: 14,
+    fontSize: AppFontSize.small,
     fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
   );
 }
@@ -1554,8 +1479,8 @@ abstract final class _ProfileButtonStyles {
   static OutlinedBorder get _shape =>
       RoundedRectangleBorder(borderRadius: BorderRadius.circular(12));
 
-  static TextStyle get _text => GoogleFonts.inter(
-    fontSize: 15,
+  static TextStyle get _text => GoogleFonts.barlowCondensed(
+    fontSize: AppFontSize.small,
     fontWeight: FontWeight.w700,
     letterSpacing: .3,
   );
@@ -1607,8 +1532,14 @@ InputDecoration _profileInputDecoration({
   return InputDecoration(
     labelText: label,
     hintText: hint,
-    labelStyle: GoogleFonts.inter(fontSize: 14, color: AppColors.slateText),
-    hintStyle: GoogleFonts.inter(fontSize: 14, color: AppColors.textMuted),
+    labelStyle: GoogleFonts.barlowCondensed(
+      fontSize: AppFontSize.small,
+      color: AppColors.slateText,
+    ),
+    hintStyle: GoogleFonts.barlowCondensed(
+      fontSize: AppFontSize.small,
+      color: AppColors.textMuted,
+    ),
     prefixIcon: icon == null ? null : Icon(icon, color: AppColors.primary),
     filled: true,
     fillColor: AppColors.surfaceSoft,
@@ -1626,4 +1557,87 @@ InputDecoration _profileInputDecoration({
       borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
     ),
   );
+}
+
+/// Bloco do aluno (`unitId`) ou, para o professor, o turno atual ou o
+/// próximo da escala.
+class _UnitShiftCard extends StatelessWidget {
+  const _UnitShiftCard({required this.user});
+
+  final UserModel user;
+
+  static const Widget _icon = CircleAvatar(
+    radius: 22,
+    backgroundColor: AppColors.primary,
+    child: Icon(Icons.grid_view_rounded, color: Colors.white, size: 20),
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    if (user.type == UserType.instructor) {
+      return InstructorScheduleBuilder(
+        instructorId: user.id,
+        builder: (context, schedule) {
+          final current = schedule.schedule.current;
+          final next = schedule.schedule.next;
+          final String title;
+          final String subtitle;
+          if (schedule.loading) {
+            title = '...';
+            subtitle = '';
+          } else if (current != null) {
+            title = schedule.unitName(current);
+            subtitle = 'Agora, até ${current.endTime}';
+          } else if (next != null) {
+            title = schedule.unitName(next);
+            subtitle = 'Próximo turno: ${schedule.nextWhenLabel}';
+          } else {
+            title = 'Sem turno na escala';
+            subtitle = schedule.hasError ? 'Escala indisponível' : '';
+          }
+          return _ProfessionalInfoCard(
+            key: const Key('card_bloco_turno'),
+            avatar: _icon,
+            label: 'BLOCO / TURNO',
+            title: title,
+            subtitle: subtitle,
+          );
+        },
+      );
+    }
+
+    final unitId = user.unitId;
+    final modality = switch (user.modality) {
+      StudentModality.remote => 'Remoto (treina em casa)',
+      StudentModality.onSite => 'Presencial',
+      null => '',
+    };
+    if (unitId == null || !locator.isRegistered<UnitService>()) {
+      return _ProfessionalInfoCard(
+        key: const Key('card_bloco_turno'),
+        avatar: _icon,
+        label: 'BLOCO',
+        title: 'Sem bloco definido',
+        subtitle: modality,
+      );
+    }
+    return StreamBuilder<List<UnitModel>>(
+      stream: locator<UnitService>().streamUnits(includeInactive: true),
+      builder: (context, snapshot) {
+        final unit = snapshot.data?.where((u) => u.id == unitId).firstOrNull;
+        return _ProfessionalInfoCard(
+          key: const Key('card_bloco_turno'),
+          avatar: _icon,
+          label: 'BLOCO',
+          title:
+              snapshot.hasError
+                  ? 'Bloco indisponível'
+                  : snapshot.data == null
+                  ? '...'
+                  : unit?.name ?? 'Bloco removido',
+          subtitle: modality,
+        );
+      },
+    );
+  }
 }

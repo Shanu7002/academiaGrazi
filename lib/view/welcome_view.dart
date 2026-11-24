@@ -1,3 +1,5 @@
+import 'package:academiagrazi/theme/app_font_size.dart';
+import 'package:academiagrazi/theme/app_colors.dart';
 import 'dart:async';
 import 'dart:math' as math;
 
@@ -240,7 +242,7 @@ class _WelcomeViewState extends State<WelcomeView>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF02594F),
+      backgroundColor: AppColors.primary,
 
       body: GestureDetector(
         behavior: HitTestBehavior.opaque,
@@ -321,7 +323,10 @@ class _WelcomeViewState extends State<WelcomeView>
                                 style: GoogleFonts.barlowCondensed(
                                   color: Colors.white,
 
-                                  fontSize: compact ? 20 : 23,
+                                  fontSize:
+                                      compact
+                                          ? AppFontSize.subtitle
+                                          : AppFontSize.title,
 
                                   fontWeight: FontWeight.w300,
 
@@ -369,15 +374,14 @@ class _WelcomeViewState extends State<WelcomeView>
               left: 0,
               right: 0,
               bottom: 0,
-              height: 32,
-
-              child: _Reveal(
-                animation: _controller,
-                begin: 0.16,
-                end: 0.30,
-                slide: const Offset(0, 32),
-
-                child: Image.asset(_gradientAsset, fit: BoxFit.cover),
+              child: WelcomeBottomBand(
+                child: _Reveal(
+                  animation: _controller,
+                  begin: 0.16,
+                  end: 0.30,
+                  slide: const Offset(0, 32),
+                  child: Image.asset(_gradientAsset, fit: BoxFit.cover),
+                ),
               ),
             ),
           ],
@@ -404,6 +408,29 @@ class _WelcomeViewState extends State<WelcomeView>
       height: 48,
 
       child: Image.asset(path, fit: BoxFit.contain),
+    );
+  }
+}
+
+/// Restringe a faixa inferior à área visual do app no desktop.
+/// A região externa permanece verde, sem esticar o gradiente para a janela toda.
+class WelcomeBottomBand extends StatelessWidget {
+  const WelcomeBottomBand({super.key, required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 430),
+        child: SizedBox(
+          key: const Key('welcome_bottom_band'),
+          width: double.infinity,
+          height: 32,
+          child: ClipRect(child: child),
+        ),
+      ),
     );
   }
 }

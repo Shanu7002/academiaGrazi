@@ -12,9 +12,9 @@ Aplicativo mobile (Flutter) da Academia Grazi Braz, **em português do Brasil**,
 
 | Perfil | `UserType` | Faz o quê |
 |---|---|---|
-| Administrador | `admin` | Visão da operação, equipe (carga dos professores), cadastro de professores, unidades e escala, grade de aulas, biblioteca de exercícios, ocorrências |
+| Administrador | `admin` | Visão da operação, gestão dos alunos (professor responsável e modalidade), redistribuição de alunos entre professores (automática, proporcional à capacidade, ou manual), equipe (carga dos professores), cadastro de professores, unidades e escala, grade de aulas, biblioteca de exercícios, ocorrências, catálogo de planos e controle manual das mensalidades |
 | Professor | `instructor` | Painel com unidade atual/próxima e pendências, lista de alunos, montagem e prescrição de treinos, avaliações físicas |
-| Aluno | `user` | Treino em destaque, execução do treino com registro de carga, evolução e avaliações, perfil e ficha de saúde |
+| Aluno | `user` | Treino em destaque, execução do treino com registro de carga, evolução e avaliações, perfil e ficha de saúde, plano e situação das mensalidades |
 
 O aluno se cadastra sozinho usando o **código de convite do professor** (4 dígitos, renovado a cada 15 min). O vínculo aluno → professor é o campo `users.responsable`.
 
@@ -23,9 +23,9 @@ O aluno se cadastra sozinho usando o **código de convite do professor** (4 díg
 **Dentro:** RF01–RF14 e RNF01–RNF02 (ver `docs/BACKLOG.md`).
 
 **Fora desta versão: não implemente, mesmo que pareça útil:**
-- Pagamentos, mensalidade, planos, finanças, vendas digitais.
+- Pagamento online: gateway, cobrança automática, Pix ou cartão integrados, boletos, finanças e vendas digitais. **Planos e mensalidades existem só como controle manual**: o admin cadastra os planos, atribui ao aluno e registra cada pagamento recebido fora do app (`membershipPlans`, `memberships`, §5.3). Decisão de 2026-11-16, que substitui o GB-120 (AGB-138).
 - Reserva de aulas e controle de lotação (a grade de aulas é **somente leitura**).
-- Mensagens/chat entre professor e aluno; "Redistribuir alunos".
+- Mensagens/chat entre professor e aluno.
 - **Vídeos de exercício** (upload e player). O campo `exercises.videoUrl` existe, mas fica sempre `null`. Onde o protótipo mostra vídeo, exiba a imagem do exercício.
 - Push notification (FCM). As notificações são **somente a lista interna no app**.
 - Inteligência artificial: o card "Sugestão com IA" fica **desabilitado** com o selo "Recurso futuro".
@@ -46,6 +46,8 @@ O aluno se cadastra sozinho usando o **código de convite do professor** (4 díg
 | Avaliação física | Agendada pelo professor e depois registrada (peso, gordura, massa magra, observações) | `assessments` |
 | Modalidade do aluno | Presencial ou remoto (treino em casa), definida pelo professor/admin | `users.modality` |
 | Ocorrência | Problema operacional registrado (ex.: equipamento quebrado) | `occurrences` |
+| Plano (catálogo) | Plano oferecido pela academia: valor da mensalidade, duração em meses, modalidades | `membershipPlans` |
+| Plano do aluno / Mensalidade | Plano atribuído ao aluno; uma mensalidade por mês a partir do início, paga ou em aberto | `memberships`; mensalidades calculadas por `membershipFees()` |
 
 ---
 
@@ -126,6 +128,7 @@ lib/
 | Keys de widget para teste | `Key('snake_case_em_portugues')`, ex.: `Key('botao_iniciar_treino')`, `Key('campo_busca_aluno')`. Prefixo pelo tipo: `botao_`, `campo_`, `card_`, `aba_`/`<perfil>_tab_`. |
 | Números mágicos de negócio | Proibidos nas telas. Use `lib/config/business_rules.dart`. |
 | Cores | Somente `AppColors.*`. Nada de `Color(0x…)` fora de `lib/theme/`. Use `withValues(alpha:)`, não `withOpacity`. |
+| Tamanho de fonte | Somente `AppFontSize.*` (`lib/theme/app_font_size.dart`). Nada de `fontSize: 14` com número solto. |
 | Log | `debugPrint` ou `dart:developer log`. Nunca `print`. |
 | Formatação | `dart format` (largura 80, `analysis_options.yaml`). `flutter analyze` sem warnings. |
 | Datas | Ver §5.1. |
@@ -159,27 +162,27 @@ Legenda: ✅ existe · 🆕 planejada (schema de referência; quem implementar s
 name: string
 email: string
 type: 'admin' | 'instructor' | 'user'
-createdAt: string ISO
+createdAt: string ISO UTC        # gravado só na criação (UserModel.createdAt); nunca reescrito
 responsable?: string            # aluno → uid do professor; professor → uid do admin que o cadastrou
 photoUrl?: string               # Cloudinary
 # aluno
 registrationProfile?: { measurements{age,heightCm,weightKg}, gender?: 'male'|'female'|'undisclosed', primaryGoal, health{conditions[],restrictions[],notes}, emergencyContact{name,relationship,phone} }
 onboardingCompleted: bool
 termsAcceptedAt?: string ISO
-unitId?: string                 # 🆕 GB-003/GB-043
-modality?: 'onSite' | 'remote'  # 🆕 definido por professor/admin
+unitId?: string                 # aluno; bloco definido pelo admin nos detalhes do aluno (GB-043) ou pelo professor responsável
+modality?: 'onSite' | 'remote'  # aluno; definido pelo professor responsável ou admin (GB-003)
 # professor
 registrationCode?: string       # 4 dígitos
 registrationCodeExpiresAt?: string ISO UTC
-specialty?: string              # 🆕 GB-085
-studentCapacity?: int           # 🆕 GB-085 (padrão 30 quando ausente)
+specialty?: string              # professor; só o admin altera (GB-003), tela no GB-085
+studentCapacity?: int           # professor; só o admin altera (GB-003); padrão 30 quando ausente (GB-085)
 ```
 
 **✅ `instructorCodes/{code}`**: `{ instructorId, instructorName, active, createdAt, expiresAtMillis }`. Leitura pública apenas por `get`.
 
-**🆕 `units/{unitId}`**: `{ name, address?, active, createdAt }`
+**✅ `units/{unitId}`**: `UnitModel` (`lib/models/units/unit_model.dart`), `UnitService`. `{ name, address?, active, createdAt }`. Nunca apagada: desative com `active: false`.
 
-**🆕 `instructorShifts/{id}`**: `{ instructorId, unitId, weekday: 1..7 (DateTime.weekday, 1 = segunda), startTime: 'HH:mm', endTime: 'HH:mm', createdAt }`
+**✅ `instructorShifts/{id}`**: `InstructorShiftModel` (`lib/models/units/instructor_shift_model.dart`), `InstructorShiftService`. `{ instructorId, unitId, weekday: 1..7 (DateTime.weekday, 1 = segunda), startTime: 'HH:mm', endTime: 'HH:mm', createdAt }`. Horário local da academia; `startTime < endTime` (o turno não vira a meia-noite). Turno atual/próximo: `currentAndNextShift(shifts, now)` em `lib/service/units/shift_schedule.dart`. Turnos do mesmo professor não se sobrepõem no mesmo dia (encostar pode): `findOverlappingShift`, conferido no diálogo e no `InstructorShiftService.addShift`. O admin monta a escala na seção "Escala" dos detalhes do professor.
 
 **🆕 `exercises/{id}`**
 ```
@@ -246,7 +249,25 @@ Pendente = `scheduled` com data futura · vencida = `scheduled` com `scheduledAt
 
 **🆕 `occurrences/{id}`**: `{ title, description, unitId?, severity: 'warning'|'info', status: 'open'|'resolved', reportedBy, reportedByName, createdAt, resolvedAt?, resolvedBy? }`
 
-**🆕 `gym_classes/{id}`**: grade de aulas, somente leitura para o aluno. O nome da coleção já está nas regras. `{ name, unitId, instructorId?, weekday, startTime, durationMinutes, capacity (informativo), active }`
+**✅ `gym_classes/{id}`**: `GymClassModel` (`lib/models/units/gym_class_model.dart`), `GymClassService`; cadastro pelo admin em `GymClassesView`. Grade de aulas, somente leitura para o aluno, sem reserva e sem lotação. `{ name, unitId, instructorId?, weekday, startTime: 'HH:mm', durationMinutes, capacity? (informativo), active, createdAt }`. Nunca apagada: retire da grade com `active: false`.
+
+**✅ `membershipPlans/{id}`**: `MembershipPlanModel` (`lib/models/memberships/membership_plan_model.dart`), `MembershipService`; catálogo do admin em `MembershipPlansView`. `{ name, monthlyPriceCents: int (> 0), durationMonths: int (1..36), modalities?, active, createdAt }`. Dinheiro sempre em **centavos (int)**. Nunca apagado: retire do catálogo com `active: false`.
+
+**✅ `memberships/{id}`**: `MembershipModel` (`lib/models/memberships/membership_model.dart`), `MembershipService`. Plano atribuído ao aluno, com cópia dos dados do catálogo (mudar o catálogo não altera planos já contratados).
+```
+studentId, planId: string
+planName: string; modalities?: string       # cópia do catálogo
+monthlyPriceCents, durationMonths: int      # cópia do catálogo
+startDate: 'YYYY-MM-DD'                     # vencimento da 1ª mensalidade
+status: 'active' | 'closed'                 # um 'active' por aluno; atribuir outro encerra o anterior
+payments: [ { installment: int (1 = primeira), paidOn: 'YYYY-MM-DD',
+              method: 'pix'|'cash'|'card'|'transfer', amountCents: int,
+              recordedBy: uid, recordedAt: string ISO UTC } ]
+createdAt: string ISO UTC; createdBy: uid; closedAt?: string ISO UTC
+```
+As mensalidades **não são documentos**: `membershipFees(membership, now)` e `summarizeMembership(membership, now)` (`lib/service/memberships/membership_schedule.dart`) calculam vencimentos (mesmo dia nos meses seguintes, limitado ao fim do mês), situação (paga, em atraso, vence em breve, a vencer) e o resumo do plano (em dia, vence em breve, em atraso, encerrado). "Vence em breve" usa `BusinessRules.membershipFeeDueSoonDays`. Depois de criado, só mudam `status`, `closedAt` e `payments`.
+
+**Bloqueio por atraso:** com mensalidade vencida há mais de `BusinessRules.membershipBlockGraceDays` dias (`isAccessBlocked`), o `AuthWrapper` mostra ao aluno a tela de acesso pausado (`StudentAccessGate`/`OverdueBlockedView`), com o nome do professor responsável e o botão Sair. A tela escuta o plano e libera sozinha quando o pagamento é registrado. Sem plano, ou sem conseguir ler o plano, o acesso fica liberado. O bloqueio é só no app: as regras do Firestore não comparam datas com as mensalidades.
 
 ---
 
@@ -258,7 +279,8 @@ As regras do Firestore (`firestore.rules`) são a **barreira real**; checagens n
 |---|---|---|---|
 | Próprio `users` | lê; altera só `name`, `photoUrl`, `registrationProfile.health`, `registrationProfile.emergencyContact` | lê; altera os mesmos campos + renova o próprio código | lê/altera |
 | `users` de outros | lê só o do seu professor (nome/foto) | lê os alunos com `responsable == uid`; altera `unitId`/`modality` deles | lê todos; cria professores; altera `specialty`, `studentCapacity`, `unitId`, `modality` |
-| Campos `type`, `responsable`, `createdAt` | ❌ nunca | ❌ nunca | só na criação |
+| Campos `type`, `createdAt` | ❌ nunca | ❌ nunca | só na criação |
+| Campo `responsable` (vínculo aluno → professor) | ❌ nunca | ❌ nunca | define na criação do professor; troca o professor do aluno, sempre para um professor válido |
 | `exercises` | lê | lê, cria, edita os que criou | tudo |
 | `workouts` | lê os próprios | CRUD dos seus alunos | lê |
 | `workoutTemplates` | ❌ | CRUD dos próprios | lê |
@@ -267,6 +289,12 @@ As regras do Firestore (`firestore.rules`) são a **barreira real**; checagens n
 | `units`, `instructorShifts`, `gym_classes` | lê | lê | CRUD |
 | `notifications` | lê as próprias; altera só `read` | lê as próprias; cria para seus alunos | lê as próprias; cria para qualquer um |
 | `occurrences` | ❌ | cria; lê as que criou | tudo |
+| `membershipPlans` | ❌ | ❌ | lê, cria, edita (não apaga) |
+| `memberships` | lê o próprio | ❌ | lê; cria; altera só `status`, `closedAt` e `payments` |
+
+**Troca de professor responsável:** a sessão de treino registra o professor autor da ficha ativa, não o responsável atual. Depois de uma troca, o aluno segue treinando a ficha vigente até o novo professor publicar outra, e o novo responsável pode substituir ou retirar a ficha ativa e o treino em casa deixados pelo anterior.
+
+**Dados financeiros** (`memberships`) só aparecem para o próprio aluno e para o admin; o professor não os vê.
 
 **Dados de saúde** (`registrationProfile.health`, `assessments`) e **contato de emergência** são sensíveis (LGPD): nunca exiba para outro aluno, nunca grave em log, nunca envie para serviço externo.
 
@@ -278,17 +306,104 @@ As regras do Firestore (`firestore.rules`) são a **barreira real**; checagens n
 
 - O layout segue o **protótipo final**. Na dúvida sobre uma tela, pergunte ao time; não invente fluxo.
 - Largura máxima de 430 px centralizada (padrão de `MainShell`/`ProfessorAreaView`).
-- **Cores**: `lib/theme/app_colors.dart`. Primária `#005A4F`, destaque `#FF7943`, texto `#092837`, fundo `#F4F7FA`. Faltou um tom? Crie o token em `AppColors`.
-- **Tipografia**: Barlow Condensed (tema padrão, títulos em caixa alta/negrito), Inter para texto corrido e rótulos, Anton para números grandes de métrica (já usada nos dashboards).
-- **Cabeçalho**: sempre `CustomAppBar` (avatar do usuário + título + sino). Telas raiz de aba usam `showBackButton: false`.
+- **Marca**: toda tela segue o manual de marca (§7.1). Cores só por `AppColors`, fonte só Barlow Condensed, tema em `AppTheme`.
+- **Cabeçalho**: sempre `CustomAppBar` (avatar do usuário + título + sino). A seta de voltar é automática: aparece só quando a tela foi empilhada e pode voltar (nunca na raiz de uma aba).
 - **Navegação inferior**: `AppBottomNavigation`. Abas finais por perfil:
   - Aluno: Início · Treinos · Evolução · Perfil
   - Professor: Início · Treinos (montagem) · Evolução (avaliações) · Perfil; a lista de alunos abre pelo Início
-  - Admin: Início · Exercícios · Equipe · Perfil
+  - Admin: Início · Alunos · Equipe · Perfil (a aba Alunos lista todos, filtra remotos e troca professor e modalidade)
 - Foto de usuário: `UserAvatar` (usa miniatura do Cloudinary).
 - Recursos fora do escopo **não aparecem** na UI. Exceção: o card de IA desabilitado com "Recurso futuro".
 - Nenhum botão sem ação (`onPressed: () {}`). Se a função ainda não existe, o botão não aparece.
 
+
+### 7.1 Manual de marca (obrigatório em toda tela e texto)
+
+Manual completo: [`docs/MANUAL_DE_MARCA.md`](docs/MANUAL_DE_MARCA.md). Em conflito com preferências genéricas de design, o manual prevalece. Abaixo, as regras já traduzidas para o app.
+
+**Identidade.** Nome **GRAZI BRAZ** (sempre em caixa alta no logo), tagline *conexão e movimento*, descritor *Treino personalizado*. Verbos da marca: **CONECTAR** (vínculo, empatia) e **MOVIMENTAR** (bem-estar, disciplina, propósito).
+
+**Tom de voz.**
+- Próximo, humano, motivador e acolhedor; nada de "academia hardcore".
+- Frases curtas e claras, em segunda pessoa ("você", "sua energia de treino"). Perguntas para engajar são bem-vindas.
+- Humor leve só em opções e enquetes. Temas: disciplina, propósito, constância, bem-estar, comunidade, saúde.
+- pt-BR; frases de impacto em inglês só pontualmente.
+- Mensagens de erro e estados vazios também seguem o tom: dizem o que aconteceu e o que fazer, sem culpar o usuário. Textos legais (termos, LGPD) não são reescritos.
+- Padrão de falha: `Não conseguimos <ação> agora. <o que fazer>` (ex.: "Não conseguimos salvar o bloco agora. Tente novamente."). O erro técnico vai só para o `debugPrint`; **nunca** aparece na tela (`$error`, `Bad state:`…).
+- Todo texto visível com acentuação correta.
+
+**Tipografia.** Fonte única **Barlow Condensed** (`GoogleFonts.barlowCondensed`; o `AppTheme` já define o padrão). Não use Inter, Anton nem outra família.
+- Títulos: SemiBold/Bold, **CAIXA ALTA**, tracking levemente aberto (`letterSpacing` ~0,6–1).
+- Subtítulo e tagline: *itálico*, Light/Regular, caixa baixa ou de título.
+- Corpo: Regular, tracking levemente aberto (~0,2).
+- Números de métrica: Barlow Condensed Bold, grande.
+- **Tamanhos: escala única `AppFontSize`** (nunca número solto em `fontSize`). Escolha pelo papel do texto, não pelo espaço disponível; se não couber, ajuste o layout (`Expanded`, `Wrap`, `maxLines`/`ellipsis`), não a fonte.
+
+| Token | px | Uso |
+|---|---|---|
+| `caption` | 13 | rótulos pequenos, sobretítulos em caixa alta, selos (mínimo do app) |
+| `small` | 15 | legendas, texto secundário |
+| `body` | 17 | texto corrido, nomes em listas, campos, botões |
+| `subtitle` | 20 | título de cartão ou item de destaque |
+| `title` | 24 | título de seção |
+| `headline` | 30 | título da página |
+| `display` | 44 | números grandes de métrica |
+- Título de seção no padrão `PALAVRA EM CAIXA ALTA / Complemento em itálico` (ex.: `EVOLUÇÃO / Suas medidas`).
+- Destaque no corpo: a palavra-chave em CAIXA ALTA e/ou negrito na cor de impacto.
+- **Títulos: use sempre `BrandHeading`** (`lib/view/components/brand_heading.dart`). Ele aplica o padrão sozinho: o título em caixa alta e, depois da barra, o complemento em itálico. Use `level: BrandHeadingLevel.page` no topo da tela e `level: BrandHeadingLevel.section` nas seções. Não monte título com `Text` e estilo próprio.
+- Saudação dos painéis: `UserGreeting` (`OLÁ / Primeiro nome` de quem está logado). Nunca coloque nome fixo.
+
+**Cores** (`lib/theme/app_colors.dart`; nunca `Color(0x…)` fora de `lib/theme/`):
+
+| Papel | Cor | Token |
+|---|---|---|
+| Impacto: CTA principal, número/palavra em destaque | Laranja `#E37747` | `AppColors.accent` (`onAccent` = branco por cima) |
+| Institucional: logo, títulos, ícones, fundos de marca | Verde `#02594F` | `AppColors.primary` / `textPrimary` |
+| Ponto de luz: brilho, detalhes | Amarelo `#F2BE48` | `AppColors.highlight` |
+| Atenção e respiro: perguntas ao aluno, avisos | Azul `#2A327B` | `AppColors.info` (com moderação) |
+| Texto corrido | Cinza `#707070` | `AppColors.textBody` |
+| Fundo | Off-white `#EBE8E6`, cartões brancos | `AppColors.background` / `surface` |
+
+Predominância: laranja > verde > amarelo > azul. Superfícies e bordas usam nuances claras dessas cores (tokens `*Surface`, `*Border`).
+
+**Ajustes de leitura (decisão do time, valem sobre o manual):**
+- Cinza `#707070` só sobre cartões **brancos**. Legendas que ficam sobre o fundo off-white usam `textSecondary` (`#5C5C5C`).
+- Amarelo nunca como texto sobre fundo claro (contraste 1,7:1): só sobre o verde ou como detalhe gráfico.
+- Laranja como **texto** só em tamanho grande ou negrito (títulos, números, botões). Texto pequeno em alerta laranja usa `accentText`.
+- Branco sobre laranja (contraste 3:1): só em negrito ou ≥ 18 px, como nos botões do tema.
+- Erro e ação destrutiva usam `AppColors.danger` (vermelho), única cor fora da paleta, para não se confundir com o laranja dos CTAs.
+
+**Componentes.**
+- Botão principal: `FilledButton`/`ElevatedButton` do tema (laranja, texto branco em negrito).
+- Secundário: `OutlinedButton` (contorno verde). Terciário: `TextButton` verde.
+- Um CTA laranja por bloco de tela; o resto em verde.
+- Avisos (`SnackBar`) em verde. Diálogos com título em Barlow Condensed verde.
+
+**Gradiente, símbolo e logo.**
+- O gradiente da marca (laranja, amarelo, azul e verde, desfocado e com grão) vale para capas, faixas laterais e destaques. Use os assets prontos (`assets/linhaGradiente.png`, `assets/welcometela/faixa_gradiente.png`); não recrie gradientes "parecidos".
+- Símbolo: flor de 8 pétalas (`assets/welcometela/flor.png`, `flor_contorno.svg`, `petala_0..7.svg`). Pode ser usado grande e recortado na borda ou como marca d'água em linha branca ou verde.
+- Logo só nas versões aprovadas (horizontal, vertical, empilhada, reduzida) e numa cor única da paleta, de preferência verde, ou branco sobre verde/laranja/gradiente. Assets: `logoLogin.png`, `logoGraziBranca.png`, `ICONE.svg`. Não distorcer, girar, recolorir em várias cores, trocar a fonte nem aplicar sem contraste.
+
+**Ícones.** Estilo linha (outline), traço uniforme, cantos levemente arredondados, sem preenchimento, em verde `#02594F`. No Material, prefira as variantes `_outlined`/`_rounded`.
+
+**Fotografia.**
+- Pessoas reais treinando ou em momentos de conexão, com diversidade de corpos e foco em mulheres ativas.
+- Luz natural, cores quentes, leve grão.
+- Nada de estúdio frio, pose artificial ou estética bodybuilding.
+
+**Layout.**
+- Muito respiro e composição limpa.
+- Títulos grandes em caixa alta; texto pequeno alinhado à esquerda.
+- Navegação e "sobretítulos" discretos em caixa alta e tamanho pequeno.
+
+**Checklist de marca** (entra na DoD, §10):
+- [ ] Só Barlow Condensed, com tamanhos da escala `AppFontSize`
+- [ ] Só cores da paleta via `AppColors` (+ cinza de texto e off-white), com os ajustes de leitura acima
+- [ ] Laranja no destaque principal; verde institucional; azul com moderação
+- [ ] Títulos em caixa alta; subtítulo/tagline em itálico
+- [ ] Logo e símbolo só nas versões aprovadas, em cor única
+- [ ] Texto claro, curto, humano e motivador (inclusive erros e estados vazios)
+- [ ] Espaço em branco suficiente
 ---
 
 ## 8. Testes
@@ -320,6 +435,7 @@ Um card só está pronto quando:
 - [ ] Critérios de aceite do card em `docs/BACKLOG.md` atendidos.
 - [ ] Sem dados mockados ou textos fixos de exemplo em `lib/` para a funcionalidade entregue.
 - [ ] Estados de carregando, vazio e erro tratados; textos em pt-BR.
+- [ ] Checklist de marca (§7.1) atendido.
 - [ ] `firestore.rules` e `firestore.indexes.json` atualizados quando houver coleção ou consulta nova.
 - [ ] Model novo ou alterado com `*_model_changelog.xml` atualizado.
 - [ ] Testes novos passando; `flutter test` e `flutter analyze` limpos.
@@ -355,3 +471,21 @@ Para o agente: **se a regra de negócio não estiver neste arquivo nem no card, 
 - O código de convite não tem backend de renovação: ele é renovado sob demanda em uma transação (`RegisterInstructorService._issueCode`). Não crie timers que gravem no banco.
 - `CustomAppBar` assina o documento do usuário logado para a foto; em teste isolado ele exibe o ícone padrão se os services não estiverem no `locator`.
 - O seletor "Presencial / Treino em casa" da tela de login é **apenas visual** (troca o fundo). A modalidade real do aluno é `users.modality`.
+- Teste que monta o `AuthWrapper` como aluno precisa de `MembershipService` no `locator`: o `StudentAccessGate` confere as mensalidades antes de abrir o `MainShell`.
+
+---
+
+## AGB-205 · Login interativo
+
+Implementação: `lib/view/login_view.dart`, componentes em `lib/view/login/`.
+Detalhes e aceite: `docs/AGB-205_LOGIN.md`.
+
+- Esta tarefa modifica o **login**, não a abertura animada `WelcomeView`.
+- Os cenários Presencial/Treino em casa são exclusivamente visuais; não gravam modalidade, perfil ou plano no banco.
+- Troca automática a cada 5 s; intervenção manual adia a próxima troca por 8 s. Com foco em qualquer campo, requisição pendente, cadastro aberto ou aplicativo em segundo plano, a rotação para. Retoma após 8 s quando permitido.
+- O controle visível de pausa foi removido (AGB-205 V2); a rotação pausa automaticamente com foco/interação. `MediaQuery.disableAnimations` ou `accessibleNavigation` desliga a rotação e as transições não essenciais; a seleção manual continua disponível.
+- O formulário permanece montado durante a troca, preservando posição, controladores e texto.
+- O login continua usando `LoginController` e retorna ao `AuthWrapper`. **Não remover ou contornar `StudentAccessGate`, Planos e Mensalidades, nem regras do Firestore.**
+- Exceção visual local aprovada pelo conceito do AGB-205: headline “Seu corpo. Seu ritmo.” em caixa de frase e CTA verde, como no login anterior; não altera o tema global nem os padrões das demais telas. Fonte e cores continuam as do tema Grazi Braz.
+- A aparência usa o logo já versionado e os novos assets `agb205_presencial.webp` / `agb205_casa.webp`, incluídos no pacote; não baixar imagens em tempo de execução nem usar a imagem dos dois celulares como fundo.
+- `LoginView(autoRotate: false)` está disponível para testes que validam somente autenticação. Os testes da rotação ficam em `test/view/login/login_interactive_view_test.dart`.
